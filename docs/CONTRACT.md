@@ -8,11 +8,12 @@ BOX CAL이 계산한 격실·부하를 PHG D가 쓸 수 있는 형태로 옮기�
 
 ```
 {
-  schema: 'hvac-grid/0', units: 'mm',
+  schema: 'hvac-grid/0', units: 'mm', coordinates: 'ship',   // 선박 좌표: +x 선수, +y 좌현 (BOX와 같음)
   source:  { app, file, sha256, project },          // 어떤 BOX 파일·프로젝트에서 뽑았는지
   rules:   { supplyDeltaTK, roundCmh, exhaustFrom }, // 풍량 규칙(4장)
   conditions: { ... },                               // BOX 설계 조건 그대로 (외기온도, 인원 발열, 1인 신기량 …)
-  decks:   [{ id, name, elevationMm, heightMm, offsetMm:{x,y}, rotationDeg }],
+  decks:   [{ id, name, elevationMm, heightMm, offsetMm:{x,y}, rotationDeg, scale }],   // 변위·회전·축척은 기록용: 격실 좌표에 이미 적용됨
+  zones:   [{ supplySystemId, roomIds, transferRoomIds, saCmh, eaCmh, minOaCmh, oaNeedCmh, oaCmh, raCmh, oaPct, pressurizationCmh, ok }],   // 4장 구역 수지
   rooms:   [{ id, no, name, deckId, isoClass, polygon:[{x,y}], holes:[[{x,y}]], areaM2, volumeM3, ceilingHeightMm,
               systems:{ supply, exhaust, return } }],
   loads:   { [roomId]: { coolingSensibleW, coolingLatentW, coolingW, heatingW, minFreshAirCmh, minAch, achAirCmh, complete, status } },
@@ -51,7 +52,7 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 | rooms.id / no / name | `id`, `no`, `name` | 격실 식별 — 두 앱이 공유하는 키 |
 | rooms.deckId | `deckId` | |
 | rooms.isoClass | `isoClass` | ISO 7547 분류(AC, WHEELHOUSE, BOILER, ALLEY_SOUND …) — SOLAS 범주 대응에도 사용 예정 |
-| rooms.polygon / holes | `polygon`, `holes` | Deck 도면 좌표(mm). Deck 변위·회전은 decks에 별도 |
+| rooms.polygon / holes | `polygon`, `holes` | **선박 좌표(mm)** — BOX가 Deck 변위·회전·축척을 적용해 보고함(90° 회전·변위 Deck으로 확인, 고정 시험 `samples/fixtures/offset-deck`). 그래서 Deck 사이(갑판 경계, 수직 덕트) 좌표를 그대로 비교 |
 | rooms.areaM2 / volumeM3 / ceilingHeightMm | `floor`, `volume`, `ceilingHeight` | ceilingHeight 0은 null |
 | rooms.systems | `sup`, `exh`, `ret` | 급기·배기·환기 계통 이름 |
 | loads.coolingSensibleW … heatingW | `coolingSensibleW`, `coolingLatentW`, `coolingW`, `heatingW` | 안전율 포함, 외기부하 제외(BOX 기준) |
@@ -80,18 +81,21 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 - 크기: 풍속 ≤ 10 m/s, 마찰 ≤ 2 Pa/m, 50 mm 단위, 종횡비 ≤ 4, 가장 작은 단면. 손실: Darcy–Weisbach(Colebrook, 아연도 0.09 mm, 공기 1.2 kg/m³) + 엘보 K 0.25.
 - 계통 최대 압력손실 = max(각 Deck의 PHG D 최대 손실 + 공조기에서 그 Deck까지 수직 덕트 손실).
 
-## 4. 풍량 규칙 v0
+## 4. 풍량 규칙 (v0 + 구역 수지)
 
 | 풍량 | 규칙 | 근거 |
 |---|---|---|
-| 급기 | 급기 계통이 있는 격실: ⌈냉방 현열 W × 3 ÷ ΔT⌉₁₀, ΔT 기본 10 K | 이전 통합(Box_PHG_Integrated, HVAC Studio)과 같은 근사(1/(ρ·cp) ≈ 2.99) |
+| 급기 | 급기 계통이 있는 격실: ⌈max(냉방 현열 W × 3 ÷ ΔT, 최소 신기)⌉₁₀, ΔT 기본 10 K. 전달 공기를 보내는 실은 ⌈자기 배기 + 보내는 전달 공기⌉₁₀ 이상(보충 급기) | 이전 통합(Box_PHG_Integrated, HVAC Studio)과 같은 근사(1/(ρ·cp) ≈ 2.99) |
 | 배기 | 배기 계통이 있는 격실: ⌈ACH × 체적⌉₁₀ | BOX `ventilationAirCmh` |
-| 환기 | 환기 계통이 있는 격실: max(0, 급기 − 배기) | 단순 수지 |
+| 전달 공기 | 배기 > 급기이고 환기가 없는 실(화장실·탈의실·배식실): 부족분을 같은 Deck에서 벽을 가장 길게 공유하는 급기 실에서(같으면 복도). CO₂·축전지·페인트 실은 자체 흡입구 | 문 그릴·언더컷 |
+| 환기 | **공조 구역**(급기 계통 하나)마다: 신기 = max(최소 신기 합, 구역 배기 × 1.05), 환기 = 급기 − 신기를 환기 실에 "급기 − 자기 배기 − 보낸 전달 공기" 비율로 배분(10 CMH 단위). 환기 실이 없는 구역(조리실 급기팬)은 전외기 | 거주구 약가압 유지 (리뷰 1차 R1-ENG-01) |
 | 신기 | 정보값: 최소 신기량 | 계통 OA 배분은 BOX AHU 계산 결과로 대체 예정 |
 
 BOX의 AHU 계산(`CAL_ENHANCE.ahu`)이 유효하면(AHU 조건 입력 완료) 그 격실 SA 풍량을 우선하도록 v1에서 바꿉니다. S5 예제는 AHU 조건이 없어 `AHU_INPUT` 경고 상태입니다.
 
-풍량 검토(`lib/project.cjs airChecks`): 배기가 있고 환기가 없는 실(조리실·화장실·세탁실)에서 급기 > 배기이면 "부압 미확보" 경고, 부하 미완료 실, 계통은 있으나 풍량 0인 실·계통.
+`rules.airBalance: 'room'`이면 v0(실별 환기 = 급기 − 배기), `transferMakeup: false`면 보충 급기 없이 계산합니다.
+
+풍량 검토(`lib/project.cjs airChecks`): 구역 수지 부족(실패), 배기가 있고 환기가 없는 실의 급기 > 배기(부압 미확보, 실패), 난방 급기 온도차 > 18 K, 기관구역을 냉방 규칙으로 계산, 이웃 급기 실이 없는 배기 실, 복도 문 통기구 > 0.05 m²(화물선 II-2/9.4.2), 부하 미완료(확인).
 
 ## 5. 검증
 

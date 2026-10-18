@@ -14,5 +14,11 @@
     "solas:extract": "node tools/solas-extract.cjs",
     "solas:check": "node tools/solas-extract.cjs --check",
     "mockup": "node tools/build-mockup.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.50.0"
   }
 }

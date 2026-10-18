@@ -1,20 +1,22 @@
 // Test drawings: the T3 test ship - a cargo ship accommodation block, 4 decks, 20 x 16 m (bridge deck 12 x 16 m).
 // It exercises what S5 does not: systems over several decks with a duct trunk, L-shaped cabins with their own toilets,
-// an engine casing through the accommodation (A-60), a galley with its own supply / exhaust (SOLAS II-2/9.7.5),
-// exhaust and return systems, rooms the SOLAS dictionary does not know.
+// an engine casing on the corridor (A-60), a galley with its own supply / exhaust (SOLAS II-2/9.7.5), exhaust and return
+// systems, transfer air, stairs stacked through all decks, CO2 and battery rooms with their own exhaust. v2 (after
+// review 1): the AC room and the trunk open onto the corridor, so ducts need not pass the casing or the stair.
 //   node tools/make-test-ship.cjs [outDir=samples/t3]
 // Writes T3.box.json (a BOX CAL project, the same format as BOX's own S5 example: deck outline LINEs and RECT / POLY
 // rooms carrying the room data) and one general-arrangement DXF per deck (T3_<deck>.dxf: deck outline, closed room
 // outlines, room number and name) + T3_ALL.dxf (all decks side by side). Synthetic data, not a real ship.
 'use strict';
-const fs = require('fs'), path = require('path'), crypto = require('crypto'), G = require('../lib/phg-plan.cjs');
+const fs = require('fs'), path = require('path'), crypto = require('crypto'), G = require('../lib/geom.cjs');
 
 const DECKS = [
  { id: 'D1', name: 'UPPER DK', z: 0 }, { id: 'D2', name: 'A DK', z: 2800 }, { id: 'D3', name: 'B DK', z: 5600 }, { id: 'D4', name: 'NAV BRG DK', z: 8400 }];
 const HEIGHT = 2800;
+// ship coordinates as BOX uses them: +x forward, +y port. y 0..7000 starboard side, 7000..9000 corridor, 9000..16000 port side
 const OUTLINE = { D1: [0, 0, 20000, 16000], D2: [0, 0, 20000, 16000], D3: [0, 0, 20000, 16000], D4: [8000, 0, 20000, 16000] };
 
-// room data defaults (BOX field names); use() picks the HVAC systems and the internal loads by room type
+// room data defaults (BOX field names); USE picks the HVAC systems and the internal loads by room type
 const BASE = { coolTemp: 25, coolingRh: 55, heatTemp: 22, heatingRh: 40, sup: '', exh: '', ret: '', lighting: 10, windowArea: 0, people: 0, minimumFreshAir: 0, equipW: 0, minimumAch: 0, isoClass: 'AC' };
 const USE = {
  cabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 1, minimumFreshAir: 28.8, equipW: 200, windowArea: 0.8 },
@@ -23,6 +25,7 @@ const USE = {
  cabinWc: { exh: 'EF-SAN', minimumAch: 15, lighting: 8 },
  wc: { exh: 'EF-SAN', minimumAch: 15, lighting: 8 },
  locker: { exh: 'EF-SAN', minimumAch: 10, lighting: 5 },
+ drying: { exh: 'EF-SAN', minimumAch: 10, equipW: 1500, lighting: 5 },
  corridor: { sup: 'AHU-ACC', ret: 'RA-ACC', isoClass: 'ALLEY_SOUND', lighting: 8 },
  stair: { sup: 'AHU-ACC', lighting: 8 },
  mess: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 16, minimumFreshAir: 460.8, equipW: 800, windowArea: 2.4, lighting: 12 },
@@ -30,25 +33,29 @@ const USE = {
  office: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 900, windowArea: 1.2, lighting: 12 },
  gym: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 1200, lighting: 12 },
  pantry: { sup: 'AHU-ACC', exh: 'EF-GAL', minimumAch: 15, equipW: 1500 },
+ // galley: own supply fan and exhaust (II-2/9.7.2.1, 9.7.5), exhaust > supply (the rest comes from the mess)
  galley: { sup: 'SF-GAL', exh: 'EF-GAL', minimumAch: 40, people: 3, equipW: 9000, lighting: 15, windowArea: 1.2 },
- laundry: { exh: 'EF-LAU', minimumAch: 20, equipW: 4000 },
+ laundry: { sup: 'AHU-ACC', exh: 'EF-LAU', minimumAch: 40, equipW: 2000 },
  changing: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 10 },
+ // CO2 room and battery room: each its own exhaust (FSS Code 5, class rules)
+ co2: { exh: 'EF-CO2', minimumAch: 6, lighting: 5 },
+ battery: { exh: 'EF-BAT', minimumAch: 12, lighting: 5 },
+ store: { lighting: 5 },
  none: { lighting: 5 },
  casing: { isoClass: 'ENGINE', lighting: 0 },
- wheel: { sup: 'AHU-BRG', ret: 'RA-BRG', people: 3, minimumFreshAir: 86.4, equipW: 3000, windowArea: 12, isoClass: 'WHEELHOUSE', lighting: 8 },
+ wheel: { sup: 'AHU-BRG', ret: 'RA-BRG', people: 3, minimumFreshAir: 86.4, equipW: 6000, windowArea: 20, isoClass: 'WHEELHOUSE', lighting: 8 },
  brgRoom: { sup: 'AHU-BRG', ret: 'RA-BRG', people: 1, minimumFreshAir: 28.8, equipW: 1500, windowArea: 0.8, lighting: 10 },
  brgEquip: { sup: 'AHU-BRG', ret: 'RA-BRG', equipW: 2500, lighting: 8 },
  brgCorr: { sup: 'AHU-BRG', ret: 'RA-BRG', isoClass: 'ALLEY_SOUND', lighting: 8 },
  brgStair: { sup: 'AHU-BRG', lighting: 8 },
- brgWc: { sup: 'AHU-BRG', exh: 'EF-BRG', minimumAch: 15, lighting: 8 },
- battery: { exh: 'EF-BRG', minimumAch: 12, lighting: 5 }};
+ brgWc: { exh: 'EF-BRG', minimumAch: 15, lighting: 8 }};
 
 const rooms = [];   // { deck, no, name, use, rect:[x0,y0,x1,y1] } or { ..., poly:[[x,y]...] }
 const R = (deck, no, name, use, x0, y0, x1, y1) => rooms.push({ deck, no, name, use, rect: [x0, y0, x1, y1] });
 const P = (deck, no, name, use, pts) => rooms.push({ deck, no, name, use, poly: pts });
-// a cabin bay: L-shaped cabin + its toilet (on the corridor side, wcW x wcD)
+// a cabin bay: L-shaped cabin + its toilet on the corridor side (wcW x wcD)
 function bay(deck, no, name, use, x0, x1, side, wcW = 1600, wcD = 2000) {
- if (side === 'port') {                       // y 0 (ship side) .. 7000 (corridor)
+ if (side === 'stbd') {                       // y 0 (ship side) .. 7000 (corridor)
   P(deck, no, name, use, [[x0, 0], [x1, 0], [x1, 7000], [x0 + wcW, 7000], [x0 + wcW, 7000 - wcD], [x0, 7000 - wcD]]);
   R(deck, no + 'T', name + ' 화장실', 'cabinWc', x0, 7000 - wcD, x0 + wcW, 7000);
  } else {                                     // y 9000 (corridor) .. 16000 (ship side)
@@ -56,54 +63,59 @@ function bay(deck, no, name, use, x0, x1, side, wcW = 1600, wcD = 2000) {
   R(deck, no + 'T', name + ' 화장실', 'cabinWc', x0, 9000, x0 + wcW, 9000 + wcD);
  }
 }
-// the core every accommodation deck shares: engine casing, corridor, stair, duct trunk, public toilet
-function core(deck, n) {
- R(deck, n + '01', '기관실 케이싱', 'casing', 0, 5500, 4000, 10500);
- R(deck, n + '02', '복도', 'corridor', 4000, 7000, 20000, 9000);
- R(deck, n + '03', '계단실', 'stair', 4000, 9000, 6500, 11500);
- R(deck, n + '04', '덕트 트렁크', 'none', 4000, 11500, 5500, 13000);
- R(deck, n + '06', '공용화장실', 'wc', 4000, 13000, 6500, 16000);
+// the core every accommodation deck shares: the engine casing on the corridor (A-60), the corridor the full length,
+// the stair (stacked with the bridge stair), the duct trunk and the public toilet on the corridor
+function core(deck, n, locker) {
+ R(deck, n + '01', '기관실 케이싱', 'casing', 0, 3000, 4000, 7000);
+ R(deck, n + '02', '복도', 'corridor', 0, 7000, 20000, 9000);
+ R(deck, n + '03', '계단실', 'stair', 8000, 9000, 10500, 11500);
+ R(deck, n + '04', '덕트 트렁크', 'none', 4000, 9000, 5500, 10500);
+ R(deck, n + '05', locker, 'locker', 4000, 10500, 5500, 12000);
+ R(deck, n + '06', '공용화장실', 'wc', 5500, 9000, 8000, 12000);
 }
-// D1 UPPER DK: galley, messes, laundry, CO2 room, AC room (the AHU and the galley fans)
-core('D1', '1');
-R('D1', '105', '청소도구실', 'locker', 5500, 11500, 6500, 13000);
-R('D1', '110', '세탁실', 'laundry', 0, 0, 4000, 3000);
-R('D1', '111', 'CO2실', 'none', 0, 3000, 4000, 5500);
-R('D1', '112', '탈의실', 'changing', 4000, 0, 6500, 7000);
+// D1 UPPER DK: galley, messes, laundry, CO2 room, AC room (AHU-ACC, the galley fans, the sanitary, laundry, CO2 fans)
+core('D1', '1', '청소도구실');
+R('D1', '111', 'CO2실', 'co2', 0, 0, 4000, 3000);
+R('D1', '110', '세탁실', 'laundry', 4000, 0, 6500, 3500);
+R('D1', '112', '탈의실', 'changing', 4000, 3500, 6500, 7000);
 R('D1', '113', '선원식당', 'mess', 6500, 0, 12000, 7000);
 R('D1', '114', '조리실', 'galley', 12000, 0, 16500, 7000);
-R('D1', '115', '건식식품창고', 'none', 16500, 0, 20000, 3500);
-R('D1', '116', '냉장고', 'none', 16500, 3500, 20000, 7000);
-R('D1', '120', '공조기실', 'none', 0, 10500, 4000, 16000);
-R('D1', '121', '사관식당', 'mess', 6500, 9000, 12000, 16000);
-R('D1', '122', '배식실', 'pantry', 12000, 9000, 14500, 16000);
-R('D1', '123', '선원휴게실', 'rec', 14500, 9000, 20000, 16000);
-// D2 A DK: crew cabins (5 port, 4 starboard), gym, linen store
-core('D2', '2');
-R('D2', '205', '청소도구실', 'locker', 5500, 11500, 6500, 13000);
-R('D2', '210', '체육실', 'gym', 0, 0, 4000, 5500);
-R('D2', '220', '린넨창고', 'none', 0, 10500, 4000, 16000);
-for (let k = 0; k < 5; k++) bay('D2', String(211 + k), `선원침실 ${String(k + 1).padStart(2, '0')}`, 'cabin', 4000 + 3200 * k, 7200 + 3200 * k, 'port');
-for (let k = 0; k < 4; k++) bay('D2', String(221 + k), `선원침실 ${String(k + 6).padStart(2, '0')}`, 'cabin', 6500 + 3375 * k, 9875 + 3375 * k, 'stbd');
+R('D1', '115', '건식식품창고', 'store', 16500, 0, 20000, 3500);
+R('D1', '116', '식료품 냉장고', 'store', 16500, 3500, 20000, 7000);
+R('D1', '120', '공조기실', 'none', 0, 9000, 4000, 16000);
+R('D1', '107', '사관휴게실', 'rec', 4000, 12000, 8000, 16000);
+R('D1', '108', '갑판사무실', 'office', 8000, 11500, 10500, 16000);
+R('D1', '121', '사관식당', 'mess', 10500, 9000, 14000, 16000);
+R('D1', '122', '배식실', 'pantry', 14000, 9000, 16000, 16000);
+R('D1', '123', '선원휴게실', 'rec', 16000, 9000, 20000, 16000);
+// D2 A DK: crew cabins (5 starboard, 3 port), gym, linen store, hobby room, drying room
+core('D2', '2', '청소도구실');
+R('D2', '210', '체육실', 'gym', 0, 0, 4000, 3000);
+R('D2', '220', '린넨창고', 'store', 0, 9000, 4000, 12000);
+R('D2', '226', '건조실', 'drying', 0, 12000, 4000, 16000);
+R('D2', '207', '취미실', 'rec', 4000, 12000, 8000, 16000);
+R('D2', '208', '선원휴게실', 'rec', 8000, 11500, 10500, 16000);
+for (let k = 0; k < 5; k++) bay('D2', String(211 + k), `선원침실 ${String(k + 1).padStart(2, '0')}`, 'cabin', 4000 + 3200 * k, 7200 + 3200 * k, 'stbd');
+[[10500, 13700], [13700, 16900], [16900, 20000]].forEach(([x0, x1], k) => bay('D2', String(221 + k), `선원침실 ${String(k + 6).padStart(2, '0')}`, 'cabin', x0, x1, 'port'));
 // D3 B DK: officers
-core('D3', '3');
-R('D3', '305', '린넨로커', 'locker', 5500, 11500, 6500, 13000);
-R('D3', '310', '선박사무실', 'office', 0, 0, 4000, 5500);
-R('D3', '320', '회의실', 'rec', 0, 10500, 4000, 16000);
-bay('D3', '311', '선장실', 'bigCabin', 4000, 10000, 'port'); bay('D3', '312', '기관장실', 'bigCabin', 10000, 16000, 'port'); bay('D3', '313', '일등항해사실', 'cabin', 16000, 20000, 'port');
-bay('D3', '321', '일등기관사실', 'cabin', 6500, 11000, 'stbd'); bay('D3', '322', '이등항해사실', 'cabin', 11000, 15500, 'stbd'); bay('D3', '323', '이등기관사실', 'cabin', 15500, 20000, 'stbd');
-// D4 NAV BRG DK: wheelhouse and bridge rooms, its own AHU in the bridge fan room
+core('D3', '3', '린넨로커');
+R('D3', '310', '선박사무실', 'office', 0, 0, 4000, 3000);
+R('D3', '320', '회의실', 'rec', 0, 9000, 4000, 16000);
+R('D3', '307', '문서보관실', 'store', 4000, 12000, 8000, 16000);
+R('D3', '308', '선원사무실', 'office', 8000, 11500, 10500, 16000);
+bay('D3', '311', '선장실', 'bigCabin', 4000, 10000, 'stbd'); bay('D3', '312', '기관장실', 'bigCabin', 10000, 16000, 'stbd'); bay('D3', '313', '일등항해사실', 'cabin', 16000, 20000, 'stbd');
+[[10500, 13700], [13700, 16900], [16900, 20000]].forEach(([x0, x1], k) => bay('D3', String(321 + k), ['일등기관사실', '이등항해사실', '이등기관사실'][k], 'cabin', x0, x1, 'port'));
+// D4 NAV BRG DK: wheelhouse and bridge rooms, its own AHU in the bridge fan room, the stair over the accommodation stair
 R('D4', '401', '조타실', 'wheel', 14000, 0, 20000, 16000);
 R('D4', '402', '복도', 'brgCorr', 8000, 7000, 14000, 9000);
 R('D4', '403', '계단실', 'brgStair', 8000, 9000, 10500, 11500);
-R('D4', '404', '선교화장실', 'brgWc', 10500, 9000, 12000, 11500);
-R('D4', '405', '선교팬룸', 'none', 12000, 9000, 14000, 11500);
+R('D4', '404', '선교화장실', 'brgWc', 8000, 11500, 10500, 13500);
+R('D4', '405', '선교팬룸', 'none', 10500, 9000, 14000, 13500);
 R('D4', '406', '배터리실', 'battery', 8000, 0, 11000, 3000);
 R('D4', '407', '무선실', 'brgRoom', 8000, 3000, 11000, 7000);
 R('D4', '408', '해도실', 'brgRoom', 11000, 0, 14000, 7000);
-R('D4', '409', '도선사실', 'cabin', 8000, 11500, 11000, 16000);
-R('D4', '410', '항해장비실', 'brgEquip', 11000, 11500, 14000, 16000);
-for (const r of rooms) if (r.deck === 'D4' && r.use === 'cabin') r.use = 'brgRoom';
+R('D4', '409', '도선사실', 'brgRoom', 8000, 13500, 11000, 16000);
+R('D4', '410', '항해장비실', 'brgEquip', 11000, 13500, 14000, 16000);
 
 // ---------- BOX project ----------
 const uuid = s => { const h = crypto.createHash('sha1').update('hvac-grid-t3:' + s).digest('hex'); return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-8${h.slice(17, 20)}-${h.slice(20, 32)}`; };
@@ -119,7 +131,7 @@ function boxProject(template) {
  const deckTpl = template.source.decks[0];
  return { ...template, source: { ...template.source, entities: ents, decks: DECKS.map(d => ({ ...deckTpl, id: d.id, name: d.name, z: d.z, height: HEIGHT })), backgrounds: [] },
   view: { ...template.view, activeDeck: 'D1', hidden: [], hiddenRooms: [], hiddenDeckLayers: [] },
-  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v1', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
+  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
 }
 
 // ---------- general arrangement DXF ----------

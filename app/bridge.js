@@ -125,21 +125,35 @@
     const s = L.getState(), node = s.nodes.at(-1), ru = s.diffusers.find(d => d.connectedNodeId === node.id);
     if (ru) ru.memo = 'HVAC Grid ' + u.id;
    }
+   // restricted rooms the plan does not serve (machinery casing, galley, CO2 room, stair, ...) are PHG D forbidden zones
+   // for AUTO (II-2/9.7.2): their outline pulled in 50 mm so a duct may still run along their walls
+   L.getState().settings.routingForbiddenZones = (pl.avoid || []).filter(z => z.zone?.length > 2).map((z, i) => ({ id: `HG-${i + 1}`, name: `${z.no} ${z.name} (${z.space})`.slice(0, 80),
+    polygon: z.zone.map(p => ({ x: p.x, y: -p.y })), clearanceMm: 0, enabled: true, visible: true, source: 'DRAWN' }));
    L.renderEverything(); this.fit();
    return this.result();
   }
-  // AUTO -> first candidate -> duct assignment -> sizing -> pressure (the same chain as tools/phg-generate.cjs --auto)
+  // AUTO -> first candidate -> duct assignment -> sizing -> pressure (the same chain as tools/hvac-run.cjs). When no
+  // route keeps out of the forbidden zones, AUTO runs again without them and the result says so (zonesRelaxed).
   async auto() {
-   const w = this.win, R = w.DuctConceptRouting, L = w.LineDesignLegacy, t = performance.now();
-   const pv = await R.preview({ timeoutMs: 120000 }), c = pv.candidates?.[0];
+   const w = this.win, R = w.DuctConceptRouting, L = w.LineDesignLegacy, t = performance.now(), st = L.getState();
+   let zonesRelaxed = false, pv = null;
+   try { pv = await R.preview({ timeoutMs: 120000 }); } catch (e) { pv = { reason: e.message }; }
+   if (!pv.candidates?.[0] && st.settings.routingForbiddenZones?.length) { st.settings.routingForbiddenZones = []; zonesRelaxed = true; pv = await R.preview({ timeoutMs: 120000 }); }
+   const c = pv.candidates?.[0];
    if (!c) throw new Error('AUTO 후보 없음: ' + (pv.reason || pv.message || ''));
    await R.applyPreview(c.id);
-   const st = L.getState(); st.selectedEntityIds.clear(); for (const e of st.entities) if (e.autoRoute) st.selectedEntityIds.add(e.id); L.renderEverything();
-   this.click('makeDuctBtn'); await wait(600);
-   const conv = this.doc.getElementById('phgb-conversion'); if (conv?.open) this.doc.getElementById('phgb-conversion-apply').click(); await wait(600);
-   this.click('calculateBtn'); await wait(400); st.selectedEntityIds.clear(); L.renderEverything(); this.fit();
-   return { ...this.result(), seconds: Math.round((performance.now() - t) / 100) / 10, candidate: c.label, unconnected: c.unconnectedRuIds?.length || 0 };
+   st.selectedEntityIds.clear(); for (const e of st.entities) if (e.autoRoute) st.selectedEntityIds.add(e.id); L.renderEverything();
+   // duct assignment: ducts appear, or the conversion dialog asks first
+   this.click('makeDuctBtn');
+   await until(() => st.ducts.length > 0 || this.doc.getElementById('phgb-conversion')?.open, 30000, '덕트 지정');
+   const conv = this.doc.getElementById('phgb-conversion'); if (conv?.open) { this.doc.getElementById('phgb-conversion-apply').click(); await until(() => st.ducts.length > 0 && !conv.open, 30000, '덕트 변환'); }
+   // sizing: every duct gets a section
+   this.click('calculateBtn'); await until(() => st.ducts.every(d => +d.widthMm > 0 || +d.diameterMm > 0), 30000, '덕트 계산');
+   st.selectedEntityIds.clear(); L.renderEverything(); this.fit();
+   return { ...this.result(), seconds: Math.round((performance.now() - t) / 100) / 10, candidate: c.label, unconnected: c.unconnectedRuIds?.length || 0, zonesRelaxed };
   }
+  // the project open in PHG D differs from the stored text (edited in PHG D since)
+  changedSince(text) { try { return this.serialize() !== text; } catch { return false; } }
   // what the inspector and the review table show for the project now open in PHG D
   result() {
    const w = this.win, st = w.LineDesignLegacy.getState(), len = d => d.points.slice(1).reduce((s, q, i) => s + Math.hypot(q.x - d.points[i].x, q.y - d.points[i].y), 0);

@@ -62,3 +62,27 @@ test('the user picks the unit deck of a multi-deck system', () => {
  const ret = plan({ ...s5, unitDecks: { 'RET-ROOM': 'S4' } }).filter(p => p.systemId === 'RET-ROOM');
  assert.equal(ret.find(p => p.isUnitDeck).deckId, 'S4');
 });
+
+test('review 1 fixes: GALLEY is not a corridor, exhaust far from supply, L-shaped rooms, forbidden zones, one-line DXF text', () => {
+ const fs = require('fs'), path = require('path'), X = require('../lib/dxf-in.cjs'), { buildContract } = require('../lib/contract.cjs');
+ const R = (id, name, poly, sys, l = {}) => ({ id, no: id, name, deckId: 'D', polygon: poly, floor: 20, volume: 56, sup: sys.s, exh: sys.e, ret: sys.r, coolingSensibleW: l.w || 0, ventilationAirCmh: l.ach || 0, calculationComplete: true });
+ const rect = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+ const c = buildContract({ source: {}, decks: [{ id: 'D', z: 0 }], rooms: [
+  R('g', 'GALLEY', rect(0, 0, 5000, 4000), { s: 'S', e: 'E' }, { w: 5000, ach: 2000 }),
+  R('L', 'CABIN\nA', [[5000, 0], [11000, 0], [11000, 6000], [8000, 6000], [8000, 3000], [5000, 3000]], { s: 'S' }, { w: 6000 }),
+  R('c', 'CASING', rect(0, 4000, 5000, 8000), {})] });
+ const ps = plan(c), sup = ps.find(p => p.kind === 'supply'), exh = ps.find(p => p.kind === 'exhaust');
+ // no corridor on this deck: the Root is the deck corner, not "the end of the corridor GALLEY"
+ assert.ok(!sup.rootSource.includes('corridor'), sup.rootSource);
+ // galley exhaust RUs: as far as the room allows from the galley supply RUs
+ const gs = sup.rus.filter(u => u.roomId === 'g'), ge = exh.rus.filter(u => u.roomId === 'g');
+ for (const e of ge) assert.ok(Math.min(...gs.map(s => Math.hypot(s.x - e.x, s.y - e.y))) >= 1000, 'exhaust 1 m+ from supply');
+ // L-shaped cabin (1800 CMH, 4 RUs): all inside, spread (no two closer than 1 m)
+ const lr = sup.rus.filter(u => u.roomId === 'L'); assert.equal(lr.length, 4);
+ const room = c.rooms.find(r => r.id === 'L'); assert.ok(lr.every(u => inside(u, room.polygon)));
+ for (let i = 0; i < lr.length; i++) for (let j = i + 1; j < lr.length; j++) assert.ok(Math.hypot(lr[i].x - lr[j].x, lr[i].y - lr[j].y) >= 1000);
+ // the casing (category A machinery) is a forbidden zone for the supply AUTO
+ assert.deepEqual(sup.avoid.map(z => z.roomId), ['c']); assert.ok(sup.avoid[0].zone.length === 4);
+ // a name with a line break stays one DXF text: every room reads back
+ assert.equal(X.rooms(sup.dxf).length, 3); assert.ok(X.rooms(sup.dxf).some(r => r.name === 'CABIN A'));
+});

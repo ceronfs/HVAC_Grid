@@ -159,5 +159,21 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .report ul{margin:0 0 16px;padding-left:20px;line-height:1.7}
 .report table.checks td{text-align:left}.report table.checks td:first-child{width:28px;text-align:center}
 .card .field{padding:0}.card .field select{min-width:0;width:100%}
+/* review 1 additions: three review levels, filters, passages, focus, directions, wide tables */
+.badge.fail{color:#fff;background:var(--red)}
+.report .gchip{cursor:pointer;font:inherit;color:inherit}.report .gchip[aria-pressed=true]{background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.report .gchip:focus-visible{outline:2px solid var(--accent)}
+.report .scrollx{overflow-x:auto;margin-bottom:18px}.report .scrollx table{margin-bottom:0}
+.report td:nth-child(3){white-space:normal;min-width:220px}
+.report table.checks.wide td:nth-child(3){white-space:normal}.report table.checks td:first-child{width:72px;white-space:nowrap}
+.report tbody tr[data-key^="pen:"]{cursor:pointer}.report tbody tr[data-key^="pen:"]:hover td{background:var(--soft)}
+.plan .pen.dk{fill:var(--canvas);stroke:var(--text);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.plan .pen.fd rect{fill:var(--canvas);stroke:var(--text);stroke-width:2.2;vector-effect:non-scaling-stroke}.plan .pen.fd line{stroke:var(--text);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.plan .pen.dk.fd{fill:var(--text)}
+.plan .pass{fill:none;stroke-width:3;vector-effect:non-scaling-stroke;stroke-dasharray:6 4;pointer-events:visibleStroke}.plan .pass.fail{stroke:var(--red)}.plan .pass.check{stroke:var(--warn)}
+.plan .focus{fill:none;stroke:var(--accent);stroke-width:4;vector-effect:non-scaling-stroke;animation:focus 1.2s ease-out 3}
+@keyframes focus{from{stroke-opacity:1}to{stroke-opacity:.15}}
+.plan .dir{fill:var(--muted);stroke:none;pointer-events:none;font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif}.plan .dir line{stroke:var(--muted);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.legend .pd.dk{border-radius:0;transform:rotate(45deg);width:8px;height:8px}.legend .pd.fd{border-radius:0;background:var(--canvas);border-color:var(--text);border-width:2px}
 @media (max-width:1499px){.brand small{display:none}.step{padding:0 10px}}
 @media (max-width:1366px){.main{grid-template-columns:208px minmax(0,1fr) 256px}.main.left-off{grid-template-columns:28px minmax(0,1fr) 256px}.main.right-off{grid-template-columns:208px minmax(0,1fr) 28px}.step{padding:0 8px;font-size:12px}.proj{max-width:150px}}

@@ -1,0 +1,364 @@
+{
+ "schema": "hvac-grid/0",
+ "units": "mm",
+ "coordinates": "ship",
+ "source": {
+  "app": "BOX CAL Enhance",
+  "file": "vendor/BOX_CAL_Enhance.html",
+  "sha256": "bd942611477ddfe5",
+  "project": "offset-deck.box.json",
+  "path": "samples/fixtures/offset-deck.box.json"
+ },
+ "rules": {
+  "supplyDeltaTK": 10,
+  "roundCmh": 10,
+  "exhaustFrom": "ach",
+  "airBalance": "zone",
+  "pressurizationPct": 5,
+  "transferVelocityMps": 2,
+  "transferMakeup": true
+ },
+ "conditions": {
+  "waterlineEnabled": "off",
+  "waterlineZMm": null,
+  "waterlineSeaKType": "",
+  "waterlineSeaDirectK": null,
+  "solarFaceMode": "max-wall-or-roof",
+  "externalCoolTemp": 35,
+  "externalHeatTemp": -20,
+  "externalRh": 70,
+  "indoorCoolTemp": 27,
+  "indoorCoolRh": 50,
+  "indoorHeatTemp": 22,
+  "externalK": 0.7,
+  "internalK": 0.9,
+  "peopleSensibleW": 70,
+  "peopleLatentW": 50,
+  "latentModel": "fixed",
+  "ventLatentWPerCmh": 7.5,
+  "freshAirCmhPerPerson": 28.8,
+  "safetyFactorPct": 10,
+  "solarUpliftTopK": 16,
+  "solarUpliftSideK": 12,
+  "solarUpliftEndK": 12,
+  "solarPolicySource": "explicit",
+  "boundaryPresets": {
+   "OUTDOOR": {
+    "coolingTemp": 35,
+    "heatingTemp": -20
+   },
+   "SEA": {
+    "coolingTemp": 32,
+    "heatingTemp": 5
+   },
+   "TANK": {
+    "coolingTemp": 35,
+    "heatingTemp": -20
+   },
+   "GROUND": {
+    "coolingTemp": 20,
+    "heatingTemp": 5
+   },
+   "NON_AC": {
+    "coolingTemp": 32,
+    "heatingTemp": 10
+   }
+  }
+ },
+ "decks": [
+  {
+   "id": "A",
+   "name": "A",
+   "elevationMm": 0,
+   "heightMm": 3000,
+   "offsetMm": {
+    "x": 0,
+    "y": 0
+   },
+   "rotationDeg": 0,
+   "scale": 1
+  },
+  {
+   "id": "B",
+   "name": "B",
+   "elevationMm": 3000,
+   "heightMm": 3000,
+   "offsetMm": {
+    "x": 10000,
+    "y": 2000
+   },
+   "rotationDeg": 90,
+   "scale": 1
+  }
+ ],
+ "rooms": [
+  {
+   "id": "R10",
+   "no": "B1",
+   "name": "침실",
+   "deckId": "B",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 2000.0000000000005
+    },
+    {
+     "x": 10000,
+     "y": 2000
+    },
+    {
+     "x": 10000,
+     "y": 6000
+    },
+    {
+     "x": 4000,
+     "y": 6000
+    }
+   ],
+   "holes": [],
+   "areaM2": 24,
+   "volumeM3": 72,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": "AHU-1",
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "R11",
+   "no": "B2",
+   "name": "침실",
+   "deckId": "B",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 6000
+    },
+    {
+     "x": 10000,
+     "y": 6000
+    },
+    {
+     "x": 10000,
+     "y": 10000
+    },
+    {
+     "x": 4000.000000000001,
+     "y": 10000
+    }
+   ],
+   "holes": [],
+   "areaM2": 24,
+   "volumeM3": 72,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": "AHU-1",
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "R4",
+   "no": "A1",
+   "name": "침실",
+   "deckId": "A",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 6000
+    },
+    {
+     "x": 0,
+     "y": 6000
+    }
+   ],
+   "holes": [],
+   "areaM2": 24,
+   "volumeM3": 72,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": "AHU-1",
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "R5",
+   "no": "A2",
+   "name": "침실",
+   "deckId": "A",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 8000,
+     "y": 0
+    },
+    {
+     "x": 8000,
+     "y": 6000
+    },
+    {
+     "x": 4000,
+     "y": 6000
+    }
+   ],
+   "holes": [],
+   "areaM2": 24,
+   "volumeM3": 72,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": "AHU-1",
+    "exhaust": null,
+    "return": null
+   }
+  }
+ ],
+ "loads": {
+  "R10": {
+   "coolingSensibleW": 1134.4,
+   "coolingLatentW": 50,
+   "coolingW": 1302.8400000000001,
+   "heatingW": 2744.2799999999997,
+   "minFreshAirCmh": 28.8,
+   "minAch": 0,
+   "achAirCmh": 0,
+   "complete": true,
+   "status": "완료 · 흘수선 미검증"
+  },
+  "R11": {
+   "coolingSensibleW": 1278.4,
+   "coolingLatentW": 50,
+   "coolingW": 1461.2400000000002,
+   "heatingW": 3409.5599999999995,
+   "minFreshAirCmh": 28.8,
+   "minAch": 0,
+   "achAirCmh": 0,
+   "complete": true,
+   "status": "완료 · 흘수선 미검증"
+  },
+  "R4": {
+   "coolingSensibleW": 1278.4,
+   "coolingLatentW": 50,
+   "coolingW": 1461.2400000000002,
+   "heatingW": 3409.5600000000004,
+   "minFreshAirCmh": 28.8,
+   "minAch": 0,
+   "achAirCmh": 0,
+   "complete": true,
+   "status": "완료 · 흘수선 미검증"
+  },
+  "R5": {
+   "coolingSensibleW": 1146.4,
+   "coolingLatentW": 50,
+   "coolingW": 1316.0400000000002,
+   "heatingW": 2966.0400000000004,
+   "minFreshAirCmh": 28.8,
+   "minAch": 0,
+   "achAirCmh": 0,
+   "complete": true,
+   "status": "완료 · 흘수선 미검증"
+  }
+ },
+ "systems": [
+  {
+   "id": "AHU-1",
+   "kind": "supply",
+   "deckIds": [
+    "A",
+    "B"
+   ],
+   "roomIds": [
+    "R10",
+    "R11",
+    "R4",
+    "R5"
+   ],
+   "designCmh": 1480
+  }
+ ],
+ "rus": [],
+ "ducts": {},
+ "airflow": {
+  "R10": {
+   "supplyCmh": 350,
+   "exhaustCmh": 0,
+   "returnCmh": 0,
+   "freshAirCmh": 28.8,
+   "source": "load",
+   "transferInCmh": 0,
+   "transferFrom": null,
+   "transferOutCmh": 0,
+   "makeupCmh": 0
+  },
+  "R11": {
+   "supplyCmh": 390,
+   "exhaustCmh": 0,
+   "returnCmh": 0,
+   "freshAirCmh": 28.8,
+   "source": "load",
+   "transferInCmh": 0,
+   "transferFrom": null,
+   "transferOutCmh": 0,
+   "makeupCmh": 0
+  },
+  "R4": {
+   "supplyCmh": 390,
+   "exhaustCmh": 0,
+   "returnCmh": 0,
+   "freshAirCmh": 28.8,
+   "source": "load",
+   "transferInCmh": 0,
+   "transferFrom": null,
+   "transferOutCmh": 0,
+   "makeupCmh": 0
+  },
+  "R5": {
+   "supplyCmh": 350,
+   "exhaustCmh": 0,
+   "returnCmh": 0,
+   "freshAirCmh": 28.8,
+   "source": "load",
+   "transferInCmh": 0,
+   "transferFrom": null,
+   "transferOutCmh": 0,
+   "makeupCmh": 0
+  }
+ },
+ "zones": [
+  {
+   "supplySystemId": "AHU-1",
+   "roomIds": [
+    "R10",
+    "R11",
+    "R4",
+    "R5"
+   ],
+   "transferRoomIds": [],
+   "saCmh": 1480,
+   "eaCmh": 0,
+   "minOaCmh": 115,
+   "oaCmh": 1480,
+   "raCmh": 0,
+   "oaNeedCmh": 116,
+   "oaPct": 100,
+   "pressurizationCmh": 1480,
+   "ok": true
+  }
+ ]
+}

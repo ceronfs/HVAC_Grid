@@ -1,44 +1,95 @@
 // node --test test/
 'use strict';
-const test = require('node:test'), assert = require('node:assert/strict');
-const { buildContract, roomAirflow, validate, DEFAULT_RULES } = require('../lib/contract.cjs');
-const s5 = require('../samples/s5.contract.json');
+const test = require('node:test'), assert = require('node:assert/strict'), fs = require('fs'), path = require('path');
+const { buildContract, roomAirflow, validate, applyRules, DEFAULT_RULES } = require('../lib/contract.cjs');
+const load = f => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'samples', f), 'utf8'));   // a fresh copy per test
+const s5 = load('s5.contract.json');
 
-test('airflow rules v0', () => {
+test('room airflow rules', () => {
  const room = sys => ({ systems: { supply: null, exhaust: null, return: null, ...sys } });
- const load = (o = {}) => ({ coolingSensibleW: 2804, achAirCmh: 114.5, minFreshAirCmh: 144, complete: true, ...o });
- // supply: ceil10(2804 x 3 / 10) = 850; return = supply when there is no exhaust
- assert.deepEqual(roomAirflow(room({ supply: 'AHU', return: 'RET' }), load(), DEFAULT_RULES), { supplyCmh: 850, exhaustCmh: 0, returnCmh: 850, freshAirCmh: 144, source: 'load' });
- // exhaust: ceil10(ACH x volume); return never negative
- assert.deepEqual(roomAirflow(room({ supply: 'AHU', exhaust: 'EXH', return: 'RET' }), load({ coolingSensibleW: 89 }), DEFAULT_RULES).exhaustCmh, 120);
- assert.equal(roomAirflow(room({ supply: 'AHU', exhaust: 'EXH', return: 'RET' }), load({ coolingSensibleW: 89 }), DEFAULT_RULES).returnCmh, 0);
+ const ld = (o = {}) => ({ coolingSensibleW: 2804, achAirCmh: 114.5, minFreshAirCmh: 144, complete: true, ...o });
+ // supply: ceil10(2804 x 3 / 10) = 850; return = supply when there is no exhaust (per room, before the zone balance)
+ assert.deepEqual(roomAirflow(room({ supply: 'AHU', return: 'RET' }), ld(), DEFAULT_RULES), { supplyCmh: 850, exhaustCmh: 0, returnCmh: 850, freshAirCmh: 144, source: 'load' });
+ // exhaust: ceil10(ACH x volume)
+ assert.equal(roomAirflow(room({ supply: 'AHU', exhaust: 'EXH', return: 'RET' }), ld({ coolingSensibleW: 89 }), DEFAULT_RULES).exhaustCmh, 120);
+ // supply is at least the room's fresh air: 89 W -> 27 CMH, fresh air 144 -> 150
+ assert.equal(roomAirflow(room({ supply: 'AHU' }), ld({ coolingSensibleW: 89 }), DEFAULT_RULES).supplyCmh, 150);
  // no system -> no air; pending room -> nothing yet
- assert.equal(roomAirflow(room({}), load(), DEFAULT_RULES).supplyCmh, 0);
- assert.equal(roomAirflow(room({ supply: 'AHU' }), load({ complete: false }), DEFAULT_RULES).source, 'pending');
+ assert.equal(roomAirflow(room({}), ld(), DEFAULT_RULES).supplyCmh, 0);
+ assert.equal(roomAirflow(room({ supply: 'AHU' }), ld({ complete: false }), DEFAULT_RULES).source, 'pending');
  // dT changes the supply
- assert.equal(roomAirflow(room({ supply: 'AHU' }), load(), { ...DEFAULT_RULES, supplyDeltaTK: 12 }).supplyCmh, 710);
+ assert.equal(roomAirflow(room({ supply: 'AHU' }), ld(), { ...DEFAULT_RULES, supplyDeltaTK: 12 }).supplyCmh, 710);
 });
 
 test('S5 sample contract (BOX CAL Enhance built-in example)', () => {
  assert.deepEqual(validate(s5), []);
- assert.equal(s5.schema, 'hvac-grid/0');
- assert.equal(s5.decks.length, 5);
- assert.equal(s5.rooms.length, 94);
+ assert.equal(s5.schema, 'hvac-grid/0'); assert.equal(s5.coordinates, 'ship');
+ assert.equal(s5.decks.length, 5); assert.equal(s5.rooms.length, 94);
  const supply = s5.systems.filter(s => s.kind === 'supply');
  assert.equal(supply.length, 10);
  assert.ok(supply.every(s => s.deckIds.length === 1), 'each S5 supply system serves one deck');
- assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 10420);
+ // 10,420 CMH from the loads (as in H1) + 190 CMH make-up supply for the transfer air the rooms give their toilets
+ assert.equal(s5.rooms.reduce((t, r) => t + s5.airflow[r.id].supplyCmh - (s5.airflow[r.id].makeupCmh || 0), 0), 10420);
+ assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 10610);
  const wheelhouse = s5.rooms.find(r => r.no === '501');
- assert.equal(wheelhouse.isoClass, 'WHEELHOUSE');
- assert.equal(s5.airflow[wheelhouse.id].supplyCmh, 850);
+ assert.equal(wheelhouse.isoClass, 'WHEELHOUSE'); assert.equal(s5.airflow[wheelhouse.id].supplyCmh, 850);
+ // deck ids of a system in elevation order
+ assert.deepEqual(s5.systems.find(s => s.id === 'RET-ROOM').deckIds, ['S1', 'S3', 'S4', 'S5']);
 });
 
-test('validate catches broken references', () => {
- const c = JSON.parse(JSON.stringify(s5));
+// a deck with an L-shaped cabin around its toilet, a corridor, a public toilet next to the cabin and a CO2 room
+function small(extra = {}) {
+ const R = (id, name, x0, y0, x1, y1, sys, l, poly) => ({ id, no: id, name, deckId: 'D', polygon: poly || [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], floor: (x1 - x0) * (y1 - y0) / 1e6, volume: (x1 - x0) * (y1 - y0) * 2.8 / 1e6,
+  sup: sys.s, exh: sys.e, ret: sys.r, coolingSensibleW: l.w || 0, minimumFreshAirCmh: l.oa || 0, ventilationAirCmh: l.ach || 0, calculationComplete: true });
+ return buildContract({ source: {}, decks: [{ id: 'D', z: 0 }], rooms: [
+  R('cab', '선원침실', 0, 0, 4000, 6000, { s: 'AHU', r: 'RA' }, { w: 1000, oa: 30 }, [[0, 0], [4000, 0], [4000, 6000], [2000, 6000], [2000, 4000], [0, 4000]]),
+  R('wc1', '선원침실 화장실', 0, 4000, 2000, 6000, { e: 'EF' }, { ach: 140 }),
+  R('cor', '복도', 0, 6000, 10000, 8000, { s: 'AHU', r: 'RA' }, { w: 300 }),
+  R('wc2', '공용화장실', 4000, 0, 6000, 6000, { e: 'EF' }, { ach: 400 }),
+  R('co2', 'CO2실', 6000, 0, 8000, 6000, { e: 'EF-CO2' }, { ach: 200 })] }, extra);
+}
+
+test('zone balance: transfer air, make-up supply, fresh air, return', () => {
+ const c = small(), a = c.airflow, z = c.zones.find(x => x.supplySystemId === 'AHU');
+ // the cabin toilet takes its air from the cabin (longest shared wall), the public toilet from the corridor
+ assert.equal(a.wc1.transferFrom, 'cab'); assert.equal(a.wc1.transferInCmh, 140);
+ assert.equal(a.wc2.transferFrom, 'cab');   // 6000 mm shared with the cabin vs 2000 with the corridor
+ // CO2 room: gas tight, its own inlet
+ assert.equal(a.co2.transferFrom, 'own-inlet');
+ // the cabin gives 140 + 400: its supply is raised to cover it (make-up)
+ assert.equal(a.cab.transferOutCmh, 540); assert.equal(a.cab.supplyCmh, 540); assert.equal(a.cab.makeupCmh, 540 - 300);
+ // zone: exhaust = transfer given away 540, fresh air >= 540 x 1.05 = 567, return = supply - fresh air
+ assert.equal(z.eaCmh, 540); assert.equal(z.oaNeedCmh, 567); assert.ok(z.ok);
+ assert.equal(z.raCmh, z.saCmh - z.oaCmh); assert.ok(z.oaCmh >= 567);
+ assert.equal(c.systems.find(s => s.id === 'RA').designCmh, z.raCmh);
+ // the cabin has nothing left to return (all of its supply goes to the toilets): the corridor returns
+ assert.equal(a.cab.returnCmh, 0); assert.ok(a.cor.returnCmh > 0);
+ // without make-up the zone cannot cover the exhaust: the zone fails
+ const n = small({ transferMakeup: false }), zn = n.zones.find(x => x.supplySystemId === 'AHU');
+ assert.equal(zn.ok, false); assert.equal(zn.raCmh, 0);
+ // v0 per-room rule still available
+ const v0 = applyRules(small(), { airBalance: 'room' });
+ assert.equal(v0.zones.length, 0); assert.equal(v0.airflow.cor.returnCmh, v0.airflow.cor.supplyCmh);
+});
+
+test('S5 and T3 zones: every zone balanced, totals equal the systems', () => {
+ for (const f of ['s5.contract.json', 't3.contract.json']) {
+  const c = load(f);
+  assert.ok(c.zones.length > 0 && c.zones.every(z => z.ok), f + ' zones');
+  for (const z of c.zones) { assert.equal(z.saCmh, c.systems.find(s => s.kind === 'supply' && s.id === z.supplySystemId).designCmh); assert.equal(z.oaCmh + z.raCmh, z.saCmh); }
+  const ra = c.systems.filter(s => s.kind === 'return').reduce((t, s) => t + s.designCmh, 0);
+  assert.equal(ra, c.zones.reduce((t, z) => t + z.raCmh, 0), f + ' return = zone returns');
+ }
+});
+
+test('validate catches broken references and wrong shapes', () => {
+ const c = load('s5.contract.json');
  c.rooms[0].deckId = 'NOPE'; c.rooms[1].polygon = [{ x: 0, y: 0 }];
  const problems = validate(c);
- assert.ok(problems.some(p => p.includes('unknown deck')));
- assert.ok(problems.some(p => p.includes('polygon')));
+ assert.ok(problems.some(p => p.includes('unknown deck'))); assert.ok(problems.some(p => p.includes('polygon')));
+ // any parsed JSON: no throw, a list of problems
+ for (const bad of [null, [], 'x', { schema: 'hvac-grid/0' }, { ...load('s5.contract.json'), rooms: 'x' }, { ...load('s5.contract.json'), solas: { ship: 'BOAT' } }, { ...load('s5.contract.json'), roots: { a: { x: 'q' } } }])
+  assert.ok(validate(bad).length > 0, JSON.stringify(bad)?.slice(0, 40));
 });
 
 test('buildContract keeps system totals equal to room airflow', () => {
@@ -51,12 +102,10 @@ test('buildContract keeps system totals equal to room airflow', () => {
 });
 
 test('applyRules: a larger supply dT lowers supply airflow and system totals, loads untouched', () => {
- const { applyRules } = require('../lib/contract.cjs'), s5 = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../samples/s5.contract.json'), 'utf8'));   // a fresh copy: other tests change the shared one
- const c = applyRules(s5, { supplyDeltaTK: 12 });
+ const s = load('s5.contract.json'), c = applyRules(s, { supplyDeltaTK: 12 });
  assert.equal(c.rules.supplyDeltaTK, 12);
  const sup = k => k.systems.filter(x => x.kind === 'supply').reduce((t, x) => t + x.designCmh, 0);
- assert.ok(sup(c) < sup(s5));
- for (const s of c.systems.filter(x => x.kind === 'supply')) assert.equal(s.designCmh, s.roomIds.reduce((t, id) => t + c.airflow[id].supplyCmh, 0));
- assert.deepEqual(c.loads, s5.loads);
- assert.equal(s5.rules.supplyDeltaTK, 10);
+ assert.ok(sup(c) < sup(s));
+ for (const x of c.systems.filter(x => x.kind === 'supply')) assert.equal(x.designCmh, x.roomIds.reduce((t, id) => t + c.airflow[id].supplyCmh, 0));
+ assert.deepEqual(c.loads, s.loads); assert.equal(s.rules.supplyDeltaTK, 10);
 });
