@@ -1,0 +1,86 @@
+# HVAC Grid — 초기 계획
+
+작성 2026-10-18 · 상태: 초안 (코드 없음)
+
+## 1. 목표
+
+BOX Cal과 PHG D를 묶어, 선박 HVAC 설계를 **Deck · 격실 단위의 한 데이터 흐름**으로 처리한다.
+
+| 단계 | 담당 | 결과 |
+|---|---|---|
+| 격실·Deck 정의 | BOX Cal | 격실 외곽, 용도, 면적·체적, Deck |
+| 부하 계산 | BOX Cal | 현열·잠열, 최소 신기량, 장비(SUP) 용량 |
+| 격실 풍량 | 공통 | 급기(부하 기반), 환기(신기 배분), 배출(ACH) |
+| RU 배치 | PHG D | 격실별 RU, 풍량 분배 (PHG D의 같은 실 BR·풍량 초안 활용) |
+| 덕트 라우팅·계산 | PHG D | AUTO(복도 우선 주관, 병렬 계산), 단면·압력·소음, 설계 비교 |
+| 검토 | PHG D + SOLAS | 방화 경계·관통 조건(PHG D SOLAS 계획), 풍속·압력 |
+| 출력 | 공통 | 통합 프로젝트 저장, XLSX·DXF·보고서 |
+
+## 2. 이전 시도에서 배운 점
+
+(Box_PHG_Integrated 2026-09-29, NODE HVAC Studio 2026-10-01 — `SOURCES.md`)
+
+**잘 된 점**
+- 기존 엔진을 고치지 않고 iframe으로 결합해 빠르게 연결함
+- 격실 부하 → RU 풍량(현열 W × 3 ÷ ΔT), 환기 신기 배분, 배출 ACH, 풍량 합계를 보존하는 배분(34+33+33=100)
+- 통합 JSON 저장·복구, 3단계 작업 순서, 테스트 7개
+
+**한계**
+1. 두 앱의 상태가 따로 있어 **수동 새로고침**이 필요하고, 한쪽에서 바꾼 것이 다른 쪽에 바로 반영되지 않음
+2. **도형을 공유하지 않음**: 두 앱에 같은 좌표의 도면을 각각 불러와야 함, 격실 경계와 RU 위치를 서로 검사하지 않음
+3. 여러 Deck의 RU가 **한 PHG 네트워크**에 섞임(Deck별 계통 분리 없음)
+4. 로컬 서버가 필요(통합 저장), 두 앱 UI가 이질적
+5. 검증이 UI·풍량 흐름에 한정 — 부하·덕트 계산을 실도면으로 검증하지 않음
+
+## 3. 통합 방식 선택지
+
+| 방식 | 내용 | 장점 | 단점 |
+|---|---|---|---|
+| A. 셸 + 브리지 | 두 앱을 그대로 띄우고 메시지 브리지로 격실·풍량·RU를 자동 동기화 (이전 방식 개선) | 빠름, 두 앱 독립 개발 유지 | 상태 이중화, 도형 공유 어려움 |
+| B. 공통 모델 단일 앱 | 공통 프로젝트 모델 위에 BOX 계산·PHG D 덕트를 모듈로 통합 | 데이터 일관성, 하나의 도면·Undo·저장 | 개발량 큼, 두 앱 구조 차이(BOX `src/` 모듈 vs PHG D 패치 빌드) |
+| C. PHG D 중심 | PHG D를 주 앱으로, BOX 부하 계산 엔진만 모듈로 가져옴 | PHG D의 도면·실 인식과 바로 결합 | BOX 화면 기능(3D 등) 일부 포기 |
+
+**권장: A → B 단계 전환.** 두 앱 모두 지금 개발 중이므로(BOX Cal `CAL_Enhance` 오늘 커밋, PHG D A 보완 병행) 먼저 **데이터 계약**을 확정하고 브리지로 실도면 흐름을 검증한 뒤, 계약을 그대로 공통 모델로 옮겨 단일 앱으로 점진 통합한다.
+
+## 4. 데이터 계약 초안 (v0)
+
+```
+HVACGridProject {
+  schema: 'hvac-grid/0', units: 'mm',
+  decks:   [{ id, name, elevationMm, drawing }],
+  rooms:   [{ id, deckId, no, name, use, polygon:[{x,y}], areaM2, heightM, solas?: { space, category } }],
+  loads:   { [roomId]: { sensibleW, latentW, oaCmh, achExhaust, status: 'done'|'pending' } },
+  systems: [{ id, kind: 'SUP'|'EXH', unit, deckIds, roomIds, designCmh }],
+  airflow: { [roomId]: { supplyCmh, ventCmh, exhaustCmh, source: 'load'|'oa'|'ach'|'manual' } },
+  rus:     [{ id, roomId, systemId, use: 'supply'|'vent'|'exhaust', flowCmh, x, y }],
+  ducts:   { [systemId]: <PHG D 프로젝트 JSON> }
+}
+```
+
+핵심은 **격실 식별의 공유**: BOX 격실 ↔ PHG D 실 인식(외곽·이름)을 같은 `roomId`로 묶는다. 좌표는 mm, Deck별로 분리한다.
+
+## 5. 단계 계획
+
+| 단계 | 내용 | 완료 기준 |
+|---|---|---|
+| H0 준비 | 두 원본 구조 분석(BOX 격실·부하 데이터, PHG D 프로젝트 JSON), 데이터 계약 v0 확정, 저장소·빌드·테스트 틀 | 계약 문서 + 샘플 프로젝트 1개 |
+| H1 브리지 | BOX → PHG D: 격실 외곽·용도·풍량 전달, PHG D 풍량 초안을 **BOX 부하 기반 풍량**으로 대체 | S5 샘플·S03에서 격실 풍량이 RU에 자동 반영 |
+| H2 Deck·계통 | Deck별 PHG D 네트워크, SUP 계통별 Root, 급기·환기·배출 분리 | 다층 샘플에서 Deck·계통별 덕트망 |
+| H3 통합 저장·출력 | 한 프로젝트 파일, 통합 XLSX(부하·풍량·덕트·압력), 보고서 | 저장·복구·출력 테스트 |
+| H4 SOLAS | PHG D SOLAS 계획(P1~P4)을 격실 공유 모델에 연결 | 경계·관통 표기가 통합 격실 기준으로 동작 |
+| H5 단일 앱 | 공통 모델로 화면 통합(B 방식) | 하나의 도면·Undo·저장 |
+
+각 단계 끝에 테스트·캡처로 확인을 받는다.
+
+## 6. PHG D와의 관계
+
+- PHG D는 A 수준 보완을 병행한다(실도면 설계 비교 검증·비용 보정, 대형 Deck 속도, 압력 계산 교차 검증). 그 결과는 이 프로젝트에 원본 버전 갱신으로 반영한다.
+- PHG D에 이미 있는 실 인식·풍량 초안·같은 실 BR·설계 비교는 H1~H2에서 BOX 데이터와 연결하는 접점이 된다.
+
+## 7. 결정이 필요한 사항
+
+1. 통합 방식: A → B 단계 전환(권장) / 처음부터 B / C
+2. BOX Cal 원본: `CAL_Enhance/04_CAL_Enhance_fixed.html`을 기준으로 할지, 개발 중인 다른 세션과 어떻게 맞출지(버전 고정 시점)
+3. 1차 목표 범위: H0~H1(격실·풍량 자동 연결)부터 시작할지
+4. 검증 샘플: S5 샘플(이전 시도), S03, 실제 호선 도면 제공 가능 여부
+5. GitHub 저장소: `ceronfs/HVAC_Grid`(비공개) — 생성 방법 확인 필요(이 PC에 GitHub CLI 없음)
