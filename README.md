@@ -8,7 +8,7 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·환기·배�
    (BOX Cal)        (BOX Cal)             (공통)                     (PHG D)      (PHG D)          (PHG D · SOLAS)      (공통)
 ```
 
-상태: **H0 완료 (2026-10-18)** — 데이터 계약 v0, BOX → 계약 추출, S5 샘플(5 Deck · 94실 · 급기 10계통 10,420 CMH), 테스트 4개.
+상태: **H1 완료 (2026-10-18)** — 데이터 계약 v0, BOX → 계약 추출, 계약 → PHG D 프로젝트 생성(+AUTO 검증). S5: 급기 10계통 모두 RU 100개 전부 연결, 풍량·실 일치. 테스트 7개. 결과 [docs/H1_S5_RESULT.md](docs/H1_S5_RESULT.md)
 
 ## 문서
 
@@ -22,11 +22,12 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·환기·배�
 
 ```
 npm test                    # 계약 테스트
-npm run extract:s5          # BOX CAL(최신) S5 예제 → samples/s5.contract.json (Playwright: PHG 도구 사용)
+npm run extract:s5          # BOX CAL S5 예제 → samples/s5.contract.json
 node tools/box-extract.cjs <BOX 프로젝트.json> <출력.json>
+node tools/phg-generate.cjs samples/s5.contract.json out/s5 --auto   # 계약 → PHG D 프로젝트(Deck·계통별) + AUTO
 ```
 
-`probe/`는 BOX 구조 확인에 쓴 조사 스크립트입니다.
+`vendor/`에는 원본 앱의 **고정 사본**(PHG D, BOX CAL Enhance)이 있고 도구는 이 사본만 씁니다. 원본 파일은 읽기 전용입니다(`vendor/VERSIONS.json`). 생성물은 `out/`(git 제외), `probe/`는 BOX 구조 확인에 쓴 조사 스크립트입니다.
 
 ## 원칙
 

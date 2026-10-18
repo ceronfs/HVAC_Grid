@@ -1,0 +1,5 @@
+{
+ "note": "Frozen copies used by HVAC Grid. The originals are read only; update a copy here only on purpose and record it.",
+ "DuctConcept_PHG_D.html": { "from": "C:\Users\HK\Desktop\PHG\DuctConcept_PHG_D.html", "sha256_16": "643f328a1f50244a", "commit": "ceronfs/PHG 57ef186 (build of 5587bab)", "copied": "2026-10-18" },
+ "BOX_CAL_Enhance.html": { "from": "C:\Users\HK\OneDrive\CAL_Enhance\04_CAL_Enhance_fixed.html", "sha256_16": "bd942611477ddfe5", "commit": "CAL_Enhance 32976f8", "copied": "2026-10-18" }
+}

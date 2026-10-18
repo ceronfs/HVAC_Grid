@@ -1,6 +1,6 @@
 // Probe: S5 example -> CAL frame -> report() loads and ahu() flows.
-const {launch}=require('C:/Users/HK/Desktop/PHG/tools/env.cjs');
-const BOX='file:///C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html';
+const {launch}=require('../tools/browser.cjs');
+const BOX='file:///'+require('../tools/browser.cjs').vendor('BOX_CAL_Enhance.html').split(String.fromCharCode(92)).join('/');
 (async()=>{const b=await launch(),p=await b.newPage({viewport:{width:1600,height:900}});const errors=[];p.on('pageerror',e=>errors.push(e.message));p.on('dialog',d=>d.accept());
  await p.goto(BOX);await p.waitForFunction(()=>window.CAD_APP&&document.querySelector('#s5ExampleBtn'),null,{timeout:120000});
  await p.click('#s5ExampleBtn');await p.waitForFunction(()=>CAD_APP.st.entities.length>100,null,{timeout:120000});await new Promise(r=>setTimeout(r,1000));

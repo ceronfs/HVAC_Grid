@@ -64,7 +64,7 @@ HVACGridProject {
 | 단계 | 내용 | 완료 기준 |
 |---|---|---|
 | H0 준비 ✅ | 두 원본 구조 분석(BOX 격실·부하 데이터, PHG D 프로젝트 JSON), 데이터 계약 v0 확정, 저장소·빌드·테스트 틀 | 계약 문서 + 샘플 프로젝트 1개 — **완료 2026-10-18**: `docs/CONTRACT.md`, `tools/box-extract.cjs`, `samples/s5.contract.json`, 테스트 4개 |
-| H1 브리지 | BOX → PHG D: 격실 외곽·용도·풍량 전달, PHG D 풍량 초안을 **BOX 부하 기반 풍량**으로 대체 | S5 샘플·S03에서 격실 풍량이 RU에 자동 반영 |
+| H1 브리지 ✅ | BOX → PHG D: 격실 외곽·용도·풍량 전달, PHG D 풍량 초안을 **BOX 부하 기반 풍량**으로 대체 | S5 샘플·S03에서 격실 풍량이 RU에 자동 반영 — **완료 2026-10-18 (S5)**: `tools/phg-generate.cjs`, 10계통 RU 100개 전부 연결, `docs/H1_S5_RESULT.md` |
 | H2 Deck·계통 | Deck별 PHG D 네트워크, SUP 계통별 Root, 급기·환기·배출 분리 | 다층 샘플에서 Deck·계통별 덕트망 |
 | H3 통합 저장·출력 | 한 프로젝트 파일, 통합 XLSX(부하·풍량·덕트·압력), 보고서 | 저장·복구·출력 테스트 |
 | H4 SOLAS | PHG D SOLAS 계획(P1~P4)을 격실 공유 모델에 연결 | 경계·관통 표기가 통합 격실 기준으로 동작 |

@@ -1,6 +1,6 @@
 // Probe: open BOX CAL Enhance (latest), load the built-in S5 example, print the room/deck data shape.
-const path=require('path');const {launch}=require('C:/Users/HK/Desktop/PHG/tools/env.cjs');
-const BOX='file:///C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html';
+const path=require('path');const {launch}=require('../tools/browser.cjs');
+const BOX='file:///'+require('../tools/browser.cjs').vendor('BOX_CAL_Enhance.html').split(String.fromCharCode(92)).join('/');
 (async()=>{const b=await launch(),p=await b.newPage({viewport:{width:1600,height:900}});const errors=[];p.on('pageerror',e=>errors.push(e.message));
  p.on('dialog',d=>d.accept());
  await p.goto(BOX);await p.waitForFunction(()=>window.CAD_APP&&document.querySelector('#s5ExampleBtn'),null,{timeout:120000});

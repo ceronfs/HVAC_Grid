@@ -10,6 +10,15 @@
 | **PHG D** | `C:\Users\HK\Desktop\PHG\DuctConcept_PHG_D.html` | 1,546,910 | 2026-10-18 | `643f328a1f50244a` | GitHub `ceronfs/PHG`(비공개), 커밋 `5587bab` — 개발 중(A 수준 보완 병행). C는 2026-10-18 개발 정지, D만 개발 |
 | SOLAS 화재구획 | `C:\Users\HK\Desktop\Program\SOLAS\fire_rating.html` + `SOLAS_격실분류_화재구획등급표.xlsx` | 102,570 | 2026-08-24 | `05b6440e140fd636` | 표 9.1~9.8, 격실 82종. PHG D SOLAS 적용 계획(`PHG/docs/PHG_D_SOLAS_APPLY_PLAN.md`)의 원본 |
 
+## 고정 사본 (HVAC Grid가 실제로 쓰는 파일)
+
+| 사본 | 원본 | 해시 |
+|---|---|---|
+| `vendor/DuctConcept_PHG_D.html` | PHG D (`ceronfs/PHG` 57ef186) | `643f328a1f50244a` |
+| `vendor/BOX_CAL_Enhance.html` | `CAL_Enhance/04_CAL_Enhance_fixed.html` (32976f8) | `bd942611477ddfe5` |
+
+원본 파일은 읽기 전용입니다. 사본 갱신은 의도적으로 하고 `vendor/VERSIONS.json`에 기록합니다.
+
 ## 참고 원본 (이전 판)
 
 | 구성 | 파일 | 크기 | 해시 |

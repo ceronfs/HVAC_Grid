@@ -40,7 +40,7 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 | loads.minAch / achAirCmh | `minimumAch`, `ventilationAirCmh` | 환기 횟수와 그 풍량(ACH × 체적) |
 | loads.complete / status | `calculationComplete`, `calculationStatus` | 미완료 격실은 풍량 0(대기) |
 
-## 3. 계약 → PHG D 대응 (H1에서 구현)
+## 3. 계약 → PHG D 대응 (H1 구현: `lib/phg-plan.cjs`, `tools/phg-generate.cjs`)
 
 | 계약 | PHG D |
 |---|---|
@@ -48,6 +48,8 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 | systems(kind=supply) | 급기 계통별 PHG D 프로젝트(Root 1개) |
 | airflow.supplyCmh | 계통 RU 풍량(격실 안 RU에 균등 배분, 합계 보존) |
 | 좌표 | PHG D는 y를 뒤집음(앱 y = −DXF y) |
+| Root | 같은 Deck의 팬룸·공조기실(이름), 없으면 복도 끝 — `rootSource: assumed:…`로 표시, 실제 공조기 위치로 옮겨야 함 |
+| RU 배치 | 급기 500 CMH마다 1개, 실 안 중심(또는 가장 안쪽 점), Root·다른 RU와 400 mm 이상, 풍량 합계 보존 |
 
 ## 4. 풍량 규칙 v0
 

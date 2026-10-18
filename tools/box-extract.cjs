@@ -2,12 +2,12 @@
 // S5 example with "s5"), opens the CAL frame, reads CAL_ENHANCE.report() and the deck stack, and writes the contract.
 //   node tools/box-extract.cjs s5 samples/s5.contract.json
 //   node tools/box-extract.cjs <project.json> <out.json>
-// BOX_HTML overrides the BOX file (default: the latest CAL Enhance build). Playwright comes from the PHG tooling.
+// BOX_HTML overrides the BOX file (default: vendor/BOX_CAL_Enhance.html, the frozen copy of the latest CAL Enhance).
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
 const { buildContract, validate } = require('../lib/contract.cjs');
-const { launch } = require(process.env.PHG_TOOLS || 'C:/Users/HK/Desktop/PHG/tools/env.cjs');
-const BOX_HTML = process.env.BOX_HTML || 'C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html';
+const { launch, vendor } = require('./browser.cjs');
+const BOX_HTML = process.env.BOX_HTML || vendor('BOX_CAL_Enhance.html');   // frozen copy; the original is read only
 
 async function extract(input) {
  const b = await launch(), p = await b.newPage({ viewport: { width: 1600, height: 900 } }), errors = [];
