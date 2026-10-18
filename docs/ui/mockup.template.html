@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HVAC Grid · 통합 UI 목업</title>
+<style>
+:root{--bg:#f5f4ef;--panel:#fff;--line:#dedcd5;--line2:#ecebe6;--text:#292927;--muted:#706f69;--accent:#185fa5;--soft:#e6f1fb;--ok:#2e7d32;--warn:#b26a00;--red:#a32d2d;
+ --box:#1f6f8b;--phg:#185fa5;--grid:#7a4fb3;--canvas:#fff;--gridline:#efeee9}
+html[data-theme=dark]{--bg:#0d1726;--panel:#132033;--line:#344861;--line2:#22344b;--text:#edf4ff;--muted:#9fb0c7;--accent:#35b5ef;--soft:#143754;--canvas:#07111f;--gridline:#1c2b40}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:11px system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;overflow:hidden}
+button{font:inherit;color:inherit}
+.app{height:100%;display:grid;grid-template-rows:44px 74px minmax(0,1fr) 24px}
+/* app bar */
+.bar{display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;white-space:nowrap}
+.brand i{width:24px;height:24px;border-radius:5px;background:var(--accent);display:grid;place-items:center;color:#fff;font:700 11px system-ui;font-style:normal}
+.brand small{font-weight:400;color:var(--muted);font-size:11px}
+.proj{padding:4px 8px;border:1px solid var(--line);border-radius:6px;color:var(--muted);white-space:nowrap}
+.steps{display:flex;gap:2px;margin:0 auto;background:var(--bg);padding:3px;border-radius:8px;border:1px solid var(--line)}
+.step{border:0;background:none;padding:5px 12px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;color:var(--muted)}
+.step b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);font-size:10px;background:var(--panel);color:var(--muted)}
+.step[aria-pressed=true]{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.step[aria-pressed=true] b{background:var(--accent);border-color:var(--accent);color:#fff}
+.step .src{font-size:9px;padding:0 4px;border-radius:3px;background:var(--soft);color:var(--accent)}
+.baricons{display:flex;gap:4px}
+.ib{width:30px;height:30px;border:1px solid transparent;border-radius:6px;background:none;cursor:pointer;display:grid;place-items:center;color:var(--muted)}
+.ib:hover{background:var(--soft);color:var(--accent)}
+/* ribbon */
+.ribbon{display:flex;align-items:stretch;gap:4px;padding:4px 10px;background:var(--panel);border-bottom:1px solid var(--line);overflow:hidden}
+.grp{display:grid;grid-template-rows:auto 12px;padding:2px 6px 1px;border-left:1px solid var(--line2);position:relative}
+.grp:first-child{border-left:0}
+.grp .btns{display:flex;gap:1px}
+.cmd{width:auto;min-width:40px;height:44px;padding:2px 4px;border:1px solid transparent;border-radius:6px;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.cmd:hover{background:var(--soft);border-color:#cfe3f6}
+.cmd svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.cmd span{font-size:10px;white-space:nowrap;color:var(--text)}
+.cmd.new{outline:1px dashed var(--grid);outline-offset:-2px}
+.grp .cap{font-size:10px;color:var(--muted);text-align:center;white-space:nowrap}
+.tag{position:absolute;right:4px;top:-1px;font-size:8px;padding:0 3px;border-radius:3px;color:#fff}
+.tag.box{background:var(--box)}.tag.phg{background:var(--phg)}.tag.grid{background:var(--grid)}
+/* main */
+.main{display:grid;grid-template-columns:240px minmax(0,1fr) 280px;min-height:0}
+.side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.side.right{border-right:0;border-left:1px solid var(--line)}
+.sh{padding:8px 10px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;font-weight:600}
+.sh small{font-weight:400;color:var(--muted)}
+.search{margin:8px 10px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font:inherit}
+.chips{display:flex;gap:4px;flex-wrap:wrap;padding:0 10px 8px}
+.chip{padding:2px 7px;border:1px solid var(--line);border-radius:10px;background:none;cursor:pointer;color:var(--muted)}
+.chip[aria-pressed=true]{background:var(--soft);border-color:var(--accent);color:var(--accent)}
+.tree{overflow:auto;flex:1;padding-bottom:10px}
+.deck{border-top:1px solid var(--line2)}
+.deckh{display:flex;align-items:center;gap:6px;padding:7px 10px;cursor:pointer;font-weight:600}
+.deckh[aria-current=true]{background:var(--soft);color:var(--accent)}
+.deckh small{margin-left:auto;font-weight:400;color:var(--muted)}
+.room{display:grid;grid-template-columns:34px 1fr auto;gap:6px;align-items:center;padding:4px 10px 4px 22px;cursor:pointer}
+.room:hover{background:var(--bg)}.room[aria-selected=true]{background:var(--soft)}
+.room .no{color:var(--muted);font-variant-numeric:tabular-nums}
+.room .cmh{font-variant-numeric:tabular-nums;color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+/* canvas */
+.center{position:relative;min-width:0;min-height:0;background:var(--canvas);
+ background-image:linear-gradient(var(--gridline) 1px,transparent 1px),linear-gradient(90deg,var(--gridline) 1px,transparent 1px);background-size:20px 20px}
+.center svg.plan{position:absolute;inset:0;width:100%;height:100%}
+.float{position:absolute;left:12px;top:12px;display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.float button{border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:4px 9px;cursor:pointer}
+.float button[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.legend{position:absolute;right:12px;bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;max-width:420px;box-shadow:0 2px 8px rgba(0,0,0,.08);line-height:1.6}
+.note{position:absolute;left:12px;bottom:12px;background:#1f4f7a;color:#fff;border-radius:8px;padding:8px 12px;max-width:560px;line-height:1.5}
+.plan .rm{stroke:#5b6b7a;stroke-width:1.2;vector-effect:non-scaling-stroke;cursor:pointer}
+.plan .rm.sel{stroke:var(--red);stroke-width:2.5}
+.plan text{font:11px system-ui,"Noto Sans KR";fill:var(--text);pointer-events:none}
+.plan .duct{fill:none;stroke-width:3;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.plan .ru{fill:#e6b3ff;stroke:#7a4fb3;stroke-width:1.2;vector-effect:non-scaling-stroke}
+.plan .root{fill:var(--red)}
+/* inspector */
+.insp{overflow:auto;flex:1;padding:10px}
+.card{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:10px;background:var(--panel)}
+.card h4{margin:0 0 6px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.card h4 .tag{position:static}
+.kv{display:grid;grid-template-columns:1fr auto;gap:3px 8px}
+.kv span:nth-child(odd){color:var(--muted)}.kv span:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}
+.big{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.bar2{height:6px;border-radius:3px;background:var(--line2);overflow:hidden;margin-top:4px}.bar2 i{display:block;height:100%;background:var(--accent)}
+.status{display:flex;align-items:center;gap:16px;padding:0 12px;background:var(--panel);border-top:1px solid var(--line);color:var(--muted);white-space:nowrap;overflow:hidden}
+.status b{color:var(--text);font-weight:600}
+.ok{color:var(--ok)}.warn{color:var(--warn)}
+</style>
+</head>
+<body>
+<div class="app">
+ <header class="bar">
+  <div class="brand"><i>N</i>HVAC Grid <small>BOX CAL + PHG D</small></div>
+  <div class="proj" id="proj"></div>
+  <nav class="steps" id="steps" aria-label="작업 단계"></nav>
+  <div class="baricons">
+   <button class="ib" title="프로젝트 저장 (통합)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 3h10l3 3v11H4zM7 3v5h6V3M7 17v-5h7v5"/></svg></button>
+   <button class="ib" title="설정"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h14M3 14h14M7 3.5v5M13 11.5v5"/></svg></button>
+   <button class="ib" id="theme" title="어두운 화면"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3a7 7 0 100 14 5 5 0 010-14z"/></svg></button>
+   <button class="ib" title="도움말"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3a7 7 0 100 14 7 7 0 000-14zM8 8a2 2 0 114 0c0 1.5-2 1.5-2 3M10 14v.5"/></svg></button>
+  </div>
+ </header>
+ <div class="ribbon" id="ribbon" role="toolbar" aria-label="명령"></div>
+ <div class="main">
+  <aside class="side">
+   <div class="sh">Deck · 격실 <small id="treeCount"></small></div>
+   <input class="search" id="q" placeholder="격실 번호·이름 검색" aria-label="격실 검색">
+   <div class="chips" id="chips"></div>
+   <div class="tree" id="tree"></div>
+  </aside>
+  <section class="center" id="center">
+   <svg class="plan" id="plan" aria-label="Deck 평면"></svg>
+   <div class="float" id="float"></div>
+   <div class="legend" id="legend"></div>
+   <div class="note" id="note"></div>
+  </section>
+  <aside class="side right">
+   <div class="sh" id="inspTitle">속성</div>
+   <div class="insp" id="insp"></div>
+  </aside>
+ </div>
+ <footer class="status" id="status"></footer>
+</div>
+<script>
+const DATA=/*DATA*/null;
+const $=id=>document.getElementById(id),esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const P={open:'M3 6h5l2 2h7v8H3z',bg:'M3 4h14v12H3zM10 7v6M7 10h6',save:'M4 3h10l3 3v11H4zM7 3v5h6V3',dxfOut:'M4 3h8l4 4v10H4zM10 9v6M7 12l3 3 3-3',line:'M4 16L16 4',poly:'M3 15l4-6 4 3 6-8',rect:'M4 5h12v10H4z',text:'M5 5h10M10 5v11',move:'M10 2v16M2 10h16',trim:'M3 10h14M10 4v12',del:'M5 5l10 10M15 5L5 15',
+ ol:'M3 14l4-9h6l4 9zM3 14h14',olv:'M3 14l4-9h6l4 9zM7 11l2 2 4-4',vl:'M3 10h3M8 10h3M13 10h4',area:'M4 4h12v12H4zM4 4l12 12',roomNo:'M4 4h12v12H4zM8 8h4M8 12h4',roomFix:'M4 4h12v12H4zM10 7v6M7 10h6',list:'M4 5h12M4 10h12M4 15h12',check:'M4 10l4 4 8-8',geo:'M4 15l6-11 6 11z',cube:'M10 2l7 4v8l-7 4-7-4V6zM10 2v8l7 4M10 10l-7 4',deck:'M3 6h14M3 10h14M3 14h14',water:'M3 12c2-2 4-2 6 0s4 2 6 0',
+ cond:'M10 3v10M7 13a3 3 0 106 0',bound:'M3 3h14v14H3zM3 10h14',k:'M5 4v12M5 10l8-6M8 8l6 8',load:'M4 16V8M10 16V4M16 16v-6',oa:'M3 10h10M10 6l4 4-4 4M16 4v12',rh:'M6 16c0-4 4-4 4-8M10 16c0-4 4-4 4-8',xlsx:'M3 3h14v14H3zM3 8h14M8 3v14',sum:'M14 4H5l5 6-5 6h9',
+ rule:'M3 15h14M5 15V9M9 15V6M13 15v-4',sys:'M10 3v4M4 13v4M16 13v4M4 13h12M10 7v6',assign:'M3 5h6v6H3zM11 9h6v6h-6zM9 8h3',root:'M4 10l10-6v12z',sync:'M5 10a5 5 0 019-3M15 10a5 5 0 01-9 3M14 3v4h-4M6 17v-4h4',
+ ru:'M4 4h12v12H4zM4 4l12 12M16 4L4 16',ruAuto:'M4 4h8v8H4zM14 10l3 3-3 3',flow:'M3 7h8a2.5 2.5 0 10-2.5-2.5M3 11h11a2.5 2.5 0 11-2.5 2.5M3 15h5',zone:'M3 3h14v14H3zM3 3l14 14',auto:'M4 14l4-4 3 3 5-6M13 7h3v3',cmp:'M3 4h6v12H3zM11 4h6v12h-6z',set:'M3 6h14M3 14h14M7 3.5v5M13 11.5v5',
+ ml:'M2 10h16M2 7h16M2 13h16',br:'M3 6h14M10 6v11',sbr:'M3 5h14M8 5v6h8',ad:'M3 8h14M3 12h14',calc:'M3 6h14v8H3zM7 6v8',noise:'M3 8h3l4-4v12l-4-4H3z',press:'M10 3a7 7 0 107 7M10 10l4-4',vel:'M3 14a7 7 0 0114 0M10 14l4-5',fire:'M10 3c3 4 5 6 5 9a5 5 0 01-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-8z',report:'M5 3h7l3 3v11H5zM8 9h5M8 12h5'};
+const C=(icon,label,src,isNew)=>({icon,label,src,isNew});
+const STEPS=[
+ {id:'room',name:'도면·격실',src:'BOX',groups:[['파일','box',[C('open','DXF 열기'),C('bg','배경'),C('open','JSON 열기'),C('save','저장'),C('dxfOut','DXF 출력')]],['그리기','box',[C('line','선'),C('poly','폴리선'),C('rect','사각형'),C('text','문자')]],['편집','box',[C('move','이동'),C('trim','자르기'),C('del','삭제')]],
+  ['격실','box',[C('ol','하부 OL'),C('ol','상부 OL'),C('olv','OL 검증'),C('vl','가상선'),C('area','면적'),C('roomNo','실 번호'),C('roomFix','실 지정'),C('list','격실 목록')]],['검사','box',[C('check','선 검사'),C('geo','도형 검사'),C('cube','3D 검사')]],['Deck','box',[C('deck','적층'),C('water','흘수선')]]]},
+ {id:'load',name:'부하',src:'BOX CAL',groups:[['조건','box',[C('cond','설계 조건'),C('bound','경계 조건')]],['K값','box',[C('k','ISO 기준'),C('k','ISO 적용'),C('k','구조 계산'),C('check','구조 적용'),C('k','사용자')]],['부하','box',[C('load','격실 부하'),C('oa','신기(OA)'),C('rh','리히터')]],['내보내기','box',[C('xlsx','ISO 시트'),C('xlsx','미적용 시트'),C('sum','SUP 요약'),C('xlsx','전체 XLSX')]]]},
+ {id:'air',name:'풍량·계통',src:'Grid',groups:[['풍량 규칙','grid',[C('rule','급기 ΔT',null,1),C('rule','배기 ACH',null,1)]],['계통','grid',[C('sys','계통 목록',null,1),C('assign','격실 배정',null,1),C('root','공조기 위치',null,1)]],['동기화','grid',[C('sync','BOX 반영',null,1),C('check','변경 확인',null,1)]]]},
+ {id:'duct',name:'RU·덕트',src:'PHG D',groups:[['계통','phg',[C('root','R'),C('ru','RU'),C('ruAuto','RU 자동'),C('flow','풍량')]],['자동 라우팅','phg',[C('zone','금지 영역'),C('auto','AUTO'),C('check','검토'),C('cmp','비교'),C('set','설정')]],['덕트','phg',[C('ml','ML'),C('br','BR'),C('sbr','SBR'),C('ad','AD')]],['계산','phg',[C('check','연결 검토'),C('calc','계산'),C('noise','소음'),C('press','압력')]]]},
+ {id:'review',name:'검토·출력',src:'Grid',groups:[['검토','grid',[C('vel','풍속',null,1),C('press','압력 균형',null,1),C('noise','소음',null,1),C('fire','방화(SOLAS)',null,1)]],['출력','grid',[C('xlsx','통합 XLSX',null,1),C('dxfOut','DXF',null,1),C('report','보고서',null,1),C('save','프로젝트',null,1)]]]}];
+const SYS_COLORS=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'];
+const S={step:'room',deck:null,room:null,filter:'all',view:'2D'};
+const supplyIds=[...new Set(DATA.rooms.map(r=>r.systems.supply).filter(Boolean))].sort(),sysColor=id=>SYS_COLORS[supplyIds.indexOf(id)%SYS_COLORS.length]||'#999';
+S.deck=DATA.networks[0]?.deckId||DATA.decks.at(-1).id;
+$('proj').textContent=DATA.project;
+function steps(){$('steps').innerHTML=STEPS.map((s,i)=>`<button class="step" data-step="${s.id}" aria-pressed="${s.id===S.step}"><b>${i+1}</b>${s.name}<span class="src">${s.src}</span></button>`).join('');
+ $('steps').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.step=b.dataset.step;render();});}
+function ribbon(){const st=STEPS.find(s=>s.id===S.step);
+ $('ribbon').innerHTML=st.groups.map(([cap,src,cmds])=>`<div class="grp"><span class="tag ${src}">${src==='box'?'BOX':src==='phg'?'PHG D':'신규'}</span><div class="btns">${cmds.map(c=>`<button class="cmd${c.isNew?' new':''}" title="${esc(c.label)}"><svg viewBox="0 0 20 20"><path d="${P[c.icon]||P.list}"/></svg><span>${esc(c.label)}</span></button>`).join('')}</div><div class="cap">${cap}</div></div>`).join('');}
+function tree(){const q=$('q').value.trim().toLowerCase();let count=0;
+ $('chips').innerHTML=[['all','전체'],['sup','급기 계통'],['exh','배기'],['pending','미완료']].map(([k,l])=>`<button class="chip" data-f="${k}" aria-pressed="${S.filter===k}">${l}</button>`).join('');
+ $('chips').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;render();});
+ $('tree').innerHTML=[...DATA.decks].reverse().map(d=>{const rooms=DATA.rooms.filter(r=>r.deckId===d.id).filter(r=>(!q||(r.no+' '+r.name).toLowerCase().includes(q))&&(S.filter==='all'||(S.filter==='sup'&&r.systems.supply)||(S.filter==='exh'&&r.systems.exhaust)||(S.filter==='pending'&&!DATA.loads[r.id].complete)));count+=rooms.length;
+  const open=d.id===S.deck;return `<div class="deck"><div class="deckh" data-deck="${d.id}" aria-current="${open}">${open?'▾':'▸'} ${esc(d.name)} <small>Z ${d.elevationMm.toLocaleString()} · ${rooms.length}실</small></div>${open?rooms.map(r=>`<div class="room" data-room="${r.id}" aria-selected="${r.id===S.room}"><span class="no">${esc(r.no)}</span><span><span class="dot" style="background:${r.systems.supply?sysColor(r.systems.supply):'#ccc'}"></span>${esc(r.name)}</span><span class="cmh">${DATA.airflow[r.id].supplyCmh}</span></div>`).join(''):''}</div>`;}).join('');
+ $('treeCount').textContent=count+'실';
+ $('tree').querySelectorAll('.deckh').forEach(e=>e.onclick=()=>{S.deck=e.dataset.deck;S.room=null;render();});
+ $('tree').querySelectorAll('.room').forEach(e=>e.onclick=()=>{S.room=e.dataset.room;render();});}
+function plan(){const rooms=DATA.rooms.filter(r=>r.deckId===S.deck),pts=rooms.flatMap(r=>r.polygon),xs=pts.map(p=>p.x),ys=pts.map(p=>-p.y);
+ const minX=Math.min(...xs)-900,maxX=Math.max(...xs)+900,minY=Math.min(...ys)-900,maxY=Math.max(...ys)+900,svg=$('plan');svg.setAttribute('viewBox',`${minX} ${minY} ${maxX-minX} ${maxY-minY}`);svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+ const maxLoad=Math.max(...rooms.map(r=>DATA.loads[r.id].coolingSensibleW),1);
+ const fill=r=>{if(S.step==='load'){const t=DATA.loads[r.id].coolingSensibleW/maxLoad;return `rgba(214,39,40,${0.08+0.6*t})`;}
+  if(S.step==='air'||S.step==='duct'||S.step==='review')return r.systems.supply?sysColor(r.systems.supply)+'33':'#eee';return 'rgba(24,95,165,.06)';};
+ const fs=Math.max(140,(maxX-minX)/70);
+ let html=rooms.map(r=>{const c=r.polygon.reduce((a,p)=>({x:a.x+p.x/r.polygon.length,y:a.y+p.y/r.polygon.length}),{x:0,y:0});
+  const label=S.step==='load'?`${Math.round(DATA.loads[r.id].coolingSensibleW).toLocaleString()} W`:S.step==='room'?esc(r.name):`${DATA.airflow[r.id].supplyCmh} CMH`;
+  return `<polygon class="rm${r.id===S.room?' sel':''}" data-room="${r.id}" points="${r.polygon.map(p=>p.x+','+(-p.y)).join(' ')}" fill="${fill(r)}"/><text x="${c.x}" y="${-c.y-fs*0.2}" text-anchor="middle" style="font-size:${fs}px">${esc(r.no)}</text><text x="${c.x}" y="${-c.y+fs*1.1}" text-anchor="middle" style="font-size:${fs*0.9}px">${label}</text>`;}).join('');
+ if(S.step==='duct'||S.step==='review'){for(const n of DATA.networks.filter(n=>n.deckId===S.deck)){const col=sysColor(n.systemId);
+  html+=n.ducts.map(d=>`<polyline class="duct" stroke="${col}" stroke-opacity="${d.type==='main'?1:.7}" style="stroke-width:${d.type==='main'?4:d.type==='branch'?3:2}" points="${d.points.map(p=>p.x+','+p.y).join(' ')}"/>`).join('')+
+   n.rus.map(u=>`<rect class="ru" x="${u.x-160}" y="${u.y-160}" width="320" height="320"/>`).join('')+`<circle class="root" cx="${n.root.x}" cy="${n.root.y}" r="200"/>`;}}
+ svg.innerHTML=html;svg.querySelectorAll('.rm').forEach(e=>e.onclick=()=>{S.room=e.dataset.room;render();});
+ $('float').innerHTML=(S.step==='room'?['2D','3D','Fit']:S.step==='duct'?['계통 전체','선택 계통','Fit']:['2D','Fit']).map(b=>`<button aria-pressed="${b==='2D'||b==='계통 전체'}">${b}</button>`).join('');
+ const nets=DATA.networks.filter(n=>n.deckId===S.deck);
+ $('legend').innerHTML=S.step==='load'?'<b>냉방 현열</b> — 진할수록 큼 (BOX CAL 결과)':S.step==='room'?'<b>격실</b> — BOX 도형에서 인식한 실(외곽선·번호·이름)':
+  `<b>급기 계통</b><br>${[...new Set(rooms.map(r=>r.systems.supply).filter(Boolean))].map(id=>`<span class="dot" style="background:${sysColor(id)}"></span>${id} · ${DATA.systems.find(s=>s.id===id&&s.kind==='supply')?.designCmh.toLocaleString()} CMH`).join('<br>')}${S.step!=='air'?`<br><small>${nets.length?'덕트: PHG D AUTO 결과 (H1 생성)':'이 Deck은 덕트 미생성 — 데모 데이터는 3DK'}</small>`:''}`;
+ const notes={room:'① 도면·격실: BOX의 CAD·격실 인식 기능을 이 리본으로 씁니다. 왼쪽 트리는 BOX Deck 적층 + 격실 목록을 합친 것입니다.',load:'② 부하: BOX CAL(설계 조건·K값·부하·신기·리히터)이 같은 화면 안에서 열립니다. 별도 전체 화면 창 대신 속성 패널에 결과가 바로 보입니다.',
+  air:'③ 풍량·계통 (신규): 격실 부하 → 급기·배기·환기 풍량, 계통 배정, 공조기 위치를 정합니다. HVAC Grid 계약(hvac-grid/0)이 이 단계의 데이터입니다.',duct:'④ RU·덕트: PHG D의 리본·AUTO·계산을 그대로 씁니다. 풍량은 BOX 부하에서 오고, RU는 실마다 자동 배치됩니다.',review:'⑤ 검토·출력 (신규): 풍속·압력·소음·방화(SOLAS) 검토와 통합 출력입니다.'};
+ $('note').textContent=notes[S.step];}
+function inspector(){const r=DATA.rooms.find(x=>x.id===S.room);
+ if(!r){const deckRooms=DATA.rooms.filter(x=>x.deckId===S.deck),sum=k=>deckRooms.reduce((t,x)=>t+(DATA.airflow[x.id][k]||0),0),cool=deckRooms.reduce((t,x)=>t+DATA.loads[x.id].coolingSensibleW,0);
+  const nets=DATA.networks.filter(n=>n.deckId===S.deck);
+  $('inspTitle').innerHTML='Deck '+esc(DATA.decks.find(d=>d.id===S.deck).name);
+  $('insp').innerHTML=`<div class="card"><h4>Deck 요약</h4><div class="kv"><span>격실</span><span>${deckRooms.length}</span><span>냉방 현열</span><span>${Math.round(cool).toLocaleString()} W</span><span>급기 합계</span><span>${sum('supplyCmh').toLocaleString()} CMH</span><span>배기 합계</span><span>${sum('exhaustCmh').toLocaleString()} CMH</span></div></div>`+
+   nets.map(n=>`<div class="card"><h4><span><span class="dot" style="background:${sysColor(n.systemId)}"></span>${esc(n.systemId)}</span><span class="tag phg">PHG D</span></h4><div class="kv"><span>RU</span><span>${n.rus.length}개</span><span>덕트</span><span>${n.lengthM} m</span><span>최대 압력손실</span><span>${n.indexPa} Pa</span><span>공조기 위치</span><span class="${/assumed/.test(n.rootSource)?'warn':''}">${/assumed/.test(n.rootSource)?'임시 (복도 끝)':'팬룸'}</span></div></div>`).join('')+
+   `<div class="card"><h4>선택</h4><span style="color:var(--muted)">왼쪽 트리나 도면에서 격실을 고르면 부하·풍량·덕트가 여기에 모입니다.</span></div>`;return;}
+ const L=DATA.loads[r.id],A=DATA.airflow[r.id],net=DATA.networks.find(n=>n.deckId===r.deckId&&n.systemId===r.systems.supply),rus=net?net.rus.filter(u=>u.roomId===r.id):[];
+ $('inspTitle').innerHTML=`${esc(r.no)} ${esc(r.name)} <small>${esc(r.isoClass||'')}</small>`;
+ const show=k=>({room:['geo','sys'],load:['load','geo'],air:['air','sys','load'],duct:['air','duct','sys'],review:['air','duct','check']}[S.step]||[]).includes(k);
+ $('insp').innerHTML=[
+  show('load')&&`<div class="card"><h4>부하 <span class="tag box">BOX CAL</span></h4><div class="big">${Math.round(L.coolingSensibleW).toLocaleString()} W</div><div style="color:var(--muted)">냉방 현열</div><div class="kv" style="margin-top:6px"><span>냉방 잠열</span><span>${Math.round(L.coolingLatentW)} W</span><span>냉방 합계</span><span>${Math.round(L.coolingW)} W</span><span>난방</span><span>${Math.round(L.heatingW)} W</span><span>최소 신기</span><span>${L.minFreshAirCmh} CMH</span><span>상태</span><span class="${L.complete?'ok':'warn'}">${esc(L.status||'')}</span></div></div>`,
+  show('air')&&`<div class="card"><h4>풍량 <span class="tag grid">계약 v0</span></h4><div class="kv"><span>급기</span><span><b>${A.supplyCmh}</b> CMH</span><span>배기</span><span>${A.exhaustCmh} CMH</span><span>환기</span><span>${A.returnCmh} CMH</span><span>신기(정보)</span><span>${A.freshAirCmh} CMH</span></div><div style="color:var(--muted);margin-top:6px">급기 = ⌈현열 × 3 ÷ ${DATA.rules.supplyDeltaTK} K⌉ · 배기 = ⌈ACH × 체적⌉</div></div>`,
+  show('sys')&&`<div class="card"><h4>계통</h4><div class="kv"><span>급기</span><span>${r.systems.supply?`<span class="dot" style="background:${sysColor(r.systems.supply)}"></span>${esc(r.systems.supply)}`:'—'}</span><span>배기</span><span>${esc(r.systems.exhaust||'—')}</span><span>환기</span><span>${esc(r.systems.return||'—')}</span></div></div>`,
+  show('duct')&&`<div class="card"><h4>RU·덕트 <span class="tag phg">PHG D</span></h4>${net?`<div class="kv"><span>RU</span><span>${rus.length}개 · ${rus.reduce((t,u)=>t+u.flowCmh,0)} CMH</span><span>계통 덕트</span><span>${net.lengthM} m</span><span>계통 최대 압력손실</span><span>${net.indexPa} Pa</span></div>`:'<span style="color:var(--muted)">이 계통의 덕트는 아직 만들지 않았습니다 (데모: 3DK)</span>'}</div>`,
+  show('geo')&&`<div class="card"><h4>형상 <span class="tag box">BOX</span></h4><div class="kv"><span>면적</span><span>${r.areaM2.toFixed(1)} m²</span><span>체적</span><span>${r.volumeM3.toFixed(1)} m³</span><span>외곽 꼭짓점</span><span>${r.polygon.length}</span></div></div>`,
+  show('check')&&`<div class="card"><h4>검토 <span class="tag grid">신규</span></h4><div class="kv"><span>풍속</span><span class="ok">기준 이내</span><span>방화 경계 관통</span><span class="warn">SOLAS 단계에서 판정</span></div></div>`].filter(Boolean).join('');}
+function status(){const st=STEPS.findIndex(s=>s.id===S.step)+1,sup=DATA.systems.filter(s=>s.kind==='supply');
+ $('status').innerHTML=`<span>단계 <b>${st}/5</b> ${STEPS[st-1].name}</span><span>Deck <b>${DATA.decks.length}</b> · 격실 <b>${DATA.rooms.length}</b></span><span>급기 계통 <b>${sup.length}</b> · <b>${sup.reduce((t,s)=>t+s.designCmh,0).toLocaleString()}</b> CMH</span><span>덕트망 <b>${DATA.networks.length}</b>/${sup.length} (데모)</span><span style="margin-left:auto">목업 — 실제 동작 아님 · 데이터: BOX CAL S5 예제 + PHG D 생성 결과</span>`;}
+function render(){steps();ribbon();tree();plan();inspector();status();}
+$('q').oninput=()=>tree();$('theme').onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'':'dark';};
+render();
+</script>
+</body>
+</html>

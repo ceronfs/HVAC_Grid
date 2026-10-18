@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HVAC Grid</title>
+<link rel="stylesheet" href="shell.css">
+</head>
+<body>
+<div class="app">
+ <header class="bar">
+  <div class="brand"><i>N</i>HVAC Grid <small>BOX CAL + PHG D</small></div>
+  <nav class="steps" id="steps" role="tablist" aria-label="작업 단계"></nav>
+  <div class="proj" id="proj">계약 없음</div>
+  <div class="baricons">
+   <button class="ib" id="undoBtn" title="실행 취소"><svg viewBox="0 0 20 20"><path d="M7 5L3 9l4 4M3 9h9a4 4 0 010 8H9"/></svg></button>
+   <button class="ib" id="redoBtn" title="다시 실행"><svg viewBox="0 0 20 20"><path d="M13 5l4 4-4 4M17 9H8a4 4 0 000 8h3"/></svg></button>
+   <span class="sep"></span>
+   <button class="ib" id="openProjectBtn" title="HVAC Grid 프로젝트 열기"><svg viewBox="0 0 20 20"><path d="M3 6h5l2 2h7v8H3z"/></svg></button>
+   <button class="ib" id="saveProjectBtn" title="HVAC Grid 프로젝트 저장 (계약 + PHG D 덕트망)"><svg viewBox="0 0 20 20"><path d="M4 3h10l3 3v11H4zM7 3v5h6V3M7 17v-5h7v5"/></svg></button>
+   <button class="ib" id="themeBtn" title="어두운 화면"><svg viewBox="0 0 20 20"><path d="M10 3a7 7 0 100 14 5 5 0 010-14z"/></svg></button>
+  </div>
+ </header>
+ <div class="ribbon" id="ribbon" role="toolbar" aria-label="명령"></div>
+ <div class="main" id="main">
+  <aside class="side" id="left">
+   <div class="sh">Deck · 격실 <small id="treeCount"></small><button class="mini" id="leftToggle" title="패널 접기">‹</button></div>
+   <input class="search" id="q" placeholder="격실 번호·이름 검색" aria-label="격실 검색">
+   <div class="chips" id="chips"></div>
+   <div class="tree" id="tree"></div>
+  </aside>
+  <section class="center" id="center">
+   <iframe id="boxFrame" title="BOX CAL" style="visibility:hidden"></iframe>
+   <iframe id="phgFrame" title="PHG D" style="visibility:hidden"></iframe>
+   <svg class="plan" id="plan" aria-label="Deck 평면" hidden></svg>
+   <div class="report" id="report" hidden></div>
+   <div class="legend" id="legend" hidden></div>
+   <div class="empty" id="empty" hidden></div>
+   <div class="busy" id="busy" hidden><div><span class="spin"></span><b id="busyText"></b></div></div>
+  </section>
+  <aside class="side right" id="right">
+   <div class="sh"><span id="inspTitle">속성</span><button class="mini" id="rightToggle" title="패널 접기">›</button></div>
+   <div class="insp" id="insp"></div>
+  </aside>
+ </div>
+ <footer class="status" id="status"></footer>
+</div>
+<input type="file" id="pick" hidden>
+<script src="bridge.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>

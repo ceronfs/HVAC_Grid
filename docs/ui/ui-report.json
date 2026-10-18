@@ -1,0 +1,97 @@
+{
+ "box": {
+  "title": "NODE BOX · CAL ENHANCE",
+  "buttons": 49,
+  "sample": [
+   "⟲",
+   "DXF",
+   "BG",
+   "J↓",
+   "S",
+   "D↑",
+   "↶",
+   "↷",
+   "⌕",
+   "하부 OL",
+   "상부 OL",
+   "OL 검증",
+   "VL",
+   "AR",
+   "AP",
+   "RN",
+   "RM",
+   "RL",
+   "A6",
+   "CK",
+   "GX",
+   "설정/검사 ▾",
+   "정밀도: 사용자 설정정밀도: 기본",
+   "격실 ID 고정",
+   "3D 검사 · 선택 격실",
+   "검토 도구 · 계산 근거·비교",
+   "대용량 엔진 창 열기",
+   "흘수선 · 미적용",
+   "R↑",
+   "A↑",
+   "CAL",
+   "DC",
+   "BC",
+   "KD",
+   "K7",
+   "KC",
+   "C✓",
+   "KU",
+   "LR",
+   "OA",
+   "RH",
+   "I↑",
+   "N↑",
+   "Σ↑",
+   "LX",
+   "H5",
+   "S5",
+   "◐",
+   "?"
+  ],
+  "font": "system-ui, \"Noto Sans KR\", sans-serif 10px",
+  "vars": [
+   "--bg:#f5f4ef",
+   "--panel:#fff",
+   "--line:#dedcd5",
+   "--text:#292927",
+   "--muted:#706f69",
+   "--blue:#185fa5",
+   "--soft:#e6f1fb",
+   "--red:#a32d2d"
+  ],
+  "panels": [
+   "side 155x792",
+   "side right 170x792"
+  ]
+ },
+ "phg": {
+  "title": "Duct Concept by NODE · PHG D",
+  "groups": [
+   "도면:4",
+   "덕트:6",
+   "계통:5",
+   "자동 라우팅:8",
+   "계산:5",
+   "저장:3"
+  ],
+  "font": "system-ui, -apple-system, \"Segoe UI\", \"Noto Sans KR\", Arial, sans-serif 11px",
+  "vars": [
+   "--bg:#f5f4ef",
+   "--panel:#ffffff",
+   "--line:#e3e1d9",
+   "--text:#2c2c2a",
+   "--muted:#6f6e68",
+   "--accent:#185fa5",
+   "--phgd-accent:#185fa5"
+  ],
+  "docks": [
+   "left 170",
+   "right 170"
+  ]
+ }
+}

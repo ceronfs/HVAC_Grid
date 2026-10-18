@@ -1,0 +1,32 @@
+// Screenshots of the working shell (app/) for docs/ui/: each step at 1600 px, 1280 px and dark mode.
+'use strict';
+const path = require('path');
+const { launch } = require('../tools/browser.cjs'), { start } = require('../tools/serve.cjs');
+(async () => {
+ const s = await start(), b = await launch(), p = await b.newPage({ viewport: { width: 1600, height: 900 } }), errors = [];
+ p.on('pageerror', e => errors.push(e.message)); p.on('dialog', d => d.accept());
+ const out = n => path.join(__dirname, '..', 'docs', 'ui', n), idle = () => p.waitForFunction(() => document.getElementById('busy').hasAttribute('hidden'), null, { timeout: 300000 });
+ await p.goto(s.url + '/app/'); await p.waitForFunction(() => window.HVACGrid?.box.loading, null, { timeout: 30000 }); await idle();
+ await p.waitForFunction(() => HVACGrid.box.readyTest(HVACGrid.box.win), null, { timeout: 180000 });
+ await p.screenshot({ path: out('shell-0-start.png') });
+ await p.locator('#ribbon .cmd', { hasText: 'S5 예제' }).click(); await p.waitForFunction(() => HVACGrid.box.hasDrawing(), null, { timeout: 180000 }); await p.waitForTimeout(800);
+ await p.screenshot({ path: out('shell-1-room.png') });
+ await p.click('.step[data-step=load]'); await idle(); await p.locator('#ribbon .cmd', { hasText: 'CAL 열기' }).click();
+ await p.waitForFunction(() => /^현재 격실/.test(HVACGrid.box.calStatus()), null, { timeout: 180000 }); await p.locator('#ribbon .cmd', { hasText: '격실 부하' }).click(); await p.waitForTimeout(1500);
+ await p.screenshot({ path: out('shell-2-load.png') });
+ await p.locator('#ribbon .cmd', { hasText: '계약 만들기' }).click(); await idle();
+ await p.locator('#tree .deckh', { hasText: '3DK' }).click(); await p.locator('#tree .room', { hasText: '선원침실 02' }).click();
+ await p.screenshot({ path: out('shell-3-air.png') });
+ await p.evaluate(() => HVACGrid.runAll(HVACGrid.plans().map(x => x.key))); await idle();
+ await p.click('.step[data-step=duct]'); await idle(); await p.evaluate(() => HVACGrid.phg.fit()); await p.waitForTimeout(400);
+ await p.screenshot({ path: out('shell-4-duct.png') });
+ await p.click('.step[data-step=review]'); await idle();
+ await p.screenshot({ path: out('shell-5-review.png') });
+ const summary = await p.evaluate(() => HVACGrid.plans().map(x => { const r = HVACGrid.S.results[x.key] || {}; return [x.key, r.rus, r.flowCmh, x.designCmh, r.ducts, r.lengthM, r.indexPa, r.unconnected, r.seconds].join(' '); }));
+ await p.setViewportSize({ width: 1280, height: 800 }); await p.click('.step[data-step=air]'); await idle(); await p.waitForTimeout(300);
+ await p.screenshot({ path: out('shell-6-air-1280.png') });
+ await p.click('#themeBtn'); await p.waitForTimeout(200); await p.screenshot({ path: out('shell-7-air-dark.png') }); await p.click('#themeBtn');
+ const ribbonOverflow = await p.evaluate(() => { const r = document.getElementById('ribbon'); return r.scrollWidth - r.clientWidth; });
+ console.log(summary.join('\n')); console.log(JSON.stringify({ errors, ribbonOverflow1280: ribbonOverflow }));
+ await b.close(); await s.close();
+})().catch(e => { console.error(e); process.exit(1); });

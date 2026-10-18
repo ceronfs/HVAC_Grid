@@ -49,3 +49,14 @@ test('buildContract keeps system totals equal to room airflow', () => {
  assert.equal(c.systems[0].designCmh, c.airflow.a.supplyCmh + c.airflow.b.supplyCmh);
  assert.equal(c.airflow.a.supplyCmh, 30); assert.equal(c.airflow.b.supplyCmh, 60);
 });
+
+test('applyRules: a larger supply dT lowers supply airflow and system totals, loads untouched', () => {
+ const { applyRules } = require('../lib/contract.cjs'), s5 = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../samples/s5.contract.json'), 'utf8'));   // a fresh copy: other tests change the shared one
+ const c = applyRules(s5, { supplyDeltaTK: 12 });
+ assert.equal(c.rules.supplyDeltaTK, 12);
+ const sup = k => k.systems.filter(x => x.kind === 'supply').reduce((t, x) => t + x.designCmh, 0);
+ assert.ok(sup(c) < sup(s5));
+ for (const s of c.systems.filter(x => x.kind === 'supply')) assert.equal(s.designCmh, s.roomIds.reduce((t, id) => t + c.airflow[id].supplyCmh, 0));
+ assert.deepEqual(c.loads, s5.loads);
+ assert.equal(s5.rules.supplyDeltaTK, 10);
+});

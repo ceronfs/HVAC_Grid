@@ -36,3 +36,10 @@ test('deck DXF: closed room outlines with number and name', () => {
  assert.equal((dxf.match(/\r\nLWPOLYLINE\r\n/g) || []).length, s5.rooms.filter(r => r.deckId === 'S3').length);
  assert.match(dxf, /\r\n선원식당\r\n/);
 });
+
+test('a unit location set in HVAC Grid replaces the guessed Root', () => {
+ const roots = { 'S3__AHU-AC-01': { x: 11600, y: 4000 } }, pl = plan({ ...s5, roots }).find(p => p.key === 'S3__AHU-AC-01');
+ assert.equal(pl.rootSource, 'user');
+ assert.deepEqual(pl.root, { x: 11600, y: 4000 });
+ assert.ok(pl.rus.every(u => Math.hypot(u.x - 11600, u.y - 4000) >= 400));
+});
