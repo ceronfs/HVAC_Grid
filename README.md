@@ -8,7 +8,7 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·환기·배�
    (BOX Cal)        (BOX Cal)             (공통)                     (PHG D)      (PHG D)          (PHG D · SOLAS)      (공통)
 ```
 
-상태: **프로젝트 시작 (2026-10-18)** — 구조·원본 목록·초기 계획만 있습니다. 코드는 아직 없습니다.
+상태: **H0 완료 (2026-10-18)** — 데이터 계약 v0, BOX → 계약 추출, S5 샘플(5 Deck · 94실 · 급기 10계통 10,420 CMH), 테스트 4개.
 
 ## 문서
 
@@ -16,6 +16,17 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·환기·배�
 |---|---|
 | [docs/SOURCES.md](docs/SOURCES.md) | 통합 대상 원본(경로·크기·해시·상태)과 이전 통합 시도 |
 | [docs/PLAN.md](docs/PLAN.md) | 목표, 이전 시도에서 배운 점, 통합 방식 선택지, 데이터 계약 초안, 단계 계획, 결정 필요 사항 |
+| [docs/CONTRACT.md](docs/CONTRACT.md) | 데이터 계약 v0: 구조, BOX → 계약 · 계약 → PHG D 대응, 풍량 규칙, 검증 |
+
+## 실행
+
+```
+npm test                    # 계약 테스트
+npm run extract:s5          # BOX CAL(최신) S5 예제 → samples/s5.contract.json (Playwright: PHG 도구 사용)
+node tools/box-extract.cjs <BOX 프로젝트.json> <출력.json>
+```
+
+`probe/`는 BOX 구조 확인에 쓴 조사 스크립트입니다.
 
 ## 원칙
 

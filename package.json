@@ -1,0 +1,9 @@
+{
+  "name": "hvac-grid",
+  "private": true,
+  "description": "BOX CAL + PHG D HVAC platform",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.cjs\"",
+    "extract:s5": "node tools/box-extract.cjs s5 samples/s5.contract.json"
+  }
+}
