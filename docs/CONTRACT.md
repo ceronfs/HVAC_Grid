@@ -18,10 +18,29 @@ BOX CAL이 계산한 격실·부하를 PHG D가 쓸 수 있는 형태로 옮기�
   loads:   { [roomId]: { coolingSensibleW, coolingLatentW, coolingW, heatingW, minFreshAirCmh, minAch, achAirCmh, complete, status } },
   airflow: { [roomId]: { supplyCmh, exhaustCmh, returnCmh, freshAirCmh, source } },
   systems: [{ id, kind:'supply'|'exhaust'|'return', deckIds, roomIds, designCmh }],
-  rus:     [],   // H1: PHG D에 배치한 RU
-  ducts:   {}    // H1~: 계통별 PHG D 프로젝트
+  rus:     [],   // (예약) PHG D RU는 프로젝트 파일의 PHG D 프로젝트에 있음
+  ducts:   {},   // (예약)
+  // H2~H4: 셸에서 사용자가 정한 것 (모두 선택 항목, 없으면 자동)
+  roots:     { ['<deckId>__<systemKey>']: { x, y } },   // 공조기 Deck: 공조기·팬 위치 / 다른 Deck: 수직 덕트(샤프트) 위치 (mm, 도면 좌표)
+  unitDecks: { ['<systemKey>']: deckId },               // 여러 Deck 계통의 공조기 Deck
+  solas:     { ship:'CARG'|'TANK'|'P36P'|'P36M', method:'IC'|'IIC'|'IIIC', sprinkler, rooms:{ [roomId]: { space } }, bounds:{ [boundaryId]: { grade } } }
 }
 ```
+
+`systemKey`는 계통 이름(`id`)입니다. 같은 이름이 두 종류에 쓰이면 `id~kind`가 됩니다. 계획 키는 `<deckId>__<systemKey>`(Deck·계통별 PHG D 프로젝트 1개).
+
+### 프로젝트 파일 `hvac-grid-project/1` (`lib/project.cjs`)
+
+```
+{ schema: 'hvac-grid-project/1', savedAt, app:{ name },
+  contract,                                  // 위 계약 (사용자 지정 포함)
+  projects: { [planKey]: '<PHG D 프로젝트 JSON 문자열>' },
+  results:  { [planKey]: { rus, flowCmh, ducts, lengthM, indexPa, auto, unconnected, seconds, sig, at, ... } },
+  geometry: { [planKey]: { root, rus, ducts:[{ displayName, type, widthMm, heightMm, diameterMm, flowCmh, points }] } } }   // PHG D 좌표(y 아래)
+```
+
+- `sig`: 결과를 만든 계획(Root·RU 위치·풍량·흐름 방향)의 서명. 풍량 규칙·공조기 위치·공조기 Deck이 바뀌면 서명이 달라져 **그 계획만** "다시 보내기 필요"가 됩니다.
+- 읽기(`read`): `/0` 파일은 변환, 계약 검사 실패는 거부, 지금 계획에 없는 키의 결과는 버림(보고).
 
 ## 2. BOX → 계약 대응
 
@@ -40,16 +59,26 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 | loads.minAch / achAirCmh | `minimumAch`, `ventilationAirCmh` | 환기 횟수와 그 풍량(ACH × 체적) |
 | loads.complete / status | `calculationComplete`, `calculationStatus` | 미완료 격실은 풍량 0(대기) |
 
-## 3. 계약 → PHG D 대응 (H1 구현: `lib/phg-plan.cjs`, `tools/phg-generate.cjs`)
+## 3. 계약 → PHG D 대응 (`lib/phg-plan.cjs`, 실행 `app/bridge.js` · `tools/hvac-run.cjs`)
 
 | 계약 | PHG D |
 |---|---|
 | decks + rooms.polygon + no/name | Deck별 배경 도면: 닫힌 외곽선(ROOM 레이어) + 실 번호·이름 문자 → PHG D 실 인식(복도 우선 주관, 같은 실 BR, 풍량 초안, SOLAS 계획)이 그대로 동작 |
-| systems(kind=supply) | 급기 계통별 PHG D 프로젝트(Root 1개) |
-| airflow.supplyCmh | 계통 RU 풍량(격실 안 RU에 균등 배분, 합계 보존) |
+| systems (급기·배기·환기) | **Deck·계통별** PHG D 프로젝트(Root 1개). 배기·환기는 Root의 `pressureFlowMode = 'exhaust'`(PHG D 합류 피팅 압력 계산) |
+| airflow.supplyCmh / exhaustCmh / returnCmh | 종류별 RU 풍량(격실 안 RU에 균등 배분, 합계 보존). 배기·환기 RU는 같은 실 급기 RU와 400 mm 이상 |
 | 좌표 | PHG D는 y를 뒤집음(앱 y = −DXF y) |
-| Root | 같은 Deck의 팬룸·공조기실(이름), 없으면 복도 끝 — `rootSource: assumed:…`로 표시, 실제 공조기 위치로 옮겨야 함 |
-| RU 배치 | 급기 500 CMH마다 1개, 실 안 중심(또는 가장 안쪽 점), Root·다른 RU와 400 mm 이상, 풍량 합계 보존 |
+| 공조기 Deck (여러 Deck 계통) | `unitDecks` 지정 → 팬룸이 있는 Deck → 풍량이 가장 큰 Deck |
+| Root (공조기 Deck) | `roots` 지정 → 팬룸·공조기실(이름) → 복도 끝 → Deck 모서리. 뒤의 둘은 `assumed:…`(임시) |
+| Root (다른 Deck = 수직 덕트) | `roots` 지정 → 샤프트·트렁크 실 → 공조기 바로 위·아래(그 점이 실 안이면) → 복도 끝 |
+| 같은 팬룸·트렁크의 여러 계통 | 서로 600 mm 이상 떨어진 점(실 안, 벽에서 200 mm 이상) |
+| RU 배치 | 500 CMH마다 1개, 실 안 중심(또는 가장 안쪽 점, 구멍 제외), Root·다른 RU와 400 mm 이상, 풍량 합계 보존 |
+
+### 수직 덕트 (`lib/risers.cjs`, `lib/ducts.cjs`)
+
+- 공조기 Deck에서 위·아래로, 계통이 쓰는 Deck을 잇는 구간마다 1개. 풍량 = 그 너머 Deck 풍량 합.
+- 길이 = Deck 높이 차 + 두 샤프트 점의 수평 거리(직각), 엘보 2개(+ 수평 이동 2개).
+- 크기: 풍속 ≤ 10 m/s, 마찰 ≤ 2 Pa/m, 50 mm 단위, 종횡비 ≤ 4, 가장 작은 단면. 손실: Darcy–Weisbach(Colebrook, 아연도 0.09 mm, 공기 1.2 kg/m³) + 엘보 K 0.25.
+- 계통 최대 압력손실 = max(각 Deck의 PHG D 최대 손실 + 공조기에서 그 Deck까지 수직 덕트 손실).
 
 ## 4. 풍량 규칙 v0
 
@@ -62,6 +91,8 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 
 BOX의 AHU 계산(`CAL_ENHANCE.ahu`)이 유효하면(AHU 조건 입력 완료) 그 격실 SA 풍량을 우선하도록 v1에서 바꿉니다. S5 예제는 AHU 조건이 없어 `AHU_INPUT` 경고 상태입니다.
 
+풍량 검토(`lib/project.cjs airChecks`): 배기가 있고 환기가 없는 실(조리실·화장실·세탁실)에서 급기 > 배기이면 "부압 미확보" 경고, 부하 미완료 실, 계통은 있으나 풍량 0인 실·계통.
+
 ## 5. 검증
 
-`npm test` (`node --test "test/**/*.test.cjs"`) — 계약 구조(Deck·격실 ID, polygon, 부하·풍량 존재, 계통 참조), 풍량 규칙(급기·배기·환기·미완료), S5 샘플(5 Deck, 94실, 급기 10계통, 합계 10,420 CMH).
+`npm test` (`node --test "test/**/*.test.cjs"`) — 계약 구조(Deck·격실 ID, polygon, 부하·풍량 존재, 계통 참조), 풍량 규칙(급기·배기·환기·미완료), S5 샘플(5 Deck, 94실, 급기 10계통, 합계 10,420 CMH), 계획(종류·Deck별 풍량 보존, 공조기 Deck, 배기 RU 간격), 수직 덕트(물리·크기·경로 손실), 프로젝트 파일(왕복·변환·거부·결과 서명), 출력(XLSX 다시 읽기, DXF 다시 읽기, 보고서), SOLAS(워크북 830칸 대조, 분류, 등급, 관통), 시험 도면 대조. `npm run test:e2e` — 셸 + 실제 BOX·PHG D(S5, T3).

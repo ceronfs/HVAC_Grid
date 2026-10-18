@@ -16,6 +16,8 @@
 |---|---|---|
 | `vendor/DuctConcept_PHG_D.html` | PHG D (`ceronfs/PHG` 57ef186) | `643f328a1f50244a` |
 | `vendor/BOX_CAL_Enhance.html` | `CAL_Enhance/04_CAL_Enhance_fixed.html` (32976f8) | `bd942611477ddfe5` |
+| `vendor/SOLAS_fire_rating.html` | `Program/SOLAS/fire_rating.html` (2026-08-24) — 표·격실 사전의 단일 원본, `lib/solas-data.json`으로 추출 | `05b6440e140fd636` |
+| `vendor/SOLAS_fire_rating_tables.xlsx` | `Program/SOLAS/SOLAS_격실분류_화재구획등급표.xlsx` — 대조용(테스트) | `11a1db1d56d893e9` |
 
 원본 파일은 읽기 전용입니다. 사본 갱신은 의도적으로 하고 `vendor/VERSIONS.json`에 기록합니다.
 

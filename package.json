@@ -1,12 +1,18 @@
 {
   "name": "hvac-grid",
   "private": true,
-  "description": "BOX CAL + PHG D HVAC platform",
+  "description": "BOX CAL + PHG D HVAC platform (HVAC Grid)",
   "scripts": {
     "test": "node --test \"test/**/*.test.cjs\"",
-    "extract:s5": "node tools/box-extract.cjs s5 samples/s5.contract.json",
+    "test:e2e": "node test/e2e/shell.e2e.cjs && node test/e2e/t3.e2e.cjs",
+    "test:all": "npm test && npm run test:e2e",
     "start": "node tools/serve.cjs",
-    "test:e2e": "node test/e2e/shell.e2e.cjs",
+    "run:t3": "node tools/hvac-run.cjs samples/t3.contract.json out/t3 --shots --solas=samples/t3/T3.solas.json",
+    "run:s5": "node tools/hvac-run.cjs samples/s5.contract.json out/s5 --shots",
+    "make:t3": "node tools/make-test-ship.cjs && node tools/box-extract.cjs samples/t3/T3.box.json samples/t3.contract.json",
+    "extract:s5": "node tools/box-extract.cjs s5 samples/s5.contract.json",
+    "solas:extract": "node tools/solas-extract.cjs",
+    "solas:check": "node tools/solas-extract.cjs --check",
     "mockup": "node tools/build-mockup.cjs"
   }
 }

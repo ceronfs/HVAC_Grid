@@ -1,0 +1,4 @@
+# frozen copies keep their bytes (their SHA-256 is recorded in vendor/VERSIONS.json); DXF keeps CRLF as written
+vendor/** -text
+*.dxf -text
+*.xlsx binary

@@ -3,9 +3,10 @@
  "units": "mm",
  "source": {
   "app": "BOX CAL Enhance",
-  "file": "C:\\Users\\HK\\Desktop\\HVAC_Grid\\vendor\\BOX_CAL_Enhance.html",
+  "file": "vendor/BOX_CAL_Enhance.html",
   "sha256": "bd942611477ddfe5",
-  "project": "built-in S5 example"
+  "project": "built-in S5 example",
+  "path": null
  },
  "rules": {
   "supplyDeltaTK": 10,

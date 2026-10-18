@@ -9,11 +9,21 @@
   for (;;) { let v; try { v = test(); } catch { v = null; } if (v) return v; if (performance.now() - t > timeoutMs) throw new Error(what + ' 대기 시간 초과'); await wait(100); }
  }
 
- // lib/*.cjs are CommonJS for node tests; the shell runs the same files through this small loader
- async function loadCjs(url) {
-  const src = await (await fetch(url, { cache: 'no-store' })).text(), module = { exports: {} };
-  new Function('module', 'exports', src + '\n//# sourceURL=' + url)(module, module.exports);
-  return module.exports;
+ // lib/*.cjs are CommonJS for node tests; the shell runs the same files through this small loader. All files are
+ // fetched first, then require('./x.cjs' | './x.json') resolves among them (evaluated once, on first use).
+ async function loadLibs(base, files) {
+  const texts = Object.fromEntries(await Promise.all(files.map(async f => {
+   const r = await fetch(base + f, { cache: 'no-store' }); if (!r.ok) throw new Error(f + ' 읽기 실패 (' + r.status + ')'); return [f, await r.text()]; })));
+  const done = {};
+  const require = name => {
+   const f = name.replace(/^\.\//, ''); if (f in done) return done[f];
+   if (!(f in texts)) throw new Error('lib 모듈 없음: ' + name);
+   if (f.endsWith('.json')) return (done[f] = JSON.parse(texts[f]));
+   const module = { exports: {} }; done[f] = module.exports;
+   new Function('module', 'exports', 'require', texts[f] + '\n//# sourceURL=' + base + f)(module, module.exports, require);
+   return (done[f] = module.exports);
+  };
+  return Object.fromEntries(files.filter(f => f.endsWith('.cjs')).map(f => [f.replace('.cjs', ''), require(f)]));
  }
 
  class VendorFrame {
@@ -108,6 +118,8 @@
    dialog.querySelector('button[type=submit]').click();
    await until(() => !dialog.open && L.getState().entities.length > 0, 120000, 'DXF 가져오기');
    R.placeRoot({ x: pl.root.x, y: -pl.root.y });
+   // exhaust and return networks: PHG D's pressure calculation takes converging (exhaust) fittings from the Root
+   const root = L.getState().nodes.find(n => n.type === 'root'); if (root) { root.pressureFlowMode = pl.flowMode || 'supply'; root.memo = `HVAC Grid ${pl.systemId} ${pl.isUnitDeck === false ? '수직 덕트' : '공조기'}`; }
    for (const u of pl.rus) {
     R.placeRu({ x: u.x, y: -u.y, flowCmh: u.flowCmh });
     const s = L.getState(), node = s.nodes.at(-1), ru = s.diffusers.find(d => d.connectedNodeId === node.id);
@@ -145,13 +157,15 @@
    const wd = Math.max(maxX - minX, (maxY - minY) * rc.width / rc.height), h = wd * rc.height / rc.width;
    Object.assign(v, { x: (minX + maxX) / 2 - wd / 2, y: (minY + maxY) / 2 - h / 2, w: wd, h }); svg.setAttribute('viewBox', `${v.x} ${v.y} ${wd} ${h}`); w.LineDesignLegacy.renderEverything();
   }
-  // ducts, RUs and Root in app coordinates for the shell's own plan view
+  // ducts (with their size and airflow), RUs and Root in app coordinates (y down) for the shell's plan view, the SOLAS
+  // penetration check and the outputs
   geometry() {
-   const s = this.win.LineDesignLegacy.getState(), r = s.nodes.find(n => n.type === 'root');
+   const s = this.win.LineDesignLegacy.getState(), r = s.nodes.find(n => n.type === 'root'), num = v => Number.isFinite(+v) && +v > 0 ? Math.round(+v) : 0;
    return { root: r ? { x: r.x, y: r.y } : null, rus: s.diffusers.map(d => ({ x: d.x, y: d.y, flowCmh: d.flowCmh })),
-    ducts: s.ducts.map(d => ({ type: d.type, points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(p.y) })) })) };
+    ducts: s.ducts.map(d => ({ id: d.id, displayName: d.displayName || d.id, type: d.type, shape: d.shape, widthMm: d.shape === 'round' ? 0 : num(d.widthMm), heightMm: d.shape === 'round' ? 0 : num(d.heightMm),
+     diameterMm: d.shape === 'round' ? num(d.diameterMm) : 0, flowCmh: Math.round(+d.flowCmh || 0), points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(p.y) })) })) };
   }
  }
 
- window.HVACGridBridge = { wait, until, loadCjs, Box, Phg };
+ window.HVACGridBridge = { wait, until, loadLibs, Box, Phg };
 })();

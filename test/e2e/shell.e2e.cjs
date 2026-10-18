@@ -1,67 +1,103 @@
-// End-to-end: the HVAC Grid shell over the real vendor apps. BOX S5 example -> CAL -> contract -> airflow rules and a
-// unit location -> PHG D send + AUTO -> review. Screenshots go to out/e2e/ (git ignored).  npm run test:e2e
+// End-to-end: the HVAC Grid shell over the real vendor apps with the S5 example. BOX S5 -> CAL -> contract -> airflow
+// rules, a unit location, an exhaust system over several decks (unit deck, undo / redo) -> PHG D send + AUTO -> review
+// tabs, SOLAS space assignment -> outputs (project, XLSX, DXF, report) as real downloads. Screenshots: out/e2e/.
 'use strict';
 const fs = require('fs'), path = require('path'), assert = require('node:assert/strict');
-const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs');
+const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs'), { readWorkbook } = require('../../lib/xlsx-read.cjs'), X = require('../../lib/dxf-in.cjs');
 const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
 
 (async () => {
  fs.mkdirSync(OUT, { recursive: true });
- const s = await start(), b = await launch(), p = await b.newPage({ viewport: { width: 1600, height: 900 } }), errors = [], t0 = Date.now();
- p.on('pageerror', e => errors.push(e.message)); p.on('dialog', d => d.accept());
+ const s = await start(), b = await launch(), p = await b.newPage({ viewport: { width: 1600, height: 900 }, acceptDownloads: true }), errors = [], t0 = Date.now();
+ p.on('pageerror', e => errors.push(e.message)); p.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); }); p.on('dialog', d => d.accept());
  const shot = n => p.screenshot({ path: path.join(OUT, n + '.png') });
  const log = (...a) => console.log(((Date.now() - t0) / 1000).toFixed(1) + 's', ...a);
  const ribbon = label => p.locator('#ribbon .cmd', { hasText: label }).first();
  const idle = () => p.waitForFunction(() => document.getElementById('busy').hasAttribute('hidden'), null, { timeout: 300000 });
+ const H = f => p.evaluate(f);
+ const download = async label => { const [d] = await Promise.all([p.waitForEvent('download'), ribbon(label).click()]); const f = path.join(OUT, d.suggestedFilename()); await d.saveAs(f); return f; };
  try {
   await p.goto(s.url + '/app/');
   await p.waitForFunction(() => window.HVACGrid && window.HVACGrid.box.loading, null, { timeout: 30000 }); await idle();
   await p.waitForFunction(() => HVACGrid.box.readyTest(HVACGrid.box.win), null, { timeout: 180000 });
   log('BOX ready'); await shot('1-room-empty');
   // the native BOX command bar is hidden inside the frame; the shell ribbon runs its commands
-  assert.equal(await p.evaluate(() => getComputedStyle(HVACGrid.box.doc.querySelector('header.top')).display), 'none');
+  assert.equal(await H(() => getComputedStyle(HVACGrid.box.doc.querySelector('header.top')).display), 'none');
   await ribbon('S5 예제').click();
   await p.waitForFunction(() => HVACGrid.box.hasDrawing(), null, { timeout: 180000 }); await p.waitForTimeout(1000);
   log('S5 loaded'); await shot('1-room-s5');
   await p.click('.step[data-step=load]'); await idle();
   await ribbon('계약 만들기').click(); await idle();
-  const c = await p.evaluate(() => ({ step: HVACGrid.S.step, rooms: HVACGrid.S.contract?.rooms.length, plans: HVACGrid.plans().length, msg: HVACGrid.S.msg }));
+  const c = await H(() => ({ step: HVACGrid.S.step, rooms: HVACGrid.S.contract?.rooms.length, plans: HVACGrid.plans().length, supply: HVACGrid.plans().filter(x => x.kind === 'supply').length }));
   log('contract', JSON.stringify(c));
-  assert.equal(c.step, 'air'); assert.equal(c.rooms, 94); assert.equal(c.plans, 10);
+  assert.equal(c.step, 'air'); assert.equal(c.rooms, 94); assert.equal(c.supply, 10); assert.equal(c.plans, 18);
+  // the contract made in the shell equals the one tools/box-extract.cjs wrote (same BOX, same example)
+  const sample = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'samples', 's5.contract.json'), 'utf8'));
+  assert.deepEqual(await H(() => HVACGrid.S.contract.airflow), sample.airflow);
   await shot('3-air');
   // step 3: a unit location for S3 / AHU-AC-01 picked on the plan
   await p.locator('#tree .deckh', { hasText: '3DK' }).click();
   await p.selectOption('#sysSel', 'AHU-AC-01');
   await ribbon('위치 지정').click();
-  const box = await p.locator('#plan').boundingBox();   // the middle of the deck (the corridor), clear of the legend
-  await p.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-  const root = await p.evaluate(() => HVACGrid.plans().find(x => x.key === 'S3__AHU-AC-01').rootSource);
-  assert.equal(root, 'user'); log('unit location set');
+  const box = await p.locator('#plan').boundingBox();   // the middle of the deck strip (the corridor), clear of the legend
+  await p.mouse.click(box.x + box.width * 0.36, box.y + box.height / 2);
+  assert.equal(await H(() => HVACGrid.plans().find(x => x.key === 'S3__AHU-AC-01').rootSource), 'user'); log('unit location set');
   await p.fill('#dT', '12'); await ribbon('적용').click();
-  const sup12 = await p.evaluate(() => HVACGrid.S.contract.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0));
+  const sup12 = await H(() => HVACGrid.S.contract.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0));
   assert.ok(sup12 < 10420, 'dT 12 lowers supply'); log('dT 12 ->', sup12, 'CMH');
   await shot('3-air-root');
+  // exhaust: EXH-ROOM serves 4 decks; its unit deck can be chosen, and the shell edit undone / redone
+  await p.locator('.seg[data-seg="계통 종류"] button', { hasText: '배기' }).click();
+  assert.equal(await H(() => HVACGrid.S.kind), 'exhaust');
+  const before = await H(() => HVACGrid.plans().find(x => x.systemId === 'EXH-ROOM' && x.isUnitDeck).deckId);
+  await p.selectOption('#unitSel', 'S5'); await idle();
+  assert.equal(await H(() => HVACGrid.plans().find(x => x.systemId === 'EXH-ROOM' && x.isUnitDeck).deckId), 'S5');
+  await p.click('#plan'); await p.keyboard.press('Control+z'); await idle();
+  assert.equal(await H(() => HVACGrid.plans().find(x => x.systemId === 'EXH-ROOM' && x.isUnitDeck).deckId), before, 'undo');
+  await p.keyboard.press('Control+y'); await idle();
+  assert.equal(await H(() => HVACGrid.plans().find(x => x.systemId === 'EXH-ROOM' && x.isUnitDeck).deckId), 'S5', 'redo');
+  log('exhaust unit deck', before, '-> S5, undo / redo ok'); await shot('3-air-exhaust');
+  await p.locator('.seg[data-seg="평면 보기"] button', { hasText: '방화' }).click(); await p.waitForTimeout(200);
+  assert.ok(await p.locator('#plan line.fb').count() > 0, 'fire boundaries drawn'); await shot('3-air-fire');
+  await p.locator('.seg[data-seg="평면 보기"] button', { hasText: '풍량' }).click();
+  await p.locator('.seg[data-seg="계통 종류"] button', { hasText: '급기' }).click();
   // step 4: PHG D with the BOX rooms, the user's unit location and the RUs, then AUTO
   await p.click('.step[data-step=duct]'); await idle();
-  assert.equal(await p.evaluate(() => getComputedStyle(HVACGrid.phg.doc.querySelector('header.topbar')).display), 'none');
+  assert.equal(await H(() => getComputedStyle(HVACGrid.phg.doc.querySelector('header.topbar')).display), 'none');
+  await p.selectOption('#sysSel', 'AHU-AC-01');
   await ribbon('보내기 + AUTO').click(); await idle();
-  const r = await p.evaluate(() => HVACGrid.S.results['S3__AHU-AC-01']);
-  log('AUTO', JSON.stringify(r));
-  assert.ok(r.auto && r.ducts > 0 && r.unconnected === 0, 'AUTO connected every RU');
-  assert.equal(r.flowCmh, r.designCmh);
+  const r = await H(() => HVACGrid.result('S3__AHU-AC-01'));
+  log('AUTO', JSON.stringify({ rus: r.rus, flow: r.flowCmh, ducts: r.ducts, len: r.lengthM, pa: r.indexPa }));
+  assert.ok(r.auto && r.ducts > 0 && r.unconnected === 0, 'AUTO connected every RU'); assert.equal(r.flowCmh, r.designCmh);
+  assert.ok(await H(() => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts.every(d => d.widthMm > 0 || d.diameterMm > 0)), 'duct sizes read back');
   await p.locator('#tree .room', { hasText: '선원침실 01' }).click(); await p.waitForTimeout(300);
   await shot('4-duct');
-  // step 5: the second S3 system too, then the review table
+  // an exhaust deck of EXH-ROOM (its Root runs the PHG D pressure calculation in exhaust mode)
+  await H(() => HVACGrid.runAll(['S3__EXH-ROOM'])); await idle();
+  assert.equal(await H(() => JSON.parse(HVACGrid.S.projects['S3__EXH-ROOM']).network.nodes.find(n => n.type === 'root').pressureFlowMode), 'exhaust');
+  // step 5: the second S3 supply system too, then the review tabs
   await p.click('.step[data-step=review]'); await idle();
-  await p.evaluate(() => HVACGrid.runAll(['S3__AHU-AC-02'])); await idle();
+  await H(() => HVACGrid.runAll(['S3__AHU-AC-02'])); await idle();
   const rows = await p.locator('#report tbody tr[data-key]').count(), ok = await p.locator('#report td.ok').count();
-  log('review rows', rows, 'AUTO done', ok); assert.equal(rows, 10); assert.ok(ok >= 2);
+  log('review rows', rows, 'AUTO done', ok); assert.equal(rows, 18); assert.ok(ok >= 3);
   await shot('5-review');
-  // project file round trip keeps the PHG D projects
-  const saved = await p.evaluate(() => JSON.parse(HVACGrid.projectJson()));
-  assert.equal(saved.schema, 'hvac-grid-project/0'); assert.equal(Object.keys(saved.projects).length, 2);
-  fs.writeFileSync(path.join(OUT, 'project.json'), JSON.stringify(saved));
+  await p.locator('#report .tabs button', { hasText: '계통' }).click(); assert.ok(await p.locator('#report table').count() >= 2); await shot('5-review-systems');
+  await p.locator('#report .tabs button', { hasText: '방화' }).click();
+  const unc = await H(() => HVACGrid.analysis().solas.summary.unclassified.length);
+  const first = p.locator('#report select[data-solas]').first(); await first.selectOption('전기설비실'); await idle();
+  assert.equal(await H(() => HVACGrid.analysis().solas.summary.unclassified.length), unc - 1, 'SOLAS space assigned');
+  await shot('5-review-fire'); log('SOLAS unclassified', unc, '->', unc - 1);
+  // outputs as real downloads
+  const fProject = await download('프로젝트 저장'), fXlsx = await download('통합 XLSX'), fDxf = await download('통합 DXF'), fHtml = await download('보고서');
+  const saved = JSON.parse(fs.readFileSync(fProject, 'utf8'));
+  assert.equal(saved.schema, 'hvac-grid-project/1'); assert.equal(Object.keys(saved.projects).length, 3);
+  assert.equal(Object.keys(saved.contract.solas.rooms).length, 1);
+  const wb = readWorkbook(fs.readFileSync(fXlsx)); assert.equal(wb['격실'].length, 95); assert.ok(wb['관통 목록'].length > 1);
+  assert.equal(X.rooms(fs.readFileSync(fDxf, 'utf8'), { roomLayers: /^ROOM$/ }).length, 94);
+  assert.match(fs.readFileSync(fHtml, 'utf8'), /HVAC Grid 설계 보고서/);
+  log('downloads', [fProject, fXlsx, fDxf, fHtml].map(f => path.basename(f) + ' ' + fs.statSync(f).size).join(' · '));
   await p.setViewportSize({ width: 1280, height: 800 }); await p.click('.step[data-step=duct]'); await idle(); await p.waitForTimeout(400); await shot('4-duct-1280');
+  await p.click('.step[data-step=air]'); await idle(); await H(() => { document.documentElement.dataset.theme = 'dark'; HVACGrid.render(); }); await p.waitForTimeout(200); await shot('3-air-dark');
   log('page errors', errors.length, errors.slice(0, 5));
   assert.equal(errors.length, 0, 'no page errors');
   log('E2E PASS');

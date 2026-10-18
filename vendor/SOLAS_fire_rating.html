@@ -1,0 +1,1810 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOLAS 화재구획 조회</title>
+
+<style>
+:root{
+  --paper:#e9edf1; --surface:#ffffff; --surface-2:#f3f6f9;
+  --ink:#0f161d; --ink-2:#33414f; --muted:#596776; --faint:#5b6774;
+  --line:#d2d9e1; --line-2:#e3e9ef;
+  --accent:#0d6f7d; --accent-2:#0a5a66; --accent-wash:#dcecef; --on-accent:#ffffff;
+  --sev-60:#a52318; --sev-30:#b05613; --sev-15:#84670f; --sev-a0:#41607a;
+  --sev-b15:#3f6144; --sev-b0:#4c6b50; --sev-c:#5c5c6d; --sev-star:#5d6873; --sev-none:#66727e;
+  --warn-bg:#fdf3e3; --warn-line:#e0bf7c; --warn-ink:#6b4a09;
+  --shadow:0 1px 2px rgba(15,22,29,.06), 0 8px 24px -12px rgba(15,22,29,.18);
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0c1116; --surface:#141b21; --surface-2:#1a232b;
+    --ink:#e3e9ef; --ink-2:#bcc7d2; --muted:#9fadbb; --faint:#8b99a7;
+    --line:#26313b; --line-2:#1e2830;
+    --accent:#48c0cf; --accent-2:#7ad6e2; --accent-wash:#10323a; --on-accent:#08181c;
+    --sev-60:#f0705f; --sev-30:#e8974a; --sev-15:#d4b552;
+    --sev-a0:#8fb0cd; --sev-b15:#8bc094; --sev-b0:#7fae88;
+    --sev-c:#b4b4c8; --sev-star:#a3b0bd; --sev-none:#95a3b0;
+    --warn-bg:#2a2211; --warn-line:#6b5520; --warn-ink:#e6c67d;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0c1116; --surface:#141b21; --surface-2:#1a232b;
+  --ink:#e3e9ef; --ink-2:#bcc7d2; --muted:#9fadbb; --faint:#8b99a7;
+  --line:#26313b; --line-2:#1e2830;
+  --accent:#48c0cf; --accent-2:#7ad6e2; --accent-wash:#10323a; --on-accent:#08181c;
+  --sev-60:#f0705f; --sev-30:#e8974a; --sev-15:#d4b552; --sev-a0:#8fb0cd;
+  --sev-b15:#8bc094; --sev-b0:#7fae88; --sev-c:#b4b4c8; --sev-star:#a3b0bd; --sev-none:#95a3b0;
+  --warn-bg:#2a2211; --warn-line:#6b5520; --warn-ink:#e6c67d;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+.sr{position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden;
+  clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
+body.locked{overflow:hidden}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:'IBM Plex Sans KR','IBM Plex Sans',system-ui,-apple-system,'Malgun Gothic',sans-serif;
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'IBM Plex Mono',ui-monospace,'Consolas',monospace; font-variant-numeric:tabular-nums}
+.wrap{max-width:1080px; margin:0 auto; padding:28px 20px 64px}
+
+/* ---------- masthead ---------- */
+.mast{display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
+  padding-bottom:14px; border-bottom:2px solid var(--ink); margin-bottom:26px}
+.mast h1{margin:0; font-size:23px; font-weight:600; letter-spacing:-.015em}
+.mast .sub{margin:4px 0 0; color:var(--muted); font-size:13px}
+.mast .ref{font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); text-align:right; line-height:1.7}
+
+/* ---------- console ---------- */
+.console{background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:20px; display:flex; flex-direction:column; gap:18px}
+.field{display:flex; flex-direction:column; gap:7px}
+.lab{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+
+.seg{display:flex; flex-wrap:wrap; gap:6px}
+.seg button{
+  font:inherit; font-size:13.5px; padding:8px 14px; border-radius:7px; cursor:pointer;
+  background:var(--surface-2); color:var(--ink-2); border:1px solid var(--line); transition:.14s}
+.seg button:hover{border-color:var(--accent); color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:500}
+.seg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+.pair{display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:end}
+@media (max-width:660px){ .pair{grid-template-columns:1fr; } .joint{display:none} }
+.joint{padding-bottom:12px; color:var(--faint); font-size:20px; user-select:none}
+
+.combo{position:relative}
+.combo input{
+  width:100%; font:inherit; font-size:15px; padding:10px 12px; border-radius:8px;
+  background:var(--surface-2); border:1px solid var(--line); color:var(--ink)}
+.combo input::placeholder{color:var(--faint)}
+.combo input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-wash)}
+.list{position:absolute; z-index:40; top:calc(100% + 5px); left:0; right:0; max-height:280px; overflow:auto;
+  background:var(--surface); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow); display:none}
+.list.open{display:block}
+.list li{list-style:none; margin:0; padding:8px 12px; cursor:pointer; display:flex; gap:10px; align-items:baseline;
+  border-bottom:1px solid var(--line-2)}
+.list li:last-child{border-bottom:0}
+.list li:hover,.list li.cur{background:var(--accent-wash)}
+.list li .nm{flex:1; font-size:14px}
+.list li .en{font-size:11.5px; color:var(--faint)}
+.list li .cat{font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:600; color:var(--accent)}
+.list .grp{padding:7px 12px; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); background:var(--surface-2); border-bottom:1px solid var(--line-2); cursor:default}
+.list .grp:hover{background:var(--surface-2)}
+.picked{margin-top:6px; font-size:12.5px; color:var(--muted); min-height:19px}
+.picked b{color:var(--ink-2); font-weight:500}
+
+.opt{display:flex; align-items:center; gap:9px; font-size:13.5px; color:var(--ink-2); cursor:pointer;
+  min-height:28px; padding:3px 0}
+.opt input{width:18px; height:18px; accent-color:var(--accent); cursor:pointer; flex:0 0 auto}
+.opt input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.opts{display:flex; flex-wrap:wrap; gap:8px 22px; padding-top:2px}
+
+/* ---------- verdict ---------- */
+.verdict{margin-top:22px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); overflow:hidden}
+.vhead{display:grid; grid-template-columns:minmax(0,1fr) 232px; gap:0}
+@media (max-width:700px){ .vhead{grid-template-columns:1fr} }
+.vmain{padding:24px 22px; display:flex; flex-direction:column; gap:6px; min-width:0}
+.vlabel{font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted)}
+.grade{font-family:'IBM Plex Mono',monospace; font-size:62px; font-weight:600; line-height:1.02;
+  letter-spacing:-.02em; color:var(--g,var(--ink)); overflow-wrap:anywhere}
+.grade small{font-size:22px; font-weight:500; vertical-align:super; margin-left:4px; letter-spacing:.02em}
+.gtxt{font-size:14px; color:var(--ink-2)}
+.prov{font-size:12.5px; color:var(--muted)}
+.prov .mono{color:var(--ink-2)}
+.diagram{border-left:1px solid var(--line); background:var(--surface-2); display:flex; align-items:center;
+  justify-content:center; padding:18px}
+@media (max-width:700px){ .diagram{border-left:0; border-top:1px solid var(--line)} }
+
+.alts{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px}
+.alt{border:1px solid var(--line); border-radius:7px; padding:6px 11px; font-size:13px; background:var(--surface-2)}
+.alt.on{border-color:var(--g); background:var(--surface); box-shadow:inset 0 0 0 1px var(--g)}
+.alt .v{font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--g2,var(--ink))}
+.alt .w{display:block; font-size:11px; color:var(--muted); margin-top:1px}
+
+.vbody{border-top:1px solid var(--line); padding:0}
+.block{padding:16px 22px; border-bottom:1px solid var(--line-2)}
+.block:last-child{border-bottom:0}
+.block h3{margin:0 0 9px; font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); font-weight:600}
+.note{display:flex; gap:11px; padding:7px 0; font-size:13.5px; color:var(--ink-2); line-height:1.55}
+.note + .note{border-top:1px dashed var(--line-2)}
+.key{flex:0 0 22px; height:22px; border-radius:5px; display:grid; place-items:center; font-family:'IBM Plex Mono',monospace;
+  font-size:12px; font-weight:600; background:var(--accent-wash); color:var(--accent-2); margin-top:1px}
+.warn{background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:8px; padding:11px 13px;
+  font-size:13.5px; color:var(--warn-ink); line-height:1.55}
+.warn + .warn{margin-top:8px}
+.warn b{font-weight:600}
+.empty{padding:30px 22px; color:var(--muted); font-size:14px}
+
+/* ---------- matrix ---------- */
+details.mx{margin-top:22px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow)}
+details.mx > summary{cursor:pointer; padding:15px 20px; font-size:13.5px; font-weight:500; color:var(--ink-2);
+  list-style:none; display:flex; align-items:center; justify-content:space-between; gap:10px}
+details.mx > summary::-webkit-details-marker{display:none}
+details.mx > summary::after{content:"▾"; color:var(--faint); transition:.18s}
+details.mx[open] > summary::after{transform:rotate(180deg)}
+details.mx > summary:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; border-radius:var(--r)}
+.mxbody{padding:0 20px 20px; overflow-x:auto}
+table.grid{border-collapse:collapse; font-family:'IBM Plex Mono',monospace; font-size:11.5px; white-space:nowrap}
+table.grid th,table.grid td{border:1px solid var(--line-2); padding:4px 6px; text-align:center}
+table.grid thead th{background:var(--surface-2); color:var(--muted); font-weight:600; position:sticky; top:0}
+table.grid tbody th{text-align:left; font-family:'IBM Plex Sans KR',sans-serif; font-weight:400; font-size:12px;
+  color:var(--ink-2); background:var(--surface-2); position:sticky; left:0; max-width:190px; white-space:normal; line-height:1.35}
+table.grid td.hit{outline:2px solid var(--accent); outline-offset:-2px; background:var(--accent-wash); font-weight:600}
+table.grid td.void{background:var(--surface-2); color:var(--faint)}
+.legend{display:flex; flex-wrap:wrap; gap:6px 14px; padding:12px 0 2px; font-size:11.5px; color:var(--muted)}
+.legend span{display:flex; align-items:center; gap:5px}
+.legend i{width:11px; height:11px; border-radius:3px; display:inline-block}
+
+.foot{margin-top:26px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--faint); line-height:1.75}
+.foot b{color:var(--muted); font-weight:600}
+
+/* ---------- 격실표 관리 ---------- */
+.toolrow{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  border-top:1px solid var(--line-2); padding-top:14px}
+.btn{font:inherit; font-size:13px; padding:8px 14px; border-radius:7px; cursor:pointer; transition:.14s;
+  background:var(--surface-2); color:var(--ink-2); border:1px solid var(--line)}
+.btn:hover{border-color:var(--accent); color:var(--ink)}
+.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:500}
+.btn.primary:hover{background:var(--accent-2); border-color:var(--accent-2); color:var(--on-accent)}
+.btn.danger{color:var(--sev-60); border-color:var(--line)}
+.btn.danger:hover{border-color:var(--sev-60)}
+.btn-xs{font-size:11.5px; padding:3px 9px; border-radius:6px; margin-left:6px; vertical-align:baseline}
+.tool-meta{font-size:12px; color:var(--muted)}
+.tool-meta b{color:var(--accent-2); font-weight:600}
+
+dialog#mgr{
+  width:min(860px, calc(100vw - 32px)); max-height:calc(100vh - 48px); padding:0; border:0;
+  border-radius:12px; background:var(--surface); color:var(--ink);
+  box-shadow:0 24px 70px -20px rgba(0,0,0,.5); overflow:hidden}
+dialog#mgr::backdrop{background:rgba(10,16,22,.55); backdrop-filter:blur(2px)}
+.mgr-in{max-height:calc(100vh - 48px); overflow:auto; padding:22px 24px 26px}
+.mgr-top{display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  border-bottom:2px solid var(--ink); padding-bottom:12px; margin-bottom:6px}
+.mgr-top h2{margin:0; font-size:19px; font-weight:600; letter-spacing:-.01em}
+.mgr-top p{margin:4px 0 0; font-size:12.5px; color:var(--muted)}
+.mgr-sec{padding:18px 0; border-bottom:1px solid var(--line-2)}
+.mgr-sec:last-child{border-bottom:0; padding-bottom:0}
+.mgr-sec > h3{margin:0 0 4px; font-size:11px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--muted); font-weight:600}
+.mgr-sec > .hint{margin:0 0 12px; font-size:12.5px; color:var(--muted); line-height:1.6}
+.fgrid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.fgrid4{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px}
+@media (max-width:640px){ .fgrid,.fgrid4{grid-template-columns:1fr} }
+.fld{display:flex; flex-direction:column; gap:5px}
+.fld > span{font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.fld input,.fld select{font:inherit; font-size:14px; padding:9px 11px; border-radius:7px;
+  background:var(--surface-2); border:1px solid var(--line); color:var(--ink); width:100%}
+.fld input:focus,.fld select:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-wash)}
+.frow{display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-top:14px}
+.msg{font-size:12.5px}
+.msg.ok{color:var(--sev-b15)} .msg.err{color:var(--sev-60)} .msg.info{color:var(--muted)}
+
+.clist{border:1px solid var(--line); border-radius:8px; overflow:hidden}
+.clist table{width:100%; border-collapse:collapse; font-size:13px}
+.clist th{background:var(--surface-2); color:var(--muted); font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; font-weight:600; text-align:left; padding:8px 11px; border-bottom:1px solid var(--line-2)}
+.clist td{padding:8px 11px; border-bottom:1px solid var(--line-2); vertical-align:middle}
+.clist tr:last-child td{border-bottom:0}
+.clist td.n{font-family:'IBM Plex Mono',monospace; text-align:center; font-size:12.5px; color:var(--ink-2)}
+.clist td.act{text-align:right; white-space:nowrap}
+.clist .mini{font:inherit; font-size:11.5px; padding:4px 9px; border-radius:6px; cursor:pointer;
+  background:var(--surface-2); border:1px solid var(--line); color:var(--ink-2)}
+.clist .mini:hover{border-color:var(--accent)}
+.clist .mini.del:hover{border-color:var(--sev-60); color:var(--sev-60)}
+.clist .over{font-size:10.5px; color:var(--sev-30); margin-left:6px}
+.cempty{padding:18px 12px; text-align:center; font-size:13px; color:var(--faint)}
+
+.fbtn{display:inline-flex; align-items:center; font:inherit; font-size:13px; padding:8px 14px;
+  border-radius:7px; cursor:pointer; background:var(--surface-2); color:var(--ink-2); border:1px solid var(--line)}
+.fbtn:hover{border-color:var(--accent); color:var(--ink)}
+.fbtn input{display:none}
+.banner{border:1px solid var(--warn-line); background:var(--warn-bg); color:var(--warn-ink);
+  border-radius:8px; padding:10px 12px; font-size:12.5px; line-height:1.55; margin-bottom:14px}
+.badge{font-size:10px; font-weight:600; letter-spacing:.06em; padding:1px 6px; border-radius:4px;
+  background:var(--accent-wash); color:var(--accent-2); margin-left:6px}
+</style>
+
+<style>
+/* ---------- Excel-style worksheet override ---------- */
+:root{
+  --paper:#f3f3f3; --surface:#ffffff; --surface-2:#f8f9fa;
+  --ink:#1f1f1f; --ink-2:#333333; --muted:#666666; --faint:#777777;
+  --line:#c9c9c9; --line-2:#e3e3e3;
+  --accent:#217346; --accent-2:#185c37; --accent-wash:#e2f0d9; --on-accent:#ffffff;
+  --sev-60:#9c0006; --sev-30:#c65911; --sev-15:#806000; --sev-a0:#305496;
+  --sev-b15:#375623; --sev-b0:#548235; --sev-c:#666666; --sev-star:#595959; --sev-none:#666666;
+  --warn-bg:#fff2cc; --warn-line:#d6b656; --warn-ink:#7f6000;
+  --shadow:none; --r:0px;
+}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:Arial,"Malgun Gothic","맑은 고딕",sans-serif;
+  font-size:13px; line-height:1.45;
+}
+.wrap{max-width:1240px; margin:0 auto; padding:0 12px 34px}
+.mast{
+  align-items:center; gap:16px; padding:12px 14px; margin:0 -12px 12px;
+  background:#217346; border:0; border-bottom:1px solid #185c37; color:#fff;
+}
+.mast h1{font-size:18px; font-weight:600; letter-spacing:0}
+.mast .sub{margin-top:3px; color:#eaf4ed; font-size:12px}
+.mast .ref{color:#eaf4ed; font-size:10px; line-height:1.5}
+.console,.verdict,details.mx{
+  border:1px solid var(--line); border-radius:0; box-shadow:none; background:var(--surface);
+}
+.console{padding:12px; gap:10px}
+.field{gap:4px}
+.lab{
+  font-size:11px; font-weight:600; letter-spacing:0; text-transform:none; color:#444;
+}
+.seg{gap:0}
+.seg button,.btn,.fbtn{
+  font-size:12px; padding:6px 10px; border-radius:0;
+  background:#fff; color:#333; border:1px solid #b7b7b7; margin:0 0 0 -1px;
+}
+.seg button:first-child,.btn:first-child{margin-left:0}
+.seg button:hover,.btn:hover,.fbtn:hover{border-color:var(--accent); color:var(--accent-2); background:#f4faf5}
+.seg button[aria-pressed="true"],.btn.primary{
+  background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600;
+}
+.seg button[aria-pressed="true"]:hover,.btn.primary:hover{background:var(--accent-2); color:#fff}
+.pair{grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr); gap:8px}
+.joint{padding-bottom:8px; color:#777; font-size:16px}
+.combo input{
+  font-size:13px; padding:7px 9px; border-radius:0;
+  background:#fff; border:1px solid #9e9e9e; color:#222;
+}
+.combo input:focus{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+.list{top:calc(100% + 2px); max-height:240px; border-radius:0; box-shadow:0 3px 8px rgba(0,0,0,.16)}
+.list li{padding:6px 9px; border-bottom:1px solid var(--line-2)}
+.list li:hover,.list li.cur{background:#e2f0d9}
+.list li .nm{font-size:12px}.list li .en,.list li .cat{font-size:10px}
+.picked{margin-top:4px; min-height:17px; font-size:11px; color:#666}
+.opts{gap:6px 14px; padding:2px 0}
+.opt{gap:6px; min-height:24px; padding:2px 7px; font-size:12px; border:1px solid var(--line-2); background:#fafafa}
+.opt input{width:15px; height:15px}
+.toolrow{padding-top:9px; border-top:1px solid var(--line-2)}
+.tool-meta{font-size:11px}
+.btn-xs{font-size:11px; padding:3px 7px; border-radius:0}
+.verdict{margin-top:12px; overflow:hidden}
+.vhead{grid-template-columns:minmax(0,1fr) 190px}
+.vmain{padding:16px 17px; gap:4px}
+.vlabel{font-size:10px; letter-spacing:0; text-transform:none}
+.grade{font-size:46px; line-height:1}
+.grade small{font-size:17px}
+.gtxt,.prov{font-size:12px}
+.diagram{padding:12px; background:#fafafa; border-left:1px solid var(--line)}
+.vbody{border-top:1px solid var(--line)}
+.block{padding:11px 17px}
+.block h3{margin-bottom:6px; font-size:10px; letter-spacing:0; text-transform:none}
+.note{gap:8px; padding:5px 0; font-size:12px}
+.key{flex-basis:20px; height:20px; border-radius:0}
+.warn{border-radius:0; padding:8px 10px; font-size:12px}
+.alts{gap:5px; margin-top:3px}.alt{border-radius:0; padding:5px 8px; font-size:12px}
+details.mx{margin-top:12px}
+details.mx > summary{padding:9px 12px; font-size:12px; background:#e2f0d9; border-bottom:1px solid var(--line)}
+.mxbody{padding:0 0 12px}
+table.grid{width:max-content; min-width:100%; font-size:11px}
+table.grid th,table.grid td{padding:4px 7px; border:1px solid #d0d0d0}
+table.grid thead th{background:#f2f2f2; color:#444; top:0}
+table.grid tbody tr:nth-child(even) td{background:#fbfbfb}
+table.grid tbody th{background:#f2f2f2; color:#333; font-size:11px; padding:4px 7px}
+table.grid td.hit{outline:2px solid var(--accent); background:#e2f0d9!important}
+.legend{padding:9px 12px 1px; font-size:10px}
+.legend i{width:10px; height:10px; border-radius:0}
+.foot{margin-top:16px; padding-top:10px; font-size:11px; line-height:1.6}
+dialog#mgr{border:1px solid var(--line); border-radius:0; box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.mgr-in{padding:15px 17px 18px}
+.mgr-top{padding-bottom:9px; margin-bottom:3px; border-bottom:1px solid var(--ink)}
+.mgr-top h2{font-size:16px}.mgr-top p,.mgr-sec > .hint{font-size:11px}
+.mgr-sec{padding:13px 0}
+.mgr-sec > h3{font-size:10px; letter-spacing:0}
+.fgrid,.fgrid4{gap:8px}
+.fld{gap:3px}.fld > span{font-size:10px; letter-spacing:0}
+.fld input,.fld select{font-size:12px; padding:7px 8px; border-radius:0}
+.frow{gap:6px; margin-top:10px}
+.clist{border-radius:0}.clist th{font-size:10px; padding:6px 8px}.clist td{padding:6px 8px; font-size:12px}
+.clist .mini{font-size:11px; padding:3px 7px; border-radius:0}
+.banner{border-radius:0; padding:8px 10px; font-size:11px}
+.badge{border-radius:0; font-size:10px}
+@media(max-width:700px){
+  .mast{margin-left:-12px; margin-right:-12px}
+  .vhead{grid-template-columns:1fr}.diagram{border-left:0; border-top:1px solid var(--line)}
+}
+.view-tabs{
+  display:flex; align-items:flex-end; gap:0; margin:0 0 12px;
+  border-bottom:1px solid #9e9e9e;
+}
+.view-tab{
+  min-width:132px; padding:8px 16px; margin:0 0 -1px;
+  border:1px solid #b7b7b7; border-bottom:1px solid #9e9e9e;
+  border-radius:0; background:#e7e6e6; color:#444;
+  font:inherit; font-size:12px; cursor:pointer;
+}
+.view-tab + .view-tab{margin-left:-1px}
+.view-tab:hover{background:#f4faf5; color:var(--accent-2)}
+.view-tab.active,.view-tab[aria-selected="true"]{
+  background:#fff; color:var(--accent-2); font-weight:600;
+  border-top:3px solid var(--accent); border-bottom-color:#fff;
+  padding-top:6px;
+}
+.space-panel{display:none; margin:0 0 12px; background:#fff; border:1px solid var(--line)}
+body[data-view="spaces"] .space-panel{display:block}
+body[data-view="spaces"] .console,
+body[data-view="spaces"] .verdict,
+body[data-view="spaces"] details.mx,
+body[data-view="spaces"] .foot{display:none}
+.space-panel .mgr-in{max-height:none; overflow:visible}
+.space-panel .mgr-top{margin-bottom:0}
+.space-panel .mgr-sec{padding:15px 0}
+.space-panel .mgr-sec:first-of-type{padding-top:12px}
+.catalog-tools{align-items:flex-end}
+.catalog-search{width:min(360px,100%)}
+.catalog-search input{min-width:260px}
+#spaceCatalog{max-height:560px; overflow:auto}
+#spaceCatalog table{min-width:980px}
+#spaceCatalog thead th{position:sticky; top:0; z-index:1}
+#spaceCatalog .cat-cell{white-space:normal; line-height:1.3; min-width:145px}
+#spaceCatalog .cat-cell .mono{color:var(--accent-2); font-weight:600}
+#spaceCatalog .source-cell{white-space:nowrap; color:var(--muted); font-size:11px}
+</style>
+
+<main class="wrap">
+
+  <header class="mast">
+    <div>
+      <h1>SOLAS 화재구획 조회</h1>
+      <p class="sub">인접한 두 격실을 지정하면 그 사이 격벽·갑판의 최소 내화등급을 판정합니다.</p>
+    </div>
+    <div class="ref">SOLAS II-2 Reg. 9<br>Table 9.1 – 9.8</div>
+  </header>
+
+  <nav class="view-tabs" role="tablist" aria-label="화재구획 도구 탭">
+    <button type="button" class="view-tab active" data-view-tab="calc" role="tab" aria-selected="true">화재구획 조회</button>
+    <button type="button" class="view-tab" data-view-tab="spaces" role="tab" aria-selected="false">격실표 작성</button>
+  </nav>
+
+  <section class="console">
+    <div class="field">
+      <span class="lab">선종 · 적용 표</span>
+      <div class="seg" id="ship"></div>
+    </div>
+
+    <div class="field">
+      <span class="lab">두 격실의 위치 관계</span>
+      <div class="seg" id="orient">
+        <button type="button" data-o="B" aria-pressed="true">좌우 인접 — 격벽</button>
+        <button type="button" data-o="D" aria-pressed="false">상하 인접 — 갑판</button>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div class="field">
+        <span class="lab" id="labA">격실 A</span>
+        <div class="combo">
+          <input id="inA" type="text" autocomplete="off" spellcheck="false" placeholder="격실명 입력 — 예: 조리실, galley"
+                 role="combobox" aria-expanded="false" aria-controls="lsA" aria-autocomplete="list">
+          <ul class="list" id="lsA" role="listbox" aria-label="격실 A 후보"></ul>
+        </div>
+        <div class="picked" id="pkA"></div>
+      </div>
+      <div class="joint" id="joint" aria-hidden="true">│</div>
+      <div class="field">
+        <span class="lab" id="labB">격실 B</span>
+        <div class="combo">
+          <input id="inB" type="text" autocomplete="off" spellcheck="false" placeholder="격실명 입력 — 예: 기관실, engine room"
+                 role="combobox" aria-expanded="false" aria-controls="lsB" aria-autocomplete="list">
+          <ul class="list" id="lsB" role="listbox" aria-label="격실 B 후보"></ul>
+        </div>
+        <div class="picked" id="pkB"></div>
+      </div>
+    </div>
+
+    <div class="opts">
+      <label class="opt" id="wSpr"><input type="checkbox" id="spr"> 양쪽 구역 모두 자동 스프링클러 설치 (FSS Code 적합)</label>
+      <label class="opt"><input type="checkbox" id="mvz"> 이 구획이 주수직구역 / 수평구역 경계</label>
+      <label class="opt" id="wDg"><input type="checkbox" id="dg"> 위험물 운송 화물구역</label>
+    </div>
+
+    <div class="toolrow">
+      <span class="tool-meta" id="spCount"></span>
+      <button type="button" class="btn" id="openMgr">격실표 탭 열기</button>
+    </div>
+  </section>
+
+  <section id="mgr" class="space-panel" aria-labelledby="mgrTitle">
+   <div class="mgr-in">
+    <div class="mgr-top">
+      <div>
+        <h2 id="mgrTitle">격실표 관리</h2>
+        <p>격실을 추가하거나 고치면 조회에 즉시 반영됩니다. 내장 격실과 같은 이름으로 저장하면 그 격실을 덮어씁니다.</p>
+      </div>
+      <button type="button" class="btn" id="mgrClose">조회 탭으로</button>
+    </div>
+
+    <div id="storeWarn" style="display:none" class="banner"></div>
+
+    <section class="mgr-sec">
+      <h3>격실 추가 · 수정</h3>
+      <p class="hint">범주 번호는 선종마다 다릅니다. 해당 선종 표에 대응 범주가 없으면 <b>— 없음</b>으로 두십시오 —
+        조회 시 근거 조항을 안내합니다.</p>
+      <div class="fgrid">
+        <label class="fld"><span>격실명 (국문) · 필수</span><input id="f_ko" autocomplete="off" spellcheck="false" placeholder="예: 배터리실"></label>
+        <label class="fld"><span>격실명 (영문)</span><input id="f_en" autocomplete="off" spellcheck="false" placeholder="예: Battery room"></label>
+      </div>
+      <div class="fgrid4" id="f_cats"></div>
+      <div class="frow">
+        <button type="button" class="btn primary" id="f_save">격실표에 저장</button>
+        <button type="button" class="btn" id="f_clear">입력 비우기</button>
+        <span class="msg" id="f_msg"></span>
+      </div>
+    </section>
+
+    <section class="mgr-sec">
+      <h3>현재 분류된 전체 격실표 <span id="cntAll" class="badge"></span></h3>
+      <p class="hint">내장 격실과 사용자 격실을 합친 현재 적용 목록입니다. 사용자 격실이 같은 이름의 내장 격실을 덮어쓰면 사용자 값이 표시됩니다.</p>
+      <div class="frow catalog-tools" style="margin-top:0">
+        <label class="fld catalog-search"><span>격실 검색</span><input id="spaceSearch" autocomplete="off" spellcheck="false" placeholder="국문 또는 영문 격실명"></label>
+        <span class="msg info" id="spaceMeta"></span>
+      </div>
+      <div class="clist" id="spaceCatalog"></div>
+    </section>
+
+    <section class="mgr-sec">
+      <h3>사용자 격실 <span id="cntCustom" class="badge"></span></h3>
+      <p class="hint">이 목록만 저장·내보내기 대상입니다. 내장 격실 82종은 항상 그대로 남아 있습니다.</p>
+      <div class="clist" id="customList"></div>
+    </section>
+
+    <section class="mgr-sec">
+      <h3>XLSX 가져오기 · 내보내기</h3>
+      <p class="hint">엑셀 워크북의 <span class="mono">01_격실분류</span> 시트를 사용합니다.
+        격실명·영문명·선종별 범주번호를 엑셀에서 직접 작성한 뒤 XLSX 파일로 열어 반영하십시오.<br>
+        <b>가져오기는 기존 사용자 격실을 이 내용으로 교체합니다</b> — 기존 항목이 사라지는 경우에는 한 번 더 확인합니다.</p>
+      <div class="frow" style="margin-top:0">
+        <button type="button" class="btn" id="ex_xlsx">XLSX 파일로 저장</button>
+        <label class="fbtn">XLSX 파일 열기…<input type="file" id="im_file"
+          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></label>
+        <button type="button" class="btn danger" id="reset">사용자 격실 전부 삭제</button>
+      </div>
+      <p class="msg info" id="io_msg" style="margin:8px 0 0"></p>
+      <div class="frow" id="im_confirmRow" style="display:none; margin-top:8px">
+        <button type="button" class="btn danger" id="im_confirm">교체 확인 — 기존 사용자 격실을 버리고 가져옵니다</button>
+        <button type="button" class="btn" id="im_cancel">취소</button>
+      </div>
+    </section>
+   </div>
+  </section>
+
+  <section class="verdict" id="out"></section>
+
+  <details class="mx" id="mxWrap" open>
+    <summary><span id="mxTitle">전체 매트릭스 보기</span></summary>
+    <div class="mxbody">
+      <div id="mxHost"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </details>
+
+  <p class="foot">
+    <b>근거</b> SOLAS Consolidated Edition 2012, Chapter II-2 Regulation 9 — Table 9.1 ~ 9.8 및 각 표 주석.
+    2026-08-24 원본 PDF 육안 대조 완료.<br>
+    <b>격실표</b> 내장 82종에 사용자가 격실을 추가·수정할 수 있습니다. 추가분은 이 브라우저에만 저장되며,
+    XLSX 파일로 보관하거나 다른 PC에서 가져올 수 있습니다. 파일은 엑셀 워크북 <b>01_격실분류</b> 시트를 사용합니다.
+    내장 격실은 덮어써도 원본이 남아 있어 <b>사용자 격실 전부 삭제</b>로 언제든 되돌릴 수 있습니다.<br>
+    <b>한계</b> 이 도구는 표 조회를 돕는 보조 수단입니다. 표 값 위에 개별 조항이 더 엄격한 요건을 부과하는 경우가 많으며,
+    최종 판단은 <b>IMO 정본 최신판과 주관청·선급 승인</b>에 따릅니다.
+  </p>
+</main>
+<p id="live" class="sr" role="status" aria-live="polite" aria-atomic="true"></p>
+
+<script>
+"use strict";
+
+/* ============================= 표 데이터 =============================
+   셀 표기:  "A-60"            단일 값
+             "A-60^bd"         주석 b·d 적용
+             "A-15|A-0^d"      두 값 병기 (선택 규칙은 주석 문자로 판별)
+             "*"               강 또는 동등재이되 A급 불요
+             "-"               요건 없음
+   격벽 표는 상삼각만 저장하고 조회 시 대칭 처리.
+====================================================================== */
+
+const T91 = [
+["B-0^a","A-0","A-0","A-0","A-0","A-60","A-60","A-60","A-0","A-0","A-60","A-60","A-60","A-60"],
+[null,"A-0^a","A-0","A-0","A-0","A-0","A-15","A-15","A-0^c","A-0","A-15","A-30","A-15","A-30"],
+[null,null,"B-15","A-60","A-0","B-15","B-15","B-15","B-15","A-0","A-15","A-30","A-0","A-30"],
+[null,null,null,"-","A-0","A-60^bd","A-60^bd","A-60^bd","A-0^d","A-0","A-60^b","A-60^b","A-60^b","A-60^b"],
+[null,null,null,null,"-","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0"],
+[null,null,null,null,null,"B-0","B-0","B-0","C","A-0","A-0","A-30","A-0","A-30"],
+[null,null,null,null,null,null,"B-0","B-0","C","A-0","A-15","A-60","A-15","A-60"],
+[null,null,null,null,null,null,null,"B-0","C","A-0","A-30","A-60","A-15","A-60"],
+[null,null,null,null,null,null,null,null,"C","A-0","A-0","A-0","A-0","A-0"],
+[null,null,null,null,null,null,null,null,null,"A-0^a","A-0","A-0","A-0","A-0"],
+[null,null,null,null,null,null,null,null,null,null,"A-0^a","A-0","A-0","A-15"],
+[null,null,null,null,null,null,null,null,null,null,null,"A-0^a","A-0","A-60"],
+[null,null,null,null,null,null,null,null,null,null,null,null,"A-0^a","A-0"],
+[null,null,null,null,null,null,null,null,null,null,null,null,null,"A-30"]];
+
+const T92 = [
+["A-30","A-30","A-15","A-0","A-0","A-0","A-15","A-30","A-0","A-0","A-0","A-60","A-0","A-60"],
+["A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-30","A-0","A-30"],
+["A-15","A-0","A-0^a","A-60","A-0","A-0","A-15","A-15","A-0","A-0","A-0","A-30","A-0","A-30"],
+["A-0","A-0","A-0","A-0","-","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0"],
+["A-0","A-0","A-0","A-0","-","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0"],
+["A-60","A-15","A-0","A-60","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0"],
+["A-60","A-15","A-15","A-60","A-0","A-0","A-15","A-15","A-0","A-0","A-0","A-0","A-0","A-0"],
+["A-60","A-15","A-15","A-60","A-0","A-15","A-15","A-30","A-0","A-0","A-0","A-0","A-0","A-0"],
+["A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0"],
+["A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0","A-0^a","A-0","A-0","A-0","A-0"],
+["A-60","A-60","A-60","A-60","A-0","A-0","A-15","A-30","A-0","A-0","A-0^a","A-0","A-0","A-30"],
+["A-60","A-60","A-60","A-60","A-0","A-60","A-60","A-60","A-0","A-0","A-30","A-30^a","A-0","A-60"],
+["A-60","A-30","A-15","A-60","A-0","A-15","A-30","A-30","A-0","A-0","A-0","A-0","A-0","A-0"],
+["A-60","A-60","A-60","A-60","A-0","A-30","A-60","A-60","A-0","A-0","A-0","A-0","A-0","A-0"]];
+
+const T93 = [
+["A-0^c","A-0","A-60","A-0","A-15","A-60","A-15","A-60","A-60","*","A-60"],
+[null,"C^e","B-0^e","A-0^a|B-0^e","B-0^e","A-60","A-0","A-0","A-15|A-0^d","*","A-15"],
+[null,null,"C^e","A-0^a|B-0^e","B-0^e","A-60","A-0","A-0","A-15|A-0^d","*","A-30|A-0^d"],
+[null,null,null,"A-0^a|B-0^e","A-0^a|B-0^e","A-60","A-0","A-0","A-15|A-0^d","*","A-15"],
+[null,null,null,null,"C^e","A-60","A-0","A-0","A-0","*","A-0"],
+[null,null,null,null,null,"*","A-0","A-0","A-60","*","A-60"],
+[null,null,null,null,null,null,"A-0^b","A-0","A-0","*","A-0"],
+[null,null,null,null,null,null,null,"*","A-0","*","A-0"],
+[null,null,null,null,null,null,null,null,"A-0^b","*","A-30"],
+[null,null,null,null,null,null,null,null,null,"-","A-0"],
+[null,null,null,null,null,null,null,null,null,null,"A-0"]];
+
+const T94 = [
+["A-0","A-0","A-0","A-0","A-0","A-60","A-0","A-0","A-0","*","A-30"],
+["A-0","*","*","A-0","*","A-60","A-0","A-0","A-0","*","A-0"],
+["A-60","A-0","*","A-0","*","A-60","A-0","A-0","A-0","*","A-30|A-0^d"],
+["A-0","A-0","A-0","*","A-0","A-60","A-0","A-0","A-0","*","A-0"],
+["A-15","A-0","A-0","A-0","*","A-60","A-0","A-0","A-0","*","A-0"],
+["A-60","A-60","A-60","A-60","A-60","*","A-60^f","A-30","A-60","*","A-60"],
+["A-15","A-0","A-0","A-0","A-0","A-0","*","A-0","A-0","*","A-0"],
+["A-60","A-0","A-0","A-0","A-0","A-0","A-0","*","A-0","*","A-0"],
+["A-60","A-30|A-0^d","A-30|A-0^d","A-30|A-0^d","A-0","A-60","A-0","A-0","A-0","*","A-30"],
+["*","*","*","*","*","*","*","*","*","-","A-0"],
+["A-60","A-15","A-30|A-0^d","A-15","A-0","A-30","A-0","A-0","A-30","A-0","A-0"]];
+
+const T95 = [
+["A-0^e","A-0","A-60","A-0","A-15","A-60","A-15","A-60","A-60","*","A-60"],
+[null,"C","B-0","B-0|A-0^c","B-0","A-60","A-0","A-0","A-0","*","A-30"],
+[null,null,"C^ab","B-0|A-0^c","B-0","A-60","A-0","A-0","A-0","*","A-30"],
+[null,null,null,"B-0|A-0^c","B-0|A-0^c","A-60","A-0","A-0","A-0","*","A-30"],
+[null,null,null,null,"C","A-60","A-0","A-0","A-0","*","A-0"],
+[null,null,null,null,null,"*","A-0","A-0^g","A-60","*","A-60^f"],
+[null,null,null,null,null,null,"A-0^d","A-0","A-0","*","A-0"],
+[null,null,null,null,null,null,null,"*","A-0","*","A-0"],
+[null,null,null,null,null,null,null,null,"A-0^d","*","A-30"],
+[null,null,null,null,null,null,null,null,null,"-","A-0"],
+[null,null,null,null,null,null,null,null,null,null,"*^h"]];
+
+const T96 = [
+["A-0","A-0","A-0","A-0","A-0","A-60","A-0","A-0","A-0","*","A-60"],
+["A-0","*","*","A-0","*","A-60","A-0","A-0","A-0","*","A-30"],
+["A-60","A-0","*","A-0","*","A-60","A-0","A-0","A-0","*","A-30"],
+["A-0","A-0","A-0","*","A-0","A-60","A-0","A-0","A-0","*","A-30"],
+["A-15","A-0","A-0","A-0","*","A-60","A-0","A-0","A-0","*","A-0"],
+["A-60","A-60","A-60","A-60","A-60","*","A-60^i","A-30","A-60","*","A-60"],
+["A-15","A-0","A-0","A-0","A-0","A-0","*","A-0","A-0","*","A-0"],
+["A-60","A-0","A-0","A-0","A-0","A-0","A-0","*","A-0","*","A-0"],
+["A-60","A-0","A-0","A-0","A-0","A-60","A-0","A-0","A-0^d","*","A-30"],
+["*","*","*","*","*","*","*","*","*","-","*"],
+["A-60","A-30","A-30","A-30","A-0","A-60","A-0","A-0","A-30","*","*^h"]];
+
+const T97 = [
+["A-0^c","A-0","A-60","A-0","A-15","A-60","A-15","A-60","A-60","*"],
+[null,"C","B-0","B-0|A-0^a","B-0","A-60","A-0","A-60","A-0","*"],
+[null,null,"C","B-0|A-0^a","B-0","A-60","A-0","A-60","A-0","*"],
+[null,null,null,"B-0|A-0^a","B-0|A-0^a","A-60","A-0","A-60","A-0","*"],
+[null,null,null,null,"C","A-60","A-0","A-60","A-0","*"],
+[null,null,null,null,null,"*","A-0","A-0^d","A-60","*"],
+[null,null,null,null,null,null,"A-0^b","A-0","A-0","*"],
+[null,null,null,null,null,null,null,"*","A-60","*"],
+[null,null,null,null,null,null,null,null,"A-0^b","*"],
+[null,null,null,null,null,null,null,null,null,"-"]];
+
+const T98 = [
+["A-0","A-0","A-0","A-0","A-0","A-60","A-0","-","A-0","*"],
+["A-0","*","*","A-0","*","A-60","A-0","-","A-0","*"],
+["A-60","A-0","*","A-0","*","A-60","A-0","-","A-0","*"],
+["A-0","A-0","A-0","*","A-0","A-60","A-0","-","A-0","*"],
+["A-15","A-0","A-0","A-0","*","A-60","A-0","-","A-0","*"],
+["A-60","A-60","A-60","A-60","A-60","*","A-60^e","A-0","A-60","*"],
+["A-15","A-0","A-0","A-0","A-0","A-0","*","A-0","A-0","*"],
+["-","-","-","-","-","A-0^d","A-0","*","-","*"],
+["A-60","A-0","A-0","A-0","A-0","A-60","A-0","-","A-0^b","*"],
+["*","*","*","*","*","*","*","*","*","-"]];
+
+/* ------------------------------ 주석 ------------------------------ */
+const N_9192 = {
+ a:"인접 구역이 같은 번호 범주이고 위첨자 a가 붙으면, 주관청이 불필요하다고 인정할 경우 그 사이 격벽·갑판을 설치하지 않아도 된다. 예: 조리실 ↔ 부속 팬트리. 다만 조리실 ↔ 기관구역은 둘 다 (12)여도 격벽이 필요하다.",
+ b:"경하흘수선까지의 선측, 그리고 구명뗏목·활강대 아래·인접한 상부구조·갑판실 측면은 A-30으로 완화할 수 있다.",
+ c:"공용화장실이 계단격실 내부에 완전히 들어가 있으면 그 화장실 격벽은 B급 완전성으로 가능하다.",
+ d:"범주 (6)(7)(8)(9) 구역이 집합장소 외곽 둘레 내부에 완전히 위치하면 그 격벽은 B-0급으로 가능하다. 음향·영상·조명 제어위치는 집합장소의 일부로 볼 수 있다."
+};
+const N_9394 = {
+ a:"어느 쪽이 적용되는지는 II-2/9.2.2.2 및 9.2.2.5 참조 (격벽이 갑판까지 연장되는지 여부).",
+ b:"인접 구역이 같은 번호 범주이고 위첨자 b가 붙으면, 표의 등급은 인접 구역의 용도가 서로 다를 때에만 요구된다. 조리실↔조리실은 불요, 조리실↔페인트실은 A-0 필요.",
+ c:"조타실 ↔ 해도실 격벽은 B-0 가능. 안전센터가 선교 내부에 있으면 선교와 안전센터를 나누는 칸막이에는 내화등급이 요구되지 않는다.",
+ d:"II-2/9.2.2.4.2.3 및 .4 참조 — 양쪽 모두 스프링클러 미설치면 큰 값, 양쪽 모두 설치면 작은 값, 한쪽만 설치면 큰 값.",
+ e:"II-2/9.2.1.1.2 적용 시 Table 9.3의 B-0 및 C는 A-0으로 읽는다.",
+ f:"범주 (7) 기관구역이 주관청 판단상 화재위험이 거의 없으면 내화 단열은 불요."
+};
+const N_9596 = {
+ a:"방식 IIC 및 IIIC 방화에서는 격벽에 특별한 요건이 부과되지 않는다.",
+ b:"방식 IIIC에서는 50㎡ 이상의 구역 또는 구역군 사이에 B-0급 B급 격벽을 설치한다.",
+ c:"어느 쪽이 적용되는지는 II-2/9.2.3.2 및 9.2.3.4 참조 (격벽이 갑판까지 연장되는지 여부).",
+ d:"인접 구역이 같은 번호 범주이고 위첨자 d가 붙으면, 표의 등급은 인접 구역의 용도가 서로 다를 때에만 요구된다. 조리실↔조리실은 불요, 조리실↔페인트실은 A-0 필요.",
+ e:"조타실 · 해도실 · 무선실 상호간 격벽은 B-0 가능.",
+ f:"위험물을 운송하지 않거나, 위험물이 그 격벽으로부터 수평 3m 이상 이격되어 적재되면 A-0 사용 가능.",
+ g:"위험물 운송 예정 화물구역은 II-2/19.3.8 적용.",
+ h:"Ro-ro 구역을 분리하는 격벽·갑판은 합리적으로 가스밀 폐쇄가 가능해야 하며, 주관청이 화재위험이 거의 없다고 판단하는 경우 실행 가능한 범위에서 A급 완전성을 가질 것.",
+ i:"범주 (7) 기관구역이 주관청 판단상 화재위험이 거의 없으면 내화 단열은 불요."
+};
+const N_9798 = {
+ a:"어느 쪽이 적용되는지는 II-2/9.2.3.2 및 9.2.3.4 참조 (격벽이 갑판까지 연장되는지 여부).",
+ b:"인접 구역이 같은 번호 범주이고 위첨자 b가 붙으면, 표의 등급은 인접 구역의 용도가 서로 다를 때에만 요구된다. 조리실↔조리실은 불요, 조리실↔페인트실은 A-0 필요.",
+ c:"조타실 · 해도실 · 무선실 상호간 격벽은 B-0 가능.",
+ d:"화물펌프실 ↔ A류 기관구역 사이의 격벽·갑판은 화물펌프 축봉 등 글랜드 관통이 허용된다 — 효율적 윤활을 갖춘 가스타이트 실 또는 가스 실의 영속성을 보장하는 다른 수단을 설치할 것.",
+ e:"범주 (7) 기관구역이 주관청 판단상 화재위험이 거의 없으면 내화 단열은 불요."
+};
+const N_STAR = "강 또는 동등재이되 A급은 불요. 다만 갑판이 전선·배관·환기덕트 관통을 위해 뚫리면 화염·연기 통과를 막도록 밀폐할 것. 비상발전기실↔개방갑판 구획은 고정식 가스소화 미설치 시 폐쇄수단 없는 공기흡입구가 허용된다.";
+
+/* ---------------------------- 공간 범주 ---------------------------- */
+const CATS = {
+ p14:["제어장소","계단","통로","퇴선장소·외부 피난로","개방갑판","거주구역 (화재위험 소)","거주구역 (화재위험 중)",
+      "거주구역 (화재위험 대)","위생 및 유사구역","탱크·보이드·저위험 보조기관구역","보조기관·화물구역·유류탱크 (중위험)",
+      "기관구역 및 주조리실","창고·작업장·팬트리 등","가연성 액체 저장구역"],
+ p11:["제어장소","통로","거주구역","계단","업무구역 (저위험)","A류 기관구역","기타 기관구역","화물구역",
+      "업무구역 (고위험)","개방갑판","특수분류구역 및 ro-ro 구역"],
+ c11:["제어장소","통로","거주구역","계단","업무구역 (저위험)","A류 기관구역","기타 기관구역","화물구역",
+      "업무구역 (고위험)","개방갑판","Ro-ro 및 차량구역"],
+ t10:["제어장소","통로","거주구역","계단","업무구역 (저위험)","A류 기관구역","기타 기관구역","화물펌프실",
+      "업무구역 (고위험)","개방갑판"]
+};
+
+const SHIPS = {
+ P36P:{key:"P36P", label:"여객선 · 36명 초과", cat:"p14", B:T91, D:T92, tB:"9.1", tD:"9.2", notes:N_9192, altRule:"none"},
+ P36M:{key:"P36M", label:"여객선 · 36명 이하", cat:"p11", B:T93, D:T94, tB:"9.3", tD:"9.4", notes:N_9394, altRule:"sprinkler"},
+ CARG:{key:"CARG", label:"화물선 (탱커 제외)", cat:"c11", B:T95, D:T96, tB:"9.5", tD:"9.6", notes:N_9596, altRule:"extend"},
+ TANK:{key:"TANK", label:"탱커",             cat:"t10", B:T97, D:T98, tB:"9.7", tD:"9.8", notes:N_9798, altRule:"extend"}
+};
+
+/* 격실 사전 — 값은 각 표 세트에서의 범주 번호(1-base). null = 해당 표에 대응 범주 없음 */
+const SPACES = [
+ ["조타실","Wheelhouse",1,1,1,1],
+ ["해도실","Chartroom",1,1,1,1],
+ ["무선실","Radio room",1,1,1,1],
+ ["비상발전기실","Emergency generator room",1,1,1,1],
+ ["화재제어소","Fire control station",1,1,1,1],
+ ["추진제어실 (기관구역 외)","Propulsion control room",1,1,1,1],
+ ["화재경보 집중실","Centralized fire alarm room",1,1,1,1],
+ ["안전센터","Safety centre",1,1,null,null],
+ ["소화제 저장실 (CO₂실)","Fire-extinguishing medium store",1,1,1,1],
+ ["계단격실","Stairway enclosure",2,4,4,4],
+ ["승강기 트렁크","Lift trunk",2,4,4,4],
+ ["에스컬레이터","Escalator",2,4,4,4],
+ ["비상탈출트렁크","Emergency escape trunk",2,4,4,4],
+ ["통로","Corridor",3,2,2,2],
+ ["로비","Lobby",3,2,2,2],
+ ["집합장소","Assembly station",4,null,null,null],
+ ["승정장소","Embarkation station",4,null,null,null],
+ ["생존정 격납구역","Survival craft stowage area",4,null,null,null],
+ ["외부계단 (피난용)","External escape stairs",4,null,null,null],
+ ["개방갑판","Open deck",5,10,10,10],
+ ["밀폐 산책로","Enclosed promenade",5,10,10,10],
+ ["선실 — 제한 가구","Cabin, restricted fire risk",6,3,3,3],
+ ["선실 — 비제한 가구","Cabin, other than restricted",7,3,3,3],
+ ["사무실","Office",6,3,3,3],
+ ["조제실","Dispensary",6,3,3,3],
+ ["병원","Hospital",6,3,3,3],
+ ["공공장소 — 50㎡ 미만","Public space <50 m²",6,3,3,3],
+ ["공공장소 — 50㎡ 이상 · 제한 가구","Public space ≥50 m², restricted",7,3,3,3],
+ ["공공장소 — 50㎡ 이상 · 비제한","Public space ≥50 m², other",8,3,3,3],
+ ["식당","Dining room",7,3,3,3],
+ ["오락실","Recreation room",7,3,3,3],
+ ["수술실","Operating room",7,3,3,3],
+ ["약국","Pharmacy",7,3,3,3],
+ ["실험실 — 가연성 액체 없음","Laboratory, no flammable liquids",7,3,3,3],
+ ["실험실 — 가연성 액체 보관","Laboratory, flammable liquids stowed",14,9,9,9],
+ ["영사실·필름실","Projection / film stowage room",7,3,3,3],
+ ["다이어트 키친 (무화염)","Diet kitchen, no open flame",7,3,3,3],
+ ["귀중품실","Specie room",7,3,3,3],
+ ["청소구 로커","Cleaning gear locker",7,5,5,5],
+ ["로커·소창고 — 4㎡ 미만","Locker / store <4 m²",7,5,5,5],
+ ["소건조실 — 4㎡ 이하","Small drying room ≤4 m²",7,5,5,5],
+ ["이발소·미용실","Barber shop / beauty parlour",8,3,3,3],
+ ["사우나","Sauna",8,9,9,9],
+ ["판매점","Sale shop",8,3,3,3],
+ ["화장실·샤워실·욕실","Sanitary spaces",9,3,3,3],
+ ["소세탁실","Small laundry",9,5,5,5],
+ ["실내수영장","Indoor swimming pool",9,3,3,3],
+ ["팬트리 — 조리기구 없음","Pantry, no cooking appliances",9,3,3,3],
+ ["팬트리 — 조리기구 있음 (조리실 부속)","Pantry with cooking appliances, annexed",12,9,9,9],
+ ["주팬트리 — 조리실 부속 아님","Main pantry, not annexed",13,9,9,9],
+ ["조리실","Galley",12,9,9,9],
+ ["기관실 — A류","Machinery space of category A",12,6,6,6],
+ ["보일러실","Boiler room",12,6,6,6],
+ ["환기·공조 기계실","Ventilation / AC machinery room",10,7,7,7],
+ ["양묘기실","Windlass room",10,7,7,7],
+ ["조타기실","Steering gear room",10,7,7,7],
+ ["전기추진 전동기실","Electric propulsion motor room",10,7,7,7],
+ ["축로·파이프터널","Shaft alley / pipe tunnel",10,7,7,7],
+ ["전기설비실","Electrical equipment room",10,7,7,7],
+ ["유입변압기실 — 10 kVA 초과","Oil-filled transformer room >10 kVA",11,7,7,7],
+ ["보조발전기실 — 110 kW 이하","Small auxiliary generator room",11,7,7,7],
+ ["스프링클러·소화펌프실","Sprinkler / fire pump room",11,7,7,7],
+ ["청수탱크","Fresh water tank",10,null,null,null],
+ ["보이드·코퍼댐","Void / cofferdam",10,null,null,null],
+ ["화물창","Cargo hold",11,8,8,null],
+ ["화물유탱크","Cargo oil tank",11,8,8,null],
+ ["냉장실","Refrigerated chamber",11,8,8,null],
+ ["연료유탱크 (별도구역)","Oil fuel tank, separate space",11,null,null,null],
+ ["화물펌프실","Cargo pump-room",null,null,null,8],
+ ["주세탁실","Main laundry",13,5,5,5],
+ ["대건조실 — 4㎡ 초과","Large drying room >4 m²",13,5,5,5],
+ ["잡물창고","Miscellaneous store",13,9,9,9],
+ ["우편실·수하물실","Mail / baggage room",13,9,9,9],
+ ["쓰레기실","Garbage room",13,9,9,9],
+ ["작업장 (기관구역 외)","Workshop, outside machinery space",13,9,9,9],
+ ["로커·창고 — 4㎡ 초과","Locker / store >4 m²",13,9,9,9],
+ ["페인트 로커","Paint locker",14,9,9,9],
+ ["가연성 액체 창고","Flammable liquid store",14,9,9,9],
+ ["램프실","Lamp room",14,9,9,9],
+ ["특수분류구역","Special category space",null,11,null,null],
+ ["Ro-ro 구역","Ro-ro space",null,11,11,null],
+ ["차량구역","Vehicle space",null,11,11,null]
+];
+const CAT_IDX = {p14:2, p11:3, c11:4, t10:5};
+
+/* ------------------ 사용자 격실표 (추가·수정분) ------------------
+   저장 형태는 SPACES와 동일: [국문, 영문, p14, p11, c11, t10]  (null = 대응 범주 없음)
+   내장 격실과 이름이 같으면 그 자리에서 덮어씁니다.              */
+const STORE_KEY = "solas.fireRating.spaces.v1";
+let CUSTOM = [];
+let STORE_OK = true;
+
+function loadCustom(){
+  try{
+    const s = localStorage.getItem(STORE_KEY);
+    CUSTOM = s ? JSON.parse(s) : [];
+    if(!Array.isArray(CUSTOM)) CUSTOM = [];
+  }catch(e){ CUSTOM = []; STORE_OK = false; }
+}
+function saveCustom(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(CUSTOM)); return true; }
+  catch(e){ STORE_OK = false; return false; }
+}
+/* 내장 + 사용자 병합. 동명이면 사용자 값이 이기고 원래 위치를 유지 */
+function allSpaces(){
+  const m = new Map();
+  SPACES.forEach(r => m.set(r[0], r));
+  CUSTOM.forEach(r => m.set(r[0], r));
+  return [...m.values()];
+}
+const customSet = () => new Set(CUSTOM.map(r => r[0]));
+const findSpace = ko => allSpaces().find(r => r[0] === ko) || null;
+const MAXCAT = {p14:14, p11:11, c11:11, t10:10};
+
+/* ---------------------------- 상태 ---------------------------- */
+/* 사용자가 입력한 격실명은 innerHTML 로 들어가므로 반드시 이스케이프한다 */
+const ESC_MAP = {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};
+const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ESC_MAP[c]);
+
+const S = {ship:"P36P", orient:"B", a:null, b:null, spr:false, mvz:false, dg:false};
+const COMBOS = {};                 // slot → {input, pick}  — 관리창에서 저장 후 되돌려 채우기 위함
+const $ = id => document.getElementById(id);
+let sayT = 0;
+/* 받침 유무에 따라 조사를 고른다 */
+function jong(w){ const c = String(w).charCodeAt(String(w).length-1);
+  return c>=0xAC00 && c<=0xD7A3 ? (c-0xAC00)%28 !== 0 : true; }
+const gwa = w => w + (jong(w) ? "과" : "와");
+function say(t){ clearTimeout(sayT); sayT = setTimeout(()=>{ const e=$("live"); if(e) e.textContent = t; }, 260); }
+
+/* ---------------------------- 유틸 ---------------------------- */
+function sevVar(v){
+  if(v==="A-60") return "--sev-60";
+  if(v==="A-30") return "--sev-30";
+  if(v==="A-15") return "--sev-15";
+  if(v==="A-0")  return "--sev-a0";
+  if(v==="B-15") return "--sev-b15";
+  if(v==="B-0")  return "--sev-b0";
+  if(v==="C")    return "--sev-c";
+  if(v==="*")    return "--sev-star";
+  return "--sev-none";
+}
+function sevWeight(v){ return {"A-60":6,"A-30":5,"A-15":4,"A-0":3,"B-15":2.5,"B-0":2,"C":1.4,"*":1,"-":0}[v] ?? 0; }
+function meaning(v){
+  return {
+    "A-60":"강재 구획 + 불연 단열. 1시간 화염·연기 차단, 단열 60분.",
+    "A-30":"강재 구획 + 불연 단열. 1시간 화염·연기 차단, 단열 30분.",
+    "A-15":"강재 구획 + 불연 단열. 1시간 화염·연기 차단, 단열 15분.",
+    "A-0":"강재 구획. 1시간 화염·연기 차단은 그대로 필요하며 단열만 0분.",
+    "B-15":"승인 불연재 구획. 30분 화염 차단, 단열 15분. 연기 차단 요건 없음.",
+    "B-0":"승인 불연재 구획. 30분 화염 차단, 단열 0분. 연기 차단 요건 없음.",
+    "C":"승인 불연재로 구성. 화염·연기 차단 및 온도상승 요건 없음.",
+    "*":"강 또는 동등재이되 A급은 불요.",
+    "-":"재료·완전성에 대한 특별요건 없음."
+  }[v] || "";
+}
+function parseCell(raw){
+  if(raw===null || raw===undefined) return null;
+  const alts = raw.split("|").map(part=>{
+    const m = part.split("^");
+    return {val:m[0], sup:(m[1]||"").split("")};
+  });
+  return {raw, alts};
+}
+function cellShort(raw){
+  if(raw===null||raw===undefined) return "";
+  return raw.split("|").map(p=>p.split("^")[0]).join(" / ");
+}
+function lookup(shipKey, orient, i, j){
+  const sh = SHIPS[shipKey], n = CATS[sh.cat].length;
+  if(!Number.isInteger(i)||!Number.isInteger(j)||i<0||j<0||i>=n||j>=n) return null;
+  if(orient==="D"){ return parseCell(sh.D[i][j]); }
+  const lo = Math.min(i,j), hi = Math.max(i,j);
+  return parseCell(sh.B[lo][hi]);
+}
+
+/* 선택한 표에 대응 범주가 없는 격실에 대한 안내 */
+function noCatGuidance(shipKey, ko){
+  const M = {
+    roro:`<b>Table ${SHIPS.P36P.tB}/${SHIPS.P36P.tD}에는 특수분류·ro-ro·차량구역 범주가 없습니다.</b>
+          여객 36명 초과선의 해당 구역 경계는 <b>II-2/20.5.1.1</b>이 직접 규율합니다 —
+          경계 격벽·갑판 <b>A-60</b>, 한쪽이 범주 (5)·(9)·(10)이면 <b>A-0</b>,
+          특수분류구역 아래가 연료탱크면 그 갑판은 <b>A-0</b>.
+          아울러 II-2/20 전체(환기·탐지·소화·배수)가 함께 적용됩니다.`,
+    evac:`<b>이 표에는 퇴선장소·외부 피난로 범주가 없습니다.</b> 범주 (4)는 여객 36명 초과선 표(9.1/9.2) 전용입니다.
+          이 선종에서는 통상 <b>(10) 개방갑판</b>으로 처리하되, 피난로를 이루는 경계의 내화성은
+          <b>II-2/13.3.2.4.1</b>(피난로 경계) 요건을 함께 확인하십시오.`,
+    tank:`<b>이 표에는 탱크·보이드 범주가 없습니다.</b> 범주 (10)(탱크·보이드·저위험 보조기관구역)은
+          여객 36명 초과선 표 전용입니다. 이 선종에서는 구조·용도에 따라 <b>(7) 기타 기관구역</b> 또는
+          <b>(8) 화물구역</b> 중 어느 쪽으로 볼지 <b>주관청·선급과 확인</b>하십시오.`,
+    cargoT:`<b>탱커 표(9.7/9.8)에는 화물구역 범주가 없습니다.</b> 범주 (8)은 <b>화물펌프실</b>입니다.
+          화물탱크 자체의 보호는 표가 아니라 <b>II-2/9.6.5</b>(밸브·피팅·벤트관에 열에 쉽게 무력화되는 재료 사용 금지)와
+          <b>II-2/10.8</b>(고정식 갑판 폼)이 규율합니다.`,
+    safety:`<b>안전센터는 여객선 요건입니다.</b> II-2/23은 2010.7.1 이후 건조 여객선에만 적용되므로
+          이 선종 표에는 대응 범주가 없습니다.`,
+    pump:`<b>화물펌프실 범주는 탱커 표(9.7/9.8)에만 있습니다.</b> 선종을 탱커로 바꾸어 조회하십시오.`,
+    spc:`<b>이 표에는 특수분류구역 범주가 없습니다.</b> 특수분류구역은 여객이 접근 가능한 밀폐 차량구역이므로
+          여객선에만 성립합니다. 화물선에서는 <b>(11) Ro-ro 및 차량구역</b>으로 조회하십시오.`
+  };
+  if(["특수분류구역","Ro-ro 구역","차량구역"].includes(ko) && shipKey==="P36P") return M.roro;
+  if(ko==="특수분류구역" && shipKey==="CARG") return M.spc;
+  if(["집합장소","승정장소","생존정 격납구역","외부계단 (피난용)"].includes(ko)) return M.evac;
+  if(["청수탱크","보이드·코퍼댐","연료유탱크 (별도구역)"].includes(ko)) return M.tank;
+  if(["화물창","화물유탱크","냉장실"].includes(ko) && shipKey==="TANK") return M.cargoT;
+  if(ko==="안전센터") return M.safety;
+  if(ko==="화물펌프실") return M.pump;
+  return `<b>이 표에는 대응 범주가 없습니다.</b> 구역의 실제 용도·화재위험에 가장 가까운 범주를
+          직접 선택하여 조회하고, 분류가 애매하면 <b>가장 엄격한 경계요건을 갖는 범주</b>로 처리하십시오.`;
+}
+
+/* ---------------------------- 조작부 ---------------------------- */
+function buildShipSeg(){
+  $("ship").innerHTML = Object.values(SHIPS).map(s=>
+    `<button type="button" data-s="${s.key}" aria-pressed="${s.key===S.ship}">${s.label} <span class="mono" style="opacity:.65;font-size:12px">${s.tB}/${s.tD}</span></button>`
+  ).join("");
+  $("ship").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    S.ship=b.dataset.s; S.a=null; S.b=null; $("inA").value=""; $("inB").value="";
+    syncSeg(); render();
+  });
+}
+function syncSeg(){
+  $("ship").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.s===S.ship)));
+  $("orient").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.o===S.orient)));
+  const deck = S.orient==="D";
+  $("labA").textContent = deck ? "아래 구역 (Space below)" : "격실 A";
+  $("labB").textContent = deck ? "위 구역 (Space above)"  : "격실 B";
+  $("joint").textContent = deck ? "─" : "│";
+  $("wSpr").style.display = SHIPS[S.ship].altRule==="sprinkler" ? "" : "none";
+  $("wDg").style.display  = (S.ship==="CARG") ? "" : "none";
+}
+$("orient").querySelectorAll("button").forEach(b=>b.onclick=()=>{ S.orient=b.dataset.o; syncSeg(); render(); });
+["spr","mvz","dg"].forEach(k=> $(k).onchange = e => { S[k]=e.target.checked; render(); });
+
+/* ---------------------------- 콤보박스 ---------------------------- */
+function options(){
+  const g = SHIPS[S.ship].cat, ci = CAT_IDX[g], names = CATS[g];
+  const rows = allSpaces(), mine = customSet();
+  const spaces = rows.filter(r=>r[ci]!==null)
+    .map(r=>({ko:r[0], en:r[1], cat:r[ci], kind:"space", custom:mine.has(r[0])}))
+    .sort((x,y)=> x.cat-y.cat || x.ko.localeCompare(y.ko,"ko"));
+  const orphans = rows.filter(r=>r[ci]===null)
+    .map(r=>({ko:r[0], en:r[1], cat:null, kind:"orphan", custom:mine.has(r[0])}))
+    .sort((x,y)=> x.ko.localeCompare(y.ko,"ko"));
+  const cats = names.map((n,i)=>({ko:n, en:"범주 직접 선택", cat:i+1, kind:"cat"}));
+  return {spaces, cats, orphans};
+}
+function makeCombo(inputId, listId, slot){
+  const inp = $(inputId), list = $(listId);
+  let cur = -1, items = [];
+
+  function draw(q){
+    const {spaces, cats, orphans} = options();
+    const norm = s => s.toLowerCase().replace(/\s|·|—|,/g,"");
+    const nq = norm(q);
+    const hitS = nq ? spaces.filter(o=> norm(o.ko).includes(nq) || norm(o.en).includes(nq)) : spaces;
+    const hitO = nq ? orphans.filter(o=> norm(o.ko).includes(nq) || norm(o.en).includes(nq)) : orphans;
+    const hitC = nq ? cats.filter(o=> norm(o.ko).includes(nq) || String(o.cat)===nq) : cats;
+    items = [];
+    let html = "";
+    const typed = q.trim();
+    const exists = typed && !!findSpace(typed);
+    const tag = o => o.custom ? `<span class="badge">내 격실</span>` : "";
+    const oid = k => `${listId}-o${k}`;
+    const grp = t => `<li class="grp" role="presentation">${t}</li>`;
+    const opt = (k, inner) =>
+      `<li role="option" id="${oid(k)}" aria-selected="false" data-i="${k}">${inner}</li>`;
+
+    if(typed && !exists){
+      items.push({ko:typed, kind:"new"});
+      html += grp("격실표에 없는 이름");
+      html += opt(0, `<span class="nm">＋ “${esc(typed)}” 새 격실로 추가</span>
+               <span class="en">추가하면 바로 조회에 사용됩니다</span>`);
+    }
+    if(hitS.length){
+      html += grp("격실명");
+      hitS.forEach(o=>{ items.push(o);
+        html += opt(items.length-1,
+          `<span class="nm">${esc(o.ko)}${tag(o)}</span><span class="en">${esc(o.en)}</span><span class="cat">(${o.cat})</span>`);});
+    }
+    html += grp("범주 직접 선택");
+    hitC.forEach(o=>{ items.push(o);
+      html += opt(items.length-1, `<span class="nm">(${o.cat}) ${esc(o.ko)}</span><span class="cat">(${o.cat})</span>`);});
+    if(hitO.length){
+      html += grp("이 표에 대응 범주 없음 — 별도 조항 적용");
+      hitO.forEach(o=>{ items.push(o);
+        html += opt(items.length-1,
+          `<span class="nm">${esc(o.ko)}${tag(o)}</span><span class="en">${esc(o.en)}</span><span class="cat" style="color:var(--sev-30)">별도</span>`);});
+    }
+    list.innerHTML = html;
+    list.querySelectorAll("li[data-i]").forEach(li=> li.onmousedown = e=>{ e.preventDefault(); pick(items[+li.dataset.i]); });
+    cur = -1;
+  }
+  function open(){ draw(inp.value); list.classList.add("open"); inp.setAttribute("aria-expanded","true"); }
+  function close(){ list.classList.remove("open"); inp.setAttribute("aria-expanded","false");
+                  inp.removeAttribute("aria-activedescendant"); }
+  function pick(o){
+    if(o.kind === "new"){ close(); openManager(o.ko, slot); return; }
+    S[slot] = o; inp.value = o.kind==="cat" ? `(${o.cat}) ${o.ko}` : o.ko;
+    close(); render();
+  }
+  COMBOS[slot] = {input: inp, pick};
+  inp.addEventListener("focus", open);
+  inp.addEventListener("input", ()=>{ S[slot]=null; open(); render(); });
+  inp.addEventListener("blur", ()=> setTimeout(close,120));
+  function highlight(lis){
+    lis.forEach(l=>{ l.classList.remove("cur"); l.setAttribute("aria-selected","false"); });
+    if(lis[cur]){
+      lis[cur].classList.add("cur");
+      lis[cur].setAttribute("aria-selected","true");
+      inp.setAttribute("aria-activedescendant", lis[cur].id);
+      lis[cur].scrollIntoView({block:"nearest"});
+    } else inp.removeAttribute("aria-activedescendant");
+  }
+  inp.addEventListener("keydown", e=>{
+    const lis = [...list.querySelectorAll("li[data-i]")];
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+      e.preventDefault(); if(!list.classList.contains("open")) open();
+      cur += (e.key==="ArrowDown"?1:-1);
+      if(cur<0) cur=lis.length-1; if(cur>=lis.length) cur=0;
+      highlight(lis);
+    } else if(e.key==="Enter"){
+      e.preventDefault();
+      if(cur>=0 && lis[cur]){ pick(items[+lis[cur].dataset.i]); return; }
+      // 화살표로 고르지 않았어도 확정된다 — 정확히 일치하는 이름, 없으면 첫 후보
+      const q = inp.value.trim();
+      if(!q) return;
+      const exact = items.find(o=>o.kind!=="new" && o.ko === q);
+      const target = exact || items.find(o=>o.kind==="space") || items[0];
+      if(target) pick(target);
+    } else if(e.key==="Escape"){ close(); inp.removeAttribute("aria-activedescendant"); }
+  });
+}
+makeCombo("inA","lsA","a");
+makeCombo("inB","lsB","b");
+
+/* ---------------------------- 모식도 ---------------------------- */
+function diagram(grade, deck){
+  const col = `var(${sevVar(grade)})`;
+  const w = sevWeight(grade);
+  const th = grade==="-" ? 2 : Math.max(3, Math.round(w*2.2));
+  const dash = (grade==="*"||grade==="-") ? ' stroke-dasharray="7 5"' : "";
+  const box = 'fill="var(--surface)" stroke="var(--line)" stroke-width="1.5" rx="4"';
+  const t = 'font-size="11" fill="var(--muted)" font-family="IBM Plex Sans KR, sans-serif" text-anchor="middle"';
+  if(deck){
+    return `<svg width="180" height="150" viewBox="0 0 180 150" role="img" aria-label="상하 인접 갑판 구획 모식도">
+      <rect x="18" y="14" width="144" height="50" ${box}/>
+      <text x="90" y="43" ${t}>위 구역</text>
+      <line x1="10" y1="75" x2="170" y2="75" stroke="${col}" stroke-width="${th}" stroke-linecap="round"${dash}/>
+      <rect x="18" y="86" width="144" height="50" ${box}/>
+      <text x="90" y="115" ${t}>아래 구역</text>
+    </svg>`;
+  }
+  return `<svg width="180" height="150" viewBox="0 0 180 150" role="img" aria-label="좌우 인접 격벽 구획 모식도">
+    <rect x="14" y="24" width="62" height="102" ${box}/>
+    <text x="45" y="79" ${t}>A</text>
+    <line x1="90" y1="14" x2="90" y2="136" stroke="${col}" stroke-width="${th}" stroke-linecap="round"${dash}/>
+    <rect x="104" y="24" width="62" height="102" ${box}/>
+    <text x="135" y="79" ${t}>B</text>
+  </svg>`;
+}
+
+/* ---------------------------- 판정 ---------------------------- */
+function extraWarnings(ia, ib){
+  const sh = SHIPS[S.ship], out = [];
+  const nameA = S.a ? S.a.ko : "", nameB = S.b ? S.b.ko : "";
+  const both = [nameA, nameB];
+
+  if(S.mvz){
+    out.push(S.ship==="P36P"
+      ? `<b>주수직구역 경계 — 표보다 우선.</b> II-2/9.2.2.1.1.1에 따라 <b>A-60</b>. 스텝·리세스도 A-60. 다만 한쪽이 범주 (5)·(9)·(10)이거나 양쪽이 연료탱크면 A-0으로 완화 가능.`
+      : `<b>주수직구역 경계.</b> II-2/9.2.2.1.1.2 — A급 구획으로 하되 단열값은 이 표(${sh.tB}/${sh.tD})에 따른다.`);
+  }
+  if(both.some(n=>n==="사우나")){
+    out.push(`<b>사우나 (II-2/9.2.2.3.4).</b> 사우나 외곽은 A급이며, 외곽 내부 및 범주 (5)·(9)·(10)을 제외한 다른 구역에 대해 <b>A-60</b> 단열. 고온면↔가연재 500mm 이상 이격, 난로 위 천장은 불연판 + 30mm 공기층.`);
+  }
+  if(both.some(n=>n.startsWith("소화제 저장실"))){
+    out.push(`<b>소화제 저장실 (II-2/10.4.3).</b> Table 9.1~9.8 적용상 <b>화재제어소</b>로 취급되어 범주 (1)로 조회됩니다. 다만 II-2/3.18의 제어장소 정의에는 해당하지 않아, 2026.1.1 발효 II-2/7.5.5 탐지 의무 대상은 아닙니다.`);
+  }
+  if(S.ship==="TANK" && both.some(n=>["선실 — 제한 가구","선실 — 비제한 가구","공공장소 — 50㎡ 미만","식당","통로"].includes(n))){
+    out.push(`<b>탱커 거주구역 외벽 (II-2/9.2.4.2.5).</b> 화물구역을 향한 상부구조·갑판실 외벽 전체와 그 단부로부터 바깥쪽 <b>3m</b>는 강재 + <b>A-60</b>, 측면은 선교갑판 하면까지 연장.`);
+  }
+  if(S.dg && S.ship==="CARG"){
+    const hasMS = [ia,ib].includes(6), hasCargo = [ia,ib].includes(8);
+    if(hasMS && hasCargo){
+      out.push(`<b>위험물 화물구역 ↔ A류 기관구역 (II-2/19.3.8).</b> <b>A-60</b>. 다만 위험물이 그 격벽으로부터 <b>수평 3m 이상 이격</b>되어 적재되면 예외. 그 밖의 경계는 A-60.`);
+    }
+  }
+  if(both.some(n=>["기관실 — A류","보일러실"].includes(n))){
+    out.push(`<b>A류 기관구역 (II-2/11.4 · 9.5).</b> 크라운·케이싱은 강재이며 Table ${sh.tB}/${sh.tD}에 따른 단열, 통상 통로의 바닥판은 강재. 경계의 문·천창·환기구 개구는 <b>II-2/9.5</b>가 별도로 규율합니다 — 천창은 강재·유리 금지, 제어는 구역 밖, 기관구역 경계에 창 설치 금지.`);
+  }
+  if(both.some(n=>n==="조리실"||n.startsWith("팬트리 — 조리기구 있음"))){
+    out.push(`<b>조리실 배기덕트 (II-2/9.7.5).</b> 표의 구획 등급과 별개로, 레인지 배기덕트는 그리스 트랩·상하단 방화댐퍼·덕트 내부 고정식 소화수단이 요구됩니다. 딥팻 조리기구는 <b>II-2/10.6.4</b>(자동소화·이중 서모스탯·전원 자동차단) 적용.`);
+  }
+  return out;
+}
+
+function render(){
+  syncSeg();
+  const sh = SHIPS[S.ship], catNames = CATS[sh.cat];
+  $("mxTitle").textContent = `전체 매트릭스 보기 — Table ${S.orient==="D"?sh.tD:sh.tB}`;
+
+  $("spCount").innerHTML = `격실표 <b>${allSpaces().length}종</b>`
+    + (CUSTOM.length ? ` · 그중 사용자 추가 <b>${CUSTOM.length}종</b>` : "")
+    + (STORE_OK ? "" : ` · <span style="color:var(--sev-30)">브라우저 저장 차단됨</span>`);
+
+  const chip = (o, slot) => {
+    if(o) return o.cat===null
+      ? `<b>${esc(o.ko)}</b> → <span style="color:var(--sev-30)">이 표에 대응 범주 없음</span>${o.custom?`<span class="badge">내 격실</span>`:""}`
+      : `<b>${esc(o.ko)}</b> → 범주 <span class="mono">(${o.cat})</span> ${catNames[o.cat-1]}${o.custom?`<span class="badge">내 격실</span>`:""}`;
+    const t = COMBOS[slot] ? COMBOS[slot].input.value.trim() : "";
+    if(t && !findSpace(t))
+      return `<span style="color:var(--sev-30)">“${esc(t)}” 은(는) 격실표에 없습니다.</span>
+              <button type="button" class="btn btn-xs" data-add="${slot}">격실표에 추가</button>`;
+    return "";
+  };
+  $("pkA").innerHTML = chip(S.a, "a"); $("pkB").innerHTML = chip(S.b, "b");
+  document.querySelectorAll("[data-add]").forEach(b=>
+    b.onclick = ()=> openManager(COMBOS[b.dataset.add].input.value.trim(), b.dataset.add));
+
+  drawMatrix();
+
+  if(!S.a || !S.b){
+    $("out").innerHTML = `<div class="empty">두 격실을 모두 지정하면 판정 결과가 표시됩니다. 격실명(한글·영문) 또는 범주 번호로 검색할 수 있습니다.</div>`;
+    say("");
+    return;
+  }
+
+  /* 표에 범주가 없는 격실 — 표 조회 대신 근거 조항 안내 */
+  const orphan = [S.a, S.b].find(o => o.cat === null);
+  if(orphan){
+    $("out").innerHTML = `
+      <div class="vmain" style="--g:var(--sev-30)">
+        <span class="vlabel">표 조회 불가 — 별도 조항 적용</span>
+        <span class="grade" style="font-size:34px">${esc(orphan.ko)}</span>
+        <span class="gtxt">${SHIPS[S.ship].label} 표(Table ${sh.tB}/${sh.tD})에는 이 격실에 해당하는 범주가 없습니다.</span>
+      </div>
+      <div class="vbody"><div class="block"><h3>적용 근거</h3>
+        <div class="warn">${noCatGuidance(S.ship, orphan.ko)}</div>
+      </div></div>`;
+    say(`${orphan.ko} 은(는) 이 표에 대응 범주가 없습니다. 별도 조항을 확인하십시오.`);
+    return;
+  }
+
+  const ia = S.a.cat, ib = S.b.cat;
+  const cell = lookup(S.ship, S.orient, ia-1, ib-1);
+  if(!cell){ $("out").innerHTML = `<div class="empty">해당 셀에 값이 없습니다.</div>`; return; }
+
+  /* 적용 값 결정 */
+  let chosen = cell.alts[0], autoPicked = false, ruleTxt = "";
+  if(cell.alts.length>1){
+    const isSpr = cell.alts.some(a=>a.sup.includes("d")) && sh.altRule==="sprinkler";
+    if(isSpr){
+      chosen = S.spr ? cell.alts[cell.alts.length-1] : cell.alts[0];
+      autoPicked = true;
+      ruleTxt = S.spr ? "양쪽 모두 스프링클러 → 작은 값 적용" : "스프링클러 미설치(또는 한쪽만) → 큰 값 적용";
+    } else {
+      ruleTxt = "두 값 중 어느 쪽이 적용되는지는 아래 주석을 확인하십시오 — 격벽이 갑판까지 연장되는지에 따라 갈립니다.";
+    }
+  }
+  const g = chosen.val;
+  const gv = `var(${sevVar(g)})`;
+
+  /* 주석 수집 */
+  const sups = new Set(); cell.alts.forEach(a=>a.sup.forEach(s=>sups.add(s)));
+  const noteRows = [...sups].sort().filter(s=>sh.notes[s]).map(s=>
+    `<div class="note"><span class="key">${s}</span><span>${sh.notes[s]}</span></div>`).join("");
+  const starRow = cell.alts.some(a=>a.val==="*") ? `<div class="note"><span class="key">∗</span><span>${N_STAR}</span></div>` : "";
+
+  const altHtml = cell.alts.length>1 ? `<div class="alts">` + cell.alts.map((a,k)=>{
+      const on = autoPicked ? (a===chosen) : false;
+      return `<span class="alt${on?" on":""}" style="--g:var(${sevVar(a.val)});--g2:var(${sevVar(a.val)})">
+        <span class="v">${a.val}</span>${a.sup.length?`<sup class="mono" style="font-size:10px">${a.sup.join("")}</sup>`:""}
+        ${on?`<span class="w">적용</span>`:""}</span>`;
+    }).join("") + `</div>` : "";
+
+  const warns = extraWarnings(ia, ib);
+  const warnHtml = warns.length
+    ? `<div class="block"><h3>표 밖에서 별도로 걸리는 요건</h3>${warns.map(w=>`<div class="warn">${w}</div>`).join("")}</div>` : "";
+
+  const tbl = S.orient==="D" ? sh.tD : sh.tB;
+  const relation = S.orient==="D"
+    ? `<span class="mono">(${ia})</span> ${catNames[ia-1]} <b>아래</b> ／ <span class="mono">(${ib})</span> ${catNames[ib-1]} <b>위</b>`
+    : `<span class="mono">(${ia})</span> ${catNames[ia-1]} ／ <span class="mono">(${ib})</span> ${catNames[ib-1]}`;
+
+  say(`${sh.label}, ${S.orient==="D"?"갑판":"격벽"}. `
+    + `${gwa(S.a.ko)} ${S.b.ko} 사이 최소 내화등급 ${g}.`
+    + (warns.length ? ` 별도 요건 ${warns.length}건 있음.` : ""));
+  $("out").innerHTML = `
+    <div class="vhead">
+      <div class="vmain" style="--g:${gv}">
+        <span class="vlabel">최소 내화등급 — ${S.orient==="D"?"갑판":"격벽"}</span>
+        <span class="grade">${g}${chosen.sup.length?`<small class="mono">${chosen.sup.join("")}</small>`:""}</span>
+        <span class="gtxt">${meaning(g)}</span>
+        ${altHtml}
+        ${ruleTxt?`<span class="prov">${ruleTxt}</span>`:""}
+        <span class="prov">Table <span class="mono">${tbl}</span> · 셀 <span class="mono">(${ia})×(${ib})</span> — ${relation}</span>
+      </div>
+      <div class="diagram">${diagram(g, S.orient==="D")}</div>
+    </div>
+    <div class="vbody">
+      ${(noteRows||starRow)?`<div class="block"><h3>적용 주석</h3>${noteRows}${starRow}</div>`:""}
+      ${warnHtml}
+      <div class="block"><h3>확인 순서</h3>
+        <div class="note"><span class="key">1</span><span>분류가 애매하면 <b>가장 엄격한 경계요건</b>을 갖는 범주로 처리. 어떤 구역 내부의 소구획이 <b>개구 연통 30% 미만</b>이면 별개 구역으로 보고 표를 다시 적용.</span></div>
+        <div class="note"><span class="key">2</span><span>연속 B급 천장·라이닝은 관련 갑판·격벽과 함께 요구 단열·완전성에 <b>전부 또는 일부 기여</b>하는 것으로 인정될 수 있음 (II-2/9.2.2.3.3 등).</span></div>
+        <div class="note"><span class="key">3</span><span>관통부·개구는 별도 조항 — <b>II-2/9.3</b>(관통·450mm 열전달), <b>9.4</b>(문·창), <b>9.7</b>(덕트·방화댐퍼).</span></div>
+      </div>
+    </div>`;
+}
+
+/* ---------------------------- 매트릭스 ---------------------------- */
+function drawMatrix(){
+  const sh = SHIPS[S.ship], names = CATS[sh.cat], n = names.length;
+  const deck = S.orient==="D";
+  const hi = S.a && S.b ? [S.a.cat-1, S.b.cat-1] : null;
+
+  let h = `<table class="grid">`
+    + `<caption class="sr">Table ${deck?sh.tD:sh.tB} — ${sh.label} ${deck?"갑판":"격벽"} 최소 내화등급. `
+    + `${deck?"행은 아래 구역, 열은 위 구역입니다.":"대칭 표이며 상삼각만 표시됩니다."}</caption>`
+    + `<thead><tr><th scope="col" style="text-align:left">${deck?"아래 ↓ / 위 →":"구역"}</th>`;
+  for(let j=0;j<n;j++) h += `<th scope="col">(${j+1})</th>`;
+  h += `</tr></thead><tbody>`;
+  for(let i=0;i<n;i++){
+    h += `<tr><th scope="row">(${i+1}) ${names[i]}</th>`;
+    for(let j=0;j<n;j++){
+      let raw;
+      if(deck) raw = sh.D[i][j];
+      else raw = (j>=i) ? sh.B[i][j] : null;
+      const txt = raw===null||raw===undefined ? "" : cellShort(raw);
+      const first = raw ? raw.split("|")[0].split("^")[0] : null;
+      const isHit = hi && ((deck && i===hi[0] && j===hi[1]) ||
+                           (!deck && Math.min(hi[0],hi[1])===i && Math.max(hi[0],hi[1])===j));
+      const style = first ? `color:var(${sevVar(first)});font-weight:${first==="A-60"?600:500}` : "";
+      h += `<td class="${txt?"":"void"}${isHit?" hit":""}" style="${style}">${txt||"·"}</td>`;
+    }
+    h += `</tr>`;
+  }
+  h += `</tbody></table>`;
+  $("mxHost").innerHTML = h;
+  if(!deck) $("mxHost").insertAdjacentHTML("beforeend",
+    `<p style="font-size:12px;color:var(--muted);margin:10px 0 0">격벽 표는 대칭이므로 상삼각만 표시됩니다 — 행·열 순서를 바꿔 읽어도 같은 값입니다.</p>`);
+  else $("mxHost").insertAdjacentHTML("beforeend",
+    `<p style="font-size:12px;color:var(--muted);margin:10px 0 0">갑판 표는 <b>비대칭</b>입니다 — 행이 아래 구역, 열이 위 구역이며 순서가 바뀌면 값이 달라집니다.</p>`);
+
+  $("legend").innerHTML = ["A-60","A-30","A-15","A-0","B-15","B-0","C","*","-"]
+    .map(v=>`<span><i style="background:var(${sevVar(v)})"></i>${v==="*"?"∗ 강재·A급 불요":v==="-"?"− 요건 없음":v}</span>`).join("");
+}
+
+/* ======================== 격실표 관리 ======================== */
+let pendingSlot = null;            // 관리창을 콤보에서 열었을 때 저장 후 채울 자리
+let editingOrig = null;            // 수정 중인 원래 이름
+
+function fmsg(t, cls){ const e=$("f_msg"); e.textContent=t||""; e.className="msg "+(cls||"info"); }
+function iomsg(t, cls){ const e=$("io_msg"); e.textContent=t||""; e.className="msg "+(cls||"info"); }
+
+function switchView(view){
+  document.body.dataset.view = view;
+  document.querySelectorAll("[data-view-tab]").forEach(b=>{
+    const active = b.dataset.viewTab === view;
+    b.classList.toggle("active", active);
+    b.setAttribute("aria-selected", active ? "true" : "false");
+  });
+  if(view === "spaces"){
+    buildCatSelects();
+    if(!editingOrig && !pendingSlot) formClear();
+    drawCustomList();
+  }else{
+    pendingSlot = null;
+    editingOrig = null;
+  }
+}
+document.querySelectorAll("[data-view-tab]").forEach(b=>
+  b.addEventListener("click", ()=> switchView(b.dataset.viewTab)));
+switchView("calc");
+
+function buildCatSelects(){
+  $("f_cats").innerHTML = Object.values(SHIPS).map(s=>{
+    const names = CATS[s.cat];
+    const opts = [`<option value="">— 없음</option>`]
+      .concat(names.map((n,i)=>`<option value="${i+1}">(${i+1}) ${n}</option>`)).join("");
+    return `<label class="fld"><span>${s.label}</span>
+              <select id="f_${s.cat}">${opts}</select></label>`;
+  }).join("");
+}
+function formRead(){
+  const ko = $("f_ko").value.trim();
+  const en = $("f_en").value.trim();
+  const cats = ["p14","p11","c11","t10"].map(k=>{
+    const v = $("f_"+k).value;
+    return v==="" ? null : parseInt(v,10);
+  });
+  return [ko, en, ...cats];
+}
+function formFill(row){
+  $("f_ko").value = row ? row[0] : "";
+  $("f_en").value = row ? (row[1]||"") : "";
+  ["p14","p11","c11","t10"].forEach((k,i)=> $("f_"+k).value = row && row[2+i]!=null ? String(row[2+i]) : "");
+}
+function formClear(){ formFill(null); editingOrig=null; fmsg(""); $("f_ko").focus(); }
+
+function drawSpaceCatalog(){
+  const all = allSpaces();
+  const q = String($("spaceSearch").value || "").trim().toLowerCase();
+  const rows = all.filter(r=>{
+    if(!q) return true;
+    return (String(r[0] || "") + " " + String(r[1] || "")).toLowerCase().includes(q);
+  });
+  const base = new Set(SPACES.map(r=>r[0]));
+  const mine = customSet();
+  const cell = (value, key)=>{
+    if(value == null) return '<span class="cat-cell">—</span>';
+    const name = (CATS[key] || [])[value-1] || "범주";
+    return '<span class="cat-cell"><span class="mono">(' + value + ')</span> ' + esc(name) + '</span>';
+  };
+  const body = rows.map((r,i)=>{
+    const status = mine.has(r[0]) ? (base.has(r[0]) ? "사용자 덮어씀" : "사용자") : "내장";
+    return '<tr><td class="n">' + (i+1) + '</td>'
+      + '<td>' + esc(r[0]) + '</td>'
+      + '<td style="color:var(--faint);font-size:11.5px">' + esc(r[1] || "") + '</td>'
+      + '<td>' + cell(r[2], "p14") + '</td>'
+      + '<td>' + cell(r[3], "p11") + '</td>'
+      + '<td>' + cell(r[4], "c11") + '</td>'
+      + '<td>' + cell(r[5], "t10") + '</td>'
+      + '<td class="source-cell">' + status + '</td></tr>';
+  }).join("");
+  $("spaceCatalog").innerHTML = body
+    ? '<table><thead><tr><th style="width:42px">No.</th><th>격실명</th><th>영문명</th>'
+      + '<th>여객 &gt;36</th><th>여객 ≤36</th><th>화물선</th><th>탱커</th><th>출처</th>'
+      + '</tr></thead><tbody>' + body + '</tbody></table>'
+    : '<div class="cempty">검색 결과가 없습니다.</div>';
+  $("cntAll").textContent = rows.length + "/" + all.length + "종";
+  $("spaceMeta").textContent = q ? rows.length + "종 검색됨" : "내장 + 사용자 병합";
+}
+
+function drawCustomList(){
+  drawSpaceCatalog();
+  $("cntCustom").textContent = `${CUSTOM.length}종`;
+  if(!CUSTOM.length){
+    $("customList").innerHTML = `<div class="cempty">아직 추가한 격실이 없습니다.</div>`;
+    return;
+  }
+  const base = new Set(SPACES.map(r=>r[0]));
+  const cell = v => v==null ? "—" : v;
+  $("customList").innerHTML = `<table><thead><tr>
+      <th>격실명</th><th>영문</th><th style="text-align:center">여객&gt;36</th>
+      <th style="text-align:center">여객≤36</th><th style="text-align:center">화물선</th>
+      <th style="text-align:center">탱커</th><th></th></tr></thead><tbody>` +
+    CUSTOM.map((r,i)=>`<tr>
+      <td>${esc(r[0])}${base.has(r[0])?`<span class="over">내장 덮어씀</span>`:""}</td>
+      <td style="color:var(--faint);font-size:11.5px">${esc(r[1]||"")}</td>
+      <td class="n">${cell(r[2])}</td><td class="n">${cell(r[3])}</td>
+      <td class="n">${cell(r[4])}</td><td class="n">${cell(r[5])}</td>
+      <td class="act">
+        <button type="button" class="mini" data-ed="${i}">수정</button>
+        <button type="button" class="mini del" data-rm="${i}">삭제</button></td>
+    </tr>`).join("") + `</tbody></table>`;
+
+  $("customList").querySelectorAll("[data-ed]").forEach(b=> b.onclick = ()=>{
+    const r = CUSTOM[+b.dataset.ed]; formFill(r); editingOrig = r[0];
+    fmsg(`“${r[0]}” 을(를) 수정 중입니다. 이름을 바꿔 저장하면 새 격실이 됩니다.`, "info");
+    $("f_ko").scrollIntoView({block:"center", behavior:"smooth"});
+  });
+  $("customList").querySelectorAll("[data-rm]").forEach(b=> b.onclick = ()=>{
+    const r = CUSTOM[+b.dataset.rm];
+    CUSTOM.splice(+b.dataset.rm,1); saveCustom(); afterChange();
+    fmsg(`“${r[0]}” 을(를) 삭제했습니다.`, "ok");
+  });
+}
+
+/* 저장 후 공통 갱신 — 목록·조회·매트릭스·선택 상태를 한꺼번에 맞춘다 */
+function afterChange(){
+  drawCustomList(); refreshSelections(); render();
+}
+/* 선택돼 있던 격실의 범주가 바뀌었을 수 있으므로 다시 읽어온다 */
+function refreshSelections(){
+  const ci = CAT_IDX[SHIPS[S.ship].cat];
+  ["a","b"].forEach(slot=>{
+    const cur = S[slot];
+    if(!cur || cur.kind==="cat") return;
+    const row = findSpace(cur.ko);
+    if(!row){ S[slot]=null; if(COMBOS[slot]) COMBOS[slot].input.value=""; return; }
+    S[slot] = {ko:row[0], en:row[1], cat:row[ci], kind: row[ci]===null?"orphan":"space",
+               custom: customSet().has(row[0])};
+  });
+}
+
+$("f_save").onclick = ()=>{
+  const row = formRead();
+  if(!row[0]){ fmsg("격실명(국문)을 입력하십시오.", "err"); $("f_ko").focus(); return; }
+  if(row.slice(2).every(v=>v===null)){
+    fmsg("선종 네 곳이 모두 “없음”입니다. 최소 한 곳에는 범주를 지정하십시오.", "err"); return;
+  }
+  // 이름을 바꿔 저장하면 원래 항목은 정리
+  if(editingOrig && editingOrig !== row[0]){
+    const k = CUSTOM.findIndex(r=>r[0]===editingOrig);
+    if(k>=0) CUSTOM.splice(k,1);
+  }
+  const idx = CUSTOM.findIndex(r=>r[0]===row[0]);
+  if(idx>=0) CUSTOM[idx] = row; else CUSTOM.push(row);
+  const ok = saveCustom();
+  editingOrig = null;
+  afterChange();
+  fmsg(ok ? `“${row[0]}” 을(를) 저장했습니다.`
+          : `“${row[0]}” 을(를) 적용했습니다 — 다만 이 환경에서는 브라우저 저장이 막혀 있어 창을 닫으면 사라집니다. XLSX로 저장해 보관하십시오.`,
+       ok ? "ok" : "err");
+
+  // 콤보에서 열렸다면 그 자리에 바로 채우고 닫는다
+  if(pendingSlot){
+    const ci = CAT_IDX[SHIPS[S.ship].cat];
+    const o = {ko:row[0], en:row[1], cat:row[2+["p14","p11","c11","t10"].indexOf(SHIPS[S.ship].cat)],
+               kind:"space", custom:true};
+    if(o.cat === null) o.kind = "orphan";
+    S[pendingSlot] = o;
+    if(COMBOS[pendingSlot]) COMBOS[pendingSlot].input.value = row[0];
+    pendingSlot = null;
+    switchView("calc"); render();
+  }
+};
+$("f_clear").onclick = formClear;
+
+function openManager(prefillKo, slot){
+  pendingSlot = slot || null;
+  buildCatSelects();
+  formClear();
+  if(prefillKo){
+    $("f_ko").value = prefillKo;
+    fmsg(`“${prefillKo}” 은(는) 격실표에 없습니다. 선종별 범주를 지정해 저장하면 곧바로 조회에 사용됩니다.`, "info");
+  }
+  $("storeWarn").style.display = STORE_OK ? "none" : "";
+  if(!STORE_OK) $("storeWarn").innerHTML =
+    `<b>이 환경에서는 브라우저 저장이 차단되어 있습니다.</b> 추가한 격실은 창을 닫거나 새로 고치면 사라집니다.
+     아래 <b>XLSX 가져오기 · 내보내기</b>에서 파일로 저장해 보관하십시오.`;
+  drawCustomList();
+  iomsg("");
+  switchView("spaces");
+  setTimeout(()=> $("f_ko").focus(), 40);
+}
+$("openMgr").onclick = ()=> openManager(null, null);
+$("mgrClose").onclick = ()=> switchView("calc");
+
+/* ---------------------- XLSX 입출력 ---------------------- */
+/* ==================== XLSX 입출력 ====================
+   외부 라이브러리를 쓸 수 없으므로(Artifact CSP) ZIP 과 SpreadsheetML 을 직접 다룬다.
+   내보내기 : 무압축(STORE) ZIP + 최소 워크북 — 워크북의 01_격실분류 시트와 같은 열 구성
+   가져오기 : 중앙 디렉터리 파싱 후 DecompressionStream("deflate-raw") 로 해제
+====================================================== */
+const XLSX_SHEET = "01_격실분류";
+const REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+const TEnc = new TextEncoder();
+
+const CRC_TBL = (()=>{ const t=new Uint32Array(256);
+  for(let i=0;i<256;i++){ let c=i; for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[i]=c>>>0; }
+  return t; })();
+function crc32(u8){ let c=0xFFFFFFFF;
+  for(let i=0;i<u8.length;i++) c = CRC_TBL[(c ^ u8[i]) & 0xFF] ^ (c>>>8);
+  return (c ^ 0xFFFFFFFF) >>> 0; }
+
+function zipStore(files){
+  const parts=[], cd=[]; let off=0;
+  files.forEach(f=>{
+    const nm=TEnc.encode(f.name), crc=crc32(f.data), sz=f.data.length;
+    const lh=new Uint8Array(30), lv=new DataView(lh.buffer);
+    lv.setUint32(0,0x04034b50,true); lv.setUint16(4,20,true);
+    lv.setUint32(14,crc,true); lv.setUint32(18,sz,true); lv.setUint32(22,sz,true);
+    lv.setUint16(26,nm.length,true);
+    parts.push(lh,nm,f.data);
+    const ch=new Uint8Array(46), cv=new DataView(ch.buffer);
+    cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true);
+    cv.setUint32(16,crc,true); cv.setUint32(20,sz,true); cv.setUint32(24,sz,true);
+    cv.setUint16(28,nm.length,true); cv.setUint32(42,off,true);
+    cd.push(ch,nm);
+    off += 30 + nm.length + sz;
+  });
+  const cdLen = cd.reduce((n,b)=>n+b.length,0);
+  const eo=new Uint8Array(22), ev=new DataView(eo.buffer);
+  ev.setUint32(0,0x06054b50,true);
+  ev.setUint16(8,files.length,true); ev.setUint16(10,files.length,true);
+  ev.setUint32(12,cdLen,true); ev.setUint32(16,off,true);
+  const all = parts.concat(cd,[eo]);
+  const out = new Uint8Array(all.reduce((n,b)=>n+b.length,0));
+  let q=0; all.forEach(b=>{ out.set(b,q); q+=b.length; });
+  return out;
+}
+
+const xe = v => String(v==null?"":v)
+  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;").replace(/'/g,"&apos;");
+const colName = i => { let s="", n=i+1;
+  while(n>0){ const r=(n-1)%26; s=String.fromCharCode(65+r)+s; n=Math.floor((n-1)/26); } return s; };
+
+function buildXlsx(rows){
+  const XD = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+  const table = [SHEET_HEAD].concat(rows.map(r=>[r[0], r[1], r[2], r[3], r[4], r[5]]));
+  const body = table.map((row, ri)=>{
+    const cells = row.map((v, ci)=>{
+      const ref = colName(ci) + (ri+1);
+      if(typeof v === "number") return `<c r="${ref}"><v>${v}</v></c>`;
+      const txt = (v==null || v==="") ? "" : String(v);
+      if(txt === "") return "";
+      return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xe(txt)}</t></is></c>`;
+    }).join("");
+    return `<row r="${ri+1}">${cells}</row>`;
+  }).join("");
+
+  const sheet = XD + `<worksheet xmlns="${NS}">`
+    + `<cols><col min="1" max="1" width="30" customWidth="1"/><col min="2" max="2" width="30" customWidth="1"/>`
+    + `<col min="3" max="6" width="14" customWidth="1"/></cols>`
+    + `<sheetData>${body}</sheetData></worksheet>`;
+
+  const wbXml = XD + `<workbook xmlns="${NS}" xmlns:r="${REL_NS}">`
+    + `<sheets><sheet name="${xe(XLSX_SHEET)}" sheetId="1" r:id="rId1"/></sheets></workbook>`;
+
+  const wbRels = XD + `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">`
+    + `<Relationship Id="rId1" Type="${REL_NS}/worksheet" Target="worksheets/sheet1.xml"/>`
+    + `<Relationship Id="rId2" Type="${REL_NS}/styles" Target="styles.xml"/></Relationships>`;
+
+  const rootRels = XD + `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">`
+    + `<Relationship Id="rId1" Type="${REL_NS}/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
+
+  const styles = XD + `<styleSheet xmlns="${NS}">`
+    + `<fonts count="1"><font><sz val="11"/><name val="Malgun Gothic"/></font></fonts>`
+    + `<fills count="2"><fill><patternFill patternType="none"/></fill>`
+    + `<fill><patternFill patternType="gray125"/></fill></fills>`
+    + `<borders count="1"><border/></borders>`
+    + `<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>`
+    + `<cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>`
+    + `</styleSheet>`;
+
+  const ct = XD + `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">`
+    + `<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>`
+    + `<Default Extension="xml" ContentType="application/xml"/>`
+    + `<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>`
+    + `<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`
+    + `<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>`
+    + `</Types>`;
+
+  const F = (name, str) => ({name, data: TEnc.encode(str)});
+  return zipStore([
+    F("[Content_Types].xml", ct),
+    F("_rels/.rels", rootRels),
+    F("xl/workbook.xml", wbXml),
+    F("xl/_rels/workbook.xml.rels", wbRels),
+    F("xl/styles.xml", styles),
+    F("xl/worksheets/sheet1.xml", sheet),
+  ]);
+}
+
+async function unzip(buf){
+  const u8 = new Uint8Array(buf), dv = new DataView(buf);
+  let eo = -1;
+  for(let i = u8.length - 22; i >= 0 && i > u8.length - 65558; i--)
+    if(dv.getUint32(i, true) === 0x06054b50){ eo = i; break; }
+  if(eo < 0) throw new Error("ZIP 구조를 찾지 못했습니다 — xlsx 파일이 맞는지 확인하십시오.");
+  const cnt = dv.getUint16(eo + 10, true);
+  let p = dv.getUint32(eo + 16, true);
+  const dec = new TextDecoder("utf-8"), out = {};
+  for(let i = 0; i < cnt; i++){
+    if(dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true);
+    const csize  = dv.getUint32(p + 20, true);
+    const nlen = dv.getUint16(p + 28, true);
+    const elen = dv.getUint16(p + 30, true);
+    const clen = dv.getUint16(p + 32, true);
+    const lho  = dv.getUint32(p + 42, true);
+    const name = dec.decode(u8.subarray(p + 46, p + 46 + nlen));
+    const lnl = dv.getUint16(lho + 26, true), lel = dv.getUint16(lho + 28, true);
+    const st  = lho + 30 + lnl + lel;
+    out[name] = { method, raw: u8.subarray(st, st + csize) };
+    p += 46 + nlen + elen + clen;
+  }
+  return out;
+}
+async function entryText(e){
+  if(!e) return null;
+  if(e.method === 0) return new TextDecoder("utf-8").decode(e.raw);
+  if(typeof DecompressionStream === "undefined")
+    throw new Error("이 브라우저는 XLSX 압축 해제를 지원하지 않습니다 — 최신 브라우저에서 다시 시도하십시오.");
+  const st = new Blob([e.raw]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  return new TextDecoder("utf-8").decode(await new Response(st).arrayBuffer());
+}
+
+async function readXlsx(buf){
+  const z = await unzip(buf);
+  const P = new DOMParser();
+  const wbXml = await entryText(z["xl/workbook.xml"]);
+  if(!wbXml) throw new Error("xl/workbook.xml 이 없습니다 — xlsx 파일이 아닙니다.");
+  const relsXml = await entryText(z["xl/_rels/workbook.xml.rels"]) || "<Relationships/>";
+  const rel = {};
+  [...P.parseFromString(relsXml, "application/xml").getElementsByTagName("Relationship")]
+    .forEach(r => rel[r.getAttribute("Id")] = r.getAttribute("Target"));
+
+  const sheets = [...P.parseFromString(wbXml, "application/xml").getElementsByTagName("sheet")].map(el=>{
+    const id = el.getAttributeNS(REL_NS, "id") || el.getAttribute("r:id");
+    let t = rel[id] || "";
+    const path = t.startsWith("/") ? t.slice(1) : "xl/" + t.replace(/^\.?\//, "");
+    return { name: el.getAttribute("name"), path };
+  });
+
+  const ssXml = await entryText(z["xl/sharedStrings.xml"]);
+  const shared = ssXml
+    ? [...P.parseFromString(ssXml, "application/xml").getElementsByTagName("si")]
+        .map(si => [...si.getElementsByTagName("t")].map(t => t.textContent).join(""))
+    : [];
+
+  async function readSheet(sh){
+    const xml = await entryText(z[sh.path]);
+    if(!xml) return [];
+    const doc = P.parseFromString(xml, "application/xml");
+    return [...doc.getElementsByTagName("row")].map(r=>{
+      const arr = [];
+      [...r.getElementsByTagName("c")].forEach(c=>{
+        const ref = c.getAttribute("r") || "";
+        const letters = ref.replace(/[^A-Z]/g, "");
+        let col = 0; for(const ch of letters) col = col * 26 + (ch.charCodeAt(0) - 64);
+        col = col > 0 ? col - 1 : arr.length;
+        const t = c.getAttribute("t");
+        let v = "";
+        if(t === "inlineStr") v = [...c.getElementsByTagName("t")].map(x => x.textContent).join("");
+        else {
+          const vn = c.getElementsByTagName("v")[0];
+          const raw = vn ? vn.textContent : "";
+          v = (t === "s") ? (shared[+raw] != null ? shared[+raw] : "") : raw;
+        }
+        arr[col] = v;
+      });
+      return arr;
+    });
+  }
+
+  let target = sheets.find(sh => sh.name === XLSX_SHEET);
+  if(!target){
+    for(const sh of sheets){
+      const rows = await readSheet(sh);
+      if(rows.some(r => String(r[0] || "").trim().startsWith("격실명"))){ target = sh; break; }
+    }
+  }
+  if(!target)
+    throw new Error(`“${XLSX_SHEET}” 시트도, 격실명 머리글이 있는 시트도 찾지 못했습니다.`);
+  return { rows: await readSheet(target), sheet: target.name };
+}
+
+const SHEET_HEAD = ["격실명","영문명","여객36초과","여객36이하","화물선","탱커"];
+/* ---------------- XLSX 가져오기 ---------------- */
+let pendingRows = null;                       // 교체 확인 대기 중인 데이터
+function showConfirm(on){ $("im_confirmRow").style.display = on ? "" : "none"; }
+
+/* 머리글 행 위치 — 이 도구가 만든 파일(1행)과 워크북 01_격실분류(3행) 모두 대응 */
+function headerIndex(rows){
+  // 머리글은 A열이 "격실명…" 이고 C열에 선종(여객)이 적힌 행. 제목·부제 행이 걸리지 않도록 둘 다 본다.
+  for(let i=0; i<Math.min(rows.length, 12); i++){
+    const c0 = String(rows[i][0]||"").trim();
+    const c2 = String(rows[i][2]||"").trim();
+    if(c0.startsWith("격실명") && /여객/.test(c2)) return i;
+  }
+  return -1;
+}
+
+function applyRows(rows, confirmed, srcLabel){
+  if(!rows || !rows.length){ iomsg("읽을 내용이 없습니다.", "err"); return; }
+  const hi = headerIndex(rows);
+  const body = hi >= 0 ? rows.slice(hi + 1) : rows;
+  const keys = ["p14","p11","c11","t10"], shipKeys = Object.keys(SHIPS);
+  const errs = [], next = [];
+  const baseMap = new Map(SPACES.map(r => [r[0], r]));
+
+  body.forEach((r, n)=>{
+    const line = n + (hi >= 0 ? hi + 2 : 1);
+    const ko = String(r[0] == null ? "" : r[0]).trim();
+    if(!ko || ko === "격실 분류" || ko.startsWith("격실명")) return;
+    const en = String(r[1] == null ? "" : r[1]).trim();
+    const cats = [];
+    for(let k = 0; k < 4; k++){
+      const raw = String(r[2+k] == null ? "" : r[2+k]).trim();
+      if(raw === "" || raw === "—" || raw === "-" || raw === "–"){ cats.push(null); continue; }
+      const v = parseInt(raw.replace(/[()]/g, ""), 10);
+      if(!Number.isInteger(v) || v < 1 || v > MAXCAT[keys[k]]){
+        errs.push(`${line}행 “${ko}” — ${SHIPS[shipKeys[k]].label} 범주 “${raw}” 는 1~${MAXCAT[keys[k]]} 범위를 벗어납니다.`);
+        cats.push(null);
+      } else cats.push(v);
+    }
+    if(cats.every(v => v === null)){
+      errs.push(`${line}행 “${ko}” — 네 선종 모두 범주가 비어 있어 건너뜁니다.`);
+      return;
+    }
+    const row = [ko, en, ...cats], bs = baseMap.get(ko);
+    if(bs && bs[1]===en && bs[2]===cats[0] && bs[3]===cats[1] && bs[4]===cats[2] && bs[5]===cats[3]) return;
+    next.push(row);
+  });
+
+  const m = new Map(); next.forEach(r => m.set(r[0], r));
+  const incoming = [...m.values()];
+  const lost = CUSTOM.filter(r => !m.has(r[0])).map(r => r[0]);
+  if(lost.length && !confirmed){
+    pendingRows = rows; showConfirm(true);
+    iomsg(`${srcLabel} 를 가져오면 기존 사용자 격실 ${lost.length}종이 사라집니다 — `
+        + lost.slice(0,4).join(", ") + (lost.length > 4 ? ` 외 ${lost.length-4}종` : "")
+        + `. 계속하려면 아래 [교체 확인]을 누르십시오.`, "err");
+    return;
+  }
+  pendingRows = null; showConfirm(false);
+
+  CUSTOM = incoming;
+  const ok = saveCustom();
+  afterChange();
+  const head = `${srcLabel} 에서 ${CUSTOM.length}종을 사용자 격실로 반영했습니다`
+             + (hi >= 0 ? ` (머리글 ${hi+1}행 인식)` : "")
+             + (ok ? "" : " — 브라우저 저장이 막혀 이번 세션에만 유지됩니다");
+  iomsg(errs.length
+    ? `${head}. 건너뛰거나 보정한 항목 ${errs.length}건:\n· ` + errs.slice(0,8).join("\n· ")
+      + (errs.length > 8 ? `\n· 외 ${errs.length-8}건` : "")
+    : head + ".", errs.length ? "err" : "ok");
+}
+$("im_confirm").onclick = ()=>{
+  if(!pendingRows){ showConfirm(false); return; }
+  applyRows(pendingRows, true, "가져오기");
+};
+$("im_cancel").onclick = ()=>{
+  pendingRows = null; showConfirm(false); iomsg("가져오기를 취소했습니다.", "info");
+};
+
+let DL = undefined;                    // undefined=미확인, null=불가, 객체=사용가능
+async function getDL(){
+  if(DL !== undefined) return DL;
+  try{
+    DL = (window.claude && typeof window.claude.use === "function")
+       ? await window.claude.use("downloads") : null;
+  }catch(e){ DL = null; }
+  return DL;
+}
+const DL_ERR = {
+  declined:  "저장을 취소하셨습니다.",
+  rate_limited: "저장 요청이 잠시 제한되었습니다. 몇 초 뒤 다시 눌러 주십시오.",
+  too_large: "내용이 너무 커서 저장할 수 없습니다.",
+  bad_request: "파일 이름이나 내용에 문제가 있습니다.",
+};
+$("ex_xlsx").onclick = async ()=>{
+  const rows = allSpaces();
+  const which = `전체 격실 ${rows.length}종`;
+  let bytes;
+  try{ bytes = buildXlsx(rows); }
+  catch(e){ iomsg("xlsx 를 만들지 못했습니다 — " + e.message, "err"); return; }
+
+  const dl = await getDL();
+  if(dl){
+    try{
+      await dl.save({filename:"SOLAS_격실표.xlsx", data:bytes.buffer});
+      iomsg(`SOLAS_격실표.xlsx (${which}) 로 저장했습니다.`, "ok");
+    }catch(e){
+      const code = e && e.code;
+      iomsg(code === "rejected_extension" || code === "extension_not_enabled"
+        ? "이 뷰어는 xlsx 저장을 허용하지 않습니다 — 로컬 fire_rating.html에서 열어 저장하십시오."
+        : (DL_ERR[code] || "파일 저장을 쓸 수 없습니다."), code === "declined" ? "info" : "err");
+    }
+    return;
+  }
+  try{
+    const url = URL.createObjectURL(new Blob([bytes],
+      {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+    const a = document.createElement("a");
+    a.href = url; a.download = "SOLAS_격실표.xlsx";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+    iomsg(`SOLAS_격실표.xlsx (${which}) 를 내려받았습니다. 워크북의 01_격실분류 시트와 같은 열 구성입니다.`, "ok");
+  }catch(e){
+    iomsg("이 환경에서는 파일 저장이 막혀 있습니다.", "err");
+  }
+};
+
+$("im_file").onchange = async e=>{
+  const f = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if(!f) return;
+  pendingRows = null; showConfirm(false);
+  if(/\.xlsx$/i.test(f.name) || /spreadsheetml/.test(f.type || "")){
+    try{
+      iomsg(`${f.name} 을(를) 읽는 중…`, "info");
+      const got = await readXlsx(await f.arrayBuffer());
+      applyRows(got.rows, false, `${f.name} [${got.sheet}]`);
+    }catch(err){
+      iomsg("xlsx 를 읽지 못했습니다 — " + (err && err.message ? err.message : err), "err");
+    }
+    return;
+  }
+  iomsg("XLSX 파일만 가져올 수 있습니다.", "err");
+};
+
+$("reset").onclick = ()=>{
+  if(!CUSTOM.length){ iomsg("삭제할 사용자 격실이 없습니다.", "info"); return; }
+  const n = CUSTOM.length;
+  CUSTOM = []; saveCustom(); afterChange();
+  iomsg(`사용자 격실 ${n}종을 삭제하고 내장 82종만 남겼습니다.`, "ok");
+};
+
+/* ---------------------------- 기동 ---------------------------- */
+document.documentElement.lang = "ko";
+if(!document.querySelector('meta[name="viewport"]')){            // Artifact 래퍼가 없을 때 대비
+  const m = document.createElement("meta");
+  m.name = "viewport"; m.content = "width=device-width, initial-scale=1";
+  document.head.appendChild(m);
+}
+loadCustom();
+$("spaceSearch").addEventListener("input", drawSpaceCatalog);
+buildShipSeg();
+buildCatSelects();
+syncSeg();
+render();
+</script>

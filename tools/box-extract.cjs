@@ -36,7 +36,7 @@ async function extract(input) {
  const [input = 's5', out = 'samples/s5.contract.json'] = process.argv.slice(2);
  const sha = f => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex').slice(0, 16);
  const raw = await extract(input);
- raw.source = { app: 'BOX CAL Enhance', file: BOX_HTML, sha256: sha(BOX_HTML), project: input === 's5' ? 'built-in S5 example' : path.resolve(input) };
+ raw.source = { app: 'BOX CAL Enhance', file: path.relative(path.join(__dirname, '..'), BOX_HTML).split(path.sep).join('/'), sha256: sha(BOX_HTML), project: input === 's5' ? 'built-in S5 example' : path.basename(input), path: input === 's5' ? null : path.relative(process.cwd(), path.resolve(input)).split(path.sep).join('/') };
  const contract = buildContract(raw), problems = validate(contract);
  fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true });
  fs.writeFileSync(out, JSON.stringify(contract, null, 1));

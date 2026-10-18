@@ -1,0 +1,106 @@
+'use strict';
+const test = require('node:test'), assert = require('node:assert/strict'), fs = require('fs'), path = require('path');
+const PJ = require('../lib/project.cjs'), PL = require('../lib/phg-plan.cjs'), RP = require('../lib/report.cjs'), XL = require('../lib/xlsx.cjs'), DX = require('../lib/dxf-out.cjs');
+const X = require('../lib/dxf-in.cjs'), { readWorkbook } = require('../lib/xlsx-read.cjs'), K = require('../lib/contract.cjs');
+const load = f => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'samples', f), 'utf8'));   // a fresh copy per test
+
+// a fake PHG D result for every plan: one L-shaped duct from the Root to each RU, sized 400 x 200 (0.08 m², above the fire damper limit)
+function fakeRun(contract) {
+ const plans = PL.plan(contract), results = {}, geometry = {}, projects = {};
+ for (const p of plans) {
+  results[p.key] = { rus: p.rus.length, flowCmh: p.designCmh, ducts: p.rus.length, lengthM: 10, indexPa: 100, auto: true, unconnected: 0, at: 1, sig: PJ.planSig(p), stale: false };
+  geometry[p.key] = { ducts: p.rus.map((u, i) => ({ displayName: 'D' + i, type: 'branch', widthMm: 400, heightMm: 200, flowCmh: u.flowCmh, points: [{ x: p.root.x, y: -p.root.y }, { x: u.x, y: -p.root.y }, { x: u.x, y: -u.y }] })) };
+  projects[p.key] = '{"schemaVersion":"3.0.0"}';
+ }
+ return PJ.make({ contract, projects, results, geometry });
+}
+
+test('project file: round trip, legacy schema, bare contract, broken input', () => {
+ const pr = fakeRun(load('t3.contract.json')), back = PJ.read(JSON.parse(JSON.stringify(pr)));
+ assert.equal(back.project.schema, 'hvac-grid-project/1');
+ assert.deepEqual(back.project.results, pr.results); assert.deepEqual(back.project.geometry, pr.geometry); assert.deepEqual(Object.keys(back.project.projects), Object.keys(pr.projects));
+ const legacy = PJ.read({ ...JSON.parse(JSON.stringify(pr)), schema: 'hvac-grid-project/0' });
+ assert.ok(legacy.notes.some(n => /변환/.test(n)));
+ assert.equal(PJ.read(load('s5.contract.json')).project.contract.rooms.length, 94);
+ // results of plans that no longer exist are dropped, not trusted
+ const odd = JSON.parse(JSON.stringify(pr)); odd.projects['X__NOPE'] = '{}'; odd.results['X__NOPE'] = { auto: true };
+ const r = PJ.read(odd); assert.ok(!('X__NOPE' in r.project.results)); assert.ok(r.notes.some(n => n.startsWith('X__NOPE')));
+ assert.throws(() => PJ.read({ schema: 'something' }), /HVAC Grid/); assert.throws(() => PJ.read(null));
+ const bad = JSON.parse(JSON.stringify(pr)); bad.contract.rooms[0].deckId = 'NOPE'; assert.throws(() => PJ.read(bad), /계약 검사/);
+});
+
+test('stale results: a changed plan (dT, unit location) marks only the affected results', () => {
+ const pr = fakeRun(load('t3.contract.json'));
+ assert.equal(PJ.analyze(pr).done, PJ.analyze(pr).total);
+ const moved = { ...pr, contract: { ...pr.contract, roots: { 'D4__AHU-BRG': { x: 13000, y: 10000 } } } };
+ const fr = PJ.freshResults(moved.contract, moved.results);
+ assert.ok(fr['D4__AHU-BRG'].stale); assert.ok(!fr['D1__AHU-ACC'].stale);
+ const dT = { ...pr, contract: K.applyRules(pr.contract, { supplyDeltaTK: 12 }) }, fd = PJ.freshResults(dT.contract, dT.results);
+ assert.ok(fd['D1__AHU-ACC'].stale, 'supply airflow changed'); assert.ok(!fd['D1__EF-SAN'].stale, 'exhaust unchanged');
+});
+
+test('analysis: checks, systems with risers, SOLAS penetrations from the duct geometry', () => {
+ const c = load('t3.contract.json'); c.solas = { rooms: Object.fromEntries(c.rooms.filter(r => /트렁크/.test(r.name)).map(r => [r.id, { space: '환기·공조 기계실' }])) };
+ const a = PJ.analyze(fakeRun(c));
+ assert.equal(a.done, a.total); assert.ok(a.checks.every(k => k.ok), a.checks.filter(k => !k.ok).map(k => k.text).join(', '));
+ const acc = a.systems.find(s => s.systemKey === 'AHU-ACC');
+ assert.equal(acc.decks.length, 3); assert.equal(acc.risers.length, 2); assert.equal(acc.indexDeckId, 'D3'); assert.ok(acc.indexPa > 100);
+ assert.ok(a.solas.penetrations.length > 20); assert.ok(a.solas.summary.fireDampers > 0);
+ assert.ok(a.solas.penetrations.every(p => p.no && Number.isFinite(p.x) && Number.isFinite(p.y)));
+});
+
+test('airflow checks: negative pressure rooms, pending loads', () => {
+ const c = load('s5.contract.json'), r = c.rooms.find(x => x.systems.exhaust);
+ c.airflow[r.id] = { ...c.airflow[r.id], supplyCmh: c.airflow[r.id].exhaustCmh + 50 }; r.systems.supply = r.systems.supply || 'X'; r.systems.return = null;
+ assert.ok(PJ.airChecks(c).some(x => x.roomId === r.id && x.code === 'NEG_PRESSURE'));
+ c.loads[c.rooms[0].id].complete = false;
+ assert.ok(PJ.airChecks(c).some(x => x.code === 'LOAD_PENDING'));
+});
+
+test('integrated XLSX: every sheet readable, rooms and penetrations complete', () => {
+ const pr = fakeRun(load('t3.contract.json')), a = PJ.analyze(pr), sheets = RP.sheets(pr, a), bytes = XL.xlsx(sheets);
+ const wb = readWorkbook(Buffer.from(bytes));
+ assert.deepEqual(Object.keys(wb), sheets.map(s => s.name));
+ assert.equal(wb['격실'].length, 74); assert.equal(wb['격실'][0][0], 'Deck');
+ assert.equal(wb['관통 목록'].length, a.solas.penetrations.length + 1);
+ assert.equal(wb['수직 덕트'].length, a.risers.length + 1);
+ // numbers stay numbers; the summary carries the disclaimer
+ assert.equal(typeof wb['계통'][1][5], 'number');
+ assert.ok(wb['요약'].some(r => /주관청/.test(r[1] || '')));
+ // the same input gives the same bytes (fixed ZIP dates)
+ assert.deepEqual(XL.xlsx(sheets), bytes);
+});
+
+test('integrated DXF and HTML report', () => {
+ const pr = fakeRun(load('t3.contract.json')), a = PJ.analyze(pr);
+ const dxf = DX.integratedDxf(pr.contract, { plans: a.plans, geometry: pr.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers });
+ assert.match(dxf, /AC1015/); assert.match(dxf, /\r\nEOF\r\n$/);
+ for (const layer of ['ROOM', 'DUCT_SUPPLY', 'DUCT_EXHAUST', 'DUCT_RETURN', 'RU_SUPPLY', 'UNIT_SUPPLY', 'RISER', 'FIRE_A60', 'FIRE_PEN']) assert.ok(dxf.includes('\r\n8\r\n' + layer + '\r\n'), layer);
+ assert.ok(!/[^\x00-\x7F]/.test(dxf), 'text as \\U+ escapes only');
+ // rooms read back from the integrated DXF: every room, Korean names restored
+ const back = X.rooms(dxf, { roomLayers: /^ROOM$/ });
+ assert.equal(back.length, pr.contract.rooms.length);
+ const html = RP.html(pr, a);
+ assert.match(html, /<svg/); assert.match(html, /주관청/); assert.equal((html.match(/<figure>/g) || []).length, 4);
+});
+
+test('test drawings: every T3 deck DXF equals the contract (number, name, area)', () => {
+ const c = load('t3.contract.json');
+ for (const d of c.decks) {
+  const r = X.compare(X.rooms(fs.readFileSync(path.join(__dirname, '..', 'samples', 't3', `T3_${d.id}.dxf`), 'utf8')), c, d.id);
+  assert.ok(r.ok, `${d.id}: ${JSON.stringify(r).slice(0, 300)}`); assert.deepEqual(r.nameDiffs, []);
+ }
+ // the drawings HVAC Grid sends to PHG D read back the same, for S5 and T3
+ for (const f of ['s5.contract.json', 't3.contract.json']) { const k = load(f); for (const d of k.decks) assert.ok(X.compare(X.rooms(PL.deckDxf(k, d.id)), k, d.id).ok, f + ' ' + d.id); }
+});
+
+test('test ship generator: deterministic, BOX format, L-shaped cabins', () => {
+ const T = require('../tools/make-test-ship.cjs');
+ assert.equal(T.rooms.length, 73); assert.equal(T.rooms.filter(r => r.poly).length, 15);
+ const box = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'samples', 't3', 'T3.box.json'), 'utf8'));
+ assert.equal(box.format, 'NODE-BOX-L4'); assert.equal(box.schemaVersion, 2); assert.equal(box.source.decks.length, 4);
+ assert.equal(new Set(box.source.entities.map(e => e.persistentUuid)).size, box.source.entities.length);
+ const c = load('t3.contract.json');
+ assert.equal(c.rooms.length, 73); assert.ok(c.rooms.every(r => c.loads[r.id].complete), 'BOX computed every room');
+ assert.deepEqual(K.validate(c), []);
+});
