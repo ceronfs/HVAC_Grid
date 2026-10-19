@@ -65,9 +65,52 @@
   }
  }
 
+ // ---- BOX and CAL table windows ----
+ // BOX writes every table (격실 목록, 설계 조건, K값, 격실 부하, …) into one window of its own ("loadcal-table"). The shell
+ // opens that window - so a popup blocker lets the user's click through - and dresses it like the app: app/popup.css,
+ // the logo, the shell's theme, Korean titles and button labels. BOX reads the title and the RST / ↻ button text, so
+ // those are relabelled on screen (data-hg-*), never rewritten.
+ const POPUP_TITLES = [[/^Face Area Table$/, () => '접한 면적'], [/^격실 리스트/, t => t.replace('격실 리스트', '격실 입력')], [/^격실 목록/, t => t],
+  [/^설계조건$/, () => '설계 조건'], [/^BC · /, t => t.replace('BC · ', '경계 조건 · ')], [/^ISO 7547 K DATA$/, () => 'ISO 기준 K값 · ISO 7547'],
+  [/^KC 구조 계산 DATA$/, () => 'LY · 구조 레이어 K값'], [/^사용자 K DATA$/, () => '사용자 K값'], [/^개별 격실 부하계산 결과$/, () => '격실 부하'],
+  [/^SUP별 시스템 신기량/, t => '신기 (OA) · ' + t], [/^LOAD · AHU Main Heater \/ 격실 Reheater$/, () => '리히터 · AHU 메인 히터 / 격실 리히터']];
+ const POPUP_BUTTONS = { RST: ['새로 고침', '표를 지금 도면·조건으로 다시 읽기'], '↻': ['새로 고침', '표를 지금 도면·조건으로 다시 읽기'], NEW: ['새로 작성', '새 사용자 K 구조 작성'], XLSX: ['XLSX 저장', '이 표를 XLSX 파일로 저장'], '×': [null, '닫기'] };
+ const popups = new Set(); let popupCss = null;
+ function dressPopup(w) {
+  let d; try { d = w.document; } catch { return false; }
+  const title = d?.getElementById('modalTitle'), head = d?.querySelector('.detached-head');
+  if (!title || !head) return false;
+  if (!d.getElementById('hvac-grid-popup')) { const s = d.createElement('style'); s.id = 'hvac-grid-popup'; s.textContent = popupCss || ''; d.head.appendChild(s); }
+  d.documentElement.dataset.theme = document.documentElement.dataset.theme || '';
+  if (!head.querySelector('.hg-logo')) { const img = d.createElement('img'); img.className = 'hg-logo'; img.alt = ''; img.src = new URL('logo-64.png', location.href).href; title.before(img); }
+  const relabel = () => {
+   const t = title.textContent.trim(), m = POPUP_TITLES.find(([re]) => re.test(t)), shown = m ? m[1](t) : t;
+   if (shown !== t) title.dataset.hgLabel = shown; else delete title.dataset.hgLabel;
+   d.title = `${shown || '표'} — HVAC Grid`;
+   for (const b of head.querySelectorAll('.btn')) { const l = POPUP_BUTTONS[b.textContent.trim()]; if (l?.[0]) b.dataset.hgLabel = l[0]; else delete b.dataset.hgLabel; if (l?.[1]) b.title = l[1]; }
+  };
+  relabel();
+  if (!head.__hgObserved) { head.__hgObserved = true; new w.MutationObserver(relabel).observe(head, { subtree: true, childList: true, characterData: true }); }
+  return true;
+ }
+ function openPopup(...a) {
+  const w = window.open(...a); if (!w) return w;
+  popups.add(w);
+  // BOX writes the window right after it opens; it is dressed once its head is there
+  const t0 = performance.now(), dress = () => { if (w.closed || dressPopup(w) || performance.now() - t0 > 8000) return; setTimeout(dress, 40); };
+  (popupCss != null ? Promise.resolve() : fetch('popup.css', { cache: 'no-store' }).then(r => r.text()).then(t => { popupCss = t; }, () => { popupCss = ''; })).then(() => setTimeout(dress, 0));
+  return w;
+ }
+ // the shell's theme changed: the open table windows follow
+ function themePopups() { for (const w of popups) { if (w.closed) { popups.delete(w); continue; } try { w.document.documentElement.dataset.theme = document.documentElement.dataset.theme || ''; } catch {} } }
+
  // ---- BOX CAL Enhance ----
+ // CAL runs in BOX's CAL panel; the shell keeps that panel out of sight - every command of it is on the ② ribbon and its
+ // tables open in their own window - and shows its status itself
  const BOX_CSS = `header.top,.app>.summary{display:none!important}
-.app{grid-template-rows:minmax(0,1fr)!important;border:0!important}`;
+.app{grid-template-rows:minmax(0,1fr)!important;border:0!important}
+#calEnhancePanel{visibility:hidden!important;pointer-events:none!important}`;
+ const CAL_APPLY = new Set(['K7', 'C✓']);
  const CAL_IDS = { RL: 'roomBtn', A6: 'contactBtn', DC: 'designConditionsBtn', BC: 'faceBoundaryBtn', KD: 'kDataBtn', K7: 'iso7547KBtn', KC: 'calculatedKBtn', 'C✓': 'calculatedKApplyBtn', KU: 'userKBtn',
   LR: 'roomLoadResultBtn', OA: 'systemFreshAirBtn', RH: 'ahuHeatingBtn', 'R↑': 'exportRoomSheetBtn', 'A↑': 'exportFaceSheetBtn', 'I↑': 'exportRoomLoadSheetBtn', 'N↑': 'exportNonIsoRoomLoadSheetBtn', 'Σ↑': 'exportSystemSummaryBtn', LX: 'loadSheetBtn' };
  class Box extends VendorFrame {
@@ -78,6 +121,8 @@
    for (const [id, t] of Object.entries({ gripBtn: 'GP · 끝점 잡기(그립) 표시', deleteBtn: '삭제', lineCheckBtn: 'CK · 선·폐합 검사', osnapBtn: 'OS · 객체 스냅: 끝점·중점·중심·교점·수직 (F3)', orthoBtn: '직교 모드 (F8)', gridBtn: '격자 맞춤 (F9)', gridSizeBtn: 'GS · 격자 크기',
     clearBtn: 'CL · 선택 해제', hideBtn: 'HD · 선택 객체 숨기기', restoreBtn: 'RS · 숨긴 객체 복원', zoomBtn: 'ZT · 선택 객체 확대', showLayers: 'SA · 모든 레이어 표시', hideLayers: 'HA · 모든 레이어 숨기기', stackTransformCanvas: 'MV · 캔버스 기준점 이동 다시 시작' })) set('#' + id, t);
   }
+  // BOX's own table windows (격실 목록, 접한 면적) open through the shell too, dressed like the app
+  async load() { await super.load(); if (!this.win.__hvacGridOpen) { this.win.__hvacGridOpen = true; this.win.open = (...a) => openPopup(...a); } return this; }
   hasDrawing() { const s = this.win.CAD_APP?.st; return !!(s && s.entities.length && s.decks.length); }
   calStatus() { return this.doc.querySelector('#calEnhancePanel [role=status]')?.textContent || ''; }
   calIdle() { const b = this.doc.querySelector('#calEnhancePanel .cal-enhance-busy'); return !b || b.hidden; }
@@ -101,11 +146,11 @@
     this.calSig = null; this.click('calEnhanceBtn');
     await until(() => this.calIdle(), 180000, 'BOX CAL 계산');
     if (!/^현재 격실/.test(this.calStatus())) throw new Error('BOX CAL: ' + (this.calStatus() || '열지 못했습니다'));
-    this.calSig = this.drawingSig(); this.watchCalCommits();
+    this.calSig = this.drawingSig(); this.calRooms = +(/^현재 격실 (\d+)개/.exec(this.calStatus())?.[1] || 0); this.watchCalCommits();
    }
    const d = panel().querySelector('iframe').contentDocument, w = d.defaultView;
    // popups go through the shell window, which holds the user's click, so a popup blocker lets them through
-   if (!w.__hvacGridOpen) { w.__hvacGridOpen = true; w.open = (...a) => window.open(...a); }
+   if (!w.__hvacGridOpen) { w.__hvacGridOpen = true; w.open = (...a) => openPopup(...a); }
    return d;
   }
   // a change made inside CAL (conditions, K values) is written back into the drawing; that is not a new drawing
@@ -119,10 +164,19 @@
     return r;
    };
   }
+  // a CAL command; the ones that apply values (K7, C✓) open no window and say how it went only on the hidden CAL
+  // status line - that text is returned for the shell to show
   async cal(code) {
    if (!this.hasDrawing()) throw new Error('BOX에 Deck·격실이 없습니다. 도면을 열거나 예제를 불러오세요.');
    const id = CAL_IDS[code], d = await this.openCal(), e = d.getElementById(id);
-   if (!e) throw new Error('BOX CAL: 명령 ' + code + ' 없음'); e.click();
+   if (!e) throw new Error('BOX CAL: 명령 ' + code + ' 없음');
+   if (!CAL_APPLY.has(code)) { e.click(); return null; }
+   const line = this.doc.querySelector('#calEnhancePanel [role=status]'), before = line.textContent;
+   line.textContent = ''; e.click();
+   // "… 갱신 중…" first, then how it ended
+   const said = await until(() => { const t = line.textContent.trim(); return t && !t.endsWith('…') ? t : null; }, 30000, 'CAL 적용').catch(() => line.textContent.trim() || null);
+   if (!said) line.textContent = before;
+   return said || '적용함';
   }
   // the raw BOX data the contract is built from (the same fields as tools/box-extract.cjs)
   async extract() {
@@ -254,5 +308,5 @@
   }
  }
 
- window.HVACGridBridge = { wait, until, loadLibs, Box, Phg };
+ window.HVACGridBridge = { wait, until, loadLibs, Box, Phg, themePopups };
 })();

@@ -382,7 +382,10 @@
  // labels are Korean; the old BOX / PHG D codes stay in the tooltip ("이전 단축") so existing users still find them
  const c = (ic, label, run, more = {}) => ({ icon: ic, label, run, ...more });
  const boxCmd = id => () => act(null, async () => { await box.load(); box.click(id); });
- const boxCal = code => () => act(box.loading && box.calCurrent() ? null : 'BOX CAL 여는 중', async () => { await box.load(); await box.cal(code); });
+ // a CAL command: CAL calculates in the background (its panel stays out of sight); tables open in their own window, the
+ // commands that apply values say how it went on the status line
+ const CAL_SAY = { K7: 'ISO 적용', 'C✓': 'LY 적용' };
+ const boxCal = code => () => act(CAL_SAY[code] ? CAL_SAY[code] + ' 중' : box.loading && box.calCurrent() ? null : 'BOX CAL 계산 중', async () => { await box.load(); const said = await box.cal(code); if (said) say(`${CAL_SAY[code]}: ${said}`); });
  const boxFile = (id, accept) => () => act(null, async () => { const f = await pickFile(accept); await box.load(); box.setFile(id, f); say(f.name + ' → BOX'); });
  const phgCmd = id => () => act(null, async () => { await loadPhg(); phg.click(id); });
  const phgText = t => () => act(null, async () => { await loadPhg(); phg.clickMenu(t); });
@@ -401,9 +404,9 @@
    ['예제', [c('sample', 'S5 예제', boxCmd('s5ExampleBtn'), { code: 'S5', title: '5 Deck · 94 공간 · 12 × 8 m' }), c('sample', 'H5 예제', boxCmd('h5ExampleBtn'), { code: 'H5', title: 'BOX 내장 H5 예제 — KCS 실선 치수' }),
     c('deck', 'T3 시험선', () => act('T3 시험선 여는 중', async () => { const t = await (await fetch('../samples/t3/T3.box.json', { cache: 'no-store' })).text(); await box.load(); box.setFile('jsonFile', new File([t], 'T3.box.json', { type: 'application/json' })); say(`T3 시험선 → BOX (4 Deck · ${(t.match(/"roomNo"/g) || []).length}실)`); }), { title: 'HVAC Grid 시험선 BOX 프로젝트 (samples/t3/T3.box.json)' })]]] },
   { id: 'load', name: '부하', view: 'box', groups: () => [
-   ['계산', [c('cal', 'CAL 열기', () => act('BOX CAL 여는 중', async () => { await box.load(); await box.openCal(); }), { code: 'CAL', title: '설계 조건·K값·냉난방 부하·OA·AHU' })]],
+   ['격실', [c('cal', '격실 입력', boxCal('RL'), { code: 'RL', title: '격실 입력 · 실마다 계통(SUP·EXH·RET)·재실인원·최소신기·장비 발열·환기 횟수·ISO 구분·냉난방 온습도 (CAL 격실 리스트)' })]],
    ['조건', [c('cond', '설계 조건', boxCal('DC'), { code: 'DC' }), c('bound', '경계 조건', boxCal('BC'), { code: 'BC' })]],
-   ['K값', [c('kIso', 'ISO 기준', boxCal('KD'), { code: 'KD' }), c('kApply', 'ISO 적용', boxCal('K7'), { code: 'K7' }), c('kLayer', '구조 계산', boxCal('KC'), { code: 'KC' }), c('check', '구조 적용', boxCal('C✓'), { code: 'C✓' }), c('kUser', '사용자', boxCal('KU'), { code: 'KU' })]],
+   ['K값', [c('kIso', 'ISO 기준', boxCal('KD'), { code: 'KD' }), c('kApply', 'ISO 적용', boxCal('K7'), { code: 'K7', title: 'ISO 적용 · ISO 7547:2022 K값을 면별 경계에 적용' }), c('kLayer', 'LY', boxCal('KC'), { code: 'KC', title: 'LY · 구조 레이어(강판·단열·내장)로 계산한 K값 보기' }), c('check', 'LY 적용', boxCal('C✓'), { code: 'C✓', title: 'LY 적용 · 구조 레이어로 계산한 K값을 면별 경계에 적용' }), c('kUser', '사용자', boxCal('KU'), { code: 'KU' })]],
    ['부하', [c('load', '격실 부하', boxCal('LR'), { code: 'LR' }), c('oa', '신기 (OA)', boxCal('OA'), { code: 'OA' }), c('rh', '리히터', boxCal('RH'), { code: 'RH' })]],
    ['내보내기', [c('xlsxIso', 'ISO 시트', boxCal('I↑'), { code: 'I↑' }), c('xlsx', '미적용 시트', boxCal('N↑'), { code: 'N↑' }), c('sum', 'SUP 요약', boxCal('Σ↑'), { code: 'Σ↑' }), c('xlsxAll', '전체 XLSX', boxCal('LX'), { code: 'LX' }), c('sheet', '격실 시트', boxCal('R↑'), { code: 'R↑' }), c('face', '면적 시트', boxCal('A↑'), { code: 'A↑' })]],
    ['HVAC Grid', [c('contract', '설계 데이터 만들기', () => act('BOX 격실·부하 읽는 중', extractContract), { primary: true, title: 'BOX 격실·부하 → 격실 풍량·계통 (③ 풍량·계통으로 이동)' })]]] },
@@ -462,8 +465,6 @@
   S.step = id; S.pickRoot = false; render();
   const view = viewOf(id);
   if (view === 'box') await act(box.loading ? null : 'BOX CAL 여는 중', () => box.load());
-  // ① is the drawing: a CAL panel left open in ② would cover it (② CAL 열기 opens it again on the drawing of the time)
-  if (id === 'room' && box.loading) box.closeCal();
   if (view === 'phg') await act(phg.loading ? null : 'PHG D 여는 중', async () => { await loadPhg(); const key = curKey(); if (key && S.projects[key] && S.active !== key) await openKey(key); });
  }
  // undo / redo go to the app on screen (each keeps its own history); in ③ and ⑤ to the HVAC Grid edits
@@ -762,7 +763,9 @@
   const C = S.contract, r = C?.rooms.find(x => x.id === S.room), ps = plans();
   const done = ps.filter(p => result(p.key)?.auto && !result(p.key).stale).length, n = k => C.systems.filter(s => s.kind === k).length;
   const [nextText, nextTo] = nextStep();
-  $('status').innerHTML = `<button class="next" id="nextBtn" title="다음에 할 일">다음: ${esc(nextText)}</button>` + (C ? `<span>선박 전체: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> · 계통 급기 <b>${n('supply')}</b> 배기 <b>${n('exhaust')}</b> 환기 <b>${n('return')}</b> · 급기 <b>${fmt(C.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))}</b> CMH · 덕트망 <b>${done}</b>/${ps.length}</span><span>선택: <b>${esc(deckName(S.deck))}</b>${r ? ` · ${esc(r.no)} ${esc(r.name)}` : ''}</span>` : '<span>설계 데이터 없음 — ① 도면 → ② 부하 → 설계 데이터 만들기</span>')
+  // ②: what CAL holds - its panel is out of sight
+  const calLine = S.step === 'load' && box.loading && box.hasDrawing() ? (!box.calSig ? '<span>CAL: 아직 계산 전 — ② 명령을 누르면 계산</span>' : box.calCurrent() ? `<span>CAL: 격실 <b>${box.calRooms || '—'}</b>개 계산됨</span>` : '<span class="warn">CAL: 도면이 바뀜 — 다음 CAL 명령 때 다시 계산</span>') : '';
+  $('status').innerHTML = `<button class="next" id="nextBtn" title="다음에 할 일">다음: ${esc(nextText)}</button>` + calLine + (C ? `<span>선박 전체: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> · 계통 급기 <b>${n('supply')}</b> 배기 <b>${n('exhaust')}</b> 환기 <b>${n('return')}</b> · 급기 <b>${fmt(C.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))}</b> CMH · 덕트망 <b>${done}</b>/${ps.length}</span><span>선택: <b>${esc(deckName(S.deck))}</b>${r ? ` · ${esc(r.no)} ${esc(r.name)}` : ''}</span>` : '<span>설계 데이터 없음 — ① 도면 → ② 부하 → 설계 데이터 만들기</span>')
    + (S.active ? `<span>PHG D: <b>${esc(S.active.replace('__', ' · '))}</b></span>` : '') + `<span class="msg${S.msgErr ? ' err' : ''}" role="status">${esc(S.msg)}</span>`;
   $('proj').textContent = C ? `${RP.PROJECT_NAME(C) || '설계 데이터'} · ${C.rooms.length}실` : '설계 데이터 없음';
   $('proj').title = S.file?.name ? `파일: ${S.file.name}${S.dirty ? ' (저장 안 한 변경 있음)' : ''}` : '아직 저장하지 않음';
@@ -825,7 +828,7 @@
  $('helpBtn').onclick = () => help();
  $('helpClose').onclick = () => $('help').close();
  $('saveProjectBtn').onclick = () => act(null, () => saveProject());
- $('themeBtn').onclick = () => { const d = document.documentElement, dark = d.dataset.theme !== 'dark'; d.dataset.theme = dark ? 'dark' : ''; try { localStorage.setItem('hvac-grid-theme', dark ? 'dark' : ''); } catch {} if (S.step === 'air' && S.contract) plan(); };
+ $('themeBtn').onclick = () => { const d = document.documentElement, dark = d.dataset.theme !== 'dark'; d.dataset.theme = dark ? 'dark' : ''; B.themePopups(); try { localStorage.setItem('hvac-grid-theme', dark ? 'dark' : ''); } catch {} if (S.step === 'air' && S.contract) plan(); };
  try { if (localStorage.getItem('hvac-grid-theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch {}
  // Alt+1..5 switch steps, also while the focus is inside a vendor frame; Ctrl+Z / Ctrl+Y undo HVAC Grid edits in ③ ⑤
  const onKey = e => {

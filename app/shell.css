@@ -126,6 +126,7 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .status b{color:var(--text);font-weight:600}
 .status .msg{margin-left:auto;overflow:hidden;text-overflow:ellipsis}
 .status .msg.err{color:var(--red)}
+.status .warn{color:var(--warn);font-weight:600}
 .ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--red)}
 /* segmented choice in the ribbon (system kind, plan overlay) */
 .seg{display:flex;align-self:center;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:0 4px}
