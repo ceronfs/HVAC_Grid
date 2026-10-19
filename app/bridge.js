@@ -80,13 +80,43 @@
   }
   hasDrawing() { const s = this.win.CAD_APP?.st; return !!(s && s.entities.length && s.decks.length); }
   calStatus() { return this.doc.querySelector('#calEnhancePanel [role=status]')?.textContent || ''; }
-  // the CAL panel is a nested app in its own frame; its commands (LR, OA, ...) open their tables as popup windows
+  calIdle() { const b = this.doc.querySelector('#calEnhancePanel .cal-enhance-busy'); return !b || b.hidden; }
+  // BOX keeps its model revision private, so the shell fingerprints the drawing the CAL panel was loaded from
+  drawingSig() {
+   const s = this.win.CAD_APP.st, text = JSON.stringify([s.entities, s.decks, [...(s.roomOverrides || [])]]);
+   let h = 2166136261; for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619);
+   return text.length + ':' + (h >>> 0);
+  }
+  // CAL is open on the drawing BOX holds now
+  calCurrent() { const p = this.doc.getElementById('calEnhancePanel'); return !!p && !p.hidden && this.calIdle() && /^(현재 격실|계산 조건 반영)/.test(this.calStatus()) && this.calSig === this.drawingSig(); }
+  // the CAL panel is a nested app in its own frame; its commands (LR, OA, ...) open their tables as popup windows.
+  // BOX loads the drawing into CAL only when the panel opens, so a panel still open on an earlier drawing (another
+  // file, the S5 example after a DXF, an edit in ①) is closed and opened again instead of showing the old rooms
   async openCal() {
-   if (!/^현재 격실/.test(this.calStatus())) { this.click('calEnhanceBtn'); await until(() => /^현재 격실/.test(this.calStatus()), 180000, 'BOX CAL 계산'); }
-   const d = this.doc.querySelector('#calEnhancePanel iframe').contentDocument, w = d.defaultView;
+   const panel = () => this.doc.getElementById('calEnhancePanel');
+   await until(() => this.calIdle(), 180000, 'BOX CAL 계산');
+   if (!this.calCurrent()) {
+    if (panel()) panel().hidden = true;
+    this.calSig = null; this.click('calEnhanceBtn');
+    await until(() => this.calIdle(), 180000, 'BOX CAL 계산');
+    if (!/^현재 격실/.test(this.calStatus())) throw new Error('BOX CAL: ' + (this.calStatus() || '열지 못했습니다'));
+    this.calSig = this.drawingSig(); this.watchCalCommits();
+   }
+   const d = panel().querySelector('iframe').contentDocument, w = d.defaultView;
    // popups go through the shell window, which holds the user's click, so a popup blocker lets them through
    if (!w.__hvacGridOpen) { w.__hvacGridOpen = true; w.open = (...a) => window.open(...a); }
    return d;
+  }
+  // a change made inside CAL (conditions, K values) is written back into the drawing; that is not a new drawing
+  watchCalCommits() {
+   const host = this.win.CAL_ENHANCE_HOST;
+   if (!host || host.__hvacGrid) return; host.__hvacGrid = true;
+   const commit = host.commit;
+   host.commit = (...a) => {
+    const same = this.calSig && this.calSig === this.drawingSig(), r = commit.apply(host, a);
+    if (same) Promise.resolve(r).then(ok => { if (ok !== false) this.calSig = this.drawingSig(); }, () => {});
+    return r;
+   };
   }
   async cal(code) {
    if (!this.hasDrawing()) throw new Error('BOX에 Deck·격실이 없습니다. 도면을 열거나 예제를 불러오세요.');

@@ -23,10 +23,20 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   log('BOX ready'); await shot('1-room-empty');
   // the native BOX command bar is hidden inside the frame; the shell ribbon runs its commands
   assert.equal(await H(() => getComputedStyle(HVACGrid.box.doc.querySelector('header.top')).display), 'none');
-  await ribbon('S5 예제').click();
+  // CAL left open on one drawing opens again on the next (it once kept the old rooms: "unknown deck")
+  await ribbon('H5 예제').click();
   await p.waitForFunction(() => HVACGrid.box.hasDrawing(), null, { timeout: 180000 }); await p.waitForTimeout(1000);
+  await p.click('.step[data-step=load]'); await idle();
+  await ribbon('CAL 열기').click(); await idle();
+  assert.match(await H(() => HVACGrid.box.calStatus()), /^현재 격실 7개/); log('H5 CAL open');
+  await p.click('.step[data-step=room]'); await idle();
+  await ribbon('S5 예제').click();
+  await p.waitForFunction(() => HVACGrid.box.win.CAD_APP.st.decks.length === 5, null, { timeout: 180000 }); await p.waitForTimeout(1000);
   log('S5 loaded'); await shot('1-room-s5');
   await p.click('.step[data-step=load]'); await idle();
+  assert.equal(await H(() => HVACGrid.box.calCurrent()), false, 'CAL on H5 is not current for S5');
+  await ribbon('CAL 열기').click(); await idle();
+  assert.match(await H(() => HVACGrid.box.calStatus()), /^현재 격실 94개/); log('CAL opened again on S5');
   await ribbon('계약 만들기').click(); await idle();
   const c = await H(() => ({ step: HVACGrid.S.step, rooms: HVACGrid.S.contract?.rooms.length, plans: HVACGrid.plans().length, supply: HVACGrid.plans().filter(x => x.kind === 'supply').length }));
   log('contract', JSON.stringify(c));

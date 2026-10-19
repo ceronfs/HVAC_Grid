@@ -349,7 +349,7 @@
  // labels are Korean; the old BOX / PHG D codes stay in the tooltip ("이전 단축") so existing users still find them
  const c = (ic, label, run, more = {}) => ({ icon: ic, label, run, ...more });
  const boxCmd = id => () => act(null, async () => { await box.load(); box.click(id); });
- const boxCal = code => () => act(/^현재 격실/.test(box.loading ? box.calStatus() : '') ? null : 'BOX CAL 여는 중', async () => { await box.load(); await box.cal(code); });
+ const boxCal = code => () => act(box.loading && box.calCurrent() ? null : 'BOX CAL 여는 중', async () => { await box.load(); await box.cal(code); });
  const boxFile = (id, accept) => () => act(null, async () => { const f = await pickFile(accept); await box.load(); box.setFile(id, f); say(f.name + ' → BOX'); });
  const phgCmd = id => () => act(null, async () => { await loadPhg(); phg.click(id); });
  const phgText = t => () => act(null, async () => { await loadPhg(); phg.clickMenu(t); });
