@@ -224,3 +224,7 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .help .keys td{padding:3px 12px 3px 0;border:0;white-space:nowrap}.help .keys td:first-child{font-weight:600}.help .terms{display:grid;grid-template-columns:max-content 1fr;gap:3px 14px;margin:0}.help .terms dt{font-weight:600}.help .terms dd{margin:0}
 .help code{background:var(--line2);padding:1px 4px;border-radius:3px}
 .status .next{border:1px solid var(--accent);background:var(--soft);color:var(--accent);border-radius:4px;padding:1px 8px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}.status .next:hover{background:var(--accent);color:#fff}
+/* shared canvas in ④: picked duct, duct sizes, RUs */
+.plan .duct.pick{cursor:pointer}.plan .duct.dsel{stroke:#e8890c;opacity:.9}
+.plan .dsz{fill:var(--accent);font-weight:700;paint-order:stroke;stroke:var(--canvas);stroke-width:3px;vector-effect:non-scaling-stroke;pointer-events:none}
+.plan .ru{stroke:var(--canvas);stroke-width:1.5px;vector-effect:non-scaling-stroke}

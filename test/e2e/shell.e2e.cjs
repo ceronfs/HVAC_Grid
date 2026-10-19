@@ -62,10 +62,21 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   await p.locator('.seg[data-seg="평면 보기"] button', { hasText: '풍량' }).click();
   await p.locator('.seg[data-seg="계통 종류"] button', { hasText: '급기' }).click();
   // step 4: PHG D with the BOX rooms, the user's unit location and the RUs, then AUTO
+  // ④ is the shared HVAC Grid plan (PHG D computes in the background)
   await p.click('.step[data-step=duct]'); await idle();
-  assert.equal(await H(() => getComputedStyle(HVACGrid.phg.doc.querySelector('header.topbar')).display), 'none');
+  assert.ok(await p.isVisible('#plan') && !(await p.evaluate(() => getComputedStyle(document.getElementById('phgFrame')).visibility === 'visible')), '④ shows the plan');
   await p.selectOption('#sysSel', 'AHU-AC-01');
   await ribbon('보내기 + AUTO').click(); await idle();
+  assert.equal(await H(() => getComputedStyle(HVACGrid.phg.doc.querySelector('header.topbar')).display), 'none');
+  // the ducts on the plan; one picked shows its size and flow
+  assert.ok(await p.locator('#plan polyline.duct.pick').count() > 0, 'ducts on the shared plan');
+  await p.locator('#plan polyline.duct.pick').first().click({ force: true }); await p.waitForTimeout(200);
+  assert.match(await p.textContent('#inspTitle'), /^덕트/); await shot('4-duct-picked');
+  // PHG D as the detail editor, and back
+  await ribbon('PHG D 편집기').click(); await idle();
+  assert.ok(await p.evaluate(() => getComputedStyle(document.getElementById('phgFrame')).visibility === 'visible'), 'editor open'); await shot('4-duct-editor');
+  await ribbon('평면으로').click(); await idle();
+  assert.ok(await p.isVisible('#plan'), 'back on the plan');
   const r = await H(() => HVACGrid.result('S3__AHU-AC-01'));
   log('AUTO', JSON.stringify({ rus: r.rus, flow: r.flowCmh, ducts: r.ducts, len: r.lengthM, pa: r.indexPa }));
   assert.ok(r.auto && r.ducts > 0 && r.unconnected === 0, 'AUTO connected every RU'); assert.equal(r.flowCmh, r.designCmh);

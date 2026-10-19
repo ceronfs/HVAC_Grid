@@ -242,6 +242,14 @@
   say(`AUTO ${stopped ? '멈춤' : '완료'}: ${done}/${keys.length} (이번에 ${ran}개${stopped ? ` · 남은 ${todo.length - ran}개는 "남은 것만"으로` : ''})`);
   if (todo.length > 1) toast(`AUTO ${stopped ? '멈춤' : '완료'}: ${done}/${keys.length}`);
  }
+ // PHG D as the detail editor of the plan in ④: its own screen; closing reads back what was changed there
+ async function openEditor() {
+  await loadPhg(); const key = curKey();
+  if (key && S.projects[key]) { if (S.active !== key) await openKey(key); }
+  else if (key) await sendPlan(key);
+  S.phgEditor = true; say('PHG D 편집기 — 고친 뒤 "평면으로"를 누르면 결과를 읽어 옵니다');
+ }
+ function closeEditor() { if (S.active && phg.loading) readBackIfEdited(); S.phgEditor = false; S.duct = null; }
  function readBack() { if (!S.active) throw new Error('PHG D에 열린 계통이 없습니다'); store(S.active, { edited: true }, { keepSig: true }); say('PHG D 결과를 읽었습니다'); }
  // leaving ④ with edits made in PHG D: read them back so ⑤ and the outputs show what is on screen
  function readBackIfEdited() { if (S.active && phg.loading && S.projects[S.active] && phg.changedSince(S.projects[S.active])) { readBack(); say(`${S.active.replace('__', ' · ')}: PHG D에서 고친 내용을 읽었습니다`); } }
@@ -314,13 +322,17 @@
    ['공조기 · 수직 덕트', [c('pin', '위치 지정', () => { S.pickRoot = !S.pickRoot; say(S.pickRoot ? `평면에서 ${curPlan()?.isUnitDeck === false ? '수직 덕트(샤프트)' : '공조기'} 위치를 클릭하세요 (Esc 취소)` : ''); render(); }, { disabled: () => !curKey(), pressed: () => S.pickRoot, title: '공조기 Deck: 공조기·팬 위치 · 다른 Deck: 수직 덕트(샤프트) 위치' }), c('unpin', '지정 해제', () => act(null, clearRoot), { disabled: () => !S.contract?.roots?.[curKey()] }), unitDeckField()]],
    ['보기', [seg('평면 보기', S.overlay, [['air', '풍량'], ['fire', '방화']], v => { S.overlay = v; })]],
    ['계약', [...SAMPLES, c('open', '열기', () => act(null, openProject), { title: 'HVAC Grid 프로젝트 또는 계약 JSON' }), c('save', '계약 저장', () => act(null, OUT.contract), { disabled: needContract })]]] },
-  { id: 'duct', name: 'RU·덕트', view: 'phg', groups: () => [
+  { id: 'duct', name: 'RU·덕트', view: 'plan', groups: () => S.phgEditor ? [
+   ['편집기', [c('back', '평면으로', () => act(null, closeEditor), { primary: true, title: 'PHG D에서 고친 내용을 읽고 HVAC Grid 평면으로 돌아갑니다' })]],
    ['HVAC Grid', [sysField(true), c('send', 'PHG D로 보내기', () => act('PHG D로 보내는 중', () => sendPlan()), { primary: true, disabled: () => !curKey(), title: 'Deck 격실 도면 + 공조기·수직 덕트 + 격실별 RU(풍량)' }), c('auto', '보내기 + AUTO', () => act('AUTO 계산 중', () => autoKey()), { disabled: () => !curKey(), title: 'AUTO → 첫 후보 → 덕트 지정 → 계산 → 압력' }), c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '결과 읽기', () => act(null, readBack), { disabled: () => !S.active, title: 'PHG D에서 고친 결과를 HVAC Grid로' })]],
    ['계통', [c('root', '공조기', phgCmd('rootBtn'), { code: 'R', title: 'Root · 계통 시작점(공조기) 배치' }), c('ru', 'RU 배치', phgCmd('diffuserBtn'), { code: 'RU' }), c('ruAuto', 'RU 자동', phgCmd('autoDiffuserBtn')), c('flow', '풍량 초안', phgCmd('phgdFlowBtn'))]],
    ['자동 라우팅', [c('zone', '금지 영역', phgText('금지 영역')), c('auto', 'AUTO', phgCmd('autoRouteOpenBtn'), { title: 'AUTO · 편집 가능한 경로 객체 생성 · 덕트 지정으로 덕트화' }), c('cmp', '비교', phgCmd('phgdCompareBtn')), c('set', '설정', phgCmd('phgdAutoSettingsBtn'))]],
    ['덕트', [c('ml', '주 덕트', phgCmd('assignMainLineBtn'), { code: 'ML' }), c('br', '분기', phgCmd('assignBranchBtn'), { code: 'BR' }), c('sbr', '보조 분기', phgCmd('assignSubBranchBtn'), { code: 'SBR' }), c('ad', '덕트 지정', phgCmd('makeDuctBtn'), { code: 'AD' })]],
    ['계산', [c('lines', '선 검사', phgCmd('lineCheckBtn')), c('calc', '계산', phgCmd('calculateBtn'), { title: '풍량과 덕트 크기' }), c('noise', '소음', phgCmd('noiseCalcBtn')), c('press', '압력', phgCmd('pressureCalcBtn'))]],
-   ['보기', [c('fit', '전체 보기', phgCmd('zoomAllBtn')), c('dockL', '왼쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-left-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('left'), title: 'PHG D 도구·레이어 패널' }), c('dockR', '오른쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-right-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('right'), title: 'PHG D 프로젝트 상태·검증 패널' })]]] },
+   ['보기', [c('fit', '전체 보기', phgCmd('zoomAllBtn')), c('dockL', '왼쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-left-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('left'), title: 'PHG D 도구·레이어 패널' }), c('dockR', '오른쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-right-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('right'), title: 'PHG D 프로젝트 상태·검증 패널' })]]] : [
+   ['HVAC Grid', [sysField(true), c('send', 'PHG D로 보내기', () => act('PHG D로 보내는 중', () => sendPlan()), { primary: true, disabled: () => !curKey(), title: 'Deck 격실 도면 + 공조기·수직 덕트 + 격실별 RU(풍량)' }), c('auto', '보내기 + AUTO', () => act('AUTO 계산 중', () => autoKey()), { disabled: () => !curKey(), title: 'AUTO → 첫 후보 → 덕트 지정 → 계산 → 압력' }), c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' })]],
+   ['보기', [seg('덕트 보기', S.ductShow || 'sys', [['sys', '이 계통'], ['kind', '같은 종류'], ['all', '모든 계통']], v => { S.ductShow = v; })]],
+   ['PHG D', [c('editor', 'PHG D 편집기', () => act('PHG D 여는 중', openEditor), { disabled: () => !curKey(), title: '세부 편집: 경로·RU·덕트를 PHG D 화면에서 직접 고칩니다. "평면으로"를 누르면 고친 내용을 읽어 옵니다' })]]] },
   { id: 'review', name: '검토·출력', view: 'report', groups: () => [
    ['덕트망', [c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { primary: true, disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '남은 것만', () => act('AUTO 계산 중', () => runAll(undefined, { onlyNeeded: true })), { disabled: needContract, title: 'AUTO가 없거나 다시 보내야 하는 계통만' })]],
    ['방화 (SOLAS)', [field(`<label class="field">선종<select id="shipSel" ${S.contract ? '' : 'disabled'}>${Object.values(SO.DATA.ships).map(s => `<option value="${s.key}" ${s.key === (S.contract?.solas?.ship || SO.DEFAULT_SETTINGS.ship) ? 'selected' : ''}>${esc(s.label)} · ${s.tB}/${s.tD}</option>`).join('')}</select></label>`),
@@ -351,15 +363,17 @@
  const fv = (id, value) => S.fieldErr?.[id] ? S.fieldErr[id].value : value;
  const fe = id => S.fieldErr?.[id] ? `class="bad" aria-invalid="true" title="${esc(S.fieldErr[id].msg)}"` : '';
  const stepOf = id => STEPS.find(s => s.id === id);
+ // the view a step shows: ④ is the shared HVAC Grid plan; PHG D only while its editor is open (S.phgEditor)
+ const viewOf = id => id === 'duct' ? (S.phgEditor ? 'phg' : 'plan') : stepOf(id).view;
  async function go(id) {
-  if (S.step === 'duct' && id !== 'duct') readBackIfEdited();
+  if (S.step === 'duct' && id !== 'duct') { if (S.phgEditor) readBackIfEdited(); S.phgEditor = false; }
   S.step = id; S.pickRoot = false; render();
-  const view = stepOf(id).view;
+  const view = viewOf(id);
   if (view === 'box') await act(box.loading ? null : 'BOX CAL 여는 중', () => box.load());
   if (view === 'phg') await act(phg.loading ? null : 'PHG D 여는 중', async () => { await loadPhg(); const key = curKey(); if (key && S.projects[key] && S.active !== key) await openKey(key); });
  }
  // undo / redo go to the app on screen (each keeps its own history); in ③ and ⑤ to the HVAC Grid edits
- const frameOnScreen = () => ({ box: box.loading && box, phg: phg.loading && phg }[stepOf(S.step).view] || null);
+ const frameOnScreen = () => ({ box: box.loading && box, phg: phg.loading && phg }[viewOf(S.step)] || null);
 
  // ---------- render ----------
  // tab badges: ✓ done, ● n warnings, ↻ n results to redo after a change upstream
@@ -395,7 +409,7 @@
   ribbonMore();
   $('ribbon').querySelectorAll('.cmd').forEach(b => b.onclick = () => runs[+b.dataset.i].run());
   $('ribbon').querySelectorAll('.seg').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => { segs[g.dataset.seg](b.dataset.v); render(); }));
-  const sel = $('sysSel'); if (sel) sel.onchange = () => { S.sys = sel.value; const p = curPlan(); if (p) S.kind = p.kind; S.pickRoot = false; if (S.step === 'duct') act(null, async () => { const k = curKey(); if (S.projects[k]) await openKey(k); }); else render(); };
+  const sel = $('sysSel'); if (sel) sel.onchange = () => { S.sys = sel.value; const p = curPlan(); if (p) S.kind = p.kind; S.pickRoot = false; if (S.step === 'duct' && S.phgEditor) act(null, async () => { const k = curKey(); if (S.projects[k]) await openKey(k); }); else render(); };
   const unit = $('unitSel'); if (unit && !unit.disabled) unit.onchange = () => act(null, () => setUnitDeck(unit.value));
   const ship = $('shipSel'); if (ship) ship.onchange = () => act(null, () => { setSolas('ship', ship.value); say('SOLAS 선종: ' + SO.DATA.ships[ship.value].label); });
   const method = $('methodSel'); if (method) method.onchange = () => act(null, () => { setSolas('method', method.value); say('방화방식 ' + method.value); });
@@ -423,11 +437,11 @@
     return `<button class="room" data-room="${esc(r.id)}" aria-selected="${r.id === S.room}" title="${esc(r.no)} ${esc(r.name)}${r.isoClass ? ' · ISO 분류 ' + esc(r.isoClass) : ''} · SOLAS ${esc(cls[r.id]?.space || '미분류')}"><span class="no">${esc(r.no)}</span><span class="nm">${dots ? `<span class="dot" style="background:${sid ? sysColor(sid) : 'transparent'};${sid ? '' : 'border:1px solid var(--line)'}"></span>` : ''}${esc(r.name)}</span><span class="cmh">${value(r, C)}</span></button>`; }).join('') : ''}</div>`;
   }).join('');
   $('treeCount').textContent = count + '실';
-  $('tree').querySelectorAll('.deckh').forEach(e => e.onclick = () => { S.deck = e.dataset.deck; S.room = null; pickSystem(); render(); if (S.step === 'duct') act(null, async () => { const k = curKey(); if (k && S.projects[k]) await openKey(k); }); });
+  $('tree').querySelectorAll('.deckh').forEach(e => e.onclick = () => { S.deck = e.dataset.deck; S.room = null; pickSystem(); render(); if (S.step === 'duct' && S.phgEditor) act(null, async () => { const k = curKey(); if (k && S.projects[k]) await openKey(k); }); });
   $('tree').querySelectorAll('.room').forEach(e => e.onclick = () => selectRoom(e.dataset.room));
  }
  function selectRoom(id) {
-  const r = S.contract.rooms.find(x => x.id === id); S.room = id;
+  const r = S.contract.rooms.find(x => x.id === id); S.room = id; S.duct = null;
   if (r.deckId !== S.deck) { S.deck = r.deckId; pickSystem(); }
   const sid = r.systems[S.kind];
   if (sid && deckPlans(S.kind).some(p => p.systemId === sid) && !(S.step === 'duct' && S.active)) S.sys = deckPlans(S.kind).find(p => p.systemId === sid).systemKey;
@@ -442,12 +456,12 @@
   let maxX = Math.max(...xs) + 900; const k0 = Math.min((rc.width - legendPx) / (maxX - minX), rc.height / (maxY - minY)); if (k0 > 0 && legendPx) maxX += legendPx / k0;
   svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'xMinYMid meet');
   // sizes in screen px: k = px per mm of the fitted plan
-  const k = Math.min(rc.width / (maxX - minX), rc.height / (maxY - minY)) || 0.08, px = v => v / k, cur = curPlan(), fire = S.overlay === 'fire', a = analysis();
+  const k = Math.min(rc.width / (maxX - minX), rc.height / (maxY - minY)) || 0.08, px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', fire = S.overlay === 'fire' && !ductMode, a = analysis();
   let html = '', sel = '';
   for (const r of rooms) {
    const sid = r.systems[S.kind], bx = r.polygon.map(p => p.x), by = r.polygon.map(p => -p.y), x0 = Math.min(...bx), y0 = Math.min(...by), wPx = (Math.max(...bx) - x0) * k, hPx = (Math.max(...by) - y0) * k;
    const pts = r.polygon.map(p => p.x + ',' + -p.y).join(' '), cl = a.solas.classes[r.id], flow = C.airflow[r.id][FIELD[S.kind]];
-   const fill = fire ? (cl?.cat ? 'transparent' : 'var(--warn-fill)') : sid ? sysColor(sid) + (sid === cur?.systemId ? '38' : '1a') : 'transparent';
+   const fill = fire ? (cl?.cat ? 'transparent' : 'var(--warn-fill)') : sid ? sysColor(sid) + (sid === cur?.systemId ? (ductMode ? '1f' : '38') : (ductMode ? '0d' : '1a')) : 'transparent';
    html += `<polygon class="rm${fire && !cl?.cat ? ' uncls' : ''}" data-room="${esc(r.id)}" points="${pts}" fill="${fill}"><title>${esc(r.no)} ${esc(r.name)} · ${fire ? 'SOLAS ' + esc(cl?.space || '미분류') + (cl?.cat ? ` (${cl.cat}) ` + esc(SO.catName(a.solas.settings.ship, cl.cat)) : '') : `${KL[S.kind]} ${flow} CMH`}</title></polygon>`;
    // labels pinned to the top-left corner inside the room (RUs and the unit sit at the centre); an L-shaped room whose
    // corner is cut out gets them at its interior point; narrow rooms keep only the number
@@ -474,7 +488,7 @@
   } else {
    // transfer air: a short arrow across the middle of the wall the two rooms share (where the door grille or transfer
    // duct goes), with its CMH; solid when the user chose the source, orange through an A-class boundary
-   for (const r of rooms) { const A = C.airflow[r.id], src = C.rooms.find(x => x.id === A.transferFrom); if (!src || !A.transferInCmh) continue;
+   for (const r of ductMode ? [] : rooms) { const A = C.airflow[r.id], src = C.rooms.find(x => x.id === A.transferFrom); if (!src || !A.transferInCmh) continue;
     let seg = null; for (const e of GE.roomEdges(src)) for (const g of GE.roomEdges(r)) { const q = GE.sharedSegment(e, g, 400, 100); if (q && (!seg || q.lengthMm > seg.lengthMm)) seg = q; }
     let m, ux, uy;
     if (seg) { m = { x: (seg.a.x + seg.b.x) / 2, y: (seg.a.y + seg.b.y) / 2 }; const L = seg.lengthMm || 1; ux = -(seg.b.y - seg.a.y) / L; uy = (seg.b.x - seg.a.x) / L;
@@ -486,8 +500,27 @@
      + `<text x="${tx + ux * h + px(3)}" y="${-(ty + uy * h) - px(3)}" style="font-size:${px(10)}px">${fmt(A.transferInCmh)}</text>`
      + `<title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${bd?.grade ? ' · 경계 ' + esc(bd.grade) : ''}${A.transferSet ? ' (지정)' : ' (자동)'}</title></g>`; }
    // ducts of the chosen kind that PHG D made, thin, under the markers
-   for (const p of deckPlans(S.kind)) for (const d of S.geometry[p.key]?.ducts || [])
-    html += `<polyline class="duct" points="${d.points.map(q => `${q.x},${q.y}`).join(' ')}" stroke="${sysColor(p.systemId)}" stroke-width="${d.type === 'main' ? 2.5 : 1.5}" opacity="${p.key === cur?.key ? .9 : .45}"><title>${esc(p.systemId)} ${esc(d.displayName)} ${d.widthMm ? d.widthMm + '×' + d.heightMm : ''} · ${d.flowCmh} CMH</title></polyline>`;
+   // in ④ (the shared canvas): the chosen system's network strong and pickable, others of the deck faint as asked
+   const show = S.ductShow || 'sys', ductPlans = ductMode ? deckPlans().filter(p => show === 'all' || (show === 'kind' ? p.kind === S.kind : p.key === cur?.key)) : deckPlans(S.kind);
+   for (const p of ductPlans) (S.geometry[p.key]?.ducts || []).forEach((d, i) => {
+    const on = p.key === cur?.key, w = ductMode ? (d.type === 'main' ? 4 : d.type === 'branch' ? 2.6 : 1.6) : (d.type === 'main' ? 2.5 : 1.5), pts = d.points.map(q => `${q.x},${q.y}`).join(' ');
+    if (ductMode && S.duct?.key === p.key && S.duct.i === i) html += `<polyline class="duct dsel" points="${pts}" stroke-width="${w + 7}"></polyline>`;
+    html += `<polyline class="duct${ductMode ? ' pick' : ''}" data-key="${esc(p.key)}" data-i="${i}" points="${pts}" stroke="${sysColor(p.systemId)}" stroke-width="${w}" opacity="${on ? .95 : ductMode ? .3 : .45}"><title>${esc(p.systemId)} ${esc(d.displayName)} ${d.widthMm ? d.widthMm + '×' + d.heightMm : d.diameterMm ? 'Ø' + d.diameterMm : ''} · ${d.flowCmh} CMH</title></polyline>`;
+   });
+   if (ductMode && cur) {
+    // main duct sizes along the network, where there is room for them
+    for (const d of (S.geometry[cur.key]?.ducts || []).filter(d => d.type === 'main' && d.points.length > 1)) {
+     const [p0, p1] = [d.points[0], d.points.at(-1)], L = Math.hypot(p1.x - p0.x, p1.y - p0.y) * k; if (L < 70) continue;
+     const size = d.widthMm ? `${d.widthMm}×${d.heightMm}` : d.diameterMm ? `Ø${d.diameterMm}` : ''; if (!size) continue;
+     const vert = Math.abs(p1.x - p0.x) < Math.abs(p1.y - p0.y), mx = (p0.x + p1.x) / 2, my = (p0.y + p1.y) / 2;
+     html += `<text class="dsz" x="${mx + (vert ? px(6) : 0)}" y="${my - (vert ? 0 : px(6))}" text-anchor="${vert ? 'start' : 'middle'}" style="font-size:${px(10)}px">${size}</text>`;
+    }
+    // the plan's RUs: supply circle, return diamond, exhaust square (shape and colour)
+    for (const u of cur.rus) { const x = u.x, y = -u.y, r = px(4.5), t = `<title>${esc(u.id)} · ${fmt(u.flowCmh)} CMH</title>`;
+     html += cur.kind === 'supply' ? `<circle class="ru" cx="${x}" cy="${y}" r="${r}" fill="${sysColor(cur.systemId)}">${t}</circle>`
+      : cur.kind === 'return' ? `<path class="ru" d="M${x} ${y - r * 1.2}L${x + r * 1.2} ${y}L${x} ${y + r * 1.2}L${x - r * 1.2} ${y}Z" fill="${sysColor(cur.systemId)}">${t}</path>`
+      : `<rect class="ru" x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}" fill="${sysColor(cur.systemId)}">${t}</rect>`; }
+   }
   }
   html += sel;
   // units (filled = set by the user, dashed = a guess) on the unit deck; vertical duct shafts (circles) on the other decks
@@ -505,13 +538,17 @@
   svg.innerHTML = html; svg.classList.toggle('picking', S.pickRoot);
   svg.querySelectorAll('.rm').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); selectRoom(e.dataset.room); });
   svg.querySelectorAll('.mk').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); S.sys = plans().find(p => p.key === e.dataset.key).systemKey; render(); });
+  // ④: a duct picked on the plan (a duct of another system makes that system the current one)
+  svg.querySelectorAll('.duct.pick').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); const p = plans().find(x => x.key === e.dataset.key); if (p) { S.sys = p.systemKey; S.kind = p.kind; } S.duct = { key: e.dataset.key, i: +e.dataset.i }; S.room = null; render(); });
   svg.onclick = ev => { if (!S.pickRoot) return; const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()); setRoot({ x: q.x, y: -q.y }); render(); };
   if (fire) {
    const sum = a.solas.summary, on = a.solas.boundaries.filter(x => x.deckId === S.deck), cnt = g => on.filter(x => x.grade === g).length;
    $('legend').innerHTML = `<b>${esc(deckName(S.deck))} 방화 경계</b> <span class="muted">${esc(SO.DATA.ships[a.solas.settings.ship].label)}</span><br>${['A-60', 'A-30', 'A-15', 'A-0', 'B-15', 'B-0'].filter(cnt).map(g => `<span class="ln" style="background:${SVG.GRADE_COLORS[g]}"></span>${g} · ${cnt(g)}`).join('<br>')}<br><span class="pd fd"></span>방화댐퍼 ${a.solas.penetrations.filter(x => x.deckId === S.deck && x.damper).length} · <span class="pd"></span>관통 ${a.solas.penetrations.filter(x => x.deckId === S.deck).length} · <span class="pd dk"></span>갑판 관통<br>${a.solas.passages.some(x => x.deckId === S.deck) ? '<span class="err">▨ 제한 구역 통과</span><br>' : ''}${sum.unclassified.length ? `<span class="warn">미분류 실 ${sum.unclassified.length} (전체) — 실 선택 후 오른쪽에서 지정</span>` : '<span class="muted">모든 실 분류됨</span>'}`;
   } else {
    const sys = [...new Set(rooms.map(r => r.systems[S.kind]).filter(Boolean))].sort();
-   $('legend').innerHTML = `<b>${esc(deckName(S.deck))} ${KL[S.kind]} 계통</b><br>${sys.map(id => `<span class="dot" style="background:${sysColor(id)}"></span>${esc(id)} · ${fmt(C.systems.find(s => s.id === id && s.kind === S.kind)?.designCmh)} CMH`).join('<br>') || '<span class="muted">이 Deck에 없음</span>'}<br><span class="muted">${UNIT_WORD[S.kind]} □ 공조기·팬 · ⇅ ○ 수직 덕트 · 채움 = 지정 · 점선 = 임시</span>${C.rooms.some(r => r.deckId === S.deck && C.airflow[r.id].transferInCmh && C.rooms.some(x => x.id === C.airflow[r.id].transferFrom)) ? '<br><span class="muted">→ 전달 공기 CMH (실선 = 지정 · 주황 = A급 경계)</span>' : ''}`;
+   if (ductMode) { const res = cur && result(cur.key);
+    $('legend').innerHTML = cur ? `<b>${esc(deckName(S.deck))} · ${KL[cur.kind]} ${esc(cur.systemId)}</b><br>${res?.auto ? `덕트 ${res.ducts}개 · ${res.lengthM} m · 최대 ${res.indexPa ?? '—'} Pa${res.stale ? ' · <span class="warn">다시 보내기 필요</span>' : ''}` : '<span class="warn">덕트망 없음 — 보내기 + AUTO</span>'}<br><span class="ln" style="background:${sysColor(cur.systemId)};height:4px"></span>주 덕트 · <span class="ln" style="background:${sysColor(cur.systemId)};height:2px"></span>분기<br><span class="muted">● 급기 RU · ◆ 환기 RU · ■ 배기 RU · 덕트를 누르면 크기·풍량</span>` : '<span class="muted">이 Deck에 계통이 없습니다</span>';
+   } else $('legend').innerHTML = `<b>${esc(deckName(S.deck))} ${KL[S.kind]} 계통</b><br>${sys.map(id => `<span class="dot" style="background:${sysColor(id)}"></span>${esc(id)} · ${fmt(C.systems.find(s => s.id === id && s.kind === S.kind)?.designCmh)} CMH`).join('<br>') || '<span class="muted">이 Deck에 없음</span>'}<br><span class="muted">${UNIT_WORD[S.kind]} □ 공조기·팬 · ⇅ ○ 수직 덕트 · 채움 = 지정 · 점선 = 임시</span>${C.rooms.some(r => r.deckId === S.deck && C.airflow[r.id].transferInCmh && C.rooms.some(x => x.id === C.airflow[r.id].transferFrom)) ? '<br><span class="muted">→ 전달 공기 CMH (실선 = 지정 · 주황 = A급 경계)</span>' : ''}`;
   }
  }
  // ⑤ review: tabs over the analysis
@@ -570,6 +607,20 @@
   const C = S.contract;
   if (!C) { $('inspTitle').textContent = '속성'; $('insp').innerHTML = `<div class="card"><h4>시작</h4><span class="muted">① BOX에서 도면을 열고(S5·T3 예제 포함) ② CAL로 부하를 계산한 뒤 <b>계약 만들기</b>를 누르세요. 저장한 HVAC Grid 프로젝트는 위쪽 열기 버튼으로 엽니다.</span></div>`; return; }
   const r = C.rooms.find(x => x.id === S.room), a = analysis();
+  const dk = S.step === 'duct' && S.duct ? plans().find(p => p.key === S.duct.key) : null, d = dk && S.geometry[dk.key]?.ducts?.[S.duct.i];
+  if (!r && d) {
+   const area = d.widthMm ? d.widthMm * d.heightMm / 1e6 : d.diameterMm ? Math.PI * (d.diameterMm / 2000) ** 2 : 0, v = area ? d.flowCmh / 3600 / area : null;
+   const L = d.points.slice(1).reduce((t, q, i) => t + Math.hypot(q.x - d.points[i].x, q.y - d.points[i].y), 0) / 1000, res = result(dk.key);
+   $('inspTitle').innerHTML = `덕트 ${esc(d.displayName || d.id)}`;
+   $('insp').innerHTML = `<div class="card now"><h4>${esc({ main: '주 덕트', branch: '분기', sub_branch: '보조 분기' }[d.type] || d.type || '덕트')}<span class="from">PHG D</span></h4><div class="kv">
+     <span>계통</span><span><span class="dot" style="background:${sysColor(dk.systemId)}"></span>${KL[dk.kind]} ${esc(dk.systemId)}</span>
+     <span>크기</span><span><b>${d.widthMm ? d.widthMm + ' × ' + d.heightMm : d.diameterMm ? 'Ø ' + d.diameterMm : '—'}</b> mm</span>
+     <span>풍량</span><span><b>${fmt(d.flowCmh)}</b> CMH</span><span>풍속</span><span>${v ? v.toFixed(1) + ' m/s' : '—'}</span><span>길이</span><span>${L.toFixed(1)} m</span></div></div>`
+    + `<div class="card"><h4>덕트망 · ${esc(deckName(dk.deckId))}<span class="from">PHG D</span></h4><div class="kv"><span>RU · 풍량</span><span>${res?.rus ?? '—'} · ${fmt(res?.flowCmh)} CMH</span><span>덕트 · 길이</span><span>${res?.ducts ?? '—'} · ${res?.lengthM ?? '—'} m</span><span>Deck 최대 손실</span><span>${res?.indexPa ?? '—'} Pa</span></div>
+     <button class="btn" id="inspEditor" style="margin-top:10px;width:100%">PHG D 편집기에서 고치기</button><p class="muted" style="margin:6px 0 0">크기·경로를 바꾼 뒤 "평면으로"를 누르면 이 평면에 반영됩니다.</p></div>`;
+   $('inspEditor').onclick = () => act('PHG D 여는 중', openEditor);
+   return;
+  }
   if (!r) {
    const rooms = C.rooms.filter(x => x.deckId === S.deck), sum = k => rooms.reduce((t, x) => t + (C.airflow[x.id][k] || 0), 0);
    $('inspTitle').textContent = 'Deck ' + deckName(S.deck);
@@ -595,7 +646,7 @@
   const xs = $('xferSel'); if (xs) xs.onchange = () => act(null, () => setTransfer(r.id, xs.value));
  }
  function center() {
-  const view = stepOf(S.step).view, noContract = !S.contract && (view === 'plan' || view === 'report' || view === 'phg');
+  const view = viewOf(S.step), noContract = !S.contract && (view === 'plan' || view === 'report' || view === 'phg');
   $('boxFrame').style.visibility = view === 'box' ? 'visible' : 'hidden';
   $('phgFrame').style.visibility = view === 'phg' && !noContract ? 'visible' : 'hidden';
   show($('plan'), view === 'plan' && !noContract); show($('legend'), view === 'plan' && !noContract); show($('report'), view === 'report' && !noContract);
@@ -629,12 +680,12 @@
  }
  // ④ with a plan not in PHG D yet: what to do, over the empty canvas
  function phgHint(view) {
-  const key = curKey(), on = view === 'phg' && !!S.contract && !!key && S.active !== key && !busyNow() && !S.hintOff?.[key];
+  const key = curKey(), on = S.step === 'duct' && !!S.contract && !!key && !busyNow() && !S.hintOff?.[key] && (S.phgEditor ? S.active !== key : !result(key)?.auto);
   show($('phgHint'), on); if (!on) return;
   const pl = curPlan();
-  $('phgHint').innerHTML = `<div><b>${esc(deckName(pl.deckId))} · ${KL[pl.kind]} ${esc(pl.systemId)}는 아직 PHG D에 없습니다</b><p>격실 도면·공조기·RU(풍량)를 PHG D로 보낸 뒤 AUTO로 덕트망을 만듭니다.</p>
+  $('phgHint').innerHTML = `<div><b>${esc(deckName(pl.deckId))} · ${KL[pl.kind]} ${esc(pl.systemId)}는 아직 PHG D에 없습니다</b><p>격실 도면·공조기·RU(풍량)를 PHG D로 보내 AUTO로 덕트망을 만들고, 이 평면에 그립니다.</p>
    <button class="btn primary" data-a="auto">보내기 + AUTO</button><button class="btn" data-a="send">PHG D로 보내기만</button><button class="btn" data-a="all">모든 계통 AUTO</button><p class="phg-hint-off"><button class="linkbtn" data-a="off">닫고 PHG D에서 직접 그리기</button></p></div>`;
-  $('phgHint').querySelectorAll('button').forEach(b => b.onclick = () => ({ auto: () => act('AUTO 계산 중', () => autoKey()), send: () => act('PHG D로 보내는 중', () => sendPlan()), all: () => act('AUTO 계산 중', () => runAll()), off: () => { S.hintOff = { ...(S.hintOff || {}), [key]: true }; show($('phgHint'), false); } })[b.dataset.a]());
+  $('phgHint').querySelectorAll('button').forEach(b => b.onclick = () => ({ auto: () => act('AUTO 계산 중', () => autoKey()), send: () => act('PHG D로 보내는 중', () => sendPlan()), all: () => act('AUTO 계산 중', () => runAll()), off: () => { S.hintOff = { ...(S.hintOff || {}), [key]: true }; show($('phgHint'), false); if (!S.phgEditor) act('PHG D 여는 중', openEditor); } })[b.dataset.a]());
  }
  const busyNow = () => !$('busy').hidden;
  // help (F1, ?)
@@ -689,7 +740,7 @@
  };
  document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) || ((e.ctrlKey || e.metaKey) && /^[so]$/i.test(e.key)) || e.key === 'F1' ? onKey(e) : false;
  window.addEventListener('resize', () => { if (S.step === 'air' && S.contract) plan(); });
- window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, openSample, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
+ window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), openSample, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
   runAll: (keys, opt) => act('AUTO 계산 중', () => runAll(keys, opt)) };   // with the busy overlay and error message, as from the ribbon
  render(); go('room');
 })();
