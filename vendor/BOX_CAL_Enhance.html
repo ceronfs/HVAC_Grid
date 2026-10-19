@@ -13187,7 +13187,7 @@ let l4LabelSourceCache=null,l4PlanLabelCache=null,l4IsoLabelCache=null,l4IsoLabe
     if(source?.type==='TEXT'&&shown(source)&&!textIds.includes(source.id))textIds.push(source.id);
     for(const id of textIds)managed.add(id);
     const visibleTexts=textIds.map(id=>String(byId.get(id).text||'').trim()).filter(Boolean),
-      numberText=text=>/^\d+$/.test(text),
+      numberText=text=>/^[A-Z]?\d+[A-Z]?$/i.test(text),/* HVAC Grid patch A: same rule as isRoomNumberText */
       no=room.roomNoFromText?(String(room.no??'').trim()&&visibleTexts.find(numberText)||''):room.no,
       name=room.roomNameFromText?visibleTexts.filter(text=>!numberText(text)).join(' ').replace(/\s+/g,' ').trim():room.name;
     const bounds=room.polygon.reduce((b,p)=>({minX:Math.min(b.minX,p.x),maxX:Math.max(b.maxX,p.x),minY:Math.min(b.minY,p.y),maxY:Math.max(b.maxY,p.y)}),{minX:Infinity,maxX:-Infinity,minY:Infinity,maxY:-Infinity});
@@ -15942,7 +15942,8 @@ let l4LabelSourceCache=null,l4PlanLabelCache=null,l4IsoLabelCache=null,l4IsoLabe
     );
   }
 /*@E:2:equivalentRoomCandidates*/  /*@S:9:isRoomNumberText*/function isRoomNumberText(value) {
-    return /^\d+$/.test(String(value ?? "").trim());
+    // HVAC Grid patch A (2026-10-20): a letter before or after the digits is still a room number (211T, A12)
+    return /^[A-Z]?\d+[A-Z]?$/i.test(String(value ?? "").trim());
   }/*@E:9:isRoomNumberText*/
 /*@S:2:pointInOrOnPolygon*/  function pointInOrOnPolygon(point, polygon, tolerance = GEOMETRY_PROFILE.topology.nodeToleranceMm) {
     if (pointInPolygon(point, polygon)) return true;
@@ -24236,7 +24237,9 @@ window.CAL_ENHANCE_HOST={
  }
 };
 async function openCalEnhance(){
- if(calEnhancePanel&&!calEnhancePanel.hidden)return;
+ // HVAC Grid patch B (2026-10-20): an open panel is kept only while it shows the drawing BOX holds now; after another
+ // file, an example or an edit it loads again (it kept the old rooms: "unknown deck" downstream)
+ if(calEnhancePanel&&!calEnhancePanel.hidden&&calEnhanceSession===boxProjectSession&&calEnhanceRevision===modelRevision)return;
  if(!calEnhancePanel){
   calEnhancePanel=document.createElement('section');calEnhancePanel.id='calEnhancePanel';calEnhancePanel.setAttribute('role','dialog');calEnhancePanel.setAttribute('aria-modal','true');calEnhancePanel.setAttribute('aria-label','Cal Enhance 부하 계산');
   calEnhancePanel.innerHTML='<div class="cal-enhance-head"><b>CAL ENHANCE · 냉난방 부하 계산</b><span role="status">계산 준비 중…</span><button class="btn" data-cal-close type="button">도면으로 돌아가기</button></div><div class="cal-enhance-busy">계산 중…</div><iframe title="Cal 냉난방 부하 계산"></iframe>';

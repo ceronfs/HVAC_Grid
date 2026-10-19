@@ -1,5 +1,5 @@
 {
- "note": "Frozen copies used by HVAC Grid. The originals are read only; update a copy here only on purpose and record it.",
+ "note": "Frozen copies used by HVAC Grid. The originals are read only; update a copy here only on purpose and record it (patches: what was changed in the copy, to carry to the original).",
  "DuctConcept_PHG_D.html": {
   "from": "C:/Users/HK/Desktop/PHG/DuctConcept_PHG_D.html",
   "sha256_16": "643f328a1f50244a",
@@ -8,9 +8,25 @@
  },
  "BOX_CAL_Enhance.html": {
   "from": "C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html",
-  "sha256_16": "bd942611477ddfe5",
+  "sha256_16": "a8421581c1fe4f42",
   "commit": "CAL_Enhance 32976f8",
-  "copied": "2026-10-18"
+  "copied": "2026-10-18",
+  "sha256_16_original": "bd942611477ddfe5",
+  "patches": [
+   {
+    "id": "A",
+    "date": "2026-10-20",
+    "what": "isRoomNumberText + label numberText: a room number may carry one letter before or after the digits (211T, A12)",
+    "test": "test/e2e/vendor.e2e.cjs"
+   },
+   {
+    "id": "B",
+    "date": "2026-10-20",
+    "what": "openCalEnhance: an open CAL panel loads again when the BOX session or model revision changed (it kept the old drawing)",
+    "test": "test/e2e/vendor.e2e.cjs"
+   }
+  ],
+  "patchDoc": "docs/VENDOR_PATCHES.md"
  },
  "SOLAS_fire_rating.html": {
   "from": "C:/Users/HK/Desktop/Program/SOLAS/fire_rating.html",
