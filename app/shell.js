@@ -47,8 +47,17 @@
  const icon = n => `<svg viewBox="0 0 20 20" aria-hidden="true"><path d="${P[n] || P.list}"/></svg>`;
 
  // ---------- helpers ----------
- function say(text, err = false) { S.msg = text; S.msgErr = err; status(); }
- function busy(text) { show($('busy'), !!text); $('busyText').textContent = text || ''; }
+ function say(text, err = false) { S.msg = text; S.msgErr = err; status(); if (err) toast(text, true); }
+ // a message that stays a few seconds over the window (errors and finished long work)
+ let toastTimer = null;
+ function toast(text, err = false) { const t = $('toast'); t.textContent = text; t.classList.toggle('err', err); show(t, true); clearTimeout(toastTimer); toastTimer = setTimeout(() => show(t, false), err ? 7000 : 4000); }
+ // busy: text, and for long work a progress bar (done / total) with the time left, and a stop button
+ function busy(text, { done = null, total = null, eta = null, stop = null } = {}) {
+  show($('busy'), !!text); $('busyText').textContent = text || '';
+  show($('busyBar'), total != null); if (total != null) $('busyFill').style.width = `${Math.round(done / total * 100)}%`;
+  $('busyEta').textContent = eta != null ? `남은 시간 약 ${eta < 60 ? Math.max(1, Math.round(eta)) + '초' : Math.round(eta / 60) + '분'}` : '';
+  show($('busyStop'), !!stop); $('busyStop').onclick = stop; $('busyStop').disabled = false;
+ }
  async function act(label, fn) {
   try { if (label) busy(label); await fn(); } catch (e) { console.error(e); say(e.message || String(e), true); } finally { busy(null); render(); }
  }
@@ -61,7 +70,19 @@
  }
  const stamp = () => U.localStamp();
  // work that would be lost (PHG D results) - ask first
- const keepsWork = what => !Object.keys(S.results).length || confirm(`${what}: 지금 PHG D 결과 ${Object.keys(S.results).length}개와 실행 취소 기록이 사라집니다. 계속할까요?\n(필요하면 먼저 프로젝트 저장)`);
+ // an in-app dialog (title HVAC Grid, not the browser's): resolves with the value of the button pressed (Esc: cancel)
+ function ask(text, buttons) {
+  const d = $('dlg'); $('dlgText').textContent = text;
+  $('dlgBtns').innerHTML = buttons.map(([v, label, primary]) => `<button class="btn${primary ? ' primary' : ''}" data-v="${v}">${esc(label)}</button>`).join('');
+  return new Promise(done => { const end = v => { d.close(); done(v); }; $('dlgBtns').querySelectorAll('button').forEach(b => b.onclick = () => end(b.dataset.v)); d.oncancel = e => { e.preventDefault(); end('cancel'); }; d.showModal(); d.querySelector('.primary')?.focus(); });
+ }
+ // work that would be lost (PHG D results, edits not saved): save first, go on without saving, or stay
+ async function keepsWork(what) {
+  if (!Object.keys(S.results).length && !S.dirty) return true;
+  const v = await ask(`${what}: 지금 작업(PHG D 결과 ${Object.keys(S.results).length}개, 실행 취소 기록)이 사라집니다. 저장할까요?`, [['save', '저장하고 계속', true], ['discard', '저장하지 않고 계속'], ['cancel', '취소']]);
+  if (v === 'save') OUT.project();
+  return v !== 'cancel';
+ }
 
  // ---------- contract edits (undo / redo in the shell's own views) ----------
  function edit(label, fn) {
@@ -103,13 +124,16 @@
   S.step = 'air';
  }
  async function openSample(name = 's5') {
-  if (!keepsWork('예제 계약 열기')) return;
+  if (!(await keepsWork('예제 계약 열기'))) return;
   setContract(await (await fetch(`../samples/${name}.contract.json`, { cache: 'no-store' })).json());
-  say(name === 't3' ? 'T3 시험선 계약을 열었습니다 (4 Deck · 다층 계통)' : '예제 계약(S5)을 열었습니다'); if (S.step === 'room' || S.step === 'load') S.step = 'air';
+  S.dirty = false; say(name === 't3' ? 'T3 시험선 계약을 열었습니다 (4 Deck · 다층 계통)' : '예제 계약(S5)을 열었습니다'); if (S.step === 'room' || S.step === 'load') S.step = 'air';
  }
  function applyDeltaT() {
-  const v = +$('dT').value; if (!(v >= 3 && v <= 25)) throw new Error('급기 ΔT는 3–25 K');
-  const pp = +$('pPct').value, pb = $('pBasis').value, mo = +$('minOa').value; if (!(pp >= 0 && pp <= 30)) throw new Error('가압은 0–30 %'); if (!(mo >= 0 && mo <= 100)) throw new Error('최소 신기 비율은 0–100 %');
+  const v = +$('dT').value, pp = +$('pPct').value, pb = $('pBasis').value, mo = +$('minOa').value;
+  const bad = [['dT', !(v >= 3 && v <= 25), '급기 ΔT는 3–25 K'], ['pPct', !(pp >= 0 && pp <= 30), '가압은 0–30 %'], ['minOa', !(mo >= 0 && mo <= 100), '최소 신기 비율은 0–100 %']].filter(x => x[1]);
+  S.fieldErr = Object.fromEntries(bad.map(([id, , m]) => [id, { msg: m, value: $(id).value }]));
+  if (bad.length) throw new Error(bad.map(x => x[2]).join(' · '));
+  S.fieldErr = null;
   edit(`급기 ΔT ${v} K · 가압 ${pp} %`, () => { S.contract = K.applyRules(S.contract, { supplyDeltaTK: v, pressurizationPct: pp, pressurizationBasis: pb, minOaPct: mo }); });
   say(`급기 ΔT ${v} K · 가압 ${pb === 'supply' ? '급기' : '배기'}의 ${pp} % 적용: 급기 합계 ${fmt(S.contract.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))} CMH`);
  }
@@ -181,10 +205,20 @@
   const r = await phg.auto(); store(key, { auto: true, seconds: r.seconds, candidate: r.candidate, unconnected: r.unconnected, zonesRelaxed: r.zonesRelaxed, edited: false });
   say(`${key.replace('__', ' · ')}: 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa · ${r.seconds} s${r.zonesRelaxed ? ({ all: ' · 금지 영역과 선체 밖 영역을 모두 해제해야 경로가 나옴 — 경로 검토', rooms: ' · 제한 구역을 지키는 경로가 없어 해제(선체 밖은 유지) — 경로 검토', outside: ' · 선체 밖 금지 영역을 풀어야 모든 RU에 닿음(제한 구역은 유지) — 실 밖 덕트 검토' }[r.zonesRelaxed] || '') : ''}`, !!r.zonesRelaxed);
  }
+ // the plans one after another; 멈춤 stops after the plan running now (the done ones keep their results)
  async function runAll(keys = plans().map(p => p.key), { onlyNeeded = false } = {}) {
-  const todo = onlyNeeded ? keys.filter(k => { const r = result(k); return !r?.auto || r.stale; }) : keys;
-  for (const [i, key] of todo.entries()) { busy(`${i + 1}/${todo.length} · ${key.replace('__', ' · ')} AUTO`); await autoKey(key); }
-  const done = keys.filter(k => result(k)?.auto && !result(k).stale).length; say(`AUTO 완료: ${done}/${keys.length} (이번에 ${todo.length}개)`);
+  const todo = onlyNeeded ? keys.filter(k => { const r = result(k); return !r?.auto || r.stale; }) : keys, t0 = performance.now();
+  let stopped = false; const stop = () => { stopped = true; $('busyStop').disabled = true; $('busyText').textContent += ' — 지금 계통까지 하고 멈춤'; };
+  let ran = 0;
+  for (const [i, key] of todo.entries()) {
+   if (stopped) break;
+   const per = i ? (performance.now() - t0) / 1000 / i : null;
+   busy(`${i + 1}/${todo.length} · ${key.replace('__', ' · ')} AUTO`, { done: i, total: todo.length, eta: per != null ? per * (todo.length - i) : null, stop: todo.length > 1 ? stop : null });
+   await autoKey(key); ran++;
+  }
+  const done = keys.filter(k => result(k)?.auto && !result(k).stale).length;
+  say(`AUTO ${stopped ? '멈춤' : '완료'}: ${done}/${keys.length} (이번에 ${ran}개${stopped ? ` · 남은 ${todo.length - ran}개는 "남은 것만"으로` : ''})`);
+  if (todo.length > 1) toast(`AUTO ${stopped ? '멈춤' : '완료'}: ${done}/${keys.length}`);
  }
  function readBack() { if (!S.active) throw new Error('PHG D에 열린 계통이 없습니다'); store(S.active, { edited: true }, { keepSig: true }); say('PHG D 결과를 읽었습니다'); }
  // leaving ④ with edits made in PHG D: read them back so ⑤ and the outputs show what is on screen
@@ -193,7 +227,7 @@
  // ---------- project file and outputs ----------
  function projectJson() { keepActive(); return JSON.stringify(project()); }
  async function openProject() {
-  if (!keepsWork('프로젝트 열기')) return;
+  if (!(await keepsWork('프로젝트 열기'))) return;
   const f = await pickFile('.json'), { project: pr, notes } = PJ.read(JSON.parse(await f.text()));
   setContract(pr.contract); Object.assign(S, { projects: pr.projects, results: pr.results, geometry: pr.geometry, active: null, dirty: false });
   if (S.step === 'room' || S.step === 'load') S.step = 'air';
@@ -238,13 +272,13 @@
    ['내보내기', [c('xlsxIso', 'ISO 시트', boxCal('I↑'), { code: 'I↑' }), c('xlsx', '미적용 시트', boxCal('N↑'), { code: 'N↑' }), c('sum', 'SUP 요약', boxCal('Σ↑'), { code: 'Σ↑' }), c('xlsxAll', '전체 XLSX', boxCal('LX'), { code: 'LX' }), c('sheet', '격실 시트', boxCal('R↑'), { code: 'R↑' }), c('face', '면적 시트', boxCal('A↑'), { code: 'A↑' })]],
    ['HVAC Grid', [c('contract', '계약 만들기', () => act('BOX 격실·부하 읽는 중', extractContract), { primary: true, title: 'BOX 격실·부하 → 격실 풍량·계통 (③ 풍량·계통으로 이동)' })]]] },
   { id: 'air', name: '풍량·계통', view: 'plan', groups: () => [
-   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="25" step="1" value="${S.contract?.rules.supplyDeltaTK ?? 10}"></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${S.contract?.rules.pressurizationPct ?? 5}" style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), field(`<label class="field" title="재순환 공조 구역의 신기 하한(선주 사양). 사양이 없으면 0">최소 신기 (%)<input id="minOa" type="number" min="0" max="100" step="1" value="${S.contract?.rules.minOaPct ?? 25}" style="width:4em"></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(냉방 현열 W × 3 ÷ ΔT)' })]],
+   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="25" step="1" value="${fv('dT', S.contract?.rules.supplyDeltaTK ?? 10)}" ${fe('dT')}></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${fv('pPct', S.contract?.rules.pressurizationPct ?? 5)}" ${fe('pPct')} style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), field(`<label class="field" title="재순환 공조 구역의 신기 하한(선주 사양). 사양이 없으면 0">최소 신기 (%)<input id="minOa" type="number" min="0" max="100" step="1" value="${fv('minOa', S.contract?.rules.minOaPct ?? 25)}" ${fe('minOa')} style="width:4em"></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(냉방 현열 W × 3 ÷ ΔT)' })]],
    ['계통', [kindSeg(), sysField(false)]],
    ['공조기 · 수직 덕트', [c('pin', '위치 지정', () => { S.pickRoot = !S.pickRoot; say(S.pickRoot ? `평면에서 ${curPlan()?.isUnitDeck === false ? '수직 덕트(샤프트)' : '공조기'} 위치를 클릭하세요 (Esc 취소)` : ''); render(); }, { disabled: () => !curKey(), pressed: () => S.pickRoot, title: '공조기 Deck: 공조기·팬 위치 · 다른 Deck: 수직 덕트(샤프트) 위치' }), c('unpin', '지정 해제', () => act(null, clearRoot), { disabled: () => !S.contract?.roots?.[curKey()] }), unitDeckField()]],
    ['보기', [seg('평면 보기', S.overlay, [['air', '풍량'], ['fire', '방화']], v => { S.overlay = v; })]],
    ['계약', [...SAMPLES, c('open', '열기', () => act(null, openProject), { title: 'HVAC Grid 프로젝트 또는 계약 JSON' }), c('save', '계약 저장', OUT.contract, { disabled: needContract })]]] },
   { id: 'duct', name: 'RU·덕트', view: 'phg', groups: () => [
-   ['HVAC Grid', [sysField(true), c('send', 'PHG D로 보내기', () => act('PHG D로 보내는 중', () => sendPlan()), { primary: true, disabled: () => !curKey(), title: 'Deck 격실 도면 + 공조기·수직 덕트 + 격실별 RU(풍량)' }), c('auto', '보내기 + AUTO', () => act('AUTO 계산 중', () => autoKey()), { disabled: () => !curKey(), title: 'AUTO → 첫 후보 → 덕트 지정 → 계산 → 압력' }), c('refresh', '결과 읽기', () => act(null, readBack), { disabled: () => !S.active, title: 'PHG D에서 고친 결과를 HVAC Grid로' })]],
+   ['HVAC Grid', [sysField(true), c('send', 'PHG D로 보내기', () => act('PHG D로 보내는 중', () => sendPlan()), { primary: true, disabled: () => !curKey(), title: 'Deck 격실 도면 + 공조기·수직 덕트 + 격실별 RU(풍량)' }), c('auto', '보내기 + AUTO', () => act('AUTO 계산 중', () => autoKey()), { disabled: () => !curKey(), title: 'AUTO → 첫 후보 → 덕트 지정 → 계산 → 압력' }), c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '결과 읽기', () => act(null, readBack), { disabled: () => !S.active, title: 'PHG D에서 고친 결과를 HVAC Grid로' })]],
    ['계통', [c('root', '공조기', phgCmd('rootBtn'), { code: 'R', title: 'Root · 계통 시작점(공조기) 배치' }), c('ru', 'RU 배치', phgCmd('diffuserBtn'), { code: 'RU' }), c('ruAuto', 'RU 자동', phgCmd('autoDiffuserBtn')), c('flow', '풍량 초안', phgCmd('phgdFlowBtn'))]],
    ['자동 라우팅', [c('zone', '금지 영역', phgText('금지 영역')), c('auto', 'AUTO', phgCmd('autoRouteOpenBtn'), { title: 'AUTO · 편집 가능한 경로 객체 생성 · 덕트 지정으로 덕트화' }), c('cmp', '비교', phgCmd('phgdCompareBtn')), c('set', '설정', phgCmd('phgdAutoSettingsBtn'))]],
    ['덕트', [c('ml', '주 덕트', phgCmd('assignMainLineBtn'), { code: 'ML' }), c('br', '분기', phgCmd('assignBranchBtn'), { code: 'BR' }), c('sbr', '보조 분기', phgCmd('assignSubBranchBtn'), { code: 'SBR' }), c('ad', '덕트 지정', phgCmd('makeDuctBtn'), { code: 'AD' })]],
@@ -277,6 +311,9 @@
  }
  // open items grouped by level and field, in the order they come (failures first)
  const groups = items => { const m = new Map(); for (const [lv, area, text] of items) { const k = lv + '|' + area; if (!m.has(k)) m.set(k, [lv, area, []]); m.get(k)[2].push(text); } return [...m.values()]; };
+ // a ribbon field after a rejected entry: the value typed, marked, with the message as its tooltip
+ const fv = (id, value) => S.fieldErr?.[id] ? S.fieldErr[id].value : value;
+ const fe = id => S.fieldErr?.[id] ? `class="bad" aria-invalid="true" title="${esc(S.fieldErr[id].msg)}"` : '';
  const stepOf = id => STEPS.find(s => s.id === id);
  async function go(id) {
   if (S.step === 'duct' && id !== 'duct') readBackIfEdited();
@@ -365,7 +402,7 @@
   const C = S.contract, svg = $('plan'), rooms = C.rooms.filter(r => r.deckId === S.deck); if (!rooms.length) { svg.innerHTML = ''; return; }
   const xs = rooms.flatMap(r => r.polygon.map(p => p.x)), ys = rooms.flatMap(r => r.polygon.map(p => -p.y));
   // the legend (top right, ~300 px) gets its own strip right of the deck so it never covers rooms
-  const rc = svg.getBoundingClientRect(), legendPx = rc.width > 900 ? 300 : 0, minX = Math.min(...xs) - 900, minY = Math.min(...ys) - 900, maxY = Math.max(...ys) + 900;
+  const rc = svg.getBoundingClientRect(), legendPx = legendOpen() && rc.width > 900 ? 300 : 0, minX = Math.min(...xs) - 900, minY = Math.min(...ys) - 900, maxY = Math.max(...ys) + 900;
   let maxX = Math.max(...xs) + 900; const k0 = Math.min((rc.width - legendPx) / (maxX - minX), rc.height / (maxY - minY)); if (k0 > 0 && legendPx) maxX += legendPx / k0;
   svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'xMinYMid meet');
   // sizes in screen px: k = px per mm of the fitted plan
@@ -478,7 +515,7 @@
     <div class="scrollx">${tableHtml(pt, { limit: 300, keys: pens.map(p => 'pen:' + p.no), tip: '눌러서 ③ 방화 보기에서 위치 보기', cls: (r, j) => j === 1 && /^A-60/.test(r[1]) ? 'err' : j === 2 && /방화댐퍼|판정|확인|미정|샤프트/.test(r[2]) ? 'warn' : '' })}</div>`;
   } else {
    const items = RP.openItems(project(), a);
-   body = `<h3>검토 <small class="muted">실패 ${a.count.fail} · 확인 필요 ${a.count.check} · 통과 ${a.count.ok}</small></h3><table class="checks"><tbody>${a.checks.map(k => `<tr><td class="${LV[k.level][0]}">${LV[k.level][1]}</td><td>${esc(k.text)}</td></tr>`).join('')}</tbody></table>
+   body = `<h3>검토 <small class="muted">실패 ${a.count.fail} · 확인 필요 ${a.count.check} · 통과 ${a.count.ok}</small></h3><table class="checks"><tbody>${['fail', 'check'].flatMap(lv => a.checks.filter(k => k.level === lv)).map(k => `<tr><td class="${LV[k.level][0]}">${LV[k.level][1]}</td><td>${esc(k.text)}</td></tr>`).join('')}</tbody></table>${a.count.ok ? `<details class="grp-items ok-items"><summary><span class="${LV.ok[0]}">${LV.ok[1]}</span> ${a.count.ok}건</summary><table class="checks"><tbody>${a.checks.filter(k => k.level === 'ok').map(k => `<tr><td class="${LV.ok[0]}">${LV.ok[1]}</td><td>${esc(k.text)}</td></tr>`).join('')}</tbody></table></details>` : ''}
     <h3>미해결 확인 사항 ${items.length}건</h3>${items.length ? groups(items).map(([lv, area, rows]) => `<details class="grp-items" ${lv === 'fail' || rows.length <= 5 ? 'open' : ''}><summary><span class="${LV[lv][0]}">${LV[lv][1]}</span> ${esc(area)} <span class="muted">${rows.length}건</span></summary><table class="checks wide grp-table"><tbody>${rows.slice(0, 200).map(text => `<tr><td>${esc(text)}</td></tr>`).join('')}</tbody></table>${rows.length > 200 ? `<p class="muted">… ${rows.length - 200}건 더 (XLSX 확인 사항 시트)</p>` : ''}</details>`).join('') : '<p class="ok">없음</p>'}
     <p class="muted">설계 보조 결과 — 최종 판단은 설계자·주관청·선급. 출력: 위 리본의 통합 XLSX·통합 DXF·보고서.</p>`;
   }
@@ -531,7 +568,8 @@
    $('empty').innerHTML = `<div><b>아직 계약이 없습니다</b>BOX의 격실·부하를 HVAC Grid 계약으로 만들어야 풍량·계통과 덕트 단계를 쓸 수 있습니다.<br><button class="btn primary" id="emptyGo">② 부하에서 계약 만들기</button><button class="btn" id="emptySample">예제 계약 열기 (S5)</button><button class="btn" id="emptyT3">T3 시험선 열기</button></div>`;
    $('emptyGo').onclick = () => go('load'); $('emptySample').onclick = () => act('예제 계약 여는 중', () => openSample('s5')); $('emptyT3').onclick = () => act('T3 시험선 여는 중', () => openSample('t3'));
   }
-  if (view === 'plan' && S.contract) plan();
+  if (view === 'plan' && S.contract) { plan(); legendFold(); }
+  phgHint(view);
   if (view === 'report' && S.contract) report();
  }
  function status() {
@@ -540,7 +578,26 @@
   $('status').innerHTML = (C ? `<span>선박 전체: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> · 계통 급기 <b>${n('supply')}</b> 배기 <b>${n('exhaust')}</b> 환기 <b>${n('return')}</b> · 급기 <b>${fmt(C.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))}</b> CMH · 덕트망 <b>${done}</b>/${ps.length}</span><span>선택: <b>${esc(deckName(S.deck))}</b>${r ? ` · ${esc(r.no)} ${esc(r.name)}` : ''}</span>` : '<span>계약 없음 — ① 도면 → ② 부하 → 계약 만들기</span>')
    + (S.active ? `<span>PHG D: <b>${esc(S.active.replace('__', ' · '))}</b></span>` : '') + `<span class="msg${S.msgErr ? ' err' : ''}" role="status">${esc(S.msg)}</span>`;
   $('proj').textContent = C ? `${RP.PROJECT_NAME(C) || '계약'} · ${C.rooms.length}실` : '계약 없음';
+  document.title = C ? `${RP.PROJECT_NAME(C) || '계약'}${S.dirty ? ' *' : ''} — HVAC Grid` : 'HVAC Grid';
  }
+ // the plan legend opens and closes; it starts closed when the plan is narrow (it would cover rooms)
+ function legendOpen() { return S.legendOpen ?? ($('center').getBoundingClientRect().width > 1000); }
+ function legendFold() {
+  const lg = $('legend'), open = legendOpen();
+  if (!open) lg.innerHTML = '<button class="lg-tog" title="범례 펼치기" aria-expanded="false">범례 ▾</button>';
+  else lg.insertAdjacentHTML('afterbegin', '<button class="lg-tog close" title="범례 접기" aria-expanded="true">×</button>');
+  lg.classList.toggle('folded', !open); lg.querySelector('.lg-tog').onclick = () => { S.legendOpen = !open; render(); };
+ }
+ // ④ with a plan not in PHG D yet: what to do, over the empty canvas
+ function phgHint(view) {
+  const key = curKey(), on = view === 'phg' && !!S.contract && !!key && S.active !== key && !busyNow() && !S.hintOff?.[key];
+  show($('phgHint'), on); if (!on) return;
+  const pl = curPlan();
+  $('phgHint').innerHTML = `<div><b>${esc(deckName(pl.deckId))} · ${KL[pl.kind]} ${esc(pl.systemId)}는 아직 PHG D에 없습니다</b><p>격실 도면·공조기·RU(풍량)를 PHG D로 보낸 뒤 AUTO로 덕트망을 만듭니다.</p>
+   <button class="btn primary" data-a="auto">보내기 + AUTO</button><button class="btn" data-a="send">PHG D로 보내기만</button><button class="btn" data-a="all">모든 계통 AUTO</button><p class="phg-hint-off"><button class="linkbtn" data-a="off">닫고 PHG D에서 직접 그리기</button></p></div>`;
+  $('phgHint').querySelectorAll('button').forEach(b => b.onclick = () => ({ auto: () => act('AUTO 계산 중', () => autoKey()), send: () => act('PHG D로 보내는 중', () => sendPlan()), all: () => act('AUTO 계산 중', () => runAll()), off: () => { S.hintOff = { ...(S.hintOff || {}), [key]: true }; show($('phgHint'), false); } })[b.dataset.a]());
+ }
+ const busyNow = () => !$('busy').hidden;
  function render() { steps(); ribbon(); tree(); center(); inspector(); status(); $('main').classList.toggle('left-off', S.leftOff === true); $('main').classList.toggle('right-off', S.rightOff === true); }
 
  // ---------- wiring ----------

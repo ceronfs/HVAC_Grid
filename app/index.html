@@ -37,7 +37,8 @@
    <div class="report" id="report" hidden></div>
    <div class="legend" id="legend" hidden></div>
    <div class="empty" id="empty" hidden></div>
-   <div class="busy" id="busy" hidden><div><span class="spin"></span><b id="busyText"></b></div></div>
+   <div class="phg-hint" id="phgHint" hidden></div>
+   <div class="busy" id="busy" hidden><div><span class="spin"></span><div class="busy-body"><b id="busyText"></b><div class="busy-bar" id="busyBar" hidden><i id="busyFill"></i></div><small id="busyEta"></small></div><button class="btn" id="busyStop" hidden>멈춤</button></div></div>
   </section>
   <aside class="side right" id="right">
    <div class="sh"><span id="inspTitle">속성</span><button class="mini" id="rightToggle" title="패널 접기">›</button></div>
@@ -45,6 +46,8 @@
   </aside>
  </div>
  <footer class="status" id="status"></footer>
+ <div class="toast" id="toast" role="alert" hidden></div>
+ <dialog class="dlg" id="dlg" aria-labelledby="dlgTitle"><h3 id="dlgTitle">HVAC Grid</h3><p id="dlgText"></p><div class="dlg-btns" id="dlgBtns"></div></dialog>
 </div>
 <input type="file" id="pick" hidden>
 <script src="bridge.js"></script>

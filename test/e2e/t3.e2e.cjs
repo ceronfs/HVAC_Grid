@@ -55,8 +55,10 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   await p.locator('.seg[data-seg="평면 보기"] button', { hasText: '풍량' }).click(); await H(() => { HVACGrid.S.deck = 'D2'; HVACGrid.render(); }); await p.waitForTimeout(200); await shot('3-air-ducts-D2');
   // save, start over, open the saved project: the same results without running anything
   const [d] = await Promise.all([p.waitForEvent('download'), p.click('#saveProjectBtn')]); const file = path.join(OUT, 't3.project.json'); await d.saveAs(file);
-  await H(() => HVACGrid.openSample('s5'));
-  const [chooser] = await Promise.all([p.waitForEvent('filechooser'), p.click('#openProjectBtn')]); await chooser.setFiles(file); await idle();
+  // work would be lost: the in-app dialog asks; go on without saving (it was just saved)
+  const answer = () => p.locator('#dlg[open] button[data-v=discard]').click({ timeout: 3000 }).catch(() => {});
+  const opening = H(() => HVACGrid.openSample('s5')); await answer(); await opening;
+  const [chooser] = await Promise.all([p.waitForEvent('filechooser'), p.click('#openProjectBtn').then(answer)]); await chooser.setFiles(file); await idle();
   await p.waitForFunction(() => HVACGrid.S.contract?.rooms.length === 79 && HVACGrid.S.contract.solas, null, { timeout: 30000 });   // the file is read without the busy overlay
   const back = await H(() => { const a = HVACGrid.analysis(); return { rooms: HVACGrid.S.contract.rooms.length, done: a.done, below: HVACGrid.S.contract.solas.lowestBelow, pens: a.solas.summary.penetrations }; });
   assert.deepEqual(back, { rooms: 79, done: 17, below: '기관실 — A류', pens: a.pens }); log('project round trip', JSON.stringify(back));

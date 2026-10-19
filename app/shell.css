@@ -192,3 +192,23 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .report .scrollx th{top:0}
 /* grouped open items: one column of text, left aligned */
 .report table.checks.grp-table td,.report table.checks.grp-table td:first-child{text-align:left;white-space:normal;width:auto}
+/* usability round 1 (docs/USABILITY.md) */
+/* U-03: a rejected or out-of-range field */
+.field input.bad,.field input:invalid{border-color:var(--red);box-shadow:0 0 0 2px color-mix(in srgb,var(--red) 25%,transparent)}
+.toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%);z-index:30;max-width:min(720px,90vw);padding:10px 16px;border-radius:8px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 20px rgba(0,0,0,.18);font-size:13px}
+.toast.err{border-color:var(--red);color:var(--red);font-weight:600}
+/* U-08: progress and stop in the busy box */
+.busy-body{display:grid;gap:4px;min-width:260px}.busy-bar{height:6px;border-radius:3px;background:var(--line2);overflow:hidden}.busy-bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.busy-body small{color:var(--muted)}#busyStop{margin-left:8px}
+/* U-06: the in-app dialog */
+.dlg{border:1px solid var(--line);border-radius:10px;padding:18px 20px;background:var(--panel);color:var(--text);max-width:460px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.dlg::backdrop{background:rgba(0,0,0,.28)}.dlg h3{margin:0 0 8px;font-size:15px}.dlg p{margin:0 0 16px;line-height:1.6}.dlg-btns{display:flex;gap:8px;justify-content:flex-end}
+/* U-02: what to do in ④ before a plan is in PHG D */
+.phg-hint{position:absolute;inset:0;display:grid;place-items:center;background:var(--shade);z-index:4}
+.phg-hint>div{max-width:460px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;box-shadow:0 6px 20px rgba(0,0,0,.12);text-align:center}
+.phg-hint p{color:var(--muted);margin:8px 0 14px}.phg-hint .btn{margin:0 4px}
+/* U-09: folding legend */
+.legend .lg-tog{float:right;margin:-2px -4px 0 8px;border:0;background:none;color:var(--muted);cursor:pointer;font-size:14px}.legend.folded{padding:2px 4px}.legend.folded .lg-tog{float:none;margin:0;font-size:12px;color:var(--accent)}
+/* U-14: the passes folded under the review table */
+.ok-items{margin-top:6px}
+.phg-hint-off{margin:12px 0 0}.linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit}
