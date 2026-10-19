@@ -102,7 +102,7 @@ HVACGridProject {
 | 선주 최소 신기 비율(`minOaPct` 25 %)은 경고가 아니라 신기 하한 | 사양은 지켜야 할 값. 낮추려면 규칙을 바꿈 | `lib/contract.cjs` |
 | 가압 기준 기본은 배기 대비 5 %, 급기 대비로 바꿀 수 있음(③ 리본) | 1차 리뷰 이후 수치 연속성. 선주 사양이 급기 대비면 바꿈 | `rules.pressurizationBasis` |
 | 조리실 배기 계통은 다른 실 전부를 금지 영역으로(팬룸·트렁크만 통과), 급기는 제한 구역만 | 9.7.5 A급 덕트 구간을 만들지 않는 것이 실무 첫 선택(레인지 배기에 대한 요건). 경로가 없으면 완화 단계로 | `lib/phg-plan.cjs` |
-| ④도 HVAC Grid 평면 하나(캔버스 공유 1단계): PHG D는 숨긴 채 계산하고, 세부 편집만 PHG D 편집기 화면 | 단계를 옮겨도 같은 평면·격실·색이 유지되어 덕트 배치까지 한 캔버스로 읽힘. PHG D 원본은 그대로(편집 기능은 원본 것을 씀). 2단계: RU·공조기 이동, 덕트 크기 바꾸기, 경로 다시를 평면에서 바로(PHG D API로) | `app/shell.js` `viewOf`, `openEditor`, `closeEditor` |
+| ④도 HVAC Grid 평면 하나(캔버스 공유 1단계): PHG D는 숨긴 채 계산하고, 세부 편집만 PHG D 편집기 화면 | 단계를 옮겨도 같은 평면·격실·색이 유지되어 덕트 배치까지 한 캔버스로 읽힘. PHG D 원본은 그대로(편집 기능은 원본 것을 씀). 2단계(구현): RU·공조기를 평면에서 끌어 옮기기(`contract.ruMoves`, 놓으면 다시 AUTO), 덕트 크기 바꾸기(PHG D `manualSize` + `calculateTypedNetwork`), 다른 경로(AUTO의 다음 좋은 후보, 후보가 하나면 안내). 숨은 PHG D가 키보드 포커스를 가져가지 않게 함(Ctrl+Z는 셸로) | `app/shell.js` `viewOf`, `openEditor`, `closeEditor` |
 | 가압이 급기의 10 %를 넘으면 릴리프 확인 | 신기 하한 때문에 배기가 적은 구역(선교)은 과가압 → 문 개폐·소음 | `PJ.LIMITS.reliefPct` |
 | 시험 도면·PHG D Deck 도면은 DXF 2007(AC1021) | 한글을 UTF-8 그대로 쓸 수 있는 가장 낮은 판. R12는 코드 페이지 문자라 PHG D·BOX가 한글을 못 읽음. 출력용 통합 DXF는 R12(`\U+`) 유지 | `lib/phg-plan.cjs deckDxf`, `tools/make-test-ship.cjs` |
 

@@ -153,7 +153,8 @@
   // route reaches every RU inside the forbidden zones, AUTO runs again without the outside of the deck (restricted rooms
   // kept; a duct that then strays outside fails the passage check), then with only the outside, then without any, and the
   // result says so (zonesRelaxed: 'outside' | 'rooms' | 'all').
-  async auto() {
+  // pick: which of the good candidates (0 = PHG D's first) - "다른 경로" on the plan steps through them
+  async auto({ pick = 0 } = {}) {
    const w = this.win, R = w.DuctConceptRouting, L = w.LineDesignLegacy, t = performance.now(), st = L.getState();
    // a candidate is good when it reaches every RU; the first good one of the three tries wins, else the first one at all
    const zones = st.settings.routingForbiddenZones || [], outer = zones.filter(z => z.id.startsWith('HG-OUT-')), rooms = zones.filter(z => !outer.includes(z));
@@ -167,7 +168,7 @@
     if (good(pv)) { zonesRelaxed = relaxed; break; }
    }
    if (!good(pv) && first) { st.settings.routingForbiddenZones = first.z; zonesRelaxed = first.relaxed; pv = await R.preview({ timeoutMs: 120000 }); }
-   const c = pv.candidates?.[0];
+   const all = pv.candidates || [], goodOnes = all.filter(x => !x.unconnectedRuIds?.length), pool = goodOnes.length ? goodOnes : all, c = pool[pick % Math.max(1, pool.length)];
    if (!c) throw new Error('AUTO 후보 없음: ' + (pv.reason || pv.message || ''));
    await R.applyPreview(c.id);
    st.selectedEntityIds.clear(); for (const e of st.entities) if (e.autoRoute) st.selectedEntityIds.add(e.id); L.renderEverything();
@@ -178,7 +179,18 @@
    // sizing: every duct gets a section
    this.click('calculateBtn'); await until(() => st.ducts.every(d => +d.widthMm > 0 || +d.diameterMm > 0), 30000, '덕트 계산');
    st.selectedEntityIds.clear(); L.renderEverything(); this.fit();
-   return { ...this.result(), seconds: Math.round((performance.now() - t) / 100) / 10, candidate: c.label, unconnected: c.unconnectedRuIds?.length || 0, zonesRelaxed };
+   return { ...this.result(), seconds: Math.round((performance.now() - t) / 100) / 10, candidate: c.label, candidates: pool.length, pick: pick % Math.max(1, pool.length), unconnected: c.unconnectedRuIds?.length || 0, zonesRelaxed };
+  }
+  // a duct's section set by hand (PHG D keeps a manualSize duct as it is when it sizes the rest); null = sized again by
+  // PHG D. The network is calculated again (flows, the other sizes, pressure).
+  async setDuctSize(ductId, size) {
+   const w = this.win, L = w.LineDesignLegacy, st = L.getState(), d = st.ducts.find(x => x.id === ductId);
+   if (!d) throw new Error('PHG D에 덕트 ' + ductId + '가 없습니다');
+   if (size) Object.assign(d, { manualSize: true, shape: size.diameterMm ? 'round' : 'rect', widthMm: size.widthMm || 0, heightMm: size.heightMm || 0, diameterMm: size.diameterMm || 0 });
+   else d.manualSize = false;
+   await w.LineDesignV2.calculateTypedNetwork('');
+   L.renderEverything();
+   return this.result();
   }
   // the project open in PHG D differs from the stored text (edited in PHG D since)
   // content changed since text (a saved project)? PHG D writes keys in another order, new time stamps and default fields
@@ -207,7 +219,7 @@
    const s = this.win.LineDesignLegacy.getState(), r = s.nodes.find(n => n.type === 'root'), num = v => Number.isFinite(+v) && +v > 0 ? Math.round(+v) : 0;
    return { root: r ? { x: r.x, y: r.y } : null, rus: s.diffusers.map(d => ({ x: d.x, y: d.y, flowCmh: d.flowCmh })),
     ducts: s.ducts.map(d => ({ id: d.id, displayName: d.displayName || d.id, type: d.type, shape: d.shape, widthMm: d.shape === 'round' ? 0 : num(d.widthMm), heightMm: d.shape === 'round' ? 0 : num(d.heightMm),
-     diameterMm: d.shape === 'round' ? num(d.diameterMm) : 0, flowCmh: Math.round(+d.flowCmh || 0), points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(p.y) })) })) };
+     diameterMm: d.shape === 'round' ? num(d.diameterMm) : 0, flowCmh: Math.round(+d.flowCmh || 0), ...(d.manualSize ? { manualSize: true } : {}), points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(p.y) })) })) };
   }
  }
 

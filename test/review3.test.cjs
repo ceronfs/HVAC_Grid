@@ -77,3 +77,16 @@ test('run test: project names without file extensions; the room summary names st
  const c = K.applyRules({ ...t3, transfers: { [wc.id]: st.id } }), a = PJ.analyze({ contract: c, results: {}, geometry: {}, projects: {} });
  const air = a.checks.find(k => k.id === 'air'); assert.equal(air.level, 'fail'); assert.match(air.text, /계단실 전달 공기 1/);
 });
+
+test('shared canvas: an RU moved on the plan stays there (inside its room) and marks the plan changed', () => {
+ const PL = require('../lib/phg-plan.cjs'), PJ = require('../lib/project.cjs'), t3 = require('../samples/t3.contract.json');
+ const p0 = PL.plan(t3).find(p => p.key === 'D1__AHU-ACC'), u = p0.rus[0], room = t3.rooms.find(r => r.id === u.roomId);
+ const b = require('../lib/geom.cjs').bbox(room.polygon), to = { x: b.minX + 600, y: b.minY + 600 };
+ const moved = { ...t3, ruMoves: { [u.id]: to } }, p1 = PL.plan(moved).find(p => p.key === p0.key), u1 = p1.rus.find(x => x.id === u.id);
+ assert.deepEqual([u1.x, u1.y, u1.moved], [to.x, to.y, true]);
+ assert.notEqual(PJ.planSig(p1), PJ.planSig(p0));
+ // a point outside its room is ignored
+ const out = PL.plan({ ...t3, ruMoves: { [u.id]: { x: -50000, y: -50000 } } }).find(p => p.key === p0.key).rus.find(x => x.id === u.id);
+ assert.deepEqual([out.x, out.y], [u.x, u.y]);
+ assert.deepEqual(K.validate({ ...t3, ruMoves: { x: { x: 'a' } } }), ['ruMoves']);
+});

@@ -72,6 +72,18 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   assert.ok(await p.locator('#plan polyline.duct.pick').count() > 0, 'ducts on the shared plan');
   await p.locator('#plan polyline.duct.pick').first().click({ force: true }); await p.waitForTimeout(200);
   assert.match(await p.textContent('#inspTitle'), /^덕트/); await shot('4-duct-picked');
+  // stage 2 on the plan: a duct's size by hand (PHG D keeps it and calculates again)
+  const di = await H(() => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts.findIndex(d => d.type === 'main')), d0 = await p.evaluate(i => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts[i], di);
+  await p.evaluate(([i, w, h]) => HVACGrid.resizeDuct('S3__AHU-AC-01', i, { widthMm: w, heightMm: h }), [di, d0.widthMm + 100, d0.heightMm]); await idle();
+  const d1 = await H(() => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts[HVACGrid.S.duct.i]);   // the same duct, picked again after PHG D calculated
+  assert.deepEqual([d1.widthMm, d1.heightMm, d1.manualSize], [d0.widthMm + 100, d0.heightMm, true]); assert.ok(await H(() => HVACGrid.result('S3__AHU-AC-01').edited));
+  // an RU dragged with the mouse stays where it was dropped and AUTO runs again; Ctrl+Z takes the move back
+  const ru = await p.$('#plan .ru.drag'), rb = await ru.boundingBox(), ruId = await ru.getAttribute('data-ru');
+  await p.mouse.move(rb.x + rb.width / 2, rb.y + rb.height / 2); await p.mouse.down(); await p.mouse.move(rb.x + rb.width / 2 + 6, rb.y + rb.height / 2 + 6, { steps: 4 }); await p.mouse.up(); await p.waitForTimeout(300); await idle();
+  assert.ok(await p.evaluate(id => !!HVACGrid.S.contract.ruMoves?.[id], ruId), 'RU moved'); assert.ok(!(await H(() => HVACGrid.result('S3__AHU-AC-01').stale)), 'AUTO ran again');
+  await p.keyboard.press('Control+z'); await idle();
+  assert.ok(await p.evaluate(id => !HVACGrid.S.contract.ruMoves?.[id], ruId), 'Ctrl+Z takes the RU move back (not PHG D)');
+  await H(() => HVACGrid.runAll(['S3__AHU-AC-01'])); await idle();
   // PHG D as the detail editor, and back
   await ribbon('PHG D 편집기').click(); await idle();
   assert.ok(await p.evaluate(() => getComputedStyle(document.getElementById('phgFrame')).visibility === 'visible'), 'editor open'); await shot('4-duct-editor');
