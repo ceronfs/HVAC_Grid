@@ -14,7 +14,8 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .bar{display:flex;align-items:stretch;gap:12px;padding:0 12px;background:var(--bg);border-bottom:1px solid var(--line);min-width:0}
 .bar>.brand,.bar>.proj,.bar>.baricons{align-self:center}
 .brand{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;white-space:nowrap}
-.brand i{width:24px;height:24px;border-radius:5px;background:var(--accent);display:grid;place-items:center;color:#fff;font:700 11px system-ui;font-style:normal}
+/* the PHG logo of the NODE apps (BOX CAL, PHG D), the name with the blue of NODE BOX */
+.brand .brand-logo{width:30px;height:30px;flex:none;display:block}.brand b{color:#29a9ff;font-weight:700}
 .brand small{font-weight:400;color:var(--muted);font-size:11px}
 .proj{padding:4px 8px;border:1px solid var(--line);border-radius:6px;color:var(--muted);background:var(--panel);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;margin-left:auto}
 .steps{display:flex;gap:2px;align-self:flex-end;margin-bottom:-1px}

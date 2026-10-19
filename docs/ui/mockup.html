@@ -15,7 +15,7 @@ button{font:inherit;color:inherit}
 /* app bar */
 .bar{display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;white-space:nowrap}
-.brand i{width:24px;height:24px;border-radius:5px;background:var(--accent);display:grid;place-items:center;color:#fff;font:700 11px system-ui;font-style:normal}
+.brand .brand-logo{width:30px;height:30px;flex:none;display:block}.brand b{color:#29a9ff;font-weight:700}
 .brand small{font-weight:400;color:var(--muted);font-size:11px}
 .proj{padding:4px 8px;border:1px solid var(--line);border-radius:6px;color:var(--muted);white-space:nowrap}
 .steps{display:flex;gap:2px;margin:0 auto;background:var(--bg);padding:3px;border-radius:8px;border:1px solid var(--line)}
@@ -92,7 +92,7 @@ button{font:inherit;color:inherit}
 <body>
 <div class="app">
  <header class="bar">
-  <div class="brand"><i>N</i>HVAC Grid <small>BOX CAL + PHG D</small></div>
+  <div class="brand"><img class="brand-logo" src="../../app/logo-128.png" alt="PHG" width="30" height="30"><span>HVAC <b>Grid</b></span> <small>BOX CAL + PHG D</small></div>
   <div class="proj" id="proj"></div>
   <nav class="steps" id="steps" aria-label="작업 단계"></nav>
   <div class="baricons">
