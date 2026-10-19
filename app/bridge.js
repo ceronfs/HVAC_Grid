@@ -77,17 +77,21 @@
  const POPUP_BUTTONS = { RST: ['새로 고침', '표를 지금 도면·조건으로 다시 읽기'], '↻': ['새로 고침', '표를 지금 도면·조건으로 다시 읽기'], NEW: ['새로 작성', '새 사용자 K 구조 작성'], XLSX: ['XLSX 저장', '이 표를 XLSX 파일로 저장'], '×': [null, '닫기 (Esc)'],
   FIT: ['맞춤', '표를 창 폭에 맞춤'], '⛶': ['전체 화면', '창 최대화 / 복원'] };
  // the body BOX draws (and draws again on every filter or room change): long notes fold, figures line up
- const NOTES = '.table-notes,.k-data-notes,.design-grid-intro', NUMBER = /^[-+]?[\d,]*\.?\d+\s*%?$/;
+ const NOTES = '.table-notes,.k-data-notes,.design-grid-intro', NUMBER = /^[-+]?[\d,]*\.?\d+\s*(%|㎡|㎥|m²|m³|mm|m|W\/㎡|W\/m²|W\/CMH|W|kW|CMH|Pa|℃|°C|K|h)?$/;
  function dressBody(d) {
   for (const n of d.querySelectorAll(NOTES)) {
    // only plain notes fold: one with inputs or a table in it (창호 일사 조건 in 격실 부하) stays open
-   if (n.dataset.hgFold || n.scrollHeight < 90 || n.querySelector('input,select,textarea,table,button')) continue;
+   if (n.dataset.hgFold || n.scrollHeight < 40 || n.querySelector('input,select,textarea,table,button')) continue;
    n.dataset.hgFold = '1'; n.classList.add('hg-fold');
    const b = d.createElement('button'); b.type = 'button'; b.className = 'hg-more'; b.textContent = '자세히 ▾';
    b.onclick = () => { const open = n.classList.toggle('hg-open'); b.textContent = open ? '접기 ▴' : '자세히 ▾'; };
    n.after(b);
   }
-  for (const td of d.querySelectorAll('table.popup-table td:not([data-hg-n])')) { td.dataset.hgN = ''; if (!td.querySelector('input,select') && NUMBER.test(td.textContent.trim())) td.classList.add('hg-num'); }
+  // a number - typed in an input or not - sits right, as in a spreadsheet
+  for (const td of d.querySelectorAll('table.popup-table td:not([data-hg-n])')) {
+   td.dataset.hgN = ''; const f = td.querySelector('input:not([type=checkbox]):not([type=radio]),select');
+   if (f ? f.tagName === 'INPUT' && NUMBER.test(String(f.value).trim()) : NUMBER.test(td.textContent.trim())) td.classList.add('hg-num');
+  }
  }
  const popups = new Set(); let popupCss = null;
  function dressPopup(w) {

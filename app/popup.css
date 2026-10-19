@@ -1,80 +1,85 @@
-/* HVAC Grid look for the table windows BOX and its CAL open (격실 목록 · 격실 입력 · 설계 조건 · K값 · 격실 부하 · 신기 ·
-   리히터 …). BOX writes those windows itself (vendor/, read-only); app/bridge.js adds this sheet after it, so the same
-   NODE tokens as app/shell.css apply, light and dark. Text of BOX's own buttons is never changed (BOX reads it), the
-   Korean labels below are drawn over it. */
-:root{--bg:#f5f4ef;--panel:#fff;--line:#dedcd5;--line2:#ecebe6;--text:#292927;--muted:#595852;--accent:#185fa5;--soft:#e6f1fb;--soft-line:#cfe3f6;--warn:#8f5600;--warn-bg:#fdf4e4;--warn-line:#f0d9b0;--red:#a32d2d;--head:#f0efea}
-html[data-theme=dark]{--bg:#1c1b19;--panel:#242320;--line:#3a3934;--line2:#302f2b;--text:#ecebe6;--muted:#a8a69e;--accent:#4ea3e6;--soft:#1f3346;--soft-line:#2c4a66;--warn:#e0a24a;--warn-bg:#2e2516;--warn-line:#5a4520;--red:#e07a7a;--head:#2c2b27}
-html,body{background:var(--bg)!important;color:var(--text)!important}
-html body{font-family:"Noto Sans KR","Malgun Gothic","Segoe UI",system-ui,sans-serif!important;word-break:keep-all}
-/* one type scale: BOX's own tables were 10 px, CAL's 12 px */
-html body .detached-head,html body .detached-head *,html body .detached-body,html body .detached-body *{font-size:12px!important;line-height:1.45}
-html body .detached-body :is(h1,h2,h3,h4,.k-data-title){font-size:13px!important;font-weight:600}
+/* HVAC Grid table windows - the windows BOX and its CAL open (① 격실 목록 · 접한 면적, ② 격실 입력 · 설계 조건 · 경계 조건 ·
+   K값 · LY · 격실 부하 · 신기 · 리히터 …), in one plain spreadsheet look like Excel (docs/POPUP_DESIGN_REVIEW.md 3차).
+   BOX writes those windows itself (vendor/, read-only); app/bridge.js adds this sheet after it. Text BOX reads back (the
+   title, RST · ↻ · NEW · XLSX) is never changed: the Korean labels are drawn over it.
+   Rules: white sheet, a thin grey line round every cell, square corners, no shadows · grey header cells, bold, centred ·
+   맑은 고딕 12 px, compact rows · values the user types in blue, calculated values black · the focused cell in Excel green
+   · figures right, text left · totals bold over a double line · notes one grey line · sheet tabs · green XLSX button. */
+:root{--sheet:#fff;--bar:#f3f3f3;--grid:#d4d4d4;--grid-strong:#a6a6a6;--hdr:#f3f3f3;--text:#1f1f1f;--muted:#5f5f5f;--input:#1f4e9c;--sel:#217346;--hover:#eaf2fb;--note:#f7f7f7;--warn-bg:#fff4ce;--warn:#9c6500;--btn-hover:#e5e5e5;--red:#c42b1c}
+html[data-theme=dark]{--sheet:#1f1f1f;--bar:#2b2b2b;--grid:#3d3d3d;--grid-strong:#6b6b6b;--hdr:#2d2d2d;--text:#e8e8e8;--muted:#a8a8a8;--input:#8ab4f8;--sel:#3fa66b;--hover:#26313d;--note:#262626;--warn-bg:#3a3214;--warn:#e0b43c;--btn-hover:#3a3a3a;--red:#f1707b}
 
-/* head: the logo, the title, the commands - like the HVAC Grid app bar */
-html body .detached-head{height:46px;padding:0 12px!important;gap:6px!important;background:var(--panel)!important;border-bottom:1px solid var(--line)!important;cursor:default!important;box-shadow:0 1px 0 rgba(0,0,0,.02)}
-.detached-head .hg-logo{width:22px;height:22px;flex:none}
-html body .detached-head #modalTitle{font-size:14px!important;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.detached-head .btn,.detached-body .btn{height:28px;min-width:28px;padding:0 10px;border:1px solid var(--line)!important;border-radius:6px!important;background:var(--panel)!important;color:var(--text)!important;cursor:pointer;white-space:nowrap}
-.detached-head .btn:hover,.detached-body .btn:hover{background:var(--soft)!important;border-color:var(--soft-line)!important;color:var(--accent)!important}
-.detached-head .btn:focus-visible,.detached-body .btn:focus-visible,.popup-tab:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.table-view-controls{display:inline-flex;align-items:center;gap:2px;padding:0 6px;margin:0 2px;border-left:1px solid var(--line2);border-right:1px solid var(--line2)}
-.table-zoom-value{min-width:40px;text-align:center;color:var(--muted)}
-/* Korean labels over BOX's own text (the title, RST · ↻ · NEW · XLSX), which BOX reads back */
+/* the sheet */
+html,body{background:var(--sheet)!important;color:var(--text)!important}
+html body{font-family:"Malgun Gothic","맑은 고딕","Segoe UI",system-ui,sans-serif!important;word-break:keep-all}
+html body .detached-head,html body .detached-head *,html body .detached-body,html body .detached-body *{font-size:12px!important;line-height:1.5}
+html body .detached-body *{border-radius:0!important;box-shadow:none!important}
+
+/* head: a ribbon-grey bar - logo, title, flat commands, the green XLSX button */
+html body .detached-head{height:38px;padding:0 8px!important;gap:2px!important;background:var(--bar)!important;border-bottom:1px solid var(--grid)!important;cursor:default!important;box-shadow:none!important}
+.detached-head .hg-logo{width:18px;height:18px;flex:none;margin-right:4px}
+html body .detached-head #modalTitle{font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body .detached-head #modalTitle[data-hg-label]::after{font-size:13px!important}
+html body .detached-head .btn{height:26px;min-width:26px;padding:0 8px;border:1px solid transparent!important;border-radius:2px!important;background:none!important;color:var(--text)!important;cursor:pointer;white-space:nowrap}
+html body .detached-head .btn:hover{background:var(--btn-hover)!important}
+.table-view-controls{display:inline-flex;align-items:center;gap:0;padding:0 4px;margin:0 4px;border-left:1px solid var(--grid);border-right:1px solid var(--grid)}
+.table-zoom-value{min-width:38px;text-align:center;color:var(--muted)}
+/* Korean labels over BOX's own text */
 html body .detached-head :is(#modalTitle,#modalRefresh,#modalExport,#modalClose,.btn)[data-hg-label]{font-size:0!important;letter-spacing:0}
 html body .detached-head :is(#modalTitle,#modalRefresh,#modalExport,#modalClose,.btn)[data-hg-label]::after{content:attr(data-hg-label);font-size:12px!important}
-html body .detached-head #modalTitle[data-hg-label]::after{font-size:14px!important}
-#modalExport{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
-#modalExport:hover{filter:brightness(1.08);color:#fff!important}
-#modalClose{border-color:transparent!important;background:none!important;color:var(--muted)!important;margin-left:4px}
-#modalClose:hover{background:rgba(163,45,45,.1)!important;color:var(--red)!important}
+html body .detached-head #modalExport{background:var(--sel)!important;color:#fff!important;margin-left:4px;font-weight:600}
+html body .detached-head #modalExport:hover{filter:brightness(1.1)}
+html body .detached-head #modalClose{color:var(--muted)!important;margin-left:2px}
+html body .detached-head #modalClose:hover{background:var(--red)!important;color:#fff!important}
+html body :is(.detached-head,.detached-body) :is(.btn,.popup-tab,button):focus-visible{outline:2px solid var(--sel);outline-offset:-2px}
 
-/* body */
-html body .detached-body{padding:12px 16px 16px!important}
-/* notes: one style - the blue info box of the app; warnings amber */
-html body :is(.table-notes,.k-data-notes,.design-grid-intro){background:var(--soft)!important;border:1px solid var(--soft-line)!important;border-left:3px solid var(--accent)!important;border-radius:6px!important;color:var(--text)!important;padding:8px 12px!important;margin:0 0 10px!important;box-shadow:none!important}
-html body :is(.table-notes,.k-data-notes,.design-grid-intro) :is(strong,b,h3,h4){color:var(--text)!important}
-html body :is(.stack-warning,.design-grid-status){background:var(--warn-bg)!important;border:1px solid var(--warn-line)!important;border-left:3px solid var(--warn)!important;border-radius:6px!important;color:var(--text)!important;padding:6px 12px!important}
-/* the search / filter row above a table */
-html body .excel-toolbar{display:flex;align-items:center;gap:6px;padding:6px 0!important;background:none!important;border:0!important}
-html body .excel-toolbar input{height:28px;min-width:220px;padding:0 10px;border:1px solid var(--line)!important;border-radius:6px;background:var(--panel)!important;color:var(--text)!important}
-html body .excel-toolbar input:focus{outline:2px solid var(--accent);outline-offset:-1px}
-.excel-status{margin-left:auto;color:var(--muted)}
-/* deck and room tabs */
-html body .popup-tab{height:26px;padding:0 10px;margin:0 4px 4px 0;border:1px solid var(--line)!important;border-radius:13px!important;background:var(--panel)!important;color:var(--text)!important;cursor:pointer}
-html body .popup-tab:hover{border-color:var(--soft-line)!important;color:var(--accent)!important}
-html body .popup-tab.active{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
-/* tables: the frame, a quiet head, rows readable at a glance; cell colours BOX sets keep their meaning */
-/* BOX fixes column widths for its 10 px text: the columns size to their content, a heading stays on one line */
-html body table.popup-table{table-layout:auto!important;border-color:var(--line)!important;background:var(--panel)}
-html body table.popup-table th{white-space:nowrap!important;word-break:keep-all!important}
-html body table.popup-table td{word-break:keep-all!important;overflow-wrap:normal!important}
-html body table.popup-table td:first-child{white-space:nowrap}
-/* an input in a cell is as wide as its value (AHU-BRG-02, GMDSS배터리실), not as its column heading */
-html body table.popup-table td :is(input:not([type=checkbox]):not([type=radio]),select){field-sizing:content!important;width:auto!important;min-width:3.5em;max-width:none!important}
-html body table.popup-table th{background:var(--head)!important;color:var(--muted)!important;font-weight:600!important;border-color:var(--line)!important;padding:5px 8px!important}
-html body table.popup-table td{border-color:var(--line2)!important;padding:4px 8px!important}
-html body table.popup-table tbody tr:hover>td{box-shadow:inset 0 0 0 999px rgba(24,95,165,.06)}
-html body table.popup-table :is(input,select){font:inherit;color:var(--text);background:transparent;border:1px solid transparent;border-radius:4px}
-html body table.popup-table :is(input,select):hover{border-color:var(--line)}
-html body table.popup-table :is(input,select):focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--panel)}
-html body :is(.load-result-card,.ku-card){border:1px solid var(--line)!important;border-radius:8px!important;background:var(--panel)!important}
-
-/* review 2 (docs/POPUP_DESIGN_REVIEW.md) */
-:root{--edit:#f6faff;--edit-line:#b9d3ec;--stripe:rgba(0,0,0,.022)}
-html[data-theme=dark]{--edit:#1d2733;--edit-line:#35526d;--stripe:rgba(255,255,255,.03)}
-/* 1 long notes fold to their first lines; 자세히 opens them */
-html body .hg-fold:not(.hg-open){max-height:64px!important;overflow:hidden!important;position:relative;-webkit-mask-image:linear-gradient(#000 60%,transparent)}
-html body .hg-more{display:block;margin:-6px 0 10px auto;border:0;background:none;color:var(--accent);cursor:pointer;font-size:12px!important;padding:2px 4px}
+/* body: tight margins, sections stacked like sheet blocks */
+html body .detached-body{padding:8px 10px 12px!important;background:var(--sheet)!important}
+html body .detached-body :is(h1,h2,h3,h4,.k-data-title){font-weight:700!important;color:var(--text)!important;margin:10px 0 4px!important}
+html body .detached-body label{color:var(--muted)}
+/* notes: one grey line like a cell comment; 자세히 opens the rest */
+html body :is(.table-notes,.k-data-notes,.design-grid-intro){background:var(--note)!important;border:0!important;border-left:3px solid var(--grid-strong)!important;color:var(--muted)!important;padding:3px 8px!important;margin:0 0 6px!important}
+html body :is(.table-notes,.k-data-notes,.design-grid-intro) :is(strong,b,h3,h4){color:var(--text)!important;margin:0!important}
+html body :is(.stack-warning,.design-grid-status){background:var(--warn-bg)!important;border:0!important;border-left:3px solid var(--warn)!important;color:var(--text)!important;padding:3px 8px!important;margin:4px 0!important}
+html body .hg-fold:not(.hg-open){max-height:24px!important;overflow:hidden!important;white-space:nowrap;text-overflow:ellipsis}
+html body .hg-fold:not(.hg-open) *{display:inline!important;margin:0 6px 0 0!important}
+html body .hg-more{display:block;margin:-6px 0 6px auto;border:0;background:none;color:var(--input);cursor:pointer;padding:0 2px}
 html body .hg-more:hover{text-decoration:underline}
-/* 2 a cell that can be edited looks like one */
-html body table.popup-table td:has(input:not([type=checkbox]):not([type=radio]):not([readonly]):not([disabled]),select:not([disabled])){background:var(--edit)!important}
-html body table.popup-table td :is(input:not([type=checkbox]):not([type=radio]):not([readonly]):not([disabled]),select:not([disabled])){border-bottom:1px dashed var(--edit-line)!important;border-radius:0}
-html body table.popup-table td :is(input,select):not([disabled]):hover{border:1px solid var(--edit-line)!important;border-radius:4px}
-/* 3 figures line up */
-html body table.popup-table{font-variant-numeric:tabular-nums}
+/* the filter row above a table */
+html body .excel-toolbar{display:flex;align-items:center;gap:4px;padding:2px 0 4px!important;background:none!important;border:0!important}
+html body .excel-toolbar input{height:24px;min-width:200px;padding:0 6px;border:1px solid var(--grid)!important;background:var(--sheet)!important;color:var(--text)!important}
+html body .excel-toolbar input:focus{outline:2px solid var(--sel);outline-offset:-2px}
+html body .detached-body .btn{height:24px;padding:0 8px;border:1px solid var(--grid)!important;background:var(--bar)!important;color:var(--text)!important;cursor:pointer;white-space:nowrap}
+html body .detached-body .btn:hover{background:var(--btn-hover)!important}
+.excel-status{margin-left:auto;color:var(--muted)}
+/* deck and room tabs: sheet tabs */
+html body :is(.popup-deck-tabs,.popup-room-tabs){display:flex;flex-wrap:wrap;gap:0;margin:0 0 4px!important;border-bottom:1px solid var(--grid)}
+html body .popup-tab{height:24px;padding:0 10px;margin:0 -1px -1px 0!important;border:1px solid var(--grid)!important;background:var(--bar)!important;color:var(--text)!important;cursor:pointer}
+html body .popup-tab:hover{background:var(--btn-hover)!important}
+html body .popup-tab.active{background:var(--sheet)!important;color:var(--sel)!important;font-weight:700;border-bottom:2px solid var(--sel)!important}
+/* sections BOX draws as cards: plain blocks */
+html body :is(.load-result-card,.ku-card){border:1px solid var(--grid)!important;background:var(--sheet)!important;padding:6px!important}
+
+/* the grid */
+html body .popup-table-wrap{border:0!important;background:none!important}
+html body table.popup-table{table-layout:auto!important;border-collapse:collapse!important;border:1px solid var(--grid-strong)!important;background:var(--sheet)!important;font-variant-numeric:tabular-nums}
+html body table.popup-table :is(th,td){border:1px solid var(--grid)!important;height:22px;vertical-align:middle}
+html body table.popup-table th{background:var(--hdr)!important;color:var(--text)!important;font-weight:700!important;text-align:center!important;padding:2px 6px!important;white-space:nowrap!important;word-break:keep-all!important}
+html body table.popup-table td{background:var(--sheet);color:var(--text);padding:1px 6px!important;word-break:keep-all!important;overflow-wrap:normal!important}
+html body table.popup-table td:first-child{white-space:nowrap}
 html body table.popup-table td.hg-num{text-align:right!important}
-/* 4 long tables: a quiet stripe that keeps BOX's own cell colours */
-html body table.popup-table tbody tr:nth-child(even)>td{box-shadow:inset 0 0 0 999px var(--stripe)}
-html body table.popup-table tbody tr:hover>td{box-shadow:inset 0 0 0 999px rgba(24,95,165,.07)}
-/* 7 headings in the body */
-html body .detached-body :is(h3,h4,.k-data-title){margin:14px 0 6px!important;color:var(--text)!important}
+html body table.popup-table tbody tr:hover>td{box-shadow:inset 0 0 0 999px var(--hover)!important}
+html body table.popup-table :is(tr.load-result-total>td,td.load-result-total){font-weight:700!important;border-top:3px double var(--grid-strong)!important}
+/* a value the user types: blue, as wide as its value; the cell in focus gets the green frame */
+html body table.popup-table td :is(input:not([type=checkbox]):not([type=radio]),select){field-sizing:content!important;width:auto!important;min-width:3.5em;max-width:none!important;height:20px;padding:0 2px;font:inherit;color:var(--input)!important;background:transparent!important;border:0!important;outline:0}
+html body table.popup-table td :is(input,select):disabled{color:var(--muted)!important}
+html body table.popup-table td:focus-within{box-shadow:inset 0 0 0 2px var(--sel)!important}
+html body .detached-body :is(input:not([type=checkbox]):not([type=radio]),select,textarea):not(table *){height:24px;border:1px solid var(--grid)!important;background:var(--sheet)!important;color:var(--input)!important;padding:0 6px}
+html body .detached-body :is(input,select,textarea):not(table *):focus{outline:2px solid var(--sel);outline-offset:-2px}
+/* text left, figures right, headings centred - whatever BOX set */
+html body table.popup-table td:not(.hg-num){text-align:left!important}
+/* BOX's coloured result boxes (사용자 K: 재료 R 합계 · 총 R · 계산 K, the formula) as plain cells */
+html body :is(.ku-metric,.ku-formula,.ku-result>*){background:var(--note)!important;border:1px solid var(--grid)!important;color:var(--text)!important}
+html body :is(.detached-head,.detached-body) select:not(table *){height:24px!important;padding:0 4px}
+html body table.popup-table :is(.k-layer-flow,.k-layer-line){text-align:left!important;justify-content:flex-start!important;align-items:flex-start!important}
+html body :is(.detached-head,.detached-body) select:not(table *){min-height:0!important;padding-block:0!important;line-height:22px}
+html body table.popup-table td.hg-num input{text-align:right!important}
