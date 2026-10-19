@@ -8,8 +8,9 @@
 // digits only - BOX reads only a digits-only DXF text as a room number, so "211T" became part of the name, no number.
 //   node tools/make-test-ship.cjs [outDir=samples/t3]
 // Writes T3.box.json (a BOX CAL project, the same format as BOX's own S5 example: deck outline LINEs and RECT / POLY
-// rooms carrying the room data) and one general-arrangement DXF per deck (T3_<deck>.dxf: deck outline, closed room
-// outlines, room number and name) + T3_ALL.dxf (all decks side by side). Synthetic data, not a real ship.
+// rooms carrying the room data) and one general-arrangement DXF per deck (T3_<deck>.dxf: the walls as LINEs only - no
+// polylines, no boxes, as a drawing has them - and the room number and name) + T3_ALL.dxf (all decks side by side).
+// Synthetic data, not a real ship.
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), G = require('../lib/geom.cjs');
 
@@ -141,6 +142,27 @@ function boxProject(template) {
 }
 
 // ---------- general arrangement DXF ----------
+const roomPts = r => r.rect ? [[r.rect[0], r.rect[1]], [r.rect[2], r.rect[1]], [r.rect[2], r.rect[3]], [r.rect[0], r.rect[3]]] : r.poly;
+// the walls of a deck as a drawing has them: each wall once, a LINE - a wall along several rooms is one line that other
+// walls meet in a T (no polylines, no boxes, no wall twice); the hull side on DECK_OUTLINE, the rest on ROOM
+function walls(id) {
+ const [x0, y0, x1, y1] = OUTLINE[id], H = new Map(), V = new Map(), out = [];
+ const put = (m, k, a, b) => { if (!m.has(k)) m.set(k, []); m.get(k).push([Math.min(a, b), Math.max(a, b)]); };
+ const ring = pts => pts.forEach(([ax, ay], i) => { const [bx, by] = pts[(i + 1) % pts.length]; if (ay === by) put(H, ay, ax, bx); else if (ax === bx) put(V, ax, ay, by); else throw new Error('직교가 아닌 벽: ' + id); });
+ ring([[x0, y0], [x1, y0], [x1, y1], [x0, y1]]);
+ for (const r of rooms.filter(k => k.deck === id)) ring(roomPts(r));
+ for (const [m, horizontal] of [[H, true], [V, false]]) for (const [k, iv] of [...m].sort((a, b) => a[0] - b[0])) {
+  iv.sort((a, b) => a[0] - b[0]);
+  let [s, e] = iv[0];
+  for (const [a, b] of [...iv.slice(1), [Infinity, Infinity]]) {
+   if (a <= e) { e = Math.max(e, b); continue; }
+   const layer = (horizontal ? k === y0 || k === y1 : k === x0 || k === x1) ? 'DECK_OUTLINE' : 'ROOM';
+   out.push(horizontal ? { layer, x1: s, y1: k, x2: e, y2: k } : { layer, x1: k, y1: s, x2: k, y2: e });
+   [s, e] = [a, b];
+  }
+ }
+ return out;
+}
 function dxf(deckIds, layout) {
  const L = [], add = (...kv) => { for (let i = 0; i < kv.length; i += 2) L.push(String(kv[i]), String(kv[i + 1])); };
  let handle = 0x100; const h = () => (handle++).toString(16).toUpperCase();
@@ -149,15 +171,14 @@ function dxf(deckIds, layout) {
  add(0, 'SECTION', 2, 'TABLES', 0, 'TABLE', 2, 'LAYER', 5, h(), 100, 'AcDbSymbolTable', 70, layers.length);
  for (const [n, c] of layers) add(0, 'LAYER', 5, h(), 100, 'AcDbSymbolTableRecord', 100, 'AcDbLayerTableRecord', 2, n, 70, 0, 62, c, 6, 'CONTINUOUS');
  add(0, 'ENDTAB', 0, 'ENDSEC', 0, 'SECTION', 2, 'ENTITIES');
- const poly = (layer, pts, dx) => { add(0, 'LWPOLYLINE', 5, h(), 100, 'AcDbEntity', 8, layer, 100, 'AcDbPolyline', 90, pts.length, 70, 1); for (const [x, y] of pts) add(10, x + dx, 20, y); };
+ const line = (w, dx) => add(0, 'LINE', 5, h(), 100, 'AcDbEntity', 8, w.layer, 100, 'AcDbLine', 10, w.x1 + dx, 20, w.y1, 30, 0, 11, w.x2 + dx, 21, w.y2, 31, 0);
  const text = (layer, x, y, size, s) => add(0, 'TEXT', 5, h(), 100, 'AcDbEntity', 8, layer, 100, 'AcDbText', 10, x, 20, y, 30, 0, 40, size, 1, s, 100, 'AcDbText');
  for (const id of deckIds) {
   const dx = layout[id] || 0, [x0, y0, x1, y1] = OUTLINE[id], d = DECKS.find(k => k.id === id);
-  poly('DECK_OUTLINE', [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], dx);
+  for (const w of walls(id)) line(w, dx);
   text('TITLE', x0 + dx, y1 + 800, 500, `T3 ${d.name} (Z ${d.z})`);
   for (const r of rooms.filter(k => k.deck === id)) {
-   const pts = r.rect ? [[r.rect[0], r.rect[1]], [r.rect[2], r.rect[1]], [r.rect[2], r.rect[3]], [r.rect[0], r.rect[3]]] : r.poly;
-   poly('ROOM', pts, dx);
+   const pts = roomPts(r);
    // labels at the top-left corner when that corner is inside the room (not in the toilet of an L-shaped cabin),
    // else at the room's interior point
    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), size = 180, outline = pts.map(([x, y]) => ({ x, y }));
@@ -184,4 +205,4 @@ if (require.main === module) {
  const count = DECKS.map(d => `${d.id} ${rooms.filter(r => r.deck === d.id).length}`).join(', ');
  console.log(JSON.stringify({ out, rooms: rooms.length, perDeck: count, l: rooms.filter(r => r.poly).length }));
 }
-module.exports = { DECKS, OUTLINE, rooms, HEIGHT };
+module.exports = { DECKS, OUTLINE, rooms, HEIGHT, walls };
