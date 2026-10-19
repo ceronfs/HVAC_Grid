@@ -6,7 +6,7 @@
 (async () => {
  const B = window.HVACGridBridge, $ = id => document.getElementById(id);
  const show = (el, on) => el.toggleAttribute('hidden', !on);   // works for the SVG plan too (no .hidden property on SVG elements)
- const LIB = await B.loadLibs('../lib/', ['util.cjs', 'geom.cjs', 'contract.cjs', 'solas-data.json', 'solas.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'dxf-out.cjs', 'report.cjs']);
+ const LIB = await B.loadLibs('../lib/', ['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'dxf-out.cjs', 'report.cjs']);
  const K = LIB.contract, PL = LIB['phg-plan'], PJ = LIB.project, SO = LIB.solas, XL = LIB.xlsx, DX = LIB['dxf-out'], RP = LIB.report, SVG = LIB['plan-svg'], U = LIB.util, GE = LIB.geom;
  const esc = U.esc, fmt = v => v == null || v === '' || Number.isNaN(+v) ? '—' : Math.round(v).toLocaleString();
  const box = new B.Box($('boxFrame')), phg = new B.Phg($('phgFrame'));
@@ -16,7 +16,7 @@
  const invalidate = () => { plansCache = null; analysisCache = null; };
  const plans = () => plansCache || (plansCache = S.contract ? PL.plan(S.contract) : []);
  const project = () => PJ.make({ contract: S.contract, projects: S.projects, results: S.results, geometry: S.geometry });
- const analysis = () => analysisCache || (analysisCache = S.contract ? PJ.analyze(project()) : null);
+ const analysis = () => analysisCache || (analysisCache = S.contract ? PJ.analyze(project(), plans()) : null);
  // a result is current only while its plan is what it was made from (no signature = an old file = stale)
  const result = key => { const r = S.results[key]; if (!r) return null; const p = plans().find(x => x.key === key); return { ...r, stale: !p || !r.sig || r.sig !== PJ.planSig(p) }; };
  const keyOf = (deck, sys) => `${deck}__${sys}`;
@@ -109,8 +109,9 @@
  }
  function applyDeltaT() {
   const v = +$('dT').value; if (!(v >= 3 && v <= 25)) throw new Error('급기 ΔT는 3–25 K');
-  edit(`급기 ΔT ${v} K`, () => { S.contract = K.applyRules(S.contract, { supplyDeltaTK: v }); });
-  say(`급기 ΔT ${v} K 적용: 급기 합계 ${fmt(S.contract.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))} CMH`);
+  const pp = +$('pPct').value, pb = $('pBasis').value; if (!(pp >= 0 && pp <= 30)) throw new Error('가압은 0–30 %');
+  edit(`급기 ΔT ${v} K · 가압 ${pp} %`, () => { S.contract = K.applyRules(S.contract, { supplyDeltaTK: v, pressurizationPct: pp, pressurizationBasis: pb }); });
+  say(`급기 ΔT ${v} K · 가압 ${pb === 'supply' ? '급기' : '배기'}의 ${pp} % 적용: 급기 합계 ${fmt(S.contract.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))} CMH`);
  }
  function setRoot(p) {
   const key = curKey(), pl = curPlan(); if (!key) return;
@@ -155,6 +156,7 @@
  }
  // the window narrowed below 1440 px with PHG D open: its left dock closes (the shell's tree is already on the left)
  let wideWindow = innerWidth >= 1440;
+ addEventListener('resize', () => ribbonMore()); document.getElementById('ribbon').addEventListener('scroll', () => ribbonMore(), { passive: true });
  addEventListener('resize', () => { const w = innerWidth >= 1440; if (wideWindow && !w && phg.loading && phg.dockShown('left')) phg.click('phgb-left-panel'); wideWindow = w; });
  async function openKey(key) {
   await loadPhg(); if (S.active === key) return;
@@ -230,7 +232,7 @@
    ['내보내기', [c('xlsxIso', 'ISO 시트', boxCal('I↑'), { code: 'I↑' }), c('xlsx', '미적용 시트', boxCal('N↑'), { code: 'N↑' }), c('sum', 'SUP 요약', boxCal('Σ↑'), { code: 'Σ↑' }), c('xlsxAll', '전체 XLSX', boxCal('LX'), { code: 'LX' }), c('sheet', '격실 시트', boxCal('R↑'), { code: 'R↑' }), c('face', '면적 시트', boxCal('A↑'), { code: 'A↑' })]],
    ['HVAC Grid', [c('contract', '계약 만들기', () => act('BOX 격실·부하 읽는 중', extractContract), { primary: true, title: 'BOX 격실·부하 → 격실 풍량·계통 (③ 풍량·계통으로 이동)' })]]] },
   { id: 'air', name: '풍량·계통', view: 'plan', groups: () => [
-   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="25" step="1" value="${S.contract?.rules.supplyDeltaTK ?? 10}"></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(냉방 현열 W × 3 ÷ ΔT)' })]],
+   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="25" step="1" value="${S.contract?.rules.supplyDeltaTK ?? 10}"></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${S.contract?.rules.pressurizationPct ?? 5}" style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(냉방 현열 W × 3 ÷ ΔT)' })]],
    ['계통', [kindSeg(), sysField(false)]],
    ['공조기 · 수직 덕트', [c('pin', '위치 지정', () => { S.pickRoot = !S.pickRoot; say(S.pickRoot ? `평면에서 ${curPlan()?.isUnitDeck === false ? '수직 덕트(샤프트)' : '공조기'} 위치를 클릭하세요 (Esc 취소)` : ''); render(); }, { disabled: () => !curKey(), pressed: () => S.pickRoot, title: '공조기 Deck: 공조기·팬 위치 · 다른 Deck: 수직 덕트(샤프트) 위치' }), c('unpin', '지정 해제', () => act(null, clearRoot), { disabled: () => !S.contract?.roots?.[curKey()] }), unitDeckField()]],
    ['보기', [seg('평면 보기', S.overlay, [['air', '풍량'], ['fire', '방화']], v => { S.overlay = v; })]],
@@ -300,6 +302,8 @@
   $('undoBtn').disabled = !f && !S.undo.length; $('redoBtn').disabled = !f && !S.redo.length;
   $('undoBtn').title = `실행 취소 (${name} 편집 기록${!f && S.undo.length ? ': ' + S.undo.at(-1).label : ''}) · Ctrl+Z`; $('redoBtn').title = `다시 실행 (${name} 편집 기록${!f && S.redo.length ? ': ' + S.redo.at(-1).label : ''}) · Ctrl+Y`;
  }
+ // the ribbon's ‹ › show while there is more of it to that side
+ function ribbonMore() { const el = $('ribbon'), l = el.querySelector('.rb-more.left'), r = el.querySelector('.rb-more.right'); if (!l || !r) return; l.hidden = el.scrollLeft <= 2; r.hidden = el.scrollLeft + el.clientWidth >= el.scrollWidth - 2; }
  function ribbon() {
   const groups = stepOf(S.step).groups(); let n = 0; const runs = [], segs = {};
   $('ribbon').innerHTML = groups.map(([cap, items]) => `<div class="grp"><div class="btns">${items.map(it => {
@@ -308,6 +312,9 @@
    const tip = [it.title ? `${it.label} · ${it.title}` : it.label, it.code && `이전 단축: ${it.code}`].filter(Boolean).join('\n');
    return `<button class="cmd${it.primary ? ' primary' : ''}" data-i="${n++}" title="${esc(tip)}" ${dis ? 'disabled' : ''} ${pr != null ? `aria-pressed="${!!pr}"` : ''}>${icon(it.icon)}<span>${esc(it.label)}</span></button>`;
   }).join('')}</div><div class="cap">${esc(cap)}</div></div>`).join('');
+  $('ribbon').insertAdjacentHTML('afterbegin', '<button class="rb-more left" aria-label="리본 왼쪽" hidden>‹</button>'); $('ribbon').insertAdjacentHTML('beforeend', '<button class="rb-more right" aria-label="리본 더 보기" hidden>›</button>');
+  $('ribbon').querySelectorAll('.rb-more').forEach(b => b.onclick = () => $('ribbon').scrollBy({ left: (b.classList.contains('left') ? -1 : 1) * $('ribbon').clientWidth * 0.6, behavior: 'smooth' }));
+  ribbonMore();
   $('ribbon').querySelectorAll('.cmd').forEach(b => b.onclick = () => runs[+b.dataset.i].run());
   $('ribbon').querySelectorAll('.seg').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => { segs[g.dataset.seg](b.dataset.v); render(); }));
   const sel = $('sysSel'); if (sel) sel.onchange = () => { S.sys = sel.value; const p = curPlan(); if (p) S.kind = p.kind; S.pickRoot = false; if (S.step === 'duct') act(null, async () => { const k = curKey(); if (S.projects[k]) await openKey(k); }); else render(); };
@@ -384,14 +391,22 @@
     html += pn.boundaryKind === 'deck' ? `<path class="${cls} dk${pn.damper ? ' fd' : ''}" d="M${x} ${y - r}L${x + r} ${y}L${x} ${y + r}L${x - r} ${y}Z">${tip}</path>`
      : pn.damper ? `<g class="${cls} fd"><rect x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}"/><line x1="${x - r}" y1="${y + r}" x2="${x + r}" y2="${y - r}"/>${tip}</g>` : `<circle class="${cls}" cx="${x}" cy="${y}" r="${r}">${tip}</circle>`;
    }
-   for (const p of a.solas.passages.filter(x => x.deckId === S.deck)) { const r = C.rooms.find(x => x.id === p.roomId);
+   for (const p of a.solas.passages.filter(x => x.deckId === S.deck && x.roomId)) { const r = C.rooms.find(x => x.id === p.roomId); if (!r) continue;
     html += `<polygon class="pass ${p.level}" points="${r.polygon.map(q => q.x + ',' + -q.y).join(' ')}"><title>${esc(p.systemId)}: ${esc(p.text)} (${esc(p.rule)})</title></polygon>`; }
   } else {
-   // transfer air: an arrow from the room that gives it to the room that takes it (door grille or transfer duct)
+   // transfer air: a short arrow across the middle of the wall the two rooms share (where the door grille or transfer
+   // duct goes), with its CMH; solid when the user chose the source, orange through an A-class boundary
    for (const r of rooms) { const A = C.airflow[r.id], src = C.rooms.find(x => x.id === A.transferFrom); if (!src || !A.transferInCmh) continue;
-    const p = PL.interiorPoint(src.polygon, 100, src.holes), q = PL.interiorPoint(r.polygon, 100, r.holes), dx = q.x - p.x, dy = q.y - p.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, h = px(7);
-    const tx = q.x - ux * px(4), ty = q.y - uy * px(4);
-    html += `<g class="xfer"><line x1="${p.x}" y1="${-p.y}" x2="${tx}" y2="${-ty}"/><polygon points="${tx},${-ty} ${tx - ux * h - uy * h * .55},${-(ty - uy * h + ux * h * .55)} ${tx - ux * h + uy * h * .55},${-(ty - uy * h - ux * h * .55)}"/><title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${A.transferSet ? ' (지정)' : ''}</title></g>`; }
+    let seg = null; for (const e of GE.roomEdges(src)) for (const g of GE.roomEdges(r)) { const q = GE.sharedSegment(e, g, 400, 100); if (q && (!seg || q.lengthMm > seg.lengthMm)) seg = q; }
+    let m, ux, uy;
+    if (seg) { m = { x: (seg.a.x + seg.b.x) / 2, y: (seg.a.y + seg.b.y) / 2 }; const L = seg.lengthMm || 1; ux = -(seg.b.y - seg.a.y) / L; uy = (seg.b.x - seg.a.x) / L;
+     const c = PL.interiorPoint(src.polygon, 100, src.holes); if ((c.x - m.x) * ux + (c.y - m.y) * uy > 0) { ux = -ux; uy = -uy; } }
+    else { const p = PL.interiorPoint(src.polygon, 100, src.holes), q = PL.interiorPoint(r.polygon, 100, r.holes), L = Math.hypot(q.x - p.x, q.y - p.y) || 1; ux = (q.x - p.x) / L; uy = (q.y - p.y) / L; m = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 }; }
+    const len = px(16), h = px(6), fx = m.x - ux * len, fy = m.y - uy * len, tx = m.x + ux * len, ty = m.y + uy * len;
+    const bd = a.solas.boundaries.find(b => b.kind === 'bulkhead' && ((b.roomA === r.id && b.roomB === src.id) || (b.roomB === r.id && b.roomA === src.id))), aClass = /^A/.test(bd?.grade || '');
+    html += `<g class="xfer${A.transferSet ? ' set' : ''}${aClass ? ' acls' : ''}"><line x1="${fx}" y1="${-fy}" x2="${tx}" y2="${-ty}"/><polygon points="${tx + ux * h},${-(ty + uy * h)} ${tx - uy * h * .6},${-(ty + ux * h * .6)} ${tx + uy * h * .6},${-(ty - ux * h * .6)}"/>`
+     + `<text x="${tx + ux * h + px(3)}" y="${-(ty + uy * h) - px(3)}" style="font-size:${px(10)}px">${fmt(A.transferInCmh)}</text>`
+     + `<title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${bd?.grade ? ' · 경계 ' + esc(bd.grade) : ''}${A.transferSet ? ' (지정)' : ' (자동)'}</title></g>`; }
    // ducts of the chosen kind that PHG D made, thin, under the markers
    for (const p of deckPlans(S.kind)) for (const d of S.geometry[p.key]?.ducts || [])
     html += `<polyline class="duct" points="${d.points.map(q => `${q.x},${q.y}`).join(' ')}" stroke="${sysColor(p.systemId)}" stroke-width="${d.type === 'main' ? 2.5 : 1.5}" opacity="${p.key === cur?.key ? .9 : .45}"><title>${esc(p.systemId)} ${esc(d.displayName)} ${d.widthMm ? d.widthMm + '×' + d.heightMm : ''} · ${d.flowCmh} CMH</title></polyline>`;
@@ -418,12 +433,14 @@
    $('legend').innerHTML = `<b>${esc(deckName(S.deck))} 방화 경계</b> <span class="muted">${esc(SO.DATA.ships[a.solas.settings.ship].label)}</span><br>${['A-60', 'A-30', 'A-15', 'A-0', 'B-15', 'B-0'].filter(cnt).map(g => `<span class="ln" style="background:${SVG.GRADE_COLORS[g]}"></span>${g} · ${cnt(g)}`).join('<br>')}<br><span class="pd fd"></span>방화댐퍼 ${a.solas.penetrations.filter(x => x.deckId === S.deck && x.damper).length} · <span class="pd"></span>관통 ${a.solas.penetrations.filter(x => x.deckId === S.deck).length} · <span class="pd dk"></span>갑판 관통<br>${a.solas.passages.some(x => x.deckId === S.deck) ? '<span class="err">▨ 제한 구역 통과</span><br>' : ''}${sum.unclassified.length ? `<span class="warn">미분류 실 ${sum.unclassified.length} (전체) — 실 선택 후 오른쪽에서 지정</span>` : '<span class="muted">모든 실 분류됨</span>'}`;
   } else {
    const sys = [...new Set(rooms.map(r => r.systems[S.kind]).filter(Boolean))].sort();
-   $('legend').innerHTML = `<b>${esc(deckName(S.deck))} ${KL[S.kind]} 계통</b><br>${sys.map(id => `<span class="dot" style="background:${sysColor(id)}"></span>${esc(id)} · ${fmt(C.systems.find(s => s.id === id && s.kind === S.kind)?.designCmh)} CMH`).join('<br>') || '<span class="muted">이 Deck에 없음</span>'}<br><span class="muted">${UNIT_WORD[S.kind]} □ 공조기·팬 · ⇅ ○ 수직 덕트 · 채움 = 지정 · 점선 = 임시</span>`;
+   $('legend').innerHTML = `<b>${esc(deckName(S.deck))} ${KL[S.kind]} 계통</b><br>${sys.map(id => `<span class="dot" style="background:${sysColor(id)}"></span>${esc(id)} · ${fmt(C.systems.find(s => s.id === id && s.kind === S.kind)?.designCmh)} CMH`).join('<br>') || '<span class="muted">이 Deck에 없음</span>'}<br><span class="muted">${UNIT_WORD[S.kind]} □ 공조기·팬 · ⇅ ○ 수직 덕트 · 채움 = 지정 · 점선 = 임시</span>${C.rooms.some(r => r.deckId === S.deck && C.airflow[r.id].transferInCmh && C.rooms.some(x => x.id === C.airflow[r.id].transferFrom)) ? '<br><span class="muted">→ 전달 공기 CMH (실선 = 지정 · 주황 = A급 경계)</span>' : ''}`;
   }
  }
  // ⑤ review: tabs over the analysis
  const TABS = [['nets', '덕트망'], ['systems', '계통·수직 덕트'], ['fire', '방화 (SOLAS)'], ['checks', '검토']];
  const tableHtml = (sh, { keys, limit, cls, tip = '두 번 클릭: ④ RU·덕트에서 열기' } = {}) => `<table><thead><tr>${sh.head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${sh.rows.slice(0, limit || sh.rows.length).map((r, i) => `<tr${keys ? ` data-key="${esc(keys[i])}" class="${keys[i] === S.active ? 'active' : ''}" title="${esc(tip)}"` : ''}>${r.map((v, j) => `<td class="${typeof v === 'number' ? 'n ' : ''}${cls ? cls(r, j, i) : ''}">${esc(typeof v === 'number' ? v.toLocaleString() : v)}</td>`).join('')}</tr>`).join('')}</tbody></table>${limit && sh.rows.length > limit ? `<p class="muted">… ${sh.rows.length - limit}행 더 — 통합 XLSX 참조</p>` : ''}`;
+ // a sheet with one column moved forward (the status of a row first on a narrow screen; the XLSX keeps its order)
+ const front = (sh, name, at) => { const i = sh.head.indexOf(name); if (i < 0) return sh; const mv = r => { const c = r.slice(); const [v] = c.splice(i, 1); c.splice(at, 0, v); return c; }; return { ...sh, head: mv(sh.head), rows: sh.rows.map(mv) }; };
  // the penetration list for the screen: what to do at each crossing first (the XLSX has every column)
  function penTable(pens) {
   const room = id => { const r = S.contract.rooms.find(x => x.id === id); return r ? `${r.no} ${r.name}` : '(외부)'; };
@@ -434,11 +451,11 @@
   const LV = { fail: ['err', '✕ 실패'], check: ['warn', '● 확인'], ok: ['ok', '✓ 통과'] };
   let body = '';
   if (S.tab === 'nets') {
-   const nets = get('Deck 덕트망'), last = nets.head.length - 1;
-   body = `<h3>Deck·계통별 PHG D 덕트망 <small class="muted">${a.done}/${a.total} AUTO 완료${a.stale ? ` · 다시 보내기 ${a.stale}` : ''} · 두 번 클릭하면 ④에서 엽니다</small></h3>${tableHtml(nets, { keys: a.plans.map(p => p.key), cls: (r, j) => j === last ? (r[j] === 'AUTO 완료' ? 'ok' : r[j] === '미생성' ? 'muted' : 'warn') : j === 4 && /임시/.test(r[j]) ? 'warn' : j === 6 && r[6] !== '' && r[6] !== r[7] ? 'warn' : '' })}`;
+   const nets = front(get('Deck 덕트망'), '상태', 3), last = 3;
+   body = `<h3>Deck·계통별 PHG D 덕트망 <small class="muted">${a.done}/${a.total} AUTO 완료${a.stale ? ` · 다시 보내기 ${a.stale}` : ''} · 두 번 클릭하면 ④에서 엽니다</small></h3>${tableHtml(nets, { keys: a.plans.map(p => p.key), cls: (r, j) => j === last ? (r[j] === 'AUTO 완료' ? 'ok' : r[j] === '미생성' ? 'muted' : 'warn') : j === 5 && /임시/.test(r[j]) ? 'warn' : j === 7 && r[7] !== '' && r[7] !== r[8] ? 'warn' : '' })}`;
   } else if (S.tab === 'systems') {
-   body = `<h3>공조 구역 풍량 수지 <small class="muted">신기 = max(최소 신기 합, 배기 합 × ${1 + (C.rules.pressurizationPct ?? 5) / 100}) · 환기 = 급기 − 신기 · 화장실 등은 이웃 실에서 전달 공기</small></h3>${tableHtml(get('구역 수지'), { cls: (r, j) => j === 10 ? (r[j] === '적합' ? 'ok' : 'err') : '' })}
-    <h3>계통·팬 <small class="muted">덕트 외부 정압(ESP) = Deck 덕트망 최대 + 공조기에서 그 Deck까지 수직 덕트 · 팬 정압 추정 = ESP + 공조기 내부 + 루버</small></h3>${tableHtml(get('계통·팬'), { cls: (r, j) => j === 10 && r[j] !== '계산 완료' ? 'warn' : '' })}
+   body = `<h3>공조 구역 풍량 수지 <small class="muted">신기 = max(최소 신기 합, 배기 합 + 가압 ${C.rules.pressurizationPct ?? 5} %(${C.rules.pressurizationBasis === 'supply' ? '급기' : '배기'} 대비), 급기 × ${C.rules.minOaPct ?? 25} %) · 환기 = 급기 − 신기 · 화장실 등은 이웃 실에서 전달 공기</small></h3>${tableHtml(get('구역 수지'), { cls: (r, j) => j === 10 ? (r[j] === '적합' ? 'ok' : 'err') : '' })}
+    <h3>계통·팬 <small class="muted">덕트 외부 정압(ESP) = Deck 덕트망 최대 + 공조기에서 그 Deck까지 수직 덕트 · 팬 정압 추정 = ESP + 공조기 내부 + 루버</small></h3>${tableHtml(front(get('계통·팬'), '상태', 2), { cls: (r, j) => j === 2 && r[j] !== '계산 완료' ? 'warn' : '' })}
     <h3>수직 덕트 <small class="muted">공조기 Deck에서 다른 Deck으로 · 크기: 풍속 ≤ 10 m/s · 마찰 ≤ 2 Pa/m</small></h3>${a.risers.length ? tableHtml(get('수직 덕트')) : '<p class="muted">여러 Deck을 담당하는 계통이 없습니다.</p>'}`;
   } else if (S.tab === 'fire') {
    const sum = a.solas.summary, shp = SO.DATA.ships[a.solas.settings.ship], unc = sum.unclassified.map(id => C.rooms.find(r => r.id === id));

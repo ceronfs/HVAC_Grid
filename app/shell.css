@@ -181,6 +181,9 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .ribbon,.report .scrollx{--sbg:var(--panel);background:linear-gradient(to right,var(--sbg) 30%,transparent) left/32px 100% no-repeat local,linear-gradient(to left,var(--sbg) 30%,transparent) right/32px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.22),transparent) left/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.22),transparent) right/12px 100% no-repeat scroll,var(--sbg)}
 .report .scrollx{--sbg:var(--bg)}
 /* transfer air arrows (air view) */
-.plan .xfer line{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}.plan .xfer polygon{fill:var(--accent);stroke:none}.plan .xfer{pointer-events:visibleStroke}
+.plan .xfer line{stroke:var(--accent);stroke-width:2;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}.plan .xfer polygon{fill:var(--accent);stroke:none}.plan .xfer text{fill:var(--accent);font-weight:600;stroke:var(--canvas);stroke-width:3px;paint-order:stroke;vector-effect:non-scaling-stroke}.plan .xfer{pointer-events:visiblePainted}
+.plan .xfer.set line{stroke-dasharray:none}.plan .xfer.acls line{stroke:var(--warn)}.plan .xfer.acls polygon,.plan .xfer.acls text{fill:var(--warn)}
 /* open items grouped by level and field */
 .grp-items{margin:0 0 6px}.grp-items>summary{cursor:pointer;padding:4px 2px;font-weight:600}.grp-items>summary .muted{font-weight:400}.grp-items>table{margin:2px 0 8px 18px}
+/* ribbon overflow buttons */
+.ribbon .rb-more{position:sticky;z-index:2;flex:none;align-self:stretch;width:22px;border:1px solid var(--line);background:var(--panel);color:var(--accent);font-size:18px;font-weight:700;cursor:pointer;border-radius:4px;box-shadow:0 0 8px rgba(0,0,0,.18)}.ribbon .rb-more.left{left:0}.ribbon .rb-more.right{right:0;margin-left:auto}.ribbon .rb-more:hover{background:var(--soft)}

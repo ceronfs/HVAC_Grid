@@ -35,7 +35,7 @@ const USE = {
  rec: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 8, minimumFreshAir: 230.4, equipW: 600, windowArea: 2.4, lighting: 12 },
  office: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 900, windowArea: 1.2, lighting: 12 },
  gym: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 1200, lighting: 12 },
- pantry: { sup: 'AHU-ACC', exh: 'EF-GAL', minimumAch: 20, equipW: 1500 },
+ pantry: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 20, equipW: 1500 },   // no cooking: sanitary exhaust, not through the galley system
  // galley: own supply fan and exhaust (II-2/9.7.2.1, 9.7.5), exhaust > supply (the rest comes from the mess)
  galley: { sup: 'SF-GAL', exh: 'EF-GAL', ceilingHeight: 2400, minimumAch: 45, people: 3, equipW: 9000, lighting: 15, windowArea: 1.2 },
  laundry: { sup: 'AHU-ACC', exh: 'EF-LAU', minimumAch: 40, equipW: 2000 },
@@ -143,9 +143,9 @@ function dxf(deckIds, layout) {
  const L = [], add = (...kv) => { for (let i = 0; i < kv.length; i += 2) L.push(String(kv[i]), String(kv[i + 1])); };
  let handle = 0x100; const h = () => (handle++).toString(16).toUpperCase();
  const layers = [['DECK_OUTLINE', 7], ['ROOM', 3], ['ROOM_NO', 1], ['ROOM_NAME', 5], ['TITLE', 2]];
- add(0, 'SECTION', 2, 'HEADER', 9, '$ACADVER', 1, 'AC1021', 9, '$INSUNITS', 70, 4, 0, 'ENDSEC');   // DXF 2007: text is UTF-8
- add(0, 'SECTION', 2, 'TABLES', 0, 'TABLE', 2, 'LAYER', 70, layers.length);
- for (const [n, c] of layers) add(0, 'LAYER', 2, n, 70, 0, 62, c, 6, 'CONTINUOUS');
+ add(0, 'SECTION', 2, 'HEADER', 9, '$ACADVER', 1, 'AC1021', 9, '$DWGCODEPAGE', 3, 'ANSI_1252', 9, '$INSUNITS', 70, 4, 0, 'ENDSEC');   // DXF 2007: text is UTF-8 whatever the code page
+ add(0, 'SECTION', 2, 'TABLES', 0, 'TABLE', 2, 'LAYER', 5, h(), 100, 'AcDbSymbolTable', 70, layers.length);
+ for (const [n, c] of layers) add(0, 'LAYER', 5, h(), 100, 'AcDbSymbolTableRecord', 100, 'AcDbLayerTableRecord', 2, n, 70, 0, 62, c, 6, 'CONTINUOUS');
  add(0, 'ENDTAB', 0, 'ENDSEC', 0, 'SECTION', 2, 'ENTITIES');
  const poly = (layer, pts, dx) => { add(0, 'LWPOLYLINE', 5, h(), 100, 'AcDbEntity', 8, layer, 100, 'AcDbPolyline', 90, pts.length, 70, 1); for (const [x, y] of pts) add(10, x + dx, 20, y); };
  const text = (layer, x, y, size, s) => add(0, 'TEXT', 5, h(), 100, 'AcDbEntity', 8, layer, 100, 'AcDbText', 10, x, 20, y, 30, 0, 40, size, 1, s, 100, 'AcDbText');

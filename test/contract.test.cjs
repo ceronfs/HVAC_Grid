@@ -30,7 +30,7 @@ test('S5 sample contract (BOX CAL Enhance built-in example)', () => {
  assert.ok(supply.every(s => s.deckIds.length === 1), 'each S5 supply system serves one deck');
  // 10,420 CMH from the loads (as in H1) + 190 CMH make-up supply for the transfer air the rooms give their toilets
  assert.equal(s5.rooms.reduce((t, r) => t + s5.airflow[r.id].supplyCmh - (s5.airflow[r.id].makeupCmh || 0), 0), 10420);
- assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 10560);   // round 2: no transfer air from the bridge wing, the archive or the refrigerator (corridor instead)
+ assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 10610);   // round 2: no transfer air from the bridge wing, archive, refrigerator; round 3: make-up covers the 5 % pressurization
  const wheelhouse = s5.rooms.find(r => r.no === '501');
  assert.equal(wheelhouse.isoClass, 'WHEELHOUSE'); assert.equal(s5.airflow[wheelhouse.id].supplyCmh, 850);
  // deck ids of a system in elevation order
@@ -56,14 +56,14 @@ test('zone balance: transfer air, make-up supply, fresh air, return', () => {
  assert.equal(a.wc2.transferFrom, 'cab');   // 6000 mm shared with the cabin vs 2000 with the corridor
  // CO2 room: gas tight, its own inlet
  assert.equal(a.co2.transferFrom, 'own-inlet');
- // the cabin gives 140 + 400: its supply is raised to cover it (make-up)
- assert.equal(a.cab.transferOutCmh, 540); assert.equal(a.cab.supplyCmh, 540); assert.equal(a.cab.makeupCmh, 540 - 300);
+ // the cabin gives 140 + 400: its supply is raised to cover it and the 5 % pressurization share (make-up), 567 -> 570
+ assert.equal(a.cab.transferOutCmh, 540); assert.equal(a.cab.supplyCmh, 570); assert.equal(a.cab.makeupCmh, 570 - 300);
  // zone: exhaust = transfer given away 540, fresh air >= 540 x 1.05 = 567, return = supply - fresh air
  assert.equal(z.eaCmh, 540); assert.equal(z.oaNeedCmh, 567); assert.ok(z.ok);
  assert.equal(z.raCmh, z.saCmh - z.oaCmh); assert.ok(z.oaCmh >= 567);
  assert.equal(c.systems.find(s => s.id === 'RA').designCmh, z.raCmh);
- // the cabin has nothing left to return (all of its supply goes to the toilets): the corridor returns
- assert.equal(a.cab.returnCmh, 0); assert.ok(a.cor.returnCmh > 0);
+ // the cabin has almost nothing left to return (its supply goes to the toilets): the corridor returns
+ assert.ok(a.cab.returnCmh <= 30); assert.ok(a.cor.returnCmh > 0);   // the cabin keeps only the 30 CMH make-up margin
  // without make-up the zone cannot cover the exhaust: the zone fails
  const n = small({ transferMakeup: false }), zn = n.zones.find(x => x.supplySystemId === 'AHU');
  assert.equal(zn.ok, false); assert.equal(zn.raCmh, 0);

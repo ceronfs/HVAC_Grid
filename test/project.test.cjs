@@ -36,7 +36,7 @@ test('stale results: a changed plan (dT, unit location) marks only the affected 
  const fr = PJ.freshResults(moved.contract, moved.results);
  assert.ok(fr['D4__AHU-BRG'].stale); assert.ok(!fr['D1__AHU-ACC'].stale);
  const dT = { ...pr, contract: K.applyRules(pr.contract, { supplyDeltaTK: 12 }) }, fd = PJ.freshResults(dT.contract, dT.results);
- assert.ok(fd['D1__AHU-ACC'].stale, 'supply airflow changed'); assert.ok(!fd['D1__EF-SAN'].stale, 'exhaust unchanged');
+ assert.ok(fd['D1__AHU-ACC'].stale, 'supply airflow changed'); assert.ok(!fd['D1__EF-CO2'].stale, 'exhaust unchanged');
 });
 
 test('analysis: checks, systems with risers, SOLAS penetrations from the duct geometry', () => {

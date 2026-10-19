@@ -696,7 +696,7 @@
     "heatTemp": 22,
     "heatingRh": 40,
     "sup": "AHU-ACC",
-    "exh": "EF-GAL",
+    "exh": "EF-SAN",
     "ret": "",
     "lighting": 10,
     "windowArea": 0,
