@@ -74,7 +74,21 @@
   [/^설계조건$/, () => '설계 조건'], [/^BC · /, t => t.replace('BC · ', '경계 조건 · ')], [/^ISO 7547 K DATA$/, () => 'ISO 기준 K값 · ISO 7547'],
   [/^KC 구조 계산 DATA$/, () => 'LY · 구조 레이어 K값'], [/^사용자 K DATA$/, () => '사용자 K값'], [/^개별 격실 부하계산 결과$/, () => '격실 부하'],
   [/^SUP별 시스템 신기량/, t => '신기 (OA) · ' + t], [/^LOAD · AHU Main Heater \/ 격실 Reheater$/, () => '리히터 · AHU 메인 히터 / 격실 리히터']];
- const POPUP_BUTTONS = { RST: ['새로 고침', '표를 지금 도면·조건으로 다시 읽기'], '↻': ['새로 고침', '표를 지금 도면·조건으로 다시 읽기'], NEW: ['새로 작성', '새 사용자 K 구조 작성'], XLSX: ['XLSX 저장', '이 표를 XLSX 파일로 저장'], '×': [null, '닫기'] };
+ const POPUP_BUTTONS = { RST: ['새로 고침', '표를 지금 도면·조건으로 다시 읽기'], '↻': ['새로 고침', '표를 지금 도면·조건으로 다시 읽기'], NEW: ['새로 작성', '새 사용자 K 구조 작성'], XLSX: ['XLSX 저장', '이 표를 XLSX 파일로 저장'], '×': [null, '닫기 (Esc)'],
+  FIT: ['맞춤', '표를 창 폭에 맞춤'], '⛶': ['전체 화면', '창 최대화 / 복원'] };
+ // the body BOX draws (and draws again on every filter or room change): long notes fold, figures line up
+ const NOTES = '.table-notes,.k-data-notes,.design-grid-intro', NUMBER = /^[-+]?[\d,]*\.?\d+\s*%?$/;
+ function dressBody(d) {
+  for (const n of d.querySelectorAll(NOTES)) {
+   // only plain notes fold: one with inputs or a table in it (창호 일사 조건 in 격실 부하) stays open
+   if (n.dataset.hgFold || n.scrollHeight < 90 || n.querySelector('input,select,textarea,table,button')) continue;
+   n.dataset.hgFold = '1'; n.classList.add('hg-fold');
+   const b = d.createElement('button'); b.type = 'button'; b.className = 'hg-more'; b.textContent = '자세히 ▾';
+   b.onclick = () => { const open = n.classList.toggle('hg-open'); b.textContent = open ? '접기 ▴' : '자세히 ▾'; };
+   n.after(b);
+  }
+  for (const td of d.querySelectorAll('table.popup-table td:not([data-hg-n])')) { td.dataset.hgN = ''; if (!td.querySelector('input,select') && NUMBER.test(td.textContent.trim())) td.classList.add('hg-num'); }
+ }
  const popups = new Set(); let popupCss = null;
  function dressPopup(w) {
   let d; try { d = w.document; } catch { return false; }
@@ -91,6 +105,18 @@
   };
   relabel();
   if (!head.__hgObserved) { head.__hgObserved = true; new w.MutationObserver(relabel).observe(head, { subtree: true, childList: true, characterData: true }); }
+  const body = d.getElementById('modalBody');
+  if (body && !body.__hgObserved) {
+   body.__hgObserved = true; let queued = false;
+   new w.MutationObserver(() => { if (queued) return; queued = true; w.requestAnimationFrame(() => { queued = false; dressBody(d); }); }).observe(body, { subtree: true, childList: true });
+   // Esc closes (not while typing), Ctrl+F goes to the table's search
+   d.addEventListener('keydown', e => {
+    const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(d.activeElement?.tagName || '');
+    if (e.key === 'Escape' && !typing) { e.preventDefault(); d.getElementById('modalClose')?.click(); }
+    else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') { const q = d.querySelector('.excel-toolbar input'); if (q) { e.preventDefault(); q.focus(); q.select(); } }
+   });
+  }
+  dressBody(d);
   return true;
  }
  function openPopup(...a) {

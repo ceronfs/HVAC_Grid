@@ -765,7 +765,7 @@
   const [nextText, nextTo] = nextStep();
   // ②: what CAL holds - its panel is out of sight
   const calLine = S.step === 'load' && box.loading && box.hasDrawing() ? (!box.calSig ? '<span>CAL: 아직 계산 전 — ② 명령을 누르면 계산</span>' : box.calCurrent() ? `<span>CAL: 격실 <b>${box.calRooms || '—'}</b>개 계산됨</span>` : '<span class="warn">CAL: 도면이 바뀜 — 다음 CAL 명령 때 다시 계산</span>') : '';
-  $('status').innerHTML = `<button class="next" id="nextBtn" title="다음에 할 일">다음: ${esc(nextText)}</button>` + calLine + (C ? `<span>선박 전체: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> · 계통 급기 <b>${n('supply')}</b> 배기 <b>${n('exhaust')}</b> 환기 <b>${n('return')}</b> · 급기 <b>${fmt(C.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))}</b> CMH · 덕트망 <b>${done}</b>/${ps.length}</span><span>선택: <b>${esc(deckName(S.deck))}</b>${r ? ` · ${esc(r.no)} ${esc(r.name)}` : ''}</span>` : '<span>설계 데이터 없음 — ① 도면 → ② 부하 → 설계 데이터 만들기</span>')
+  $('status').innerHTML = `<button class="next" id="nextBtn" title="다음에 할 일">다음: ${esc(nextText)}</button>` + calLine + (C && viewOf(S.step) === 'box' ? `<span>설계 데이터: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> — ③부터 사용</span>` : C ? `<span>선박 전체: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> · 계통 급기 <b>${n('supply')}</b> 배기 <b>${n('exhaust')}</b> 환기 <b>${n('return')}</b> · 급기 <b>${fmt(C.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))}</b> CMH · 덕트망 <b>${done}</b>/${ps.length}</span><span>선택: <b>${esc(deckName(S.deck))}</b>${r ? ` · ${esc(r.no)} ${esc(r.name)}` : ''}</span>` : '<span>설계 데이터 없음 — ① 도면 → ② 부하 → 설계 데이터 만들기</span>')
    + (S.active ? `<span>PHG D: <b>${esc(S.active.replace('__', ' · '))}</b></span>` : '') + `<span class="msg${S.msgErr ? ' err' : ''}" role="status">${esc(S.msg)}</span>`;
   $('proj').textContent = C ? `${RP.PROJECT_NAME(C) || '설계 데이터'} · ${C.rooms.length}실` : '설계 데이터 없음';
   $('proj').title = S.file?.name ? `파일: ${S.file.name}${S.dirty ? ' (저장 안 한 변경 있음)' : ''}` : '아직 저장하지 않음';
@@ -814,7 +814,9 @@
   if (S.dirty) return ['프로젝트 저장 (Ctrl+S)', null];
   return ['⑤ 통합 XLSX·DXF·보고서 출력', 'review'];
  }
- function render() { steps(); ribbon(); tree(); center(); inspector(); status(); $('main').classList.toggle('left-off', S.leftOff === true); $('main').classList.toggle('right-off', S.rightOff === true); }
+ function render() { steps(); ribbon(); tree(); center(); inspector(); status(); $('main').classList.toggle('left-off', S.leftOff === true); $('main').classList.toggle('right-off', S.rightOff === true);
+  // ① ② are BOX's own screens: the HVAC Grid tree and inspector (design data, from ③ on) step aside for the drawing
+  $('main').classList.toggle('box-view', viewOf(S.step) === 'box'); }
 
  // ---------- wiring ----------
  $('steps').onclick = e => { const b = e.target.closest('.step'); if (b) go(b.dataset.step); };

@@ -23,6 +23,8 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   log('BOX ready'); await shot('1-room-empty');
   // the native BOX command bar is hidden inside the frame; the shell ribbon runs its commands
   assert.equal(await H(() => getComputedStyle(HVACGrid.box.doc.querySelector('header.top')).display), 'none');
+  // ① ② are BOX's screens: the HVAC Grid tree and inspector (design data) are not there
+  assert.deepEqual(await H(() => ['left', 'right'].map(id => getComputedStyle(document.getElementById(id)).display)), ['none', 'none']);
   // ② is ribbon-first: CAL calculates out of sight (its panel is never on screen), its tables open in a window dressed
   // like the app (app/popup.css); CAL left on one drawing calculates again for the next (it once kept the old rooms)
   await ribbon('H5 예제').click();
@@ -46,6 +48,7 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   const c = await H(() => ({ step: HVACGrid.S.step, rooms: HVACGrid.S.contract?.rooms.length, plans: HVACGrid.plans().length, supply: HVACGrid.plans().filter(x => x.kind === 'supply').length }));
   log('contract', JSON.stringify(c));
   assert.equal(c.step, 'air'); assert.equal(c.rooms, 94); assert.equal(c.supply, 10); assert.equal(c.plans, 18);
+  assert.deepEqual(await H(() => ['left', 'right'].map(id => getComputedStyle(document.getElementById(id)).display)), ['flex', 'flex'], '③: tree and inspector');
   // the contract made in the shell equals the one tools/box-extract.cjs wrote (same BOX, same example)
   const sample = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'samples', 's5.contract.json'), 'utf8'));
   assert.deepEqual(await H(() => HVACGrid.S.contract.airflow), sample.airflow);

@@ -58,3 +58,23 @@ html body table.popup-table :is(input,select){font:inherit;color:var(--text);bac
 html body table.popup-table :is(input,select):hover{border-color:var(--line)}
 html body table.popup-table :is(input,select):focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--panel)}
 html body :is(.load-result-card,.ku-card){border:1px solid var(--line)!important;border-radius:8px!important;background:var(--panel)!important}
+
+/* review 2 (docs/POPUP_DESIGN_REVIEW.md) */
+:root{--edit:#f6faff;--edit-line:#b9d3ec;--stripe:rgba(0,0,0,.022)}
+html[data-theme=dark]{--edit:#1d2733;--edit-line:#35526d;--stripe:rgba(255,255,255,.03)}
+/* 1 long notes fold to their first lines; 자세히 opens them */
+html body .hg-fold:not(.hg-open){max-height:64px!important;overflow:hidden!important;position:relative;-webkit-mask-image:linear-gradient(#000 60%,transparent)}
+html body .hg-more{display:block;margin:-6px 0 10px auto;border:0;background:none;color:var(--accent);cursor:pointer;font-size:12px!important;padding:2px 4px}
+html body .hg-more:hover{text-decoration:underline}
+/* 2 a cell that can be edited looks like one */
+html body table.popup-table td:has(input:not([type=checkbox]):not([type=radio]):not([readonly]):not([disabled]),select:not([disabled])){background:var(--edit)!important}
+html body table.popup-table td :is(input:not([type=checkbox]):not([type=radio]):not([readonly]):not([disabled]),select:not([disabled])){border-bottom:1px dashed var(--edit-line)!important;border-radius:0}
+html body table.popup-table td :is(input,select):not([disabled]):hover{border:1px solid var(--edit-line)!important;border-radius:4px}
+/* 3 figures line up */
+html body table.popup-table{font-variant-numeric:tabular-nums}
+html body table.popup-table td.hg-num{text-align:right!important}
+/* 4 long tables: a quiet stripe that keeps BOX's own cell colours */
+html body table.popup-table tbody tr:nth-child(even)>td{box-shadow:inset 0 0 0 999px var(--stripe)}
+html body table.popup-table tbody tr:hover>td{box-shadow:inset 0 0 0 999px rgba(24,95,165,.07)}
+/* 7 headings in the body */
+html body .detached-body :is(h3,h4,.k-data-title){margin:14px 0 6px!important;color:var(--text)!important}
