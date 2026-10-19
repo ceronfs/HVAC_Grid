@@ -38,7 +38,7 @@ async function run(input, outDir, { shots = false, solas = null, log = console.l
    const t = Date.now();
    await p.evaluate(k => HVACGrid.runAll([k], { onlyNeeded: true }), key); await idle();
    const r = await p.evaluate(k => HVACGrid.result(k), key), msg = await p.evaluate(() => HVACGrid.S.msgErr ? HVACGrid.S.msg : '');
-   log(`${i + 1}/${keys.length} ${key}: ${r?.auto && !r.stale ? `RU ${r.rus} · ${r.flowCmh} CMH · 덕트 ${r.ducts} · ${r.lengthM} m · ${r.indexPa} Pa · ${r.seconds}s${r.zonesRelaxed ? ' · 금지 영역 해제' : ''}` : 'FAIL ' + msg} (${((Date.now() - t) / 1000).toFixed(1)}s)`);
+   log(`${i + 1}/${keys.length} ${key}: ${r?.auto && !r.stale ? `RU ${r.rus} · ${r.flowCmh} CMH · 덕트 ${r.ducts} · ${r.lengthM} m · ${r.indexPa} Pa · ${r.seconds}s${r.zonesRelaxed ? ` · 금지 영역 해제(${{ all: '전부', rooms: '제한 구역', outside: '선체 밖' }[r.zonesRelaxed]})` : ''}` : 'FAIL ' + msg} (${((Date.now() - t) / 1000).toFixed(1)}s)`);
    if (shots && r?.auto) await p.locator('#center').screenshot({ path: path.join(outDir, 'shots', U.safeName(key) + '.png') });
   }
   const project = JSON.parse(await p.evaluate(() => HVACGrid.projectJson()));

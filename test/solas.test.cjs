@@ -55,18 +55,22 @@ test('room names to spaces: the word that ends the name wins', () => {
 });
 
 test('ratings: stairs by the decks they pass, sprinklers, same use, methods IIC / IIIC', () => {
- const sp = (space, cat, stairDecks) => ({ space, cat, stairDecks });
- // CARG (2) corridor / (4) stair "B-0|A-0^c" (II-2/9.2.3.4): a stair through more than one deck A-0; through one deck B-0, flagged
+ const sp = (space, cat, stairDecks, stairEdge = false) => ({ space, cat, stairDecks, stairEdge });
+ // CARG (2) corridor / (4) stair "B-0|A-0^c" (II-2/9.2.3.4): a stair spanning 3 decks penetrates 2: A-0; spanning 2 decks
+ // penetrates one: B-0, flagged; a stair that ends at the model's top / bottom deck: the stricter value, flagged
  const multi = SO.rate('CARG', 'B', sp('통로', 2), sp('계단격실', 4, 3));
  assert.equal(multi.grade, 'A-0'); assert.deepEqual(multi.check, []);
- const single = SO.rate('CARG', 'B', sp('통로', 2), sp('계단격실', 4, 1));
+ const single = SO.rate('CARG', 'B', sp('통로', 2), sp('계단격실', 4, 2));
  assert.equal(single.grade, 'B-0'); assert.ok(single.check.some(t => /갑판 하나만 관통/.test(t)));
+ const edge = SO.rate('CARG', 'B', sp('통로', 2), sp('계단격실', 4, 2, true));
+ assert.equal(edge.grade, 'A-0'); assert.ok(edge.check.some(t => /모델 끝/.test(t)));
+ assert.equal(SO.rate('CARG', 'B', sp('통로', 2), sp('계단격실', 4, 1)).grade, 'A-0');
  // P36M (9.3): "A-15|A-0^d" by sprinklers - none: the larger, both sides: the smaller; never silent
  const cell = SO.lookup('P36M', 'B', 2, 9); assert.equal(cell.raw, 'A-15|A-0^d');
  const noSpr = SO.rate('P36M', 'B', sp('통로', 2), sp('조리실', 9)), spr = SO.rate('P36M', 'B', sp('통로', 2), sp('조리실', 9), { sprinkler: true });
  assert.equal(noSpr.grade, 'A-15'); assert.equal(spr.grade, 'A-0'); assert.ok(noSpr.check.length && spr.check.length);
  // P36M "A-0^a|B-0^e" (corridor / stair) is the stair rule, not the sprinkler rule
- assert.equal(SO.rate('P36M', 'B', sp('통로', 2), sp('계단격실', 4, 2), { sprinkler: true }).grade, 'A-0');
+ assert.equal(SO.rate('P36M', 'B', sp('통로', 2), sp('계단격실', 4, 3), { sprinkler: true }).grade, 'A-0');
  // (9) galley / (9) galley same use: not required; galley / paint locker (both 9): A-0
  assert.equal(SO.rate('CARG', 'B', sp('조리실', 9), sp('조리실', 9), {}, true).grade, '-');
  assert.equal(SO.rate('CARG', 'B', sp('조리실', 9), sp('페인트 로커', 9), {}, false).grade, 'A-0');

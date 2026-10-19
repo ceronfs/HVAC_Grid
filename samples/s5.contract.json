@@ -16,7 +16,9 @@
   "airBalance": "zone",
   "pressurizationPct": 5,
   "transferVelocityMps": 2,
-  "transferMakeup": true
+  "transferMakeup": true,
+  "defaultCeilingMm": null,
+  "minOaPct": 25
  },
  "conditions": {
   "waterlineEnabled": "off",
@@ -4816,7 +4818,7 @@
     "S5_E103",
     "S5_E104"
    ],
-   "designCmh": 2080
+   "designCmh": 2030
   },
   {
    "id": "AHU-OFC-01",
@@ -4835,7 +4837,7 @@
     "S5_E088",
     "S5_E089"
    ],
-   "designCmh": 740
+   "designCmh": 710
   },
   {
    "id": "AHU-OFC-02",
@@ -4855,7 +4857,7 @@
     "S5_E079",
     "S5_E080"
    ],
-   "designCmh": 1130
+   "designCmh": 1160
   },
   {
    "id": "SUP-ER-01",
@@ -4912,7 +4914,7 @@
     "S5_E045",
     "S5_E046"
    ],
-   "designCmh": 540
+   "designCmh": 550
   },
   {
    "id": "SUP-SVC-02",
@@ -4933,7 +4935,7 @@
     "S5_E035",
     "S5_E036"
    ],
-   "designCmh": 560
+   "designCmh": 550
   }
  ],
  "rus": [],
@@ -4995,15 +4997,15 @@
    "makeupCmh": 0
   },
   "S5_E099": {
-   "supplyCmh": 90,
+   "supplyCmh": 30,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
    "transferFrom": null,
-   "transferOutCmh": 90,
-   "makeupCmh": 60
+   "transferOutCmh": 0,
+   "makeupCmh": 0
   },
   "S5_E100": {
    "supplyCmh": 30,
@@ -5023,7 +5025,7 @@
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 90,
-   "transferFrom": "S5_E099",
+   "transferFrom": "S5_E104",
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
@@ -5050,15 +5052,15 @@
    "makeupCmh": 0
   },
   "S5_E104": {
-   "supplyCmh": 80,
+   "supplyCmh": 90,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
    "transferFrom": null,
-   "transferOutCmh": 0,
-   "makeupCmh": 0
+   "transferOutCmh": 90,
+   "makeupCmh": 10
   },
   "S5_E105": {
    "supplyCmh": 30,
@@ -5206,7 +5208,7 @@
   "S5_E074": {
    "supplyCmh": 100,
    "exhaustCmh": 0,
-   "returnCmh": 70,
+   "returnCmh": 80,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -5217,7 +5219,7 @@
   "S5_E075": {
    "supplyCmh": 100,
    "exhaustCmh": 0,
-   "returnCmh": 70,
+   "returnCmh": 80,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -5228,7 +5230,7 @@
   "S5_E076": {
    "supplyCmh": 100,
    "exhaustCmh": 0,
-   "returnCmh": 70,
+   "returnCmh": 80,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -5259,15 +5261,15 @@
    "makeupCmh": 0
   },
   "S5_E079": {
-   "supplyCmh": 30,
+   "supplyCmh": 60,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
    "transferFrom": null,
-   "transferOutCmh": 0,
-   "makeupCmh": 0
+   "transferOutCmh": 60,
+   "makeupCmh": 30
   },
   "S5_E080": {
    "supplyCmh": 100,
@@ -5294,7 +5296,7 @@
   "S5_E082": {
    "supplyCmh": 120,
    "exhaustCmh": 0,
-   "returnCmh": 80,
+   "returnCmh": 70,
    "freshAirCmh": 115.2,
    "source": "load",
    "transferInCmh": 0,
@@ -5316,7 +5318,7 @@
   "S5_E084": {
    "supplyCmh": 90,
    "exhaustCmh": 0,
-   "returnCmh": 60,
+   "returnCmh": 50,
    "freshAirCmh": 86.4,
    "source": "load",
    "transferInCmh": 0,
@@ -5336,20 +5338,20 @@
    "makeupCmh": 0
   },
   "S5_E086": {
-   "supplyCmh": 60,
+   "supplyCmh": 30,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
    "transferFrom": null,
-   "transferOutCmh": 60,
-   "makeupCmh": 30
+   "transferOutCmh": 0,
+   "makeupCmh": 0
   },
   "S5_E087": {
    "supplyCmh": 90,
    "exhaustCmh": 0,
-   "returnCmh": 60,
+   "returnCmh": 50,
    "freshAirCmh": 86.4,
    "source": "load",
    "transferInCmh": 0,
@@ -5364,7 +5366,7 @@
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 60,
-   "transferFrom": "S5_E086",
+   "transferFrom": "S5_E079",
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
@@ -5644,15 +5646,15 @@
    "makeupCmh": 0
   },
   "S5_E034": {
-   "supplyCmh": 50,
+   "supplyCmh": 40,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
    "transferFrom": null,
-   "transferOutCmh": 50,
-   "makeupCmh": 10
+   "transferOutCmh": 0,
+   "makeupCmh": 0
   },
   "S5_E035": {
    "supplyCmh": 50,
@@ -5683,7 +5685,7 @@
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 50,
-   "transferFrom": "S5_E034",
+   "transferFrom": "S5_E039",
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
@@ -5699,15 +5701,15 @@
    "makeupCmh": 0
   },
   "S5_E039": {
-   "supplyCmh": 40,
+   "supplyCmh": 50,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
    "transferFrom": null,
-   "transferOutCmh": 0,
-   "makeupCmh": 0
+   "transferOutCmh": 50,
+   "makeupCmh": 10
   },
   "S5_E040": {
    "supplyCmh": 40,
@@ -5993,6 +5995,7 @@
    "minOaCmh": 317,
    "oaCmh": 340,
    "raCmh": 440,
+   "recirculating": true,
    "oaNeedCmh": 336,
    "oaPct": 43.6,
    "pressurizationCmh": 20,
@@ -6016,6 +6019,7 @@
    "minOaCmh": 173,
    "oaCmh": 180,
    "raCmh": 590,
+   "recirculating": true,
    "oaNeedCmh": 173,
    "oaPct": 23.4,
    "pressurizationCmh": 180,
@@ -6041,6 +6045,7 @@
    "minOaCmh": 58,
    "oaCmh": 370,
    "raCmh": 80,
+   "recirculating": true,
    "oaNeedCmh": 58,
    "oaPct": 82.2,
    "pressurizationCmh": 370,
@@ -6062,14 +6067,15 @@
     "S5_E104"
    ],
    "transferRoomIds": [],
-   "saCmh": 2080,
+   "saCmh": 2030,
    "eaCmh": 120,
    "minOaCmh": 144,
-   "oaCmh": 1230,
+   "oaCmh": 1180,
    "raCmh": 850,
+   "recirculating": true,
    "oaNeedCmh": 144,
-   "oaPct": 59.1,
-   "pressurizationCmh": 1110,
+   "oaPct": 58.1,
+   "pressurizationCmh": 1060,
    "ok": true
   },
   {
@@ -6086,14 +6092,15 @@
     "S5_E089"
    ],
    "transferRoomIds": [],
-   "saCmh": 740,
-   "eaCmh": 140,
+   "saCmh": 710,
+   "eaCmh": 80,
    "minOaCmh": 403,
    "oaCmh": 410,
-   "raCmh": 330,
+   "raCmh": 300,
+   "recirculating": true,
    "oaNeedCmh": 404,
-   "oaPct": 55.4,
-   "pressurizationCmh": 270,
+   "oaPct": 57.7,
+   "pressurizationCmh": 330,
    "ok": true
   },
   {
@@ -6110,15 +6117,18 @@
     "S5_E079",
     "S5_E080"
    ],
-   "transferRoomIds": [],
-   "saCmh": 1130,
-   "eaCmh": 0,
+   "transferRoomIds": [
+    "S5_E088"
+   ],
+   "saCmh": 1160,
+   "eaCmh": 60,
    "minOaCmh": 403,
    "oaCmh": 410,
-   "raCmh": 720,
+   "raCmh": 750,
+   "recirculating": true,
    "oaNeedCmh": 404,
-   "oaPct": 36.3,
-   "pressurizationCmh": 410,
+   "oaPct": 35.3,
+   "pressurizationCmh": 350,
    "ok": true
   },
   {
@@ -6139,6 +6149,7 @@
    "minOaCmh": 0,
    "oaCmh": 670,
    "raCmh": 0,
+   "recirculating": false,
    "oaNeedCmh": 0,
    "oaPct": 100,
    "pressurizationCmh": 670,
@@ -6163,6 +6174,7 @@
    "minOaCmh": 86,
    "oaCmh": 570,
    "raCmh": 2320,
+   "recirculating": true,
    "oaNeedCmh": 87,
    "oaPct": 19.7,
    "pressurizationCmh": 570,
@@ -6183,14 +6195,15 @@
     "S5_E046"
    ],
    "transferRoomIds": [],
-   "saCmh": 540,
-   "eaCmh": 30,
+   "saCmh": 550,
+   "eaCmh": 80,
    "minOaCmh": 0,
-   "oaCmh": 540,
+   "oaCmh": 550,
    "raCmh": 0,
-   "oaNeedCmh": 30,
+   "recirculating": false,
+   "oaNeedCmh": 80,
    "oaPct": 100,
-   "pressurizationCmh": 510,
+   "pressurizationCmh": 470,
    "ok": true
   },
   {
@@ -6208,17 +6221,16 @@
     "S5_E035",
     "S5_E036"
    ],
-   "transferRoomIds": [
-    "S5_E037"
-   ],
-   "saCmh": 560,
-   "eaCmh": 50,
+   "transferRoomIds": [],
+   "saCmh": 550,
+   "eaCmh": 0,
    "minOaCmh": 0,
-   "oaCmh": 560,
+   "oaCmh": 550,
    "raCmh": 0,
-   "oaNeedCmh": 50,
+   "recirculating": false,
+   "oaNeedCmh": 0,
    "oaPct": 100,
-   "pressurizationCmh": 510,
+   "pressurizationCmh": 550,
    "ok": true
   }
  ]

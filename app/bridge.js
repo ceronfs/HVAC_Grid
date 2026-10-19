@@ -128,17 +128,30 @@
    // restricted rooms the plan does not serve (machinery casing, galley, CO2 room, stair, ...) are PHG D forbidden zones
    // for AUTO (II-2/9.7.2): their outline pulled in 50 mm so a duct may still run along their walls
    L.getState().settings.routingForbiddenZones = (pl.avoid || []).filter(z => z.zone?.length > 2).map((z, i) => ({ id: `HG-${i + 1}`, name: `${z.no} ${z.name} (${z.space})`.slice(0, 80),
-    polygon: z.zone.map(p => ({ x: p.x, y: -p.y })), clearanceMm: 0, enabled: true, visible: true, source: 'DRAWN' }));
+    polygon: z.zone.map(p => ({ x: p.x, y: -p.y })), clearanceMm: 0, enabled: true, visible: true, source: 'DRAWN' }))
+    // the outside of the deck (open deck, notches, a 10 m frame round the rooms): a duct never leaves the accommodation
+    .concat((pl.outside || []).map((z, i) => ({ id: `HG-OUT-${i + 1}`, name: '선체 밖', polygon: z.map(p => ({ x: p.x, y: -p.y })), clearanceMm: 0, enabled: true, visible: false, source: 'DRAWN' })));
    L.renderEverything(); this.fit();
    return this.result();
   }
   // AUTO -> first candidate -> duct assignment -> sizing -> pressure (the same chain as tools/hvac-run.cjs). When no
-  // route keeps out of the forbidden zones, AUTO runs again without them and the result says so (zonesRelaxed).
+  // route reaches every RU inside the forbidden zones, AUTO runs again without the outside of the deck (restricted rooms
+  // kept; a duct that then strays outside fails the passage check), then with only the outside, then without any, and the
+  // result says so (zonesRelaxed: 'outside' | 'rooms' | 'all').
   async auto() {
    const w = this.win, R = w.DuctConceptRouting, L = w.LineDesignLegacy, t = performance.now(), st = L.getState();
-   let zonesRelaxed = false, pv = null;
-   try { pv = await R.preview({ timeoutMs: 120000 }); } catch (e) { pv = { reason: e.message }; }
-   if (!pv.candidates?.[0] && st.settings.routingForbiddenZones?.length) { st.settings.routingForbiddenZones = []; zonesRelaxed = true; pv = await R.preview({ timeoutMs: 120000 }); }
+   // a candidate is good when it reaches every RU; the first good one of the three tries wins, else the first one at all
+   const zones = st.settings.routingForbiddenZones || [], outer = zones.filter(z => z.id.startsWith('HG-OUT-')), rooms = zones.filter(z => !outer.includes(z));
+   const tries = [[zones, false], [rooms, 'outside'], [outer, 'rooms'], [[], 'all']].filter(([z], i) => i === 0 || z.length < zones.length).filter(([z, r], i, all) => i === 0 || r === 'all' || z.length > 0);
+   const good = pv => pv?.candidates?.[0] && !pv.candidates[0].unconnectedRuIds?.length;
+   let zonesRelaxed = false, pv = null, first = null;
+   for (const [z, relaxed] of tries) {
+    st.settings.routingForbiddenZones = z;
+    try { pv = await R.preview({ timeoutMs: 120000 }); } catch (e) { pv = { reason: e.message }; }
+    if (!first && pv.candidates?.[0]) first = { pv, z, relaxed };
+    if (good(pv)) { zonesRelaxed = relaxed; break; }
+   }
+   if (!good(pv) && first) { st.settings.routingForbiddenZones = first.z; zonesRelaxed = first.relaxed; pv = await R.preview({ timeoutMs: 120000 }); }
    const c = pv.candidates?.[0];
    if (!c) throw new Error('AUTO 후보 없음: ' + (pv.reason || pv.message || ''));
    await R.applyPreview(c.id);

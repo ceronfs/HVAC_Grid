@@ -127,10 +127,17 @@
   edit(`${r.no} SOLAS 공간`, () => { const rooms = { ...(S.contract.solas?.rooms || {}) }; if (space) rooms[id] = { space }; else delete rooms[id]; S.contract.solas = { ...(S.contract.solas || {}), rooms }; });
   say(`${r.no} ${r.name}: ${space || '자동 분류'}`);
  }
+ function setTransfer(id, from) {
+  const r = S.contract.rooms.find(x => x.id === id);
+  edit(`${r.no} 전달 공기 출처`, () => { const t = { ...(S.contract.transfers || {}) }; if (from) t[id] = from; else delete t[id]; S.contract = K.applyRules({ ...S.contract, transfers: t }); });
+  const A = S.contract.airflow[id]; say(`${r.no} ${r.name}: 전달 공기 ${fmt(A.transferInCmh)} CMH ← ${A.transferFrom === 'own-inlet' ? '자체 흡입구' : A.transferFrom === 'outside' ? '이웃 없음' : roomName(A.transferFrom)}`);
+ }
  function setSolas(field, value) { edit(`SOLAS ${field}`, () => { S.contract.solas = { ...(S.contract.solas || {}), [field]: value }; }); }
 
  // ---------- PHG D projects (one per deck and system) ----------
- function keepActive() { if (S.active && phg.loading) S.projects[S.active] = phg.serialize(); }
+ // before another project opens in PHG D or the outputs are made: edits made in PHG D on the open project are read back
+ // (result, geometry, project together - never the project alone, which would leave the result behind it)
+ function keepActive() { if (!S.active || !phg.loading) return; if (!S.projects[S.active]) S.projects[S.active] = phg.serialize(); else readBackIfEdited(); }
  // keepSig: the result is read back from PHG D after an edit there - it is still what the old plan made, so it keeps that
  // plan's signature (a plan changed since stays "다시 보내기 필요")
  function store(key, extra = {}, { keepSig = false } = {}) {
@@ -146,6 +153,9 @@
   // narrow window the left dock too - the shell's tree is already on the left
   if (!S.phgDocked) { S.phgDocked = true; if (phg.dockShown('right')) phg.click('phgb-right-panel'); if (innerWidth < 1440 && phg.dockShown('left')) phg.click('phgb-left-panel'); }
  }
+ // the window narrowed below 1440 px with PHG D open: its left dock closes (the shell's tree is already on the left)
+ let wideWindow = innerWidth >= 1440;
+ addEventListener('resize', () => { const w = innerWidth >= 1440; if (wideWindow && !w && phg.loading && phg.dockShown('left')) phg.click('phgb-left-panel'); wideWindow = w; });
  async function openKey(key) {
   await loadPhg(); if (S.active === key) return;
   keepActive(); S.active = key;
@@ -161,7 +171,7 @@
  async function autoKey(key = curKey()) {
   const r0 = result(key); if (S.active !== key || !r0 || r0.stale) await sendPlan(key);
   const r = await phg.auto(); store(key, { auto: true, seconds: r.seconds, candidate: r.candidate, unconnected: r.unconnected, zonesRelaxed: r.zonesRelaxed, edited: false });
-  say(`${key.replace('__', ' · ')}: 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa · ${r.seconds} s${r.zonesRelaxed ? ' · 금지 영역을 지키는 경로가 없어 해제 — 경로 검토' : ''}`, !!r.zonesRelaxed);
+  say(`${key.replace('__', ' · ')}: 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa · ${r.seconds} s${r.zonesRelaxed ? ({ all: ' · 금지 영역과 선체 밖 영역을 모두 해제해야 경로가 나옴 — 경로 검토', rooms: ' · 제한 구역을 지키는 경로가 없어 해제(선체 밖은 유지) — 경로 검토', outside: ' · 선체 밖 금지 영역을 풀어야 모든 RU에 닿음(제한 구역은 유지) — 실 밖 덕트 검토' }[r.zonesRelaxed] || '') : ''}`, !!r.zonesRelaxed);
  }
  async function runAll(keys = plans().map(p => p.key), { onlyNeeded = false } = {}) {
   const todo = onlyNeeded ? keys.filter(k => { const r = result(k); return !r?.auto || r.stale; }) : keys;
@@ -257,6 +267,8 @@
   const top = first.map(n => rows.find(r => r[0] === n)).filter(Boolean), rest = rows.filter(r => !top.includes(r)).sort((x, y) => x[ci] - y[ci]);
   return [...top, ...rest].map(r => `<option value="${esc(r[0])}" ${r[0] === sel ? 'selected' : ''}>(${r[ci]}) ${esc(r[0])}</option>`).join('');
  }
+ // open items grouped by level and field, in the order they come (failures first)
+ const groups = items => { const m = new Map(); for (const [lv, area, text] of items) { const k = lv + '|' + area; if (!m.has(k)) m.set(k, [lv, area, []]); m.get(k)[2].push(text); } return [...m.values()]; };
  const stepOf = id => STEPS.find(s => s.id === id);
  async function go(id) {
   if (S.step === 'duct' && id !== 'duct') readBackIfEdited();
@@ -375,6 +387,11 @@
    for (const p of a.solas.passages.filter(x => x.deckId === S.deck)) { const r = C.rooms.find(x => x.id === p.roomId);
     html += `<polygon class="pass ${p.level}" points="${r.polygon.map(q => q.x + ',' + -q.y).join(' ')}"><title>${esc(p.systemId)}: ${esc(p.text)} (${esc(p.rule)})</title></polygon>`; }
   } else {
+   // transfer air: an arrow from the room that gives it to the room that takes it (door grille or transfer duct)
+   for (const r of rooms) { const A = C.airflow[r.id], src = C.rooms.find(x => x.id === A.transferFrom); if (!src || !A.transferInCmh) continue;
+    const p = PL.interiorPoint(src.polygon, 100, src.holes), q = PL.interiorPoint(r.polygon, 100, r.holes), dx = q.x - p.x, dy = q.y - p.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, h = px(7);
+    const tx = q.x - ux * px(4), ty = q.y - uy * px(4);
+    html += `<g class="xfer"><line x1="${p.x}" y1="${-p.y}" x2="${tx}" y2="${-ty}"/><polygon points="${tx},${-ty} ${tx - ux * h - uy * h * .55},${-(ty - uy * h + ux * h * .55)} ${tx - ux * h + uy * h * .55},${-(ty - uy * h - ux * h * .55)}"/><title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${A.transferSet ? ' (지정)' : ''}</title></g>`; }
    // ducts of the chosen kind that PHG D made, thin, under the markers
    for (const p of deckPlans(S.kind)) for (const d of S.geometry[p.key]?.ducts || [])
     html += `<polyline class="duct" points="${d.points.map(q => `${q.x},${q.y}`).join(' ')}" stroke="${sysColor(p.systemId)}" stroke-width="${d.type === 'main' ? 2.5 : 1.5}" opacity="${p.key === cur?.key ? .9 : .45}"><title>${esc(p.systemId)} ${esc(d.displayName)} ${d.widthMm ? d.widthMm + '×' + d.heightMm : ''} · ${d.flowCmh} CMH</title></polyline>`;
@@ -382,7 +399,7 @@
   html += sel;
   // units (filled = set by the user, dashed = a guess) on the unit deck; vertical duct shafts (circles) on the other decks
   for (const p of deckPlans(S.kind)) {
-   const col = sysColor(p.systemId), on = p.key === cur?.key, user = p.rootSource === 'user', firm = user || /^(fan|shaft)-room|above-unit/.test(p.rootSource), s = px(on ? 22 : 18), cx = p.root.x, cy = -p.root.y;
+   const col = sysColor(p.systemId), on = p.key === cur?.key, user = p.rootSource === 'user', firm = user || /^(fan|shaft|own)-room|above-unit/.test(p.rootSource), s = px(on ? 22 : 18), cx = p.root.x, cy = -p.root.y;
    const tip = `${esc(p.systemId)} ${p.isUnitDeck ? (p.kind === 'supply' ? '공조기' : '팬') : '수직 덕트'} · ${esc(rootText(p.rootSource))}`;
    html += p.isUnitDeck ? `<g class="mk" data-key="${esc(p.key)}" opacity="${on ? 1 : .6}"><rect class="root${firm ? '' : ' guess'}" x="${cx - s / 2}" y="${cy - s / 2}" width="${s}" height="${s}" rx="${px(3)}" ${user ? `fill="${col}" stroke="${col}"` : `stroke="${col}"`}><title>${tip}</title></rect><text class="ahu${user ? '' : ' guess'}" x="${cx}" y="${cy + px(3)}" text-anchor="middle" style="font-size:${px(8)}px">${UNIT_WORD[p.kind]}</text></g>`
     : `<g class="mk" data-key="${esc(p.key)}" opacity="${on ? 1 : .6}"><circle class="root shaft${firm ? '' : ' guess'}" cx="${cx}" cy="${cy}" r="${s / 2}" ${user ? `fill="${col}" stroke="${col}"` : `stroke="${col}"`}><title>${tip}</title></circle><text class="ahu${user ? '' : ' guess'}" x="${cx}" y="${cy + px(4)}" text-anchor="middle" style="font-size:${px(11)}px">⇅</text></g>`;
@@ -440,7 +457,7 @@
   } else {
    const items = RP.openItems(project(), a);
    body = `<h3>검토 <small class="muted">실패 ${a.count.fail} · 확인 필요 ${a.count.check} · 통과 ${a.count.ok}</small></h3><table class="checks"><tbody>${a.checks.map(k => `<tr><td class="${LV[k.level][0]}">${LV[k.level][1]}</td><td>${esc(k.text)}</td></tr>`).join('')}</tbody></table>
-    <h3>미해결 확인 사항 ${items.length}건</h3>${items.length ? `<table class="checks wide"><tbody>${items.slice(0, 400).map(([lv, area, text]) => `<tr><td class="${LV[lv][0]}">${LV[lv][1]}</td><td>${esc(area)}</td><td>${esc(text)}</td></tr>`).join('')}</tbody></table>${items.length > 400 ? `<p class="muted">… ${items.length - 400}건 더 — 통합 XLSX "확인 사항"</p>` : ''}` : '<p class="ok">없음</p>'}
+    <h3>미해결 확인 사항 ${items.length}건</h3>${items.length ? groups(items).map(([lv, area, rows]) => `<details class="grp-items" ${lv === 'fail' || rows.length <= 5 ? 'open' : ''}><summary><span class="${LV[lv][0]}">${LV[lv][1]}</span> ${esc(area)} <span class="muted">${rows.length}건</span></summary><table class="checks wide"><tbody>${rows.slice(0, 200).map(text => `<tr><td>${esc(text)}</td></tr>`).join('')}</tbody></table>${rows.length > 200 ? `<p class="muted">… ${rows.length - 200}건 더 (XLSX 확인 사항 시트)</p>` : ''}</details>`).join('') : '<p class="ok">없음</p>'}
     <p class="muted">설계 보조 결과 — 최종 판단은 설계자·주관청·선급. 출력: 위 리본의 통합 XLSX·통합 DXF·보고서.</p>`;
   }
   const badge = id => id === 'fire' ? (a.solas.summary.passagesFail + a.solas.warnings.length + a.solas.summary.checklistFail ? ` <span class="badge fail">✕ ${a.solas.summary.passagesFail + a.solas.warnings.length + a.solas.summary.checklistFail}</span>` : a.solas.summary.unclassified.length ? ` <span class="badge warn">● ${a.solas.summary.unclassified.length}</span>` : '')
@@ -474,12 +491,13 @@
   $('inspTitle').innerHTML = `${esc(r.no)} ${esc(r.name)}`;
   $('insp').innerHTML = card('geo', '형상', 'BOX', `<div class="kv"><span>면적</span><span>${r.areaM2.toFixed(1)} m²</span><span>체적</span><span>${r.volumeM3.toFixed(1)} m³</span><span>ISO 분류</span><span>${esc(r.isoClass || '—')}</span></div>`)
    + card('load', '부하', 'BOX CAL', `<div class="big">${fmt(L.coolingSensibleW)} W</div><div class="muted">냉방 현열</div><div class="kv" style="margin-top:6px"><span>냉방 잠열</span><span>${fmt(L.coolingLatentW)} W</span><span>냉방 합계</span><span>${fmt(L.coolingW)} W</span><span>난방</span><span>${fmt(L.heatingW)} W</span><span>최소 신기(OA)</span><span>${fmt(L.minFreshAirCmh)} CMH</span><span>상태</span><span class="${L.complete ? 'ok' : 'warn'}">${esc(L.status || (L.complete ? '완료' : '미완료'))}</span></div>`)
-   + card('air', '풍량', 'HVAC Grid', `<div class="kv"><span>급기(SA)</span><span><b>${fmt(A.supplyCmh)}</b> CMH</span><span>배기(EA)</span><span>${fmt(A.exhaustCmh)} CMH</span><span>환기(RA)</span><span>${fmt(A.returnCmh)} CMH</span>${A.transferInCmh ? `<span>전달 공기 받음</span><span>${fmt(A.transferInCmh)} CMH · ${A.transferFrom === 'own-inlet' ? '자체 흡입구' : A.transferFrom === 'outside' ? '이웃 급기 실 없음' : esc(roomName(A.transferFrom))}</span>` : ''}${A.transferOutCmh ? `<span>전달 공기 보냄</span><span>${fmt(A.transferOutCmh)} CMH</span>` : ''}${A.makeupCmh ? `<span>보충 급기</span><span>+${fmt(A.makeupCmh)} CMH</span>` : ''}</div><div class="muted" style="margin-top:6px">급기 = 올림(냉방 현열 W × 3 ÷ ΔT ${C.rules.supplyDeltaTK} K), 최소 신기 이상<br>배기 = 올림(환기 횟수 × 체적) · 환기 = 공조 구역 수지</div>${a.air.filter(x => x.roomId === r.id && x.level !== 'info').map(x => `<div class="${x.level === 'fail' ? 'err' : 'warn'}" style="margin-top:4px">${x.level === 'fail' ? '✕' : '●'} ${esc(x.text.split(': ').slice(1).join(': '))}</div>`).join('')}`)
+   + card('air', '풍량', 'HVAC Grid', `<div class="kv"><span>급기(SA)</span><span><b>${fmt(A.supplyCmh)}</b> CMH</span><span>배기(EA)</span><span>${fmt(A.exhaustCmh)} CMH</span><span>환기(RA)</span><span>${fmt(A.returnCmh)} CMH</span>${A.transferInCmh ? `<span>전달 공기 받음</span><span>${fmt(A.transferInCmh)} CMH · ${A.transferFrom === 'own-inlet' ? '자체 흡입구' : A.transferFrom === 'outside' ? '이웃 급기 실 없음' : esc(roomName(A.transferFrom))}</span>` : ''}${A.transferOutCmh ? `<span>전달 공기 보냄</span><span>${fmt(A.transferOutCmh)} CMH</span>` : ''}${A.makeupCmh ? `<span>보충 급기</span><span>+${fmt(A.makeupCmh)} CMH</span>` : ''}</div>${A.transferInCmh && !/CO2|CO₂|소화제|배터리|축전지|BATTERY|페인트|PAINT/i.test(r.name || '') ? `<label class="field" style="margin-top:6px">전달 공기 출처<select id="xferSel"><option value="">자동 (${A.transferSet ? '—' : A.transferFrom === 'outside' ? '이웃 없음' : esc(roomName(A.transferFrom))})</option><option value="own-inlet" ${C.transfers?.[r.id] === 'own-inlet' ? 'selected' : ''}>자체 흡입구 (외기 그릴)</option>${C.rooms.filter(n => n !== r && n.deckId === r.deckId && GE.sharedLength(r, n) >= 300).map(n => `<option value="${esc(n.id)}" ${C.transfers?.[r.id] === n.id ? 'selected' : ''}>${esc(n.no)} ${esc(n.name)}</option>`).join('')}</select></label>` : ''}<div class="muted" style="margin-top:6px">급기 = 올림(냉방 현열 W × 3 ÷ ΔT ${C.rules.supplyDeltaTK} K), 최소 신기 이상<br>배기 = 올림(환기 횟수 × 체적) · 환기 = 공조 구역 수지</div>${a.air.filter(x => x.roomId === r.id && x.level !== 'info').map(x => `<div class="${x.level === 'fail' ? 'err' : 'warn'}" style="margin-top:4px">${x.level === 'fail' ? '✕' : '●'} ${esc(x.text.split(': ').slice(1).join(': '))}</div>`).join('')}`)
    + card('sys', '계통', '', `<div class="kv">${PL.KINDS.map(k => `<span>${KL[k]}</span><span>${r.systems[k] ? `<span class="dot" style="background:${sysColor(r.systems[k])}"></span>${esc(r.systems[k])}` : '—'}</span>`).join('')}</div>`)
    + (rp.length ? card('duct', 'RU·덕트', 'PHG D', `<div class="kv">${rp.map(p => { const rus = p.rus.filter(u => u.roomId === r.id), res = result(p.key); return `<span>${KL[p.kind]} RU</span><span>${rus.length}개 · ${fmt(rus.reduce((t, u) => t + u.flowCmh, 0))} CMH${res?.at ? ` <span class="muted">· 계통 ${res.indexPa ?? '—'} Pa</span>` : ''}</span>`; }).join('')}</div>`) : '')
    + card('fire', '방화 (SOLAS)', shp.tB + '/' + shp.tD, `<div class="kv"><span>공간</span><span class="${cl?.cat ? '' : 'warn'}">${esc(cl?.space || '미분류')}</span><span>범주</span><span>${cl?.cat ? `(${cl.cat}) ${esc(SO.catName(ship, cl.cat))}` : '—'}</span><span>근거</span><span>${esc({ name: '실 이름', 'iso-class': 'BOX ISO 분류', user: '사용자 지정', unclassified: '—', 'no-category': '이 표에 범주 없음' }[cl?.source] || '')}</span><span>경계</span><span>${bnd.length}개${worst ? ` · 최대 ${esc(worst.grade)}` : ''}</span></div>${cl?.check ? `<div class="warn" style="margin-top:4px">● ${esc(cl.check)}</div>` : ''}
      <label class="field" style="margin-top:6px">공간 지정<select id="solasSel"><option value="">자동 분류</option>${spaceOptions(C.solas?.rooms?.[r.id]?.space || '')}</select></label>`);
   const ss = $('solasSel'); if (ss) ss.onchange = () => act(null, () => setSolasRoom(r.id, ss.value));
+  const xs = $('xferSel'); if (xs) xs.onchange = () => act(null, () => setTransfer(r.id, xs.value));
  }
  function center() {
   const view = stepOf(S.step).view, noContract = !S.contract && (view === 'plan' || view === 'report' || view === 'phg');

@@ -2,7 +2,9 @@
 // It exercises what S5 does not: systems over several decks with a duct trunk, L-shaped cabins with their own toilets,
 // an engine casing on the corridor (A-60), a galley with its own supply / exhaust (SOLAS II-2/9.7.5), exhaust and return
 // systems, transfer air, stairs stacked through all decks, CO2 and battery rooms with their own exhaust. v2 (after
-// review 1): the AC room and the trunk open onto the corridor, so ducts need not pass the casing or the stair.
+// review 1): the AC room and the trunk open onto the corridor, so ducts need not pass the casing or the stair. v2.1
+// (after review 2): laundry, changing and drying rooms on the corridor (their make-up air through a corridor door),
+// a galley fan room next to the galley, room ceiling heights.
 //   node tools/make-test-ship.cjs [outDir=samples/t3]
 // Writes T3.box.json (a BOX CAL project, the same format as BOX's own S5 example: deck outline LINEs and RECT / POLY
 // rooms carrying the room data) and one general-arrangement DXF per deck (T3_<deck>.dxf: deck outline, closed room
@@ -17,7 +19,8 @@ const HEIGHT = 2800;
 const OUTLINE = { D1: [0, 0, 20000, 16000], D2: [0, 0, 20000, 16000], D3: [0, 0, 20000, 16000], D4: [8000, 0, 20000, 16000] };
 
 // room data defaults (BOX field names); USE picks the HVAC systems and the internal loads by room type
-const BASE = { coolTemp: 25, coolingRh: 55, heatTemp: 22, heatingRh: 40, sup: '', exh: '', ret: '', lighting: 10, windowArea: 0, people: 0, minimumFreshAir: 0, equipW: 0, minimumAch: 0, isoClass: 'AC' };
+// ceilingHeight: the room's ceiling (mm) - BOX takes the volume (and the ACH air) from it; 0 = the deck height
+const BASE = { coolTemp: 25, coolingRh: 55, heatTemp: 22, heatingRh: 40, sup: '', exh: '', ret: '', lighting: 10, windowArea: 0, people: 0, minimumFreshAir: 0, equipW: 0, minimumAch: 0, isoClass: 'AC', ceilingHeight: 2200 };
 const USE = {
  cabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 1, minimumFreshAir: 28.8, equipW: 200, windowArea: 0.8 },
  bigCabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 2, minimumFreshAir: 57.6, equipW: 400, windowArea: 1.6 },
@@ -28,22 +31,22 @@ const USE = {
  drying: { exh: 'EF-SAN', minimumAch: 10, equipW: 1500, lighting: 5 },
  corridor: { sup: 'AHU-ACC', ret: 'RA-ACC', isoClass: 'ALLEY_SOUND', lighting: 8 },
  stair: { sup: 'AHU-ACC', lighting: 8 },
- mess: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 16, minimumFreshAir: 460.8, equipW: 800, windowArea: 2.4, lighting: 12 },
+ mess: { sup: 'AHU-ACC', ret: 'RA-ACC', ceilingHeight: 2300, people: 12, minimumFreshAir: 460.8, equipW: 800, windowArea: 2.4, lighting: 12 },
  rec: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 8, minimumFreshAir: 230.4, equipW: 600, windowArea: 2.4, lighting: 12 },
  office: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 900, windowArea: 1.2, lighting: 12 },
  gym: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 1200, lighting: 12 },
- pantry: { sup: 'AHU-ACC', exh: 'EF-GAL', minimumAch: 15, equipW: 1500 },
+ pantry: { sup: 'AHU-ACC', exh: 'EF-GAL', minimumAch: 20, equipW: 1500 },
  // galley: own supply fan and exhaust (II-2/9.7.2.1, 9.7.5), exhaust > supply (the rest comes from the mess)
- galley: { sup: 'SF-GAL', exh: 'EF-GAL', minimumAch: 40, people: 3, equipW: 9000, lighting: 15, windowArea: 1.2 },
+ galley: { sup: 'SF-GAL', exh: 'EF-GAL', ceilingHeight: 2400, minimumAch: 45, people: 3, equipW: 9000, lighting: 15, windowArea: 1.2 },
  laundry: { sup: 'AHU-ACC', exh: 'EF-LAU', minimumAch: 40, equipW: 2000 },
  changing: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 10 },
  // CO2 room and battery room: each its own exhaust (FSS Code 5, class rules)
  co2: { exh: 'EF-CO2', minimumAch: 6, lighting: 5 },
  battery: { exh: 'EF-BAT', minimumAch: 12, lighting: 5 },
- store: { lighting: 5 },
- none: { lighting: 5 },
- casing: { isoClass: 'ENGINE', lighting: 0 },
- wheel: { sup: 'AHU-BRG', ret: 'RA-BRG', people: 3, minimumFreshAir: 86.4, equipW: 6000, windowArea: 20, isoClass: 'WHEELHOUSE', lighting: 8 },
+ store: { lighting: 5, ceilingHeight: 0 },
+ none: { lighting: 5, ceilingHeight: 0 },
+ casing: { isoClass: 'ENGINE', lighting: 0, ceilingHeight: 0 },
+ wheel: { sup: 'AHU-BRG', ret: 'RA-BRG', ceilingHeight: 2600, people: 3, minimumFreshAir: 86.4, equipW: 6000, windowArea: 20, isoClass: 'WHEELHOUSE', lighting: 8 },
  brgRoom: { sup: 'AHU-BRG', ret: 'RA-BRG', people: 1, minimumFreshAir: 28.8, equipW: 1500, windowArea: 0.8, lighting: 10 },
  brgEquip: { sup: 'AHU-BRG', ret: 'RA-BRG', equipW: 2500, lighting: 8 },
  brgCorr: { sup: 'AHU-BRG', ret: 'RA-BRG', isoClass: 'ALLEY_SOUND', lighting: 8 },
@@ -76,12 +79,13 @@ function core(deck, n, locker) {
 // D1 UPPER DK: galley, messes, laundry, CO2 room, AC room (AHU-ACC, the galley fans, the sanitary, laundry, CO2 fans)
 core('D1', '1', '청소도구실');
 R('D1', '111', 'CO2실', 'co2', 0, 0, 4000, 3000);
-R('D1', '110', '세탁실', 'laundry', 4000, 0, 6500, 3500);
-R('D1', '112', '탈의실', 'changing', 4000, 3500, 6500, 7000);
-R('D1', '113', '선원식당', 'mess', 6500, 0, 12000, 7000);
+R('D1', '109', '세제·린넨 창고', 'store', 4000, 0, 9000, 3500);
+R('D1', '110', '세탁실', 'laundry', 4000, 3500, 6500, 7000);
+R('D1', '112', '탈의실', 'changing', 6500, 3500, 9000, 7000);
+R('D1', '113', '선원식당', 'mess', 9000, 0, 12000, 7000);
 R('D1', '114', '조리실', 'galley', 12000, 0, 16500, 7000);
 R('D1', '115', '건식식품창고', 'store', 16500, 0, 20000, 3500);
-R('D1', '116', '식료품 냉장고', 'store', 16500, 3500, 20000, 7000);
+R('D1', '116', '조리실 팬룸', 'none', 16500, 3500, 20000, 7000);
 R('D1', '120', '공조기실', 'none', 0, 9000, 4000, 16000);
 R('D1', '107', '사관휴게실', 'rec', 4000, 12000, 8000, 16000);
 R('D1', '108', '갑판사무실', 'office', 8000, 11500, 10500, 16000);
@@ -91,8 +95,8 @@ R('D1', '123', '선원휴게실', 'rec', 16000, 9000, 20000, 16000);
 // D2 A DK: crew cabins (5 starboard, 3 port), gym, linen store, hobby room, drying room
 core('D2', '2', '청소도구실');
 R('D2', '210', '체육실', 'gym', 0, 0, 4000, 3000);
-R('D2', '220', '린넨창고', 'store', 0, 9000, 4000, 12000);
-R('D2', '226', '건조실', 'drying', 0, 12000, 4000, 16000);
+R('D2', '220', '건조실', 'drying', 0, 9000, 4000, 12000);
+R('D2', '226', '린넨창고', 'store', 0, 12000, 4000, 16000);
 R('D2', '207', '취미실', 'rec', 4000, 12000, 8000, 16000);
 R('D2', '208', '선원휴게실', 'rec', 8000, 11500, 10500, 16000);
 for (let k = 0; k < 5; k++) bay('D2', String(211 + k), `선원침실 ${String(k + 1).padStart(2, '0')}`, 'cabin', 4000 + 3200 * k, 7200 + 3200 * k, 'stbd');
@@ -131,7 +135,7 @@ function boxProject(template) {
  const deckTpl = template.source.decks[0];
  return { ...template, source: { ...template.source, entities: ents, decks: DECKS.map(d => ({ ...deckTpl, id: d.id, name: d.name, z: d.z, height: HEIGHT })), backgrounds: [] },
   view: { ...template.view, activeDeck: 'D1', hidden: [], hiddenRooms: [], hiddenDeckLayers: [] },
-  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
+  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.1', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
 }
 
 // ---------- general arrangement DXF ----------
@@ -139,12 +143,12 @@ function dxf(deckIds, layout) {
  const L = [], add = (...kv) => { for (let i = 0; i < kv.length; i += 2) L.push(String(kv[i]), String(kv[i + 1])); };
  let handle = 0x100; const h = () => (handle++).toString(16).toUpperCase();
  const layers = [['DECK_OUTLINE', 7], ['ROOM', 3], ['ROOM_NO', 1], ['ROOM_NAME', 5], ['TITLE', 2]];
- add(0, 'SECTION', 2, 'HEADER', 9, '$ACADVER', 1, 'AC1015', 9, '$INSUNITS', 70, 4, 9, '$DWGCODEPAGE', 3, 'ANSI_949', 0, 'ENDSEC');
+ add(0, 'SECTION', 2, 'HEADER', 9, '$ACADVER', 1, 'AC1021', 9, '$INSUNITS', 70, 4, 0, 'ENDSEC');   // DXF 2007: text is UTF-8
  add(0, 'SECTION', 2, 'TABLES', 0, 'TABLE', 2, 'LAYER', 70, layers.length);
  for (const [n, c] of layers) add(0, 'LAYER', 2, n, 70, 0, 62, c, 6, 'CONTINUOUS');
  add(0, 'ENDTAB', 0, 'ENDSEC', 0, 'SECTION', 2, 'ENTITIES');
- const poly = (layer, pts, dx) => { add(0, 'LWPOLYLINE', 5, h(), 8, layer, 90, pts.length, 70, 1); for (const [x, y] of pts) add(10, x + dx, 20, y); };
- const text = (layer, x, y, size, s) => add(0, 'TEXT', 5, h(), 8, layer, 10, x, 20, y, 30, 0, 40, size, 1, s);
+ const poly = (layer, pts, dx) => { add(0, 'LWPOLYLINE', 5, h(), 100, 'AcDbEntity', 8, layer, 100, 'AcDbPolyline', 90, pts.length, 70, 1); for (const [x, y] of pts) add(10, x + dx, 20, y); };
+ const text = (layer, x, y, size, s) => add(0, 'TEXT', 5, h(), 100, 'AcDbEntity', 8, layer, 100, 'AcDbText', 10, x, 20, y, 30, 0, 40, size, 1, s, 100, 'AcDbText');
  for (const id of deckIds) {
   const dx = layout[id] || 0, [x0, y0, x1, y1] = OUTLINE[id], d = DECKS.find(k => k.id === id);
   poly('DECK_OUTLINE', [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], dx);

@@ -35,7 +35,9 @@ test('room RUs: one per 500 CMH, sum kept', () => {
 
 test('deck DXF: closed room outlines with number and name', () => {
  const dxf = deckDxf(s5, 'S3');
- assert.match(dxf, /AC1015/);
+ // DXF 2007 (UTF-8 text) with the subclass markers CAD readers require on every entity
+ assert.match(dxf, /AC1021/); const pairs = dxf.split(/\r\n/);
+ for (const [i, v] of pairs.entries()) if (i % 2 === 1 && pairs[i - 1] === '0' && (v === 'LWPOLYLINE' || v === 'TEXT')) assert.deepEqual([pairs[i + 3], pairs[i + 4]], ['100', 'AcDbEntity'], v);
  assert.equal((dxf.match(/\r\nLWPOLYLINE\r\n/g) || []).length, s5.rooms.filter(r => r.deckId === 'S3').length);
  assert.match(dxf, /\r\n선원식당\r\n/);
 });

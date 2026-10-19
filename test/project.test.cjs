@@ -101,12 +101,12 @@ test('test drawings: every T3 deck DXF equals the contract (number, name, area)'
 
 test('test ship generator: deterministic, BOX format, L-shaped cabins', () => {
  const T = require('../tools/make-test-ship.cjs');
- assert.equal(T.rooms.length, 78); assert.equal(T.rooms.filter(r => r.poly).length, 14);
+ assert.equal(T.rooms.length, 79); assert.equal(T.rooms.filter(r => r.poly).length, 14);
  const box = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'samples', 't3', 'T3.box.json'), 'utf8'));
  assert.equal(box.format, 'NODE-BOX-L4'); assert.equal(box.schemaVersion, 2); assert.equal(box.source.decks.length, 4);
  assert.equal(new Set(box.source.entities.map(e => e.persistentUuid)).size, box.source.entities.length);
  const c = load('t3.contract.json');
- assert.equal(c.rooms.length, 78); assert.ok(c.rooms.every(r => c.loads[r.id].complete), 'BOX computed every room');
+ assert.equal(c.rooms.length, 79); assert.ok(c.rooms.every(r => c.loads[r.id].complete), 'BOX computed every room');
  assert.deepEqual(K.validate(c), []);
 });
 

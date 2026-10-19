@@ -32,7 +32,7 @@ function start(port = 0) {
  });
  return new Promise((resolve, reject) => {
   server.once('error', reject);
-  server.listen(port, '127.0.0.1', () => { actual = server.address().port; resolve({ url: `http://127.0.0.1:${actual}`, port: actual, close: () => new Promise(done => server.close(done)) }); });
+  server.listen(port, '127.0.0.1', () => { actual = server.address().port; resolve({ url: `http://127.0.0.1:${actual}`, port: actual, close: () => new Promise(done => { server.close(done); server.closeAllConnections?.(); }) }); });
  });
 }
 

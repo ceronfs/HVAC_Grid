@@ -30,7 +30,7 @@ test('S5 sample contract (BOX CAL Enhance built-in example)', () => {
  assert.ok(supply.every(s => s.deckIds.length === 1), 'each S5 supply system serves one deck');
  // 10,420 CMH from the loads (as in H1) + 190 CMH make-up supply for the transfer air the rooms give their toilets
  assert.equal(s5.rooms.reduce((t, r) => t + s5.airflow[r.id].supplyCmh - (s5.airflow[r.id].makeupCmh || 0), 0), 10420);
- assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 10610);
+ assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 10560);   // round 2: no transfer air from the bridge wing, the archive or the refrigerator (corridor instead)
  const wheelhouse = s5.rooms.find(r => r.no === '501');
  assert.equal(wheelhouse.isoClass, 'WHEELHOUSE'); assert.equal(s5.airflow[wheelhouse.id].supplyCmh, 850);
  // deck ids of a system in elevation order

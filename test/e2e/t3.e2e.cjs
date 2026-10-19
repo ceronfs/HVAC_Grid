@@ -27,7 +27,7 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   await p.click('.step[data-step=load]'); await idle(); await ribbon('계약 만들기').click(); await idle();
   const c = await H(() => ({ rooms: HVACGrid.S.contract.rooms.length, plans: HVACGrid.plans().length, multi: [...new Set(HVACGrid.plans().filter(x => x.decks > 1).map(x => x.systemId))].sort() }));
   log('contract', JSON.stringify(c));
-  assert.equal(c.rooms, 78); assert.equal(c.plans, 17); assert.deepEqual(c.multi, ['AHU-ACC', 'EF-SAN', 'RA-ACC']);
+  assert.equal(c.rooms, 79); assert.equal(c.plans, 17); assert.deepEqual(c.multi, ['AHU-ACC', 'EF-SAN', 'RA-ACC']);
   const sample = JSON.parse(fs.readFileSync(path.join(ROOT, 'samples', 't3.contract.json'), 'utf8'));
   assert.deepEqual(await H(() => HVACGrid.S.contract.airflow), sample.airflow, 'same airflow as samples/t3.contract.json');
   await H(() => { HVACGrid.S.deck = 'D2'; HVACGrid.render(); }); await p.waitForTimeout(200); await shot('3-air-D2');
@@ -39,9 +39,9 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   assert.ok(await H(() => HVACGrid.analysis().solas.boundaries.some(b => b.kind === 'floor' && b.grade === 'A-60')), 'floor over the engine room A-60');
   // every deck and system: AUTO
   const ta = Date.now(); await ribbon('모든 계통 AUTO').click(); await idle();
-  const a = await H(() => { const a = HVACGrid.analysis(); return { done: a.done, total: a.total, count: a.count, fails: a.checks.filter(k => k.level === 'fail').map(k => k.text), pens: a.solas.summary.penetrations, fd: a.solas.summary.fireDampers, pass: a.solas.passages.filter(x => x.level === 'fail').length, relaxed: Object.values(HVACGrid.S.results).filter(r => r.zonesRelaxed).length, acc: a.systems.find(s => s.systemKey === 'AHU-ACC') }; });
-  log(`AUTO ${a.done}/${a.total} in ${((Date.now() - ta) / 1000).toFixed(0)} s · review ${JSON.stringify(a.count)} · penetrations ${a.pens} · fire dampers ${a.fd} · restricted passed ${a.pass} · zones relaxed ${a.relaxed} · AHU-ACC ESP ${a.acc.indexPa} Pa (${a.acc.indexDeckId}) fan ${a.acc.fanPa} Pa`);
-  assert.equal(a.done, 17); assert.deepEqual(a.fails, []); assert.equal(a.pass, 0, 'AUTO keeps out of the casing, galley, CO2 room, stairs'); assert.ok(a.pens > 20); assert.ok(a.fd > 0); assert.ok(a.acc.complete && a.acc.indexPa > 0 && a.acc.fanPa > a.acc.indexPa);
+  const a = await H(() => { const a = HVACGrid.analysis(); return { done: a.done, total: a.total, count: a.count, out: a.solas.summary.outsideM, fails: a.checks.filter(k => k.level === 'fail').map(k => k.text), pens: a.solas.summary.penetrations, fd: a.solas.summary.fireDampers, pass: a.solas.passages.filter(x => x.level === 'fail').length, relaxed: Object.values(HVACGrid.S.results).filter(r => r.zonesRelaxed).length, acc: a.systems.find(s => s.systemKey === 'AHU-ACC') }; });
+  log(`AUTO ${a.done}/${a.total} in ${((Date.now() - ta) / 1000).toFixed(0)} s · review ${JSON.stringify(a.count)} · penetrations ${a.pens} · fire dampers ${a.fd} · restricted passed ${a.pass} · outside ${a.out} m · zones relaxed ${a.relaxed} · AHU-ACC ESP ${a.acc.indexPa} Pa (${a.acc.indexDeckId}) fan ${a.acc.fanPa} Pa`);
+  assert.equal(a.done, 17); assert.equal(a.out, 0, "no duct outside the rooms"); assert.deepEqual(a.fails, []); assert.equal(a.pass, 0, 'AUTO keeps out of the casing, galley, CO2 room, stairs'); assert.ok(a.pens > 20); assert.ok(a.fd > 0); assert.ok(a.acc.complete && a.acc.indexPa > 0 && a.acc.fanPa > a.acc.indexPa);
   await shot('5-review-nets');
   await p.locator('#report .tabs button', { hasText: '계통' }).click(); await shot('5-review-systems');
   await p.locator('#report .tabs button', { hasText: '방화' }).click(); await shot('5-review-fire');
@@ -52,7 +52,7 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   await H(() => HVACGrid.openSample('s5'));
   const [chooser] = await Promise.all([p.waitForEvent('filechooser'), p.click('#openProjectBtn')]); await chooser.setFiles(file); await idle();
   const back = await H(() => { const a = HVACGrid.analysis(); return { rooms: HVACGrid.S.contract.rooms.length, done: a.done, below: HVACGrid.S.contract.solas.lowestBelow, pens: a.solas.summary.penetrations }; });
-  assert.deepEqual(back, { rooms: 78, done: 17, below: '기관실 — A류', pens: a.pens }); log('project round trip', JSON.stringify(back));
+  assert.deepEqual(back, { rooms: 79, done: 17, below: '기관실 — A류', pens: a.pens }); log('project round trip', JSON.stringify(back));
   // the saved PHG D project opens in PHG D as it was
   await p.click('.step[data-step=duct]'); await idle();
   await H(() => { HVACGrid.S.deck = 'D3'; HVACGrid.S.sys = 'AHU-ACC'; HVACGrid.S.kind = 'supply'; HVACGrid.render(); return HVACGrid.go('duct'); }); await idle();

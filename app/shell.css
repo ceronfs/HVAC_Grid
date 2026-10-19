@@ -177,3 +177,10 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .legend .pd.dk{border-radius:0;transform:rotate(45deg);width:8px;height:8px}.legend .pd.fd{border-radius:0;background:var(--canvas);border-color:var(--text);border-width:2px}
 @media (max-width:1499px){.brand small{display:none}.step{padding:0 10px}}
 @media (max-width:1366px){.main{grid-template-columns:208px minmax(0,1fr) 256px}.main.left-off{grid-template-columns:28px minmax(0,1fr) 256px}.main.right-off{grid-template-columns:208px minmax(0,1fr) 28px}.step{padding:0 8px;font-size:12px}.proj{max-width:150px}}
+/* scroll cue: a shadow on the side that has more (ribbon on a narrow window, wide review tables) */
+.ribbon,.report .scrollx{--sbg:var(--panel);background:linear-gradient(to right,var(--sbg) 30%,transparent) left/32px 100% no-repeat local,linear-gradient(to left,var(--sbg) 30%,transparent) right/32px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.22),transparent) left/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.22),transparent) right/12px 100% no-repeat scroll,var(--sbg)}
+.report .scrollx{--sbg:var(--bg)}
+/* transfer air arrows (air view) */
+.plan .xfer line{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}.plan .xfer polygon{fill:var(--accent);stroke:none}.plan .xfer{pointer-events:visibleStroke}
+/* open items grouped by level and field */
+.grp-items{margin:0 0 6px}.grp-items>summary{cursor:pointer;padding:4px 2px;font-weight:600}.grp-items>summary .muted{font-weight:400}.grp-items>table{margin:2px 0 8px 18px}
