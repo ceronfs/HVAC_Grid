@@ -29,14 +29,16 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 
 - Node.js 20 이상, Microsoft Edge(헤드리스 실행·E2E용 — 다른 브라우저는 `HVAC_GRID_BROWSER=chrome`)
 - `npm install` — devDependency `playwright-core`(브라우저 내려받기 없음, 설치된 Edge를 씀). 이미 설치된 Playwright를 쓰려면 `PLAYWRIGHT_MODULE=<경로>`
-- 셸만 쓸 때는 **`HVAC_Grid.bat`을 더블클릭**하면 됩니다(로컬 서버를 켜고 기본 브라우저로 엶, 창을 닫으면 종료). 명령줄에서는 `npm start`.
+- 셸만 쓸 때는 **`HVAC_Grid.bat`을 더블클릭**하면 됩니다. 독립 프로그램처럼 **자기 창**(탭·주소창 없는 Edge 앱 창, 최대화, 작업 표시줄에 HVAC Grid 아이콘)으로 열리고, 콘솔 창은 남지 않습니다. 창을 닫으면 로컬 서버와 그 창의 Edge도 몇 초 안에 함께 끝납니다. 저장하지 않은 작업이 있으면 닫기 전에 묻습니다. 다시 실행하면 창이 하나 더 열립니다. Edge가 없으면 Chrome 앱 창, 둘 다 없으면 기본 브라우저 탭으로 엽니다.
+  - 문제 확인용: `HVAC_Grid.bat console`(콘솔에 진행 표시), 기록은 `%LOCALAPPDATA%\HVAC_Grid\launch.log`. 포트를 바꾸려면 `HVAC_Grid.bat 8793`.
+  - 명령줄에서는 `npm start`(브라우저 탭).
 
-처음 써 보기: `HVAC_Grid.bat` 더블클릭 → 브라우저 http://127.0.0.1:8792/app/ → ③에서 **T3 시험선** → ⑤ **모든 계통 AUTO**(약 50초) → ⑤ **보고서**.
+처음 써 보기: `HVAC_Grid.bat` 더블클릭 → HVAC Grid 창 → ③에서 **T3 시험선** → ⑤ **모든 계통 AUTO**(약 50초) → ⑤ **보고서**.
 
 ## 실행
 
 ```
-HVAC_Grid.bat               # 더블클릭: 서버 + 기본 브라우저 (이미 켜져 있으면 브라우저만)
+HVAC_Grid.bat               # 더블클릭: 독립 창(Edge 앱 모드) + 로컬 서버, 창을 닫으면 종료
 npm start                   # 통합 셸 → 브라우저에서 http://127.0.0.1:8792/app/
 npm test                    # 단위 테스트 60개
 npm run test:e2e            # E2E: S5 셸 흐름 + T3 시험선 전체 (실제 BOX·PHG D, 캡처 out/e2e*/)

@@ -10,7 +10,9 @@ const PUBLIC = ['app', 'vendor', 'lib', 'samples'];
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.cjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
  '.json': 'application/json; charset=utf-8', '.dxf': 'application/dxf', '.png': 'image/png', '.svg': 'image/svg+xml', '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
 
-function start(port = 0) {
+// onAlive: the open app says it is still there (POST /__alive, every few seconds); onBye: a window of it closed or
+// reloads (POST /__bye) - the launcher stops the server when no window is left
+function start(port = 0, { onAlive = null, onBye = null } = {}) {
  let actual = port;
  const server = http.createServer((req, res) => {
   const end = (code, headers = {}) => { try { res.writeHead(code, headers).end(); } catch {} };
@@ -20,6 +22,8 @@ function start(port = 0) {
    let rel; try { rel = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { return end(400); }
    if (/[\0\r\n]/.test(rel)) return end(400);
    if (rel === '/') return end(302, { Location: '/app/' });
+   if (rel === '/__alive') { if (req.method === 'POST') onAlive?.(); return end(204); }
+   if (rel === '/__bye') { if (req.method === 'POST') onBye?.(); return end(204); }
    let file = path.resolve(ROOT, '.' + rel);
    if (!PUBLIC.some(d => file === path.join(ROOT, d) || file.startsWith(path.join(ROOT, d) + path.sep))) return end(404);
    if (rel.endsWith('/')) file = path.join(file, 'index.html');

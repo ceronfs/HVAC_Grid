@@ -65,7 +65,7 @@
 
  // ---------- contract edits (undo / redo in the shell's own views) ----------
  function edit(label, fn) {
-  const before = JSON.stringify(S.contract); fn(); invalidate();
+  const before = JSON.stringify(S.contract); fn(); invalidate(); S.dirty = true;
   S.undo.push({ label, contract: before }); if (S.undo.length > 60) S.undo.shift(); S.redo = [];
  }
  function stepHistory(from, to, verb) {
@@ -142,6 +142,7 @@
  // keepSig: the result is read back from PHG D after an edit there - it is still what the old plan made, so it keeps that
  // plan's signature (a plan changed since stays "다시 보내기 필요")
  function store(key, extra = {}, { keepSig = false } = {}) {
+  S.dirty = true;
   const pl = plans().find(p => p.key === key), old = S.results[key];
   S.projects[key] = phg.serialize(); S.geometry[key] = phg.geometry();
   S.results[key] = { ...(old || {}), ...phg.result(), ...extra, kind: pl?.kind, rootSource: pl?.rootSource, designCmh: pl?.designCmh, sig: keepSig ? old?.sig ?? null : pl ? PJ.planSig(pl) : null, at: Date.now() };
@@ -155,6 +156,11 @@
   if (!S.phgDocked) { S.phgDocked = true; if (phg.dockShown('right')) phg.click('phgb-right-panel'); if (innerWidth < 1440 && phg.dockShown('left')) phg.click('phgb-left-panel'); }
  }
  // the window narrowed below 1440 px with PHG D open: its left dock closes (the shell's tree is already on the left)
+ // a desktop program: closing the window with work not saved asks first; the launcher (tools/launch.cjs) keeps its local
+ // server while the app says it is open
+ addEventListener('beforeunload', e => { if (S.dirty && (Object.keys(S.results).length || S.undo.length)) { e.preventDefault(); e.returnValue = ''; } });
+ const alive = () => fetch('../__alive', { method: 'POST', keepalive: true }).catch(() => {}); alive(); setInterval(alive, 5000);
+ addEventListener('pagehide', () => navigator.sendBeacon('../__bye'));
  let wideWindow = innerWidth >= 1440;
  addEventListener('resize', () => ribbonMore()); document.getElementById('ribbon').addEventListener('scroll', () => ribbonMore(), { passive: true });
  addEventListener('resize', () => { const w = innerWidth >= 1440; if (wideWindow && !w && phg.loading && phg.dockShown('left')) phg.click('phgb-left-panel'); wideWindow = w; });
@@ -189,13 +195,13 @@
  async function openProject() {
   if (!keepsWork('프로젝트 열기')) return;
   const f = await pickFile('.json'), { project: pr, notes } = PJ.read(JSON.parse(await f.text()));
-  setContract(pr.contract); Object.assign(S, { projects: pr.projects, results: pr.results, geometry: pr.geometry, active: null });
+  setContract(pr.contract); Object.assign(S, { projects: pr.projects, results: pr.results, geometry: pr.geometry, active: null, dirty: false });
   if (S.step === 'room' || S.step === 'load') S.step = 'air';
   say(f.name + ' 열기' + (notes.length ? ' · ' + notes.join(' · ') : ''));
  }
  const outName = ext => `hvac-grid-${U.safeName(RP.PROJECT_NAME(S.contract) || 'project').slice(0, 30)}-${stamp()}.${ext}`;
  const OUT = {
-  project: () => download(outName('json'), projectJson()),
+  project: () => { download(outName('json'), projectJson()); S.dirty = false; },
   xlsx: () => { keepActive(); download(outName('xlsx'), XL.xlsx(RP.sheets(project(), analysis())), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); say('통합 XLSX (격실·계통·덕트망·수직 덕트·방화·관통·물량·검토)'); },
   dxf: () => { const a = analysis(); download(outName('dxf'), DX.integratedDxf(S.contract, { plans: a.plans, geometry: S.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers }), 'application/dxf'); say('통합 DXF (Deck별 격실·RU·덕트·공조기·수직 덕트·방화 경계·관통)'); },
   report: () => { keepActive(); download(outName('html'), RP.html(project(), analysis()), 'text/html'); say('보고서 (HTML, 인쇄용)'); },

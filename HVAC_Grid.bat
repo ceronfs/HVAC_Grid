@@ -1,7 +1,8 @@
 @echo off
-rem HVAC Grid - double-click to start: local server + browser. Closing this window stops HVAC Grid.
+rem HVAC Grid - double-click to start. Opens in its own window like a desktop program; closing the window stops it.
+rem   HVAC_Grid.bat [port]            normal start (no console window)
+rem   HVAC_Grid.bat console [port]    with a console window that shows what happens (for checking problems)
 chcp 65001 >nul
-title HVAC Grid
 cd /d "%~dp0"
 where node >nul 2>nul
 if errorlevel 1 (
@@ -9,5 +10,11 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
-node tools\launch.cjs %*
-if errorlevel 1 pause
+if /i "%~1"=="console" (
+  title HVAC Grid
+  node tools\launch.cjs %2 --console
+  pause
+  exit /b
+)
+start "" wscript //nologo //B "%~dp0tools\start-hidden.vbs" %*
+exit /b

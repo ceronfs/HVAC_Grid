@@ -3,3 +3,4 @@ vendor/** -text
 *.dxf -text
 *.xlsx binary
 *.bat text eol=crlf
+*.vbs text eol=crlf
