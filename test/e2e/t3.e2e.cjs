@@ -24,7 +24,7 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   await ribbon('T3 시험선').click();
   await p.waitForFunction(() => HVACGrid.box.hasDrawing() && HVACGrid.box.win.CAD_APP.stack.decks.length === 4, null, { timeout: 180000 }); await p.waitForTimeout(800);
   await shot('1-room-t3'); log('T3 in BOX');
-  await p.click('.step[data-step=load]'); await idle(); await ribbon('계약 만들기').click(); await idle();
+  await p.click('.step[data-step=load]'); await idle(); await ribbon('설계 데이터 만들기').click(); await idle();
   const c = await H(() => ({ rooms: HVACGrid.S.contract.rooms.length, plans: HVACGrid.plans().length, multi: [...new Set(HVACGrid.plans().filter(x => x.decks > 1).map(x => x.systemId))].sort() }));
   log('contract', JSON.stringify(c));
   assert.equal(c.rooms, 79); assert.equal(c.plans, 17); assert.deepEqual(c.multi, ['AHU-ACC', 'EF-SAN', 'RA-ACC']);

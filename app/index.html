@@ -13,13 +13,13 @@
  <header class="bar">
   <div class="brand"><img class="brand-logo" src="logo-128.png" alt="PHG" width="30" height="30"><span>HVAC <b>Grid</b></span></div>
   <nav class="steps" id="steps" role="tablist" aria-label="작업 단계"></nav>
-  <div class="proj" id="proj">계약 없음</div>
+  <div class="proj" id="proj">설계 데이터 없음</div>
   <div class="baricons">
    <button class="ib" id="undoBtn" title="실행 취소"><svg viewBox="0 0 20 20"><path d="M7 5L3 9l4 4M3 9h9a4 4 0 010 8H9"/></svg></button>
    <button class="ib" id="redoBtn" title="다시 실행"><svg viewBox="0 0 20 20"><path d="M13 5l4 4-4 4M17 9H8a4 4 0 000 8h3"/></svg></button>
    <span class="sep"></span>
    <button class="ib" id="openProjectBtn" title="파일: 열기 · 최근 프로젝트 · 저장 (Ctrl+O)" aria-haspopup="menu"><svg viewBox="0 0 20 20"><path d="M3 6h5l2 2h7v8H3z"/></svg></button>
-   <button class="ib" id="saveProjectBtn" title="프로젝트 저장 (Ctrl+S) · 계약 + PHG D 덕트망 + 결과"><svg viewBox="0 0 20 20"><path d="M4 3h10l3 3v11H4zM7 3v5h6V3M7 17v-5h7v5"/></svg></button>
+   <button class="ib" id="saveProjectBtn" title="프로젝트 저장 (Ctrl+S) · 설계 데이터 + PHG D 덕트망 + 결과"><svg viewBox="0 0 20 20"><path d="M4 3h10l3 3v11H4zM7 3v5h6V3M7 17v-5h7v5"/></svg></button>
    <button class="ib" id="helpBtn" title="도움말 (F1)" aria-label="도움말"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5"/><path d="M7.8 7.8a2.3 2.3 0 114 1.6c-.9.7-1.8 1.1-1.8 2.4M10 14.2v.3"/></svg></button>
    <button class="ib" id="themeBtn" title="어두운 화면"><svg viewBox="0 0 20 20"><path d="M10 3a7 7 0 100 14 5 5 0 010-14z"/></svg></button>
   </div>
@@ -55,7 +55,7 @@
   <div class="help-body">
    <section><h4>작업 순서</h4><ol>
     <li><b>① 도면·격실</b> — BOX에서 일반배치도 DXF를 열고 외곽선·실 번호·실 지정으로 격실을 만듭니다. 연습은 리본 <i>예제</i>의 S5·T3로.</li>
-    <li><b>② 부하</b> — <i>CAL 열기</i>로 설계 조건·K값·격실 부하를 계산한 뒤 <b>계약 만들기</b>. 격실·부하가 HVAC Grid로 넘어옵니다.</li>
+    <li><b>② 부하</b> — <i>CAL 열기</i>로 설계 조건·K값·격실 부하를 계산한 뒤 <b>설계 데이터 만들기</b>. 격실·부하가 HVAC Grid로 넘어옵니다.</li>
     <li><b>③ 풍량·계통</b> — 급기 ΔT·가압·최소 신기를 정하고 <i>적용</i>. 계통별로 공조기(공조기 Deck)나 수직 덕트 위치를 평면에서 지정합니다. <i>방화</i> 보기로 SOLAS 경계를 확인합니다.</li>
     <li><b>④ RU·덕트</b> — ③과 같은 평면에서 <b>모든 계통 AUTO</b>(또는 계통 하나씩 <i>보내기 + AUTO</i>). PHG D는 뒤에서 경로·크기·압력을 계산하고 덕트망은 이 평면에 그려집니다. 평면에서 바로: <b>RU·공조기를 끌어서 옮기면</b> 다시 AUTO, 덕트를 누르고 <b>크기</b>를 고르면(풍속 표시) PHG D가 그 크기를 지키며 다시 계산, <b>다른 경로</b>는 AUTO의 다음 후보. 그 밖의 세부 편집은 <i>PHG D 편집기</i> → <i>평면으로</i>(고친 내용을 읽어 옴).</li>
     <li><b>⑤ 검토·출력</b> — 검토 실패·확인을 보고 고친 뒤 <b>프로젝트 저장</b>, <i>통합 XLSX·DXF·보고서</i>.</li></ol>
@@ -69,6 +69,7 @@
     <tr><td>Esc</td><td>위치 지정 취소 · 대화상자 닫기</td></tr>
     <tr><td>F1</td><td>이 도움말</td></tr></tbody></table></section>
    <section><h4>용어</h4><dl class="terms">
+    <dt>설계 데이터</dt><dd>② 부하에서 BOX의 Deck·격실·부하를 받아 만든 묶음. ③ 풍량 규칙·계통이 더해지고, ③~⑤가 이것으로 계산</dd>
     <dt>급기 (SA)</dt><dd>실로 보내는 공기. 냉방 현열 W × 3 ÷ ΔT, 최소 신기 이상</dd>
     <dt>배기 (EA)</dt><dd>실에서 밖으로 버리는 공기 (화장실·조리실 등). 환기 횟수 × 체적</dd>
     <dt>환기 (RA)</dt><dd>공조기로 되돌리는 공기. 공조 구역 수지로 정함</dd>
@@ -80,8 +81,8 @@
     <dt>ESP · 팬 정압</dt><dd>덕트 외부 정압(Deck 최대 + 수직 덕트) · 팬 정압 추정(ESP + 공조기 내부 + 루버)</dd>
     <dt>A-60 · A-0 · B-0</dt><dd>SOLAS 방화 등급. 덕트가 지나면 관통 조치(슬리브·방화댐퍼)</dd></dl></section>
    <section><h4>파일</h4><ul>
-    <li><b>프로젝트</b>(.json) — 계약 + 모든 PHG D 덕트망 + 결과. 다시 열면 AUTO 없이 그대로.</li>
-    <li><b>계약</b>(.json, ③ 리본) — 격실·부하·풍량·계통만.</li>
+    <li><b>프로젝트</b>(.json) — 설계 데이터 + 모든 PHG D 덕트망 + 결과. 다시 열면 AUTO 없이 그대로.</li>
+    <li><b>설계 데이터</b>(.json, ③ 리본) — 격실·부하·풍량·계통만.</li>
     <li><b>출력</b>(⑤ 리본) — 통합 XLSX(14시트), 통합 DXF(R12), 보고서(HTML, A4 가로 인쇄), 요약 CSV.</li>
     <li>폴더 단추 메뉴에 최근 프로젝트가 있습니다. 저장 안 한 변경이 있으면 창 제목에 * 가 붙습니다.</li></ul></section>
    <section><h4>문제가 생기면</h4><ul>

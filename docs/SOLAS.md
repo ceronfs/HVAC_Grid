@@ -2,7 +2,7 @@
 
 작성 2026-10-19 · 1차 리뷰 반영 · 구현 `lib/solas.cjs` · 데이터 `lib/solas-data.json` · 테스트 `test/solas.test.cjs`
 
-PHG D SOLAS 적용 계획(`PHG/docs/PHG_D_SOLAS_APPLY_PLAN.md`, P1~P4)을 **HVAC Grid의 공유 격실 모델**(BOX 격실 = 계약 `rooms`, 선박 좌표)에 연결했습니다. PHG D가 도면에서 실을 다시 찾는 대신, BOX가 정의한 격실과 Deck 높이를 그대로 써서 **격벽·외벽·갑판·바닥·천장** 경계와 **Deck 덕트·수직 덕트** 관통, **제한 구역 통과**를 판정합니다. 설계 보조이며 최종 판단은 주관청·선급입니다.
+PHG D SOLAS 적용 계획(`PHG/docs/PHG_D_SOLAS_APPLY_PLAN.md`, P1~P4)을 **HVAC Grid의 공유 격실 모델**(BOX 격실 = 설계 데이터 `rooms`, 선박 좌표)에 연결했습니다. PHG D가 도면에서 실을 다시 찾는 대신, BOX가 정의한 격실과 Deck 높이를 그대로 써서 **격벽·외벽·갑판·바닥·천장** 경계와 **Deck 덕트·수직 덕트** 관통, **제한 구역 통과**를 판정합니다. 설계 보조이며 최종 판단은 주관청·선급입니다.
 
 ## 1. 데이터 — 단일 원본과 이중 대조
 

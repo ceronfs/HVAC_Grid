@@ -42,20 +42,20 @@ v2에서 바꾼 것(리뷰 1차 R1-T3-01·02): 공조기실·트렁크·공용�
 | `T3_D1.dxf` ~ `T3_D4.dxf` | Deck별 일반배치도: `DECK_OUTLINE`, `ROOM`(닫힌 LWPOLYLINE), `ROOM_NO`·`ROOM_NAME`(TEXT), `TITLE`. DXF 2007(AC1021, 문자 UTF-8), 엔티티마다 하위 클래스 표시(AcDbEntity·AcDbPolyline·AcDbText) | PHG D·BOX DXF 가져오기, `tools/dxf-check.cjs` |
 | `T3_ALL.dxf` | 4개 Deck을 25 m 간격으로 나란히 | 전체 검토 |
 | `T3.solas.json` | SOLAS 설정: 최하층 아래 = A류 기관구역 | `tools/hvac-run.cjs --solas=` |
-| `../t3.contract.json` | BOX가 계산한 계약(`tools/box-extract.cjs`) | 셸 `T3 시험선` 계약, 테스트 |
-| `../fixtures/offset-deck.*` | Deck 하나를 90° 회전·변위한 BOX 프로젝트와 그 계약 — BOX가 선박 좌표로 보고함을 고정 | 테스트 |
+| `../t3.contract.json` | BOX가 계산한 설계 데이터(`tools/box-extract.cjs`) | 셸 `T3 시험선` 설계 데이터, 테스트 |
+| `../fixtures/offset-deck.*` | Deck 하나를 90° 회전·변위한 BOX 프로젝트와 그 설계 데이터 — BOX가 선박 좌표로 보고함을 고정 | 테스트 |
 
 생성은 결정적입니다(같은 입력 → 같은 파일, 격실 UUID는 이름 기반 해시).
 
-## 4. 이중 검토 (도면 ↔ 계약 ↔ 앱)
+## 4. 이중 검토 (도면 ↔ 설계 데이터 ↔ 앱)
 
 | 검토 | 방법 | 결과 |
 |---|---|---|
-| 도면 = 계약 | `tools/dxf-check.cjs`가 DXF의 닫힌 외곽선과 문자를 읽어(`lib/dxf-in.cjs`) 계약과 실 번호·이름·면적 대조 | 4 Deck 79/79 일치 (v1에서 L자 선실 번호가 화장실 안에 찍힌 결함을 이 도구로 찾아 고침) |
-| BOX 계산 | BOX가 `T3.box.json`을 열고 CAL이 79실 모두 계산 | 미완료 0, 계약 검사 문제 0 |
+| 도면 = 설계 데이터 | `tools/dxf-check.cjs`가 DXF의 닫힌 외곽선과 문자를 읽어(`lib/dxf-in.cjs`) 설계 데이터와 실 번호·이름·면적 대조 | 4 Deck 79/79 일치 (v1에서 L자 선실 번호가 화장실 안에 찍힌 결함을 이 도구로 찾아 고침) |
+| BOX 계산 | BOX가 `T3.box.json`을 열고 CAL이 79실 모두 계산 | 미완료 0, 설계 데이터 검사 문제 0 |
 | PHG D 실 인식 | 셸에서 `T3_D2.dxf`를 PHG D로 가져와 PHG D 자신의 실 인식으로 3개 지점 확인 | 211 선원침실 01 / 211T 화장실 / 202 복도 |
 | BOX DXF 가져오기 | 셸에서 `T3_D2.dxf`를 BOX `DXF 열기`로 | 도형·문자 모두 들어옴 |
-| PHG D 입력 도면 | HVAC Grid가 PHG D로 보내는 Deck 도면(`deckDxf`)을 다시 읽어 계약과 대조 | S5 5 Deck, T3 4 Deck 모두 일치 |
+| PHG D 입력 도면 | HVAC Grid가 PHG D로 보내는 Deck 도면(`deckDxf`)을 다시 읽어 설계 데이터와 대조 | S5 5 Deck, T3 4 Deck 모두 일치 |
 | 통합 DXF | 출력한 통합 DXF(R12)를 다시 읽어 실 수 대조 | 모든 실 |
 | 외부 DXF 판독기 | `T3_*.dxf`와 PHG D로 보내는 Deck 도면을 ezdxf 1.4(Python)로 읽기 — 2차 리뷰 R2-10에서 하위 클래스 표시 누락으로 거부되던 것을 고침 | 5개 파일 + Deck 도면 모두 읽힘, 한글 실 이름 그대로 |
 

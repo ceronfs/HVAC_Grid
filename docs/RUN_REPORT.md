@@ -25,8 +25,8 @@
 2. 앱(Playwright, `out/run-report/scripts/*.cjs`, 1600×900 · 1280×800):
    - `t3-run.cjs`: 빈 화면 → **T3 시험선 열기** → ③ 4개 Deck(전달 공기 화살표, 방화 보기) → ④ **보내기 + AUTO** 1개 → ⑤ 최하층 아래 지정 → **모든 계통 AUTO** → 탭 4개 → 검토 그룹 → 1280 px 리본 ‹ › → 출력 4종 다운로드.
    - `reopen.cjs`: 새 브라우저에서 저장한 프로젝트 열기 → 수치 비교 → ④ PHG D 재열기 → **남은 것만**.
-   - `s5-run.cjs`: 빈 화면 → **예제 계약 열기 (S5)** → **모든 계통 AUTO**.
-   - `box-path.cjs`: ① 리본 **T3 시험선**(BOX) → ② → **계약 만들기**.
+   - `s5-run.cjs`: 빈 화면 → **예제 설계 데이터 열기 (S5)** → **모든 계통 AUTO**.
+   - `box-path.cjs`: ① 리본 **T3 시험선**(BOX) → ② → **설계 데이터 만들기**.
    - `edits.cjs`: ③ 급기 ΔT·가압·최소 신기 적용, 잘못된 입력, 실행 취소/다시 실행(헤더 버튼, Ctrl+Z/Y), 속성 패널 **전달 공기 출처**, **공간 지정**(SOLAS), 결과 "다시 보내기", Alt+1~5, 1280 px 리본.
    - 보조 확인: `pen-probe.cjs`(관통 표 첫 행), `stair-probe.cjs`(계단실 전달 공기), `align-probe.cjs`(검토 그룹 정렬).
 3. 출력 검증: `validate.py`(openpyxl, ezdxf `readfile` + `recover` 감사), `report-pdf.cjs`(HTML 보고서 → A4 가로 PDF, 페이지 확인).
@@ -56,7 +56,7 @@
 | 단계 | 사용자 동작 | 결과 |
 |---|---|---|
 | 시작 | `/app/` 열기 | ① 도면·격실(BOX)에서 시작, BOX 준비 0.35 s. 오류 0 |
-| ③ 빈 화면 | ③ 탭 클릭 | "아직 계약이 없습니다" + **② 부하에서 계약 만들기 / 예제 계약 열기 (S5) / T3 시험선 열기** 버튼 표시 |
+| ③ 빈 화면 | ③ 탭 클릭 | "아직 설계 데이터가 없습니다" + **② 부하에서 설계 데이터 만들기 / 예제 설계 데이터 열기 (S5) / T3 시험선 열기** 버튼 표시 |
 | T3 열기 | **T3 시험선 열기** | 0.14 s. Deck 4 · 격실 79 · 계통 11(급기 3, 배기 6, 환기 2) · Deck·계통 17 · 급기 21,700 CMH. 헤더 `T3.box.json · 79실` |
 | ③ 전달 공기 화살표 | Deck 4개 차례로 | 화살표 UPPER DK 6 · A DK 11 · B DK 8 · NAV BRG DK 1. 툴팁 예: `전달 공기 250 CMH: 102 복도 → 106 공용화장실 · 경계 B-0 (자동)`. 범례에 "→ 전달 공기 CMH (실선 = 지정 · 주황 = A급 경계)" |
 | ③ 속성 패널 | 404 선교화장실 클릭 | "전달 공기 받음 170 CMH · 409 도선사실", **전달 공기 출처** 선택 상자(자동 / 자체 흡입구 / 403 계단실 / 405 선교팬룸 / 409 도선사실) |
@@ -79,7 +79,7 @@ T3 계통별 AUTO 결과(17/17)는 `docs/H2_H4_RESULT.md` 2장의 표와 덕트 
 
 | 항목 | T3 | S5 |
 |---|---|---|
-| 계약 열기 | 0.14 s | 0.09 s |
+| 설계 데이터 열기 | 0.14 s | 0.09 s |
 | 모든 계통 AUTO | **17/17, 50.5 s** | **18/18, 32.6 s** |
 | 검토 통과 · 확인 · 실패 | **10 · 5 · 0** | **8 · 6 · 1** |
 | 덕트 관통 · 방화댐퍼 | **152 · 11** | **209 · 4** |
@@ -92,7 +92,7 @@ T3 계통별 AUTO 결과(17/17)는 `docs/H2_H4_RESULT.md` 2장의 표와 덕트 
 
 S5의 실패 1건은 `계통 분리·점검표: 분리 경고 2 · 위반 2 · 확인 5` — `docs/H2_H4_RESULT.md` 3장에 적힌 S5 데이터 자체의 문제(축전지실 배기 계통 없음, 계통이 기관구역·조리실을 다른 구역과 함께 담당)와 같다.
 
-① → ② 경로(`box-path.cjs`): ① 리본 **T3 시험선** → BOX에 4 Deck 0.88 s, ② **계약 만들기** 0.51 s → 격실 79 · 계획 17, 풍량이 `samples/t3.contract.json`과 같음. 단, 상태 줄은 `T3 시험선 → BOX (4 Deck · 73실)`(→ P3-5).
+① → ② 경로(`box-path.cjs`): ① 리본 **T3 시험선** → BOX에 4 Deck 0.88 s, ② **설계 데이터 만들기** 0.51 s → 격실 79 · 계획 17, 풍량이 `samples/t3.contract.json`과 같음. 단, 상태 줄은 `T3 시험선 → BOX (4 Deck · 73실)`(→ P3-5).
 
 ### 4.4 사용자 편집 (T3, `edits.cjs`)
 
@@ -115,7 +115,7 @@ S5의 실패 1건은 `계통 분리·점검표: 분리 경고 2 · 위반 2 · �
 | 통합 XLSX `t3-hvac-grid-T3.box.json-202610191845.xlsx` | 911,762 B | openpyxl로 열림. 14시트: 요약 31행 · 확인 사항 27 · 격실 80(79+머리) · 구역 수지 4 · 계통·팬 12 · Deck 덕트망 18 · 덕트 377 · 수직 덕트 7 · RU 149 · 방화 경계 392 · 관통 목록 153 · 제한 구역 통과 2 · SOLAS 점검표 5 · 물량 18. 오류 셀(#…) 0, 틀 고정 A2, 자동 필터 있음. 요약의 검토 `실패 0 · 확인 필요 5 · 통과 10`, `391 · 152 · 11`이 화면과 같음 |
 | 통합 DXF `….dxf` | 269,109 B | ezdxf `readfile` 감사 오류 0 · 수정 0, `recover` 오류 0 · 수정 0. AC1009(R12), 엔티티 1,865(TEXT 788, POLYLINE 653, LINE 254, CIRCLE 170), 레이어 ROOM 79 · FIRE_PEN 152 · RISER 24 · 덕트·RU·방화 등급별. 한글은 `\U+XXXX` 표기(85개 문자열), 범위 0,0 – 90,090 × 17,350 mm |
 | HTML 보고서 `….html` | 436,917 B | CSP 메타(`default-src 'none'`), `@page { size: a4 landscape; margin: 12mm }`. Playwright로 A4 가로 PDF(`out/run-report/report-t3-a4-landscape.pdf`, 56쪽, 콘솔 오류 0) — 표 머리 반복, 평면 Deck별 1쪽, 실 번호·이름 대부분 읽힘. 일부 겹침·배치 문제(→ P3-7) |
-| 프로젝트 `….json` | 2,020,981 B | `hvac-grid-project/1`, PHG D 프로젝트·결과 17개. 다시 열어 수치 동일(4.2). 다시 연 뒤 재저장본은 계약·형상 동일, 결과 값 동일(키 순서·`at`만 다름), ④에서 연 2개 PHG D 프로젝트는 `updatedAt`·덕트 객체 키 순서가 달라짐(P3-1과 같은 원인) |
+| 프로젝트 `….json` | 2,020,981 B | `hvac-grid-project/1`, PHG D 프로젝트·결과 17개. 다시 열어 수치 동일(4.2). 다시 연 뒤 재저장본은 설계 데이터·형상 동일, 결과 값 동일(키 순서·`at`만 다름), ④에서 연 2개 PHG D 프로젝트는 `updatedAt`·덕트 객체 키 순서가 달라짐(P3-1과 같은 원인) |
 
 ### 4.6 npm test
 
@@ -135,7 +135,7 @@ S5의 실패 1건은 `계통 분리·점검표: 분리 경고 2 · 위반 2 · �
 | 1280 px 리본 | [①](../out/run-report/shots/t3-15-ribbon-1280-room.png) · [① ›](../out/run-report/shots/t3-15-ribbon-1280-room-scrolled.png) · [②](../out/run-report/shots/t3-15-ribbon-1280-load.png) · [③](../out/run-report/shots/t3-15-ribbon-1280-air.png) · [④](../out/run-report/shots/t3-15-ribbon-1280-duct.png) · [④ ›](../out/run-report/shots/t3-15-ribbon-1280-duct-scrolled.png) · [⑤](../out/run-report/shots/t3-15-ribbon-1280-review.png) · [④ › 두 번](../out/run-report/shots/edit-08-ribbon-1280-duct-end.png) |
 | 다시 열기 | [reopen-01-review-nets](../out/run-report/shots/reopen-01-review-nets.png) · [reopen-02-review-checks](../out/run-report/shots/reopen-02-review-checks.png) · [reopen-03-duct-D3-AHU-ACC](../out/run-report/shots/reopen-03-duct-D3-AHU-ACC.png) |
 | S5 | [열기](../out/run-report/shots/s5-01-opened.png) · [덕트망](../out/run-report/shots/s5-02-review-nets.png) · [계통](../out/run-report/shots/s5-02-review-systems.png) · [방화](../out/run-report/shots/s5-02-review-fire.png) · [검토](../out/run-report/shots/s5-02-review-checks.png) · [③](../out/run-report/shots/s5-03-air.png) · [④](../out/run-report/shots/s5-04-duct.png) |
-| ① → ② → 계약 | [box-01-room-t3](../out/run-report/shots/box-01-room-t3.png) · [box-02-load](../out/run-report/shots/box-02-load.png) · [box-03-air-after-contract](../out/run-report/shots/box-03-air-after-contract.png) |
+| ① → ② → 설계 데이터 | [box-01-room-t3](../out/run-report/shots/box-01-room-t3.png) · [box-02-load](../out/run-report/shots/box-02-load.png) · [box-03-air-after-contract](../out/run-report/shots/box-03-air-after-contract.png) |
 | 편집 | [규칙 적용](../out/run-report/shots/edit-01-rules-applied.png) · [잘못된 입력](../out/run-report/shots/edit-02-bad-input.png) · [자체 흡입구](../out/run-report/shots/edit-03-transfer-own-inlet.png) · [계단실 출처](../out/run-report/shots/edit-04-transfer-from-stair.png) · [공간 지정](../out/run-report/shots/edit-05-solas-space-fire-view.png) · [④ 떠난 뒤](../out/run-report/shots/edit-06-after-leaving-duct.png) · [다시 보내기](../out/run-report/shots/edit-07-stale-after-rule-edit.png) |
 | 문제 증거 | [관통 표 첫 행](../out/run-report/shots/probe-pen-table.png) · [P-002 → ③](../out/run-report/shots/probe-pen-jump-P002.png) · [계단실 전달 공기 검토](../out/run-report/shots/probe-stair-transfer-review.png) |
 
@@ -169,7 +169,7 @@ P1 = 사용을 막음, P2 = 잘못된 결과·혼란, P3 = 다듬기.
 - 증거: `out/run-report/stair-probe.json`, [probe-stair-transfer-review.png](../out/run-report/shots/probe-stair-transfer-review.png).
 
 ### P3-5 ① 리본 "T3 시험선" 상태 메시지의 실 수가 틀림
-- 재현: ① → 리본 **T3 시험선** → 상태 `T3 시험선 → BOX (4 Deck · 73실)`. 계약을 만들면 79실(`T3.box.json`의 roomNo 79개, T3 v2.1).
+- 재현: ① → 리본 **T3 시험선** → 상태 `T3 시험선 → BOX (4 Deck · 73실)`. 설계 데이터를 만들면 79실(`T3.box.json`의 roomNo 79개, T3 v2.1).
 - 증거: `out/run-report/box-path-results.json`. 문구가 `app/shell.js`에 고정되어 있음.
 
 ### P3-6 T3 프로젝트 이름이 파일 이름 "T3.box.json"

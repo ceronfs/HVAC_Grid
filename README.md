@@ -16,9 +16,9 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 | 문서 | 내용 |
 |---|---|
 | [docs/PLAN.md](docs/PLAN.md) | 목표, 이전 시도에서 배운 점, 통합 방식, 단계 계획과 상태, **직접 정한 것(8장)** |
-| [docs/CONTRACT.md](docs/CONTRACT.md) | 데이터 계약·프로젝트 파일, BOX → 계약 · 계약 → PHG D 대응, 수직 덕트, 풍량 규칙, 검증 |
+| [docs/CONTRACT.md](docs/CONTRACT.md) | 설계 데이터·프로젝트 파일, BOX → 설계 데이터 · 설계 데이터 → PHG D 대응, 수직 덕트, 풍량 규칙, 검증 |
 | [docs/SOLAS.md](docs/SOLAS.md) | SOLAS II-2 판정: 데이터 대조, 실 분류, 경계, 관통, 한계 |
-| [docs/TEST_DRAWINGS.md](docs/TEST_DRAWINGS.md) | T3 시험선: 도면·계통·파일, 도면 ↔ 계약 ↔ 앱 이중 검토 |
+| [docs/TEST_DRAWINGS.md](docs/TEST_DRAWINGS.md) | T3 시험선: 도면·계통·파일, 도면 ↔ 설계 데이터 ↔ 앱 이중 검토 |
 | [docs/H2_H4_RESULT.md](docs/H2_H4_RESULT.md) | H2~H4 결과(T3·S5 실행, 자동 시험) |
 | [docs/H1_S5_RESULT.md](docs/H1_S5_RESULT.md) | H1 결과(S5 급기 10계통) |
 | [docs/REVIEW.md](docs/REVIEW.md) | 리뷰 기록: 등급, 지적 사항과 처리 |
@@ -43,16 +43,16 @@ HVAC_Grid.bat               # 더블클릭: 독립 창(Edge 앱 모드) + 로컬
 npm start                   # 통합 셸 → 브라우저에서 http://127.0.0.1:8792/app/
 npm test                    # 단위 테스트 60개
 npm run test:e2e            # E2E: S5 셸 흐름 + T3 시험선 전체 (실제 BOX·PHG D, 캡처 out/e2e*/)
-npm run run:t3              # T3 계약 → 17개 Deck·계통 AUTO → out/t3/ (project.json, report.xlsx, report.html, integrated.dxf, shots/)
-npm run run:s5              # S5 계약 → 18개 Deck·계통 AUTO → out/s5/
-npm run make:t3             # 시험선 다시 만들기 (BOX 프로젝트·DXF) + BOX로 계약 추출
+npm run run:t3              # T3 설계 데이터 → 17개 Deck·계통 AUTO → out/t3/ (project.json, report.xlsx, report.html, integrated.dxf, shots/)
+npm run run:s5              # S5 설계 데이터 → 18개 Deck·계통 AUTO → out/s5/
+npm run make:t3             # 시험선 다시 만들기 (BOX 프로젝트·DXF) + BOX로 설계 데이터 추출
 npm run solas:check         # lib/solas-data.json = SOLAS 도구 사본 확인
-node tools/hvac-run.cjs <계약 또는 프로젝트.json> <출력 폴더> [--shots] [--solas=<SOLAS 설정.json>]   # AUTO 미완료면 종료 1
-node tools/dxf-check.cjs <도면.dxf> <계약.json> <deckId>     # 도면과 계약의 실 번호·이름·면적 대조
-node tools/box-extract.cjs <BOX 프로젝트.json> <출력.json>      # BOX → 계약
+node tools/hvac-run.cjs <설계 데이터 또는 프로젝트.json> <출력 폴더> [--shots] [--solas=<SOLAS 설정.json>]   # AUTO 미완료면 종료 1
+node tools/dxf-check.cjs <도면.dxf> <설계 데이터.json> <deckId>     # 도면과 설계 데이터의 실 번호·이름·면적 대조
+node tools/box-extract.cjs <BOX 프로젝트.json> <출력.json>      # BOX → 설계 데이터
 ```
 
-셸 작업 순서: ① 도면·격실(BOX — S5·H5·**T3 시험선**) → ② 부하(BOX CAL) → **계약 만들기** → ③ 풍량·계통(ΔT, 급기·배기·환기, 공조기 위치·공조기 Deck·샤프트, 풍량·방화 보기) → ④ RU·덕트(③과 **같은 평면**: PHG D가 뒤에서 AUTO·크기·압력을 계산하고 덕트망을 이 평면에 그림, 덕트를 누르면 크기·풍량·풍속, 평면에서 **RU·공조기 끌어 옮기기**(놓으면 다시 AUTO)·**덕트 크기 바꾸기**(PHG D 수동 크기로 다시 계산)·**다른 경로**(AUTO 다음 후보), 그 밖의 세부 편집은 **PHG D 편집기** → **평면으로**가 고친 내용을 읽어 옴) → ⑤ 검토·출력(모든 계통 AUTO, 덕트망·계통·수직 덕트·방화·검토 탭, 선종·방화방식·최하층 아래·스프링클러, 프로젝트·XLSX·DXF·보고서). 검토는 통과·확인 필요·실패 3단계입니다. ③⑤에서 Ctrl+Z / Ctrl+Y는 HVAC Grid 편집(ΔT, 위치, 공조기 Deck, SOLAS 지정)을 되돌립니다.
+셸 작업 순서: ① 도면·격실(BOX — S5·H5·**T3 시험선**) → ② 부하(BOX CAL) → **설계 데이터 만들기** → ③ 풍량·계통(ΔT, 급기·배기·환기, 공조기 위치·공조기 Deck·샤프트, 풍량·방화 보기) → ④ RU·덕트(③과 **같은 평면**: PHG D가 뒤에서 AUTO·크기·압력을 계산하고 덕트망을 이 평면에 그림, 덕트를 누르면 크기·풍량·풍속, 평면에서 **RU·공조기 끌어 옮기기**(놓으면 다시 AUTO)·**덕트 크기 바꾸기**(PHG D 수동 크기로 다시 계산)·**다른 경로**(AUTO 다음 후보), 그 밖의 세부 편집은 **PHG D 편집기** → **평면으로**가 고친 내용을 읽어 옴) → ⑤ 검토·출력(모든 계통 AUTO, 덕트망·계통·수직 덕트·방화·검토 탭, 선종·방화방식·최하층 아래·스프링클러, 프로젝트·XLSX·DXF·보고서). 검토는 통과·확인 필요·실패 3단계입니다. ③⑤에서 Ctrl+Z / Ctrl+Y는 HVAC Grid 편집(ΔT, 위치, 공조기 Deck, SOLAS 지정)을 되돌립니다.
 
 셸은 두 앱을 같은 출처 iframe으로 띄우고 스크립트로 다루므로 `file://`이 아닌 로컬 서버(`npm start`, 127.0.0.1 전용, app·vendor·lib·samples만 제공)로 엽니다.
 `vendor/`에는 원본의 **고정 사본**(PHG D, BOX CAL Enhance, SOLAS 도구·워크북)이 있고 도구는 이 사본만 씁니다. 원본 파일은 읽기 전용입니다(`vendor/VERSIONS.json`). 생성물은 `out/`(git 제외), `probe/`는 앱 구조 확인에 쓴 조사 스크립트입니다.

@@ -87,6 +87,7 @@
    let h = 2166136261; for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619);
    return text.length + ':' + (h >>> 0);
   }
+  closeCal() { const p = this.doc?.getElementById('calEnhancePanel'); if (p && this.calIdle()) p.hidden = true; }
   // CAL is open on the drawing BOX holds now
   calCurrent() { const p = this.doc.getElementById('calEnhancePanel'); return !!p && !p.hidden && this.calIdle() && /^(현재 격실|계산 조건 반영)/.test(this.calStatus()) && this.calSig === this.drawingSig(); }
   // the CAL panel is a nested app in its own frame; its commands (LR, OA, ...) open their tables as popup windows.

@@ -40,9 +40,9 @@ BOX Cal과 PHG D를 묶어, 선박 HVAC 설계를 **Deck · 격실 단위의 한
 | B. 공통 모델 단일 앱 | 공통 프로젝트 모델 위에 BOX 계산·PHG D 덕트를 모듈로 통합 | 데이터 일관성, 하나의 도면·Undo·저장 | 개발량 큼, 두 앱 구조 차이(BOX `src/` 모듈 vs PHG D 패치 빌드) |
 | C. PHG D 중심 | PHG D를 주 앱으로, BOX 부하 계산 엔진만 모듈로 가져옴 | PHG D의 도면·실 인식과 바로 결합 | BOX 화면 기능(3D 등) 일부 포기 |
 
-**권장: A → B 단계 전환.** 두 앱 모두 지금 개발 중이므로(BOX Cal `CAL_Enhance` 오늘 커밋, PHG D A 보완 병행) 먼저 **데이터 계약**을 확정하고 브리지로 실도면 흐름을 검증한 뒤, 계약을 그대로 공통 모델로 옮겨 단일 앱으로 점진 통합한다.
+**권장: A → B 단계 전환.** 두 앱 모두 지금 개발 중이므로(BOX Cal `CAL_Enhance` 오늘 커밋, PHG D A 보완 병행) 먼저 **설계 데이터**를 확정하고 브리지로 실도면 흐름을 검증한 뒤, 설계 데이터를 그대로 공통 모델로 옮겨 단일 앱으로 점진 통합한다.
 
-## 4. 데이터 계약 초안 (v0)
+## 4. 설계 데이터 초안 (v0)
 
 ```
 HVACGridProject {
@@ -63,7 +63,7 @@ HVACGridProject {
 
 | 단계 | 내용 | 완료 기준 |
 |---|---|---|
-| H0 준비 ✅ | 두 원본 구조 분석(BOX 격실·부하 데이터, PHG D 프로젝트 JSON), 데이터 계약 v0 확정, 저장소·빌드·테스트 틀 | 계약 문서 + 샘플 프로젝트 1개 — **완료 2026-10-18**: `docs/CONTRACT.md`, `tools/box-extract.cjs`, `samples/s5.contract.json`, 테스트 4개 |
+| H0 준비 ✅ | 두 원본 구조 분석(BOX 격실·부하 데이터, PHG D 프로젝트 JSON), 설계 데이터 v0 확정, 저장소·빌드·테스트 틀 | 설계 데이터 문서 + 샘플 프로젝트 1개 — **완료 2026-10-18**: `docs/CONTRACT.md`, `tools/box-extract.cjs`, `samples/s5.contract.json`, 테스트 4개 |
 | H1 브리지 ✅ | BOX → PHG D: 격실 외곽·용도·풍량 전달, PHG D 풍량 초안을 **BOX 부하 기반 풍량**으로 대체 | S5 샘플·S03에서 격실 풍량이 RU에 자동 반영 — **완료 2026-10-18 (S5)**: `tools/phg-generate.cjs`, 10계통 RU 100개 전부 연결, `docs/H1_S5_RESULT.md` |
 | H2 Deck·계통 ✅ | Deck별 PHG D 네트워크, SUP 계통별 Root, 급기·환기·배출 분리 | 다층 샘플에서 Deck·계통별 덕트망 — **완료 2026-10-19**: 통합 셸 S1 + 배기·환기 계통(PHG D 합류 압력 모드), 여러 Deck 계통의 공조기 Deck·샤프트, 수직 덕트 크기·손실·계통 최대 압력손실. T3 시험선 15계획·S5 18계획 AUTO 전부 — [H2_H4_RESULT.md](H2_H4_RESULT.md) |
 | H3 통합 저장·출력 ✅ | 한 프로젝트 파일, 통합 XLSX(부하·풍량·덕트·압력), 보고서 | 저장·복구·출력 테스트 — **완료 2026-10-19**: `hvac-grid-project/1`(결과 서명), 통합 XLSX 11시트·통합 DXF·HTML 보고서, 헤드리스 실행 `tools/hvac-run.cjs`, 다시 읽기 테스트 |
@@ -80,7 +80,7 @@ HVACGridProject {
 
 ## 7. 결정 사항 (처음 질문의 현재 상태)
 
-1. 통합 방식: **A → B 단계 전환**으로 진행 — 지금 A(셸 + 브리지) 위에 공통 모델(계약·프로젝트 파일·셸 평면)까지(H5 S1)
+1. 통합 방식: **A → B 단계 전환**으로 진행 — 지금 A(셸 + 브리지) 위에 공통 모델(설계 데이터·프로젝트 파일·셸 평면)까지(H5 S1)
 2. BOX Cal 원본: `CAL_Enhance/04_CAL_Enhance_fixed.html`(32976f8)을 고정 사본으로 사용 중 — 새 버전은 의도적으로 갱신(`vendor/VERSIONS.json`)
 3. 1차 목표 범위: H0~H4 완료
 4. 검증 샘플: S5(BOX 내장)·**T3 시험선**(합성) — **실제 호선 도면은 아직 필요**(PHG D A 계획 1번과 같은 자료)
@@ -105,6 +105,7 @@ HVACGridProject {
 | ④도 HVAC Grid 평면 하나(캔버스 공유 1단계): PHG D는 숨긴 채 계산하고, 세부 편집만 PHG D 편집기 화면 | 단계를 옮겨도 같은 평면·격실·색이 유지되어 덕트 배치까지 한 캔버스로 읽힘. PHG D 원본은 그대로(편집 기능은 원본 것을 씀). 2단계(구현): RU·공조기를 평면에서 끌어 옮기기(`contract.ruMoves`, 놓으면 다시 AUTO), 덕트 크기 바꾸기(PHG D `manualSize` + `calculateTypedNetwork`), 다른 경로(AUTO의 다음 좋은 후보, 후보가 하나면 안내). 숨은 PHG D가 키보드 포커스를 가져가지 않게 함(Ctrl+Z는 셸로) | `app/shell.js` `viewOf`, `openEditor`, `closeEditor` |
 | 가압이 급기의 10 %를 넘으면 릴리프 확인 | 신기 하한 때문에 배기가 적은 구역(선교)은 과가압 → 문 개폐·소음 | `PJ.LIMITS.reliefPct` |
 | 시험 도면·PHG D Deck 도면은 DXF 2007(AC1021) | 한글을 UTF-8 그대로 쓸 수 있는 가장 낮은 판. R12는 코드 페이지 문자라 PHG D·BOX가 한글을 못 읽음. 출력용 통합 DXF는 R12(`\U+`) 유지 | `lib/phg-plan.cjs deckDxf`, `tools/make-test-ship.cjs` |
+| 화면·문서 용어 "계약" → "설계 데이터" (2026-10-19, 사용자 결정) | 사용자 요청. 격실·부하·풍량·계통을 다 담고 처음 쓰는 사람도 바로 아는 말 | 화면 문구·도움말·문서. 코드 이름(`contract`), 형식 `hvac-grid/0`, `*.contract.json` 파일 이름은 그대로(이미 저장한 파일 호환) |
 
 ### H5 남은 것
 1. BOX·PHG D 편집과 HVAC Grid 편집을 하나의 Undo 기록으로 (지금은 화면별: ①② BOX, ④ PHG D, ③⑤ HVAC Grid)

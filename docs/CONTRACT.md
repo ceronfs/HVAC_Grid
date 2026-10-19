@@ -1,4 +1,4 @@
-# HVAC Grid 데이터 계약 v0 (`hvac-grid/0`)
+# HVAC Grid 설계 데이터 v0 (`hvac-grid/0`)
 
 작성 2026-10-18 · 구현 `lib/contract.cjs` · 추출 `tools/box-extract.cjs` · 샘플 `samples/s5.contract.json`
 
@@ -34,20 +34,20 @@ BOX CAL이 계산한 격실·부하를 PHG D가 쓸 수 있는 형태로 옮기�
 
 ```
 { schema: 'hvac-grid-project/1', savedAt, app:{ name },
-  contract,                                  // 위 계약 (사용자 지정 포함)
+  contract,                                  // 위 설계 데이터 (사용자 지정 포함)
   projects: { [planKey]: '<PHG D 프로젝트 JSON 문자열>' },
   results:  { [planKey]: { rus, flowCmh, ducts, lengthM, indexPa, auto, unconnected, seconds, sig, at, ... } },
   geometry: { [planKey]: { root, rus, ducts:[{ displayName, type, widthMm, heightMm, diameterMm, flowCmh, points }] } } }   // PHG D 좌표(y 아래)
 ```
 
 - `sig`: 결과를 만든 계획(Root·RU 위치·풍량·흐름 방향)의 서명. 풍량 규칙·공조기 위치·공조기 Deck이 바뀌면 서명이 달라져 **그 계획만** "다시 보내기 필요"가 됩니다.
-- 읽기(`read`): `/0` 파일은 같은 구조로 읽되 서명이 없어 모든 결과가 "다시 보내기 필요", 계약 검사 실패는 거부, 지금 계획에 없는 키의 결과는 버림(보고). 풍량·구역 수지·계통 합계는 파일 값을 믿지 않고 지금 규칙으로 다시 계산합니다(다르면 보고). 좌표는 원점에서 ±1,000 m 안(mm)이어야 합니다.
+- 읽기(`read`): `/0` 파일은 같은 구조로 읽되 서명이 없어 모든 결과가 "다시 보내기 필요", 설계 데이터 검사 실패는 거부, 지금 계획에 없는 키의 결과는 버림(보고). 풍량·구역 수지·계통 합계는 파일 값을 믿지 않고 지금 규칙으로 다시 계산합니다(다르면 보고). 좌표는 원점에서 ±1,000 m 안(mm)이어야 합니다.
 
-## 2. BOX → 계약 대응
+## 2. BOX → 설계 데이터 대응
 
 BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.report().loads`, Deck은 `CAD_APP.stack.decks`에서 읽습니다.
 
-| 계약 | BOX 필드 | 비고 |
+| 설계 데이터 | BOX 필드 | 비고 |
 |---|---|---|
 | rooms.id / no / name | `id`, `no`, `name` | 격실 식별 — 두 앱이 공유하는 키 |
 | rooms.deckId | `deckId` | |
@@ -60,9 +60,9 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 | loads.minAch / achAirCmh | `minimumAch`, `ventilationAirCmh` | 환기 횟수와 그 풍량(ACH × 체적) |
 | loads.complete / status | `calculationComplete`, `calculationStatus` | 미완료 격실은 풍량 0(대기) |
 
-## 3. 계약 → PHG D 대응 (`lib/phg-plan.cjs`, 실행 `app/bridge.js` · `tools/hvac-run.cjs`)
+## 3. 설계 데이터 → PHG D 대응 (`lib/phg-plan.cjs`, 실행 `app/bridge.js` · `tools/hvac-run.cjs`)
 
-| 계약 | PHG D |
+| 설계 데이터 | PHG D |
 |---|---|
 | decks + rooms.polygon + no/name | Deck별 배경 도면: 닫힌 외곽선(ROOM 레이어) + 실 번호·이름 문자 → PHG D 실 인식(복도 우선 주관, 같은 실 BR, 풍량 초안, SOLAS 계획)이 그대로 동작 |
 | systems (급기·배기·환기) | **Deck·계통별** PHG D 프로젝트(Root 1개). 배기·환기는 Root의 `pressureFlowMode = 'exhaust'`(PHG D 합류 피팅 압력 계산) |
@@ -99,4 +99,4 @@ BOX의 AHU 계산(`CAL_ENHANCE.ahu`)이 유효하면(AHU 조건 입력 완료) �
 
 ## 5. 검증
 
-`npm test` (`node --test "test/**/*.test.cjs"`) — 계약 구조(Deck·격실 ID, polygon, 부하·풍량 존재, 계통 참조, 좌표 범위), 풍량 규칙(급기·배기·환기·미완료)과 구역 수지(전달 공기 출처·보충 급기·신기·환기), S5 샘플(5 Deck, 94실, 급기 10계통, 합계 10,610 CMH), 계획(종류·Deck별 풍량 보존, 공조기 Deck, 배기 RU 간격), 수직 덕트(물리·크기·경로 손실), 프로젝트 파일(왕복·변환·거부·결과 서명), 출력(XLSX 다시 읽기, DXF 다시 읽기, 보고서), SOLAS(워크북 830칸 대조, 분류, 등급, 관통), 시험 도면 대조, 2차·3차 리뷰 회귀(`test/review2.test.cjs`, `test/review3.test.cjs`: 벽에서 나뉜 덕트, 벽을 따라가는 덕트, 얇은 실·두 겹 벽, 계단, 실 밖·모델에 없는 공간 덕트, 전달 공기 출처·딸린 실 둘레, 보충 급기 가압, 가압 기준, 다시 계산, 형상 상한, RU 간격). `npm run test:e2e` — 셸 + 실제 BOX·PHG D(S5, T3).
+`npm test` (`node --test "test/**/*.test.cjs"`) — 설계 데이터 구조(Deck·격실 ID, polygon, 부하·풍량 존재, 계통 참조, 좌표 범위), 풍량 규칙(급기·배기·환기·미완료)과 구역 수지(전달 공기 출처·보충 급기·신기·환기), S5 샘플(5 Deck, 94실, 급기 10계통, 합계 10,610 CMH), 계획(종류·Deck별 풍량 보존, 공조기 Deck, 배기 RU 간격), 수직 덕트(물리·크기·경로 손실), 프로젝트 파일(왕복·변환·거부·결과 서명), 출력(XLSX 다시 읽기, DXF 다시 읽기, 보고서), SOLAS(워크북 830칸 대조, 분류, 등급, 관통), 시험 도면 대조, 2차·3차 리뷰 회귀(`test/review2.test.cjs`, `test/review3.test.cjs`: 벽에서 나뉜 덕트, 벽을 따라가는 덕트, 얇은 실·두 겹 벽, 계단, 실 밖·모델에 없는 공간 덕트, 전달 공기 출처·딸린 실 둘레, 보충 급기 가압, 가압 기준, 다시 계산, 형상 상한, RU 간격). `npm run test:e2e` — 셸 + 실제 BOX·PHG D(S5, T3).
