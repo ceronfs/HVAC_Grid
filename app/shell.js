@@ -109,8 +109,8 @@
  }
  function applyDeltaT() {
   const v = +$('dT').value; if (!(v >= 3 && v <= 25)) throw new Error('급기 ΔT는 3–25 K');
-  const pp = +$('pPct').value, pb = $('pBasis').value; if (!(pp >= 0 && pp <= 30)) throw new Error('가압은 0–30 %');
-  edit(`급기 ΔT ${v} K · 가압 ${pp} %`, () => { S.contract = K.applyRules(S.contract, { supplyDeltaTK: v, pressurizationPct: pp, pressurizationBasis: pb }); });
+  const pp = +$('pPct').value, pb = $('pBasis').value, mo = +$('minOa').value; if (!(pp >= 0 && pp <= 30)) throw new Error('가압은 0–30 %'); if (!(mo >= 0 && mo <= 100)) throw new Error('최소 신기 비율은 0–100 %');
+  edit(`급기 ΔT ${v} K · 가압 ${pp} %`, () => { S.contract = K.applyRules(S.contract, { supplyDeltaTK: v, pressurizationPct: pp, pressurizationBasis: pb, minOaPct: mo }); });
   say(`급기 ΔT ${v} K · 가압 ${pb === 'supply' ? '급기' : '배기'}의 ${pp} % 적용: 급기 합계 ${fmt(S.contract.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))} CMH`);
  }
  function setRoot(p) {
@@ -232,7 +232,7 @@
    ['내보내기', [c('xlsxIso', 'ISO 시트', boxCal('I↑'), { code: 'I↑' }), c('xlsx', '미적용 시트', boxCal('N↑'), { code: 'N↑' }), c('sum', 'SUP 요약', boxCal('Σ↑'), { code: 'Σ↑' }), c('xlsxAll', '전체 XLSX', boxCal('LX'), { code: 'LX' }), c('sheet', '격실 시트', boxCal('R↑'), { code: 'R↑' }), c('face', '면적 시트', boxCal('A↑'), { code: 'A↑' })]],
    ['HVAC Grid', [c('contract', '계약 만들기', () => act('BOX 격실·부하 읽는 중', extractContract), { primary: true, title: 'BOX 격실·부하 → 격실 풍량·계통 (③ 풍량·계통으로 이동)' })]]] },
   { id: 'air', name: '풍량·계통', view: 'plan', groups: () => [
-   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="25" step="1" value="${S.contract?.rules.supplyDeltaTK ?? 10}"></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${S.contract?.rules.pressurizationPct ?? 5}" style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(냉방 현열 W × 3 ÷ ΔT)' })]],
+   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="25" step="1" value="${S.contract?.rules.supplyDeltaTK ?? 10}"></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${S.contract?.rules.pressurizationPct ?? 5}" style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), field(`<label class="field" title="재순환 공조 구역의 신기 하한(선주 사양). 사양이 없으면 0">최소 신기 (%)<input id="minOa" type="number" min="0" max="100" step="1" value="${S.contract?.rules.minOaPct ?? 25}" style="width:4em"></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(냉방 현열 W × 3 ÷ ΔT)' })]],
    ['계통', [kindSeg(), sysField(false)]],
    ['공조기 · 수직 덕트', [c('pin', '위치 지정', () => { S.pickRoot = !S.pickRoot; say(S.pickRoot ? `평면에서 ${curPlan()?.isUnitDeck === false ? '수직 덕트(샤프트)' : '공조기'} 위치를 클릭하세요 (Esc 취소)` : ''); render(); }, { disabled: () => !curKey(), pressed: () => S.pickRoot, title: '공조기 Deck: 공조기·팬 위치 · 다른 Deck: 수직 덕트(샤프트) 위치' }), c('unpin', '지정 해제', () => act(null, clearRoot), { disabled: () => !S.contract?.roots?.[curKey()] }), unitDeckField()]],
    ['보기', [seg('평면 보기', S.overlay, [['air', '풍량'], ['fire', '방화']], v => { S.overlay = v; })]],
@@ -454,7 +454,7 @@
    const nets = front(get('Deck 덕트망'), '상태', 3), last = 3;
    body = `<h3>Deck·계통별 PHG D 덕트망 <small class="muted">${a.done}/${a.total} AUTO 완료${a.stale ? ` · 다시 보내기 ${a.stale}` : ''} · 두 번 클릭하면 ④에서 엽니다</small></h3>${tableHtml(nets, { keys: a.plans.map(p => p.key), cls: (r, j) => j === last ? (r[j] === 'AUTO 완료' ? 'ok' : r[j] === '미생성' ? 'muted' : 'warn') : j === 5 && /임시/.test(r[j]) ? 'warn' : j === 7 && r[7] !== '' && r[7] !== r[8] ? 'warn' : '' })}`;
   } else if (S.tab === 'systems') {
-   body = `<h3>공조 구역 풍량 수지 <small class="muted">신기 = max(최소 신기 합, 배기 합 + 가압 ${C.rules.pressurizationPct ?? 5} %(${C.rules.pressurizationBasis === 'supply' ? '급기' : '배기'} 대비), 급기 × ${C.rules.minOaPct ?? 25} %) · 환기 = 급기 − 신기 · 화장실 등은 이웃 실에서 전달 공기</small></h3>${tableHtml(get('구역 수지'), { cls: (r, j) => j === 10 ? (r[j] === '적합' ? 'ok' : 'err') : '' })}
+   body = `<h3>공조 구역 풍량 수지 <small class="muted">신기 = max(최소 신기 합, 배기 합 + 가압 ${C.rules.pressurizationPct ?? 5} %(${C.rules.pressurizationBasis === 'supply' ? '급기' : '배기'} 대비), 급기 × ${C.rules.minOaPct ?? 25} %) · 환기 = 급기 − 신기 · 화장실 등은 이웃 실에서 전달 공기</small></h3>${tableHtml(get('구역 수지'), { cls: (r, j) => j === 11 ? (r[j] === '적합' ? 'ok' : 'err') : '' })}
     <h3>계통·팬 <small class="muted">덕트 외부 정압(ESP) = Deck 덕트망 최대 + 공조기에서 그 Deck까지 수직 덕트 · 팬 정압 추정 = ESP + 공조기 내부 + 루버</small></h3>${tableHtml(front(get('계통·팬'), '상태', 2), { cls: (r, j) => j === 2 && r[j] !== '계산 완료' ? 'warn' : '' })}
     <h3>수직 덕트 <small class="muted">공조기 Deck에서 다른 Deck으로 · 크기: 풍속 ≤ 10 m/s · 마찰 ≤ 2 Pa/m</small></h3>${a.risers.length ? tableHtml(get('수직 덕트')) : '<p class="muted">여러 Deck을 담당하는 계통이 없습니다.</p>'}`;
   } else if (S.tab === 'fire') {

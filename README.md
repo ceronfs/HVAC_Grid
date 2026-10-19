@@ -9,7 +9,7 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 ```
 
 상태: **H2 · H3 · H4 완료, H5 S1, 리뷰 1차 반영 (2026-10-19)** — 급기·배기·환기 계통 모두 Deck별 PHG D 덕트망, 여러 Deck 계통의 공조기 Deck·샤프트·수직 덕트, 공조 구역 풍량 수지(전달 공기), 제한 구역을 피하는 AUTO, 한 프로젝트 파일, 통합 XLSX·DXF·HTML 보고서, SOLAS 방화 경계·덕트 관통·제한 구역 통과·점검표, T3 시험선(4 Deck 합성 선박)과 도면 대조. 결과 [docs/H2_H4_RESULT.md](docs/H2_H4_RESULT.md), 리뷰 [docs/REVIEW.md](docs/REVIEW.md).
-테스트: 단위 59개 + E2E 2개(S5, T3 — 실제 BOX·PHG D).
+테스트: 단위 60개 + E2E 2개(S5, T3 — 실제 BOX·PHG D).
 
 ## 문서
 
@@ -37,7 +37,7 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 
 ```
 npm start                   # 통합 셸 → 브라우저에서 http://127.0.0.1:8792/app/
-npm test                    # 단위 테스트 59개
+npm test                    # 단위 테스트 60개
 npm run test:e2e            # E2E: S5 셸 흐름 + T3 시험선 전체 (실제 BOX·PHG D, 캡처 out/e2e*/)
 npm run run:t3              # T3 계약 → 17개 Deck·계통 AUTO → out/t3/ (project.json, report.xlsx, report.html, integrated.dxf, shots/)
 npm run run:s5              # S5 계약 → 18개 Deck·계통 AUTO → out/s5/

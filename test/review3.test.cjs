@@ -57,3 +57,13 @@ test('R3-07: duct geometry in a project file is capped', () => {
  const r = PJ.read({ schema: PJ.SCHEMA, contract: c, projects: {}, results: {}, geometry: { [key]: { ducts } } });
  const g = r.project.geometry[key]; assert.equal(g.ducts.length, 5000); assert.equal(g.ducts[0].points.length, 500); assert.ok(r.notes.some(n => /한도/.test(n)));
 });
+
+test('R4: over-pressurization flagged; minOaPct validated', () => {
+ const PJ = require('../lib/project.cjs');
+ const rooms = [R('wh', '조타실', 0, 0, 10000, 8000, { s: 'AHU', r: 'RA' }, { w: 20000, oa: 90 }), R('wc', '선교화장실', 10000, 0, 12000, 2000, { e: 'EF' }, { ach: 60 })];
+ const c = make(rooms), z = c.zones[0];
+ assert.ok(z.pressurizationCmh > z.saCmh * 0.1);   // the 25 % fresh-air floor pushes far more in than goes out
+ assert.ok(PJ.airChecks(c).some(x => x.code === 'RELIEF'));
+ assert.ok(!PJ.airChecks(make(rooms, { minOaPct: 0 })).some(x => x.code === 'RELIEF'));
+ assert.deepEqual(K.validate({ ...c, rules: { ...c.rules, minOaPct: 150 } }), ['rules.minOaPct']);
+});
