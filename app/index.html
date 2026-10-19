@@ -17,8 +17,9 @@
    <button class="ib" id="undoBtn" title="실행 취소"><svg viewBox="0 0 20 20"><path d="M7 5L3 9l4 4M3 9h9a4 4 0 010 8H9"/></svg></button>
    <button class="ib" id="redoBtn" title="다시 실행"><svg viewBox="0 0 20 20"><path d="M13 5l4 4-4 4M17 9H8a4 4 0 000 8h3"/></svg></button>
    <span class="sep"></span>
-   <button class="ib" id="openProjectBtn" title="HVAC Grid 프로젝트 열기"><svg viewBox="0 0 20 20"><path d="M3 6h5l2 2h7v8H3z"/></svg></button>
-   <button class="ib" id="saveProjectBtn" title="HVAC Grid 프로젝트 저장 (계약 + PHG D 덕트망)"><svg viewBox="0 0 20 20"><path d="M4 3h10l3 3v11H4zM7 3v5h6V3M7 17v-5h7v5"/></svg></button>
+   <button class="ib" id="openProjectBtn" title="파일: 열기 · 최근 프로젝트 · 저장 (Ctrl+O)" aria-haspopup="menu"><svg viewBox="0 0 20 20"><path d="M3 6h5l2 2h7v8H3z"/></svg></button>
+   <button class="ib" id="saveProjectBtn" title="프로젝트 저장 (Ctrl+S) · 계약 + PHG D 덕트망 + 결과"><svg viewBox="0 0 20 20"><path d="M4 3h10l3 3v11H4zM7 3v5h6V3M7 17v-5h7v5"/></svg></button>
+   <button class="ib" id="helpBtn" title="도움말 (F1)" aria-label="도움말"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5"/><path d="M7.8 7.8a2.3 2.3 0 114 1.6c-.9.7-1.8 1.1-1.8 2.4M10 14.2v.3"/></svg></button>
    <button class="ib" id="themeBtn" title="어두운 화면"><svg viewBox="0 0 20 20"><path d="M10 3a7 7 0 100 14 5 5 0 010-14z"/></svg></button>
   </div>
  </header>
@@ -47,6 +48,47 @@
  </div>
  <footer class="status" id="status"></footer>
  <div class="toast" id="toast" role="alert" hidden></div>
+ <div class="menu" id="fileMenu" role="menu" hidden></div>
+ <dialog class="dlg help" id="help" aria-labelledby="helpTitle">
+  <div class="help-head"><h3 id="helpTitle">HVAC Grid 도움말</h3><button class="mini" id="helpClose" aria-label="닫기">×</button></div>
+  <div class="help-body">
+   <section><h4>작업 순서</h4><ol>
+    <li><b>① 도면·격실</b> — BOX에서 일반배치도 DXF를 열고 외곽선·실 번호·실 지정으로 격실을 만듭니다. 연습은 리본 <i>예제</i>의 S5·T3로.</li>
+    <li><b>② 부하</b> — <i>CAL 열기</i>로 설계 조건·K값·격실 부하를 계산한 뒤 <b>계약 만들기</b>. 격실·부하가 HVAC Grid로 넘어옵니다.</li>
+    <li><b>③ 풍량·계통</b> — 급기 ΔT·가압·최소 신기를 정하고 <i>적용</i>. 계통별로 공조기(공조기 Deck)나 수직 덕트 위치를 평면에서 지정합니다. <i>방화</i> 보기로 SOLAS 경계를 확인합니다.</li>
+    <li><b>④ RU·덕트</b> — <b>모든 계통 AUTO</b>(또는 계통 하나씩 <i>보내기 + AUTO</i>). PHG D에서 덕트를 직접 고친 뒤 다른 단계로 가면 자동으로 읽어 옵니다.</li>
+    <li><b>⑤ 검토·출력</b> — 검토 실패·확인을 보고 고친 뒤 <b>프로젝트 저장</b>, <i>통합 XLSX·DXF·보고서</i>.</li></ol>
+    <p class="muted">상태 줄 왼쪽의 <b>다음:</b> 단추가 지금 할 일을 알려 줍니다.</p></section>
+   <section><h4>단축키</h4><table class="keys"><tbody>
+    <tr><td>Alt + 1 ~ 5</td><td>단계 ①~⑤로 이동</td></tr>
+    <tr><td>Ctrl + S</td><td>프로젝트 저장 (처음이면 위치와 이름 고르기)</td></tr>
+    <tr><td>Ctrl + Shift + S</td><td>다른 이름으로 저장</td></tr>
+    <tr><td>Ctrl + O</td><td>프로젝트 열기</td></tr>
+    <tr><td>Ctrl + Z / Ctrl + Y</td><td>실행 취소 / 다시 실행 (①② BOX, ④ PHG D, ③⑤ HVAC Grid 편집 — 화면마다 따로)</td></tr>
+    <tr><td>Esc</td><td>위치 지정 취소 · 대화상자 닫기</td></tr>
+    <tr><td>F1</td><td>이 도움말</td></tr></tbody></table></section>
+   <section><h4>용어</h4><dl class="terms">
+    <dt>급기 (SA)</dt><dd>실로 보내는 공기. 냉방 현열 W × 3 ÷ ΔT, 최소 신기 이상</dd>
+    <dt>배기 (EA)</dt><dd>실에서 밖으로 버리는 공기 (화장실·조리실 등). 환기 횟수 × 체적</dd>
+    <dt>환기 (RA)</dt><dd>공조기로 되돌리는 공기. 공조 구역 수지로 정함</dd>
+    <dt>신기 (OA)</dt><dd>바깥 공기. 구역마다 최소 신기·배기 + 가압·최소 신기 비율 중 큰 값</dd>
+    <dt>전달 공기</dt><dd>배기만 있는 실이 이웃 실에서 문 그릴로 받는 공기. 실 정보에서 출처 지정</dd>
+    <dt>RU</dt><dd>디퓨저·그릴 같은 말단 (500 CMH마다 1개)</dd>
+    <dt>공조기 · 수직 덕트</dt><dd>계통의 시작점. 공조기 Deck에는 공조기·팬, 다른 Deck에는 수직 덕트(샤프트)</dd>
+    <dt>AUTO</dt><dd>PHG D 자동 경로. 제한 구역·선체 밖은 금지 영역으로 피함</dd>
+    <dt>ESP · 팬 정압</dt><dd>덕트 외부 정압(Deck 최대 + 수직 덕트) · 팬 정압 추정(ESP + 공조기 내부 + 루버)</dd>
+    <dt>A-60 · A-0 · B-0</dt><dd>SOLAS 방화 등급. 덕트가 지나면 관통 조치(슬리브·방화댐퍼)</dd></dl></section>
+   <section><h4>파일</h4><ul>
+    <li><b>프로젝트</b>(.json) — 계약 + 모든 PHG D 덕트망 + 결과. 다시 열면 AUTO 없이 그대로.</li>
+    <li><b>계약</b>(.json, ③ 리본) — 격실·부하·풍량·계통만.</li>
+    <li><b>출력</b>(⑤ 리본) — 통합 XLSX(14시트), 통합 DXF(R12), 보고서(HTML, A4 가로 인쇄), 요약 CSV.</li>
+    <li>폴더 단추 메뉴에 최근 프로젝트가 있습니다. 저장 안 한 변경이 있으면 창 제목에 * 가 붙습니다.</li></ul></section>
+   <section><h4>문제가 생기면</h4><ul>
+    <li>오류는 화면 아래 알림과 상태 줄 오른쪽에 나옵니다. 잘못 넣은 칸은 빨갛게 표시됩니다.</li>
+    <li>실행 과정 보기: <code>HVAC_Grid.bat console</code> · 기록: <code>%LOCALAPPDATA%\HVAC_Grid\launch.log</code></li>
+    <li>설계 보조 결과입니다. 최종 판단은 설계자·주관청·선급에 따릅니다.</li></ul></section>
+  </div>
+ </dialog>
  <dialog class="dlg" id="dlg" aria-labelledby="dlgTitle"><h3 id="dlgTitle">HVAC Grid</h3><p id="dlgText"></p><div class="dlg-btns" id="dlgBtns"></div></dialog>
 </div>
 <input type="file" id="pick" hidden>

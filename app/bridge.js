@@ -39,6 +39,8 @@
     this.frame.addEventListener('load', async () => {
      try {
       const style = this.doc.createElement('style'); style.id = 'hvac-grid-embed'; style.textContent = this.css; this.doc.head.appendChild(style);
+      // the app's own short buttons get Korean tooltips (the app keeps its labels and code)
+      try { this.tips?.(this.doc); } catch {}
       await until(() => this.readyTest(this.win), 180000, this.frame.title + ' 로딩');
       // shell shortcuts (Alt+1..5, Esc) keep working while the focus is inside the app
       this.doc.addEventListener('keydown', e => { if (window.HVACGridBridge.onFrameKey?.(e)) e.stopPropagation(); }, true);
@@ -70,6 +72,12 @@
   LR: 'roomLoadResultBtn', OA: 'systemFreshAirBtn', RH: 'ahuHeatingBtn', 'R↑': 'exportRoomSheetBtn', 'A↑': 'exportFaceSheetBtn', 'I↑': 'exportRoomLoadSheetBtn', 'N↑': 'exportNonIsoRoomLoadSheetBtn', 'Σ↑': 'exportSystemSummaryBtn', LX: 'loadSheetBtn' };
  class Box extends VendorFrame {
   constructor(frame) { super(frame, { url: '../vendor/BOX_CAL_Enhance.html', css: BOX_CSS, ready: w => w.CAD_APP && w.document.getElementById('s5ExampleBtn') }); }
+  tips(doc) {
+   const set = (sel, t) => doc.querySelectorAll(sel).forEach(e => { e.title = t; e.setAttribute('aria-label', t); });
+   for (const [tool, t] of Object.entries({ text: 'TX · 문자 입력·수정', select: '선택', move: 'MV · 이동', trim: 'TR · 자르기 (기준선 클릭 → 자를 선 클릭)', extend: 'EX · 연장 (기준선 클릭 → 늘일 선 클릭)', split: 'SP · 나누기 (기준선 클릭 → 나눌 선 클릭)' })) set(`[data-tool="${tool}"]`, t);
+   for (const [id, t] of Object.entries({ gripBtn: 'GP · 끝점 잡기(그립) 표시', deleteBtn: '삭제', lineCheckBtn: 'CK · 선·폐합 검사', osnapBtn: 'OS · 객체 스냅: 끝점·중점·중심·교점·수직 (F3)', orthoBtn: '직교 모드 (F8)', gridBtn: '격자 맞춤 (F9)', gridSizeBtn: 'GS · 격자 크기',
+    clearBtn: 'CL · 선택 해제', hideBtn: 'HD · 선택 객체 숨기기', restoreBtn: 'RS · 숨긴 객체 복원', zoomBtn: 'ZT · 선택 객체 확대', showLayers: 'SA · 모든 레이어 표시', hideLayers: 'HA · 모든 레이어 숨기기', stackTransformCanvas: 'MV · 캔버스 기준점 이동 다시 시작' })) set('#' + id, t);
+  }
   hasDrawing() { const s = this.win.CAD_APP?.st; return !!(s && s.entities.length && s.decks.length); }
   calStatus() { return this.doc.querySelector('#calEnhancePanel [role=status]')?.textContent || ''; }
   // the CAL panel is a nested app in its own frame; its commands (LR, OA, ...) open their tables as popup windows
@@ -104,7 +112,11 @@
    super(frame, { url: '../vendor/DuctConcept_PHG_D.html', css: PHG_CSS, ready: w => w.DuctConceptRouting?.ready && w.LineDesignV2 });
    this.blank = null;
   }
-  async load() { await super.load(); this.doc.getElementById('autosaveRecoveryBar')?.remove(); if (!this.blank) this.blank = this.serialize(); return this; }
+  async load() { await super.load(); this.doc.getElementById('autosaveRecoveryBar')?.remove(); if (!this.blank) this.blank = this.serialize(); this.tips(this.doc); return this; }
+  tips(doc) {
+   const t = { ORTHO: '직교 그리기 (가로·세로만)', GRID: '격자에 맞춤', GRIP: '끝점 잡기(그립)' };
+   doc.querySelectorAll('button').forEach(b => { const k = b.textContent.trim(); if (t[k]) b.title = t[k]; });
+  }
   clickMenu(text) { this.clickText('header.topbar button', text); }
   serialize() { return JSON.stringify(this.win.LineDesignV2.serializeTypedProject()); }
   // opened: what PHG D made of a stored project right after loading it (it fills in defaults), the base for changedSince

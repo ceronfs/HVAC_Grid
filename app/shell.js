@@ -64,6 +64,27 @@
  function pickFile(accept) {
   return new Promise(resolve => { const input = $('pick'); input.value = ''; input.accept = accept || ''; input.onchange = () => input.files[0] && resolve(input.files[0]); input.click(); });
  }
+ // ---------- files: real save and open where the browser has file pickers (Edge, Chrome); else download / file input.
+ // Automated runs (navigator.webdriver) keep the download path.
+ const FS = typeof window.showSaveFilePicker === 'function' && !navigator.webdriver;
+ const KIND = { json: ['HVAC Grid 프로젝트', 'application/json'], xlsx: ['Excel 통합 문서', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'], dxf: ['DXF 도면', 'application/dxf'], html: ['HTML 보고서', 'text/html'], csv: ['CSV', 'text/csv'] };
+ // saves data as name (asks where, unless handle); resolves { name, handle } or null when the user cancels
+ async function saveFile(name, data, { handle = null, id = 'out' } = {}) {
+  const ext = name.split('.').pop(), [desc, type] = KIND[ext] || ['파일', 'application/octet-stream'];
+  if (!FS) { download(name, data, type); return { name, handle: null }; }
+  let h = handle;
+  if (!h) { try { h = await window.showSaveFilePicker({ suggestedName: name, id: 'hvac-grid-' + id, startIn: 'documents', types: [{ description: desc, accept: { [type]: ['.' + ext] } }] }); } catch (e) { if (e.name === 'AbortError') return null; throw e; } }
+  const w = await h.createWritable(); await w.write(new Blob([data], { type })); await w.close();
+  return { name: h.name, handle: h };
+ }
+ // recent project files: their handles in IndexedDB (they survive restarts; opening one asks for permission again)
+ const idb = () => new Promise((res, rej) => { const r = indexedDB.open('hvac-grid', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+ async function recentFiles() { try { const db = await idb(); return await new Promise(res => { const q = db.transaction('kv').objectStore('kv').get('recent'); q.onsuccess = () => res(q.result || []); q.onerror = () => res([]); }); } catch { return []; } }
+ async function remember(handle) {
+  try { const list = await recentFiles(), keep = [];
+   for (const x of list) if (!(await x.handle.isSameEntry(handle))) keep.push(x);
+   const db = await idb(); db.transaction('kv', 'readwrite').objectStore('kv').put([{ name: handle.name, handle, at: Date.now() }, ...keep].slice(0, 6), 'recent'); } catch {}
+ }
  function download(name, data, type = 'application/json') {
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type })); a.download = name; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
@@ -80,7 +101,7 @@
  async function keepsWork(what) {
   if (!Object.keys(S.results).length && !S.dirty) return true;
   const v = await ask(`${what}: 지금 작업(PHG D 결과 ${Object.keys(S.results).length}개, 실행 취소 기록)이 사라집니다. 저장할까요?`, [['save', '저장하고 계속', true], ['discard', '저장하지 않고 계속'], ['cancel', '취소']]);
-  if (v === 'save') OUT.project();
+  if (v === 'save') return await saveProject();
   return v !== 'cancel';
  }
 
@@ -177,7 +198,8 @@
   await phg.load();
   // the shell inspector shows the results, so PHG D's own right dock starts closed (패널 group in ④ opens it); on a
   // narrow window the left dock too - the shell's tree is already on the left
-  if (!S.phgDocked) { S.phgDocked = true; if (phg.dockShown('right')) phg.click('phgb-right-panel'); if (innerWidth < 1440 && phg.dockShown('left')) phg.click('phgb-left-panel'); }
+  if (!S.phgDocked) { S.phgDocked = true; if (phg.dockShown('right')) phg.click('phgb-right-panel'); if (phg.dockShown('left')) phg.click('phgb-left-panel');
+   await B.until(() => !phg.dockShown('left') && !phg.dockShown('right'), 3000).catch(() => {}); }   // closed before the ribbon shows the panel buttons
  }
  // the window narrowed below 1440 px with PHG D open: its left dock closes (the shell's tree is already on the left)
  // a desktop program: closing the window with work not saved asks first; the launcher (tools/launch.cjs) keeps its local
@@ -226,21 +248,36 @@
 
  // ---------- project file and outputs ----------
  function projectJson() { keepActive(); return JSON.stringify(project()); }
- async function openProject() {
+ async function openProject(handle = null) {
   if (!(await keepsWork('프로젝트 열기'))) return;
-  const f = await pickFile('.json'), { project: pr, notes } = PJ.read(JSON.parse(await f.text()));
-  setContract(pr.contract); Object.assign(S, { projects: pr.projects, results: pr.results, geometry: pr.geometry, active: null, dirty: false });
+  let f, h = handle;
+  if (FS) {
+   if (!h) { try { [h] = await window.showOpenFilePicker({ id: 'hvac-grid-project', startIn: 'documents', types: [{ description: 'HVAC Grid 프로젝트 · 계약', accept: { 'application/json': ['.json'] } }] }); } catch (e) { if (e.name === 'AbortError') return; throw e; } }
+   if ((await h.queryPermission({ mode: 'readwrite' })) !== 'granted' && (await h.requestPermission({ mode: 'readwrite' })) !== 'granted') throw new Error(`${h.name}: 파일 권한이 없습니다`);
+   f = await h.getFile();
+  } else f = await pickFile('.json');
+  const data = JSON.parse(await f.text()), { project: pr, notes } = PJ.read(data), bare = data?.schema === K.SCHEMA;
+  setContract(pr.contract); Object.assign(S, { projects: pr.projects, results: pr.results, geometry: pr.geometry, active: null, dirty: false, file: bare ? null : { name: f.name, handle: h || null } });   // a contract file is not a save target for the project
+  if (h && !bare) remember(h);
   if (S.step === 'room' || S.step === 'load') S.step = 'air';
   say(f.name + ' 열기' + (notes.length ? ' · ' + notes.join(' · ') : ''));
  }
  const outName = ext => `hvac-grid-${U.safeName(RP.PROJECT_NAME(S.contract) || 'project').slice(0, 30)}-${stamp()}.${ext}`;
  const OUT = {
-  project: () => { download(outName('json'), projectJson()); S.dirty = false; },
-  xlsx: () => { keepActive(); download(outName('xlsx'), XL.xlsx(RP.sheets(project(), analysis())), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); say('통합 XLSX (격실·계통·덕트망·수직 덕트·방화·관통·물량·검토)'); },
-  dxf: () => { const a = analysis(); download(outName('dxf'), DX.integratedDxf(S.contract, { plans: a.plans, geometry: S.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers }), 'application/dxf'); say('통합 DXF (Deck별 격실·RU·덕트·공조기·수직 덕트·방화 경계·관통)'); },
-  report: () => { keepActive(); download(outName('html'), RP.html(project(), analysis()), 'text/html'); say('보고서 (HTML, 인쇄용)'); },
-  csv: () => { const sh = RP.sheets(project(), analysis()).find(s => s.name === 'Deck 덕트망'); download(outName('csv'), '﻿' + [sh.head, ...sh.rows].map(r => r.map(U.csvCell).join(',')).join('\r\n'), 'text/csv'); },
-  contract: () => download(`hvac-grid-contract-${stamp()}.json`, JSON.stringify(S.contract, null, 1)) };
+  project: (as = false) => saveProject(as),
+  xlsx: async () => { keepActive(); const f = await saveFile(outName('xlsx'), XL.xlsx(RP.sheets(project(), analysis()))); if (f) say('통합 XLSX (격실·계통·덕트망·수직 덕트·방화·관통·물량·검토)'); },
+  dxf: async () => { const a = analysis(), f = await saveFile(outName('dxf'), DX.integratedDxf(S.contract, { plans: a.plans, geometry: S.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers })); if (f) say('통합 DXF (Deck별 격실·RU·덕트·공조기·수직 덕트·방화 경계·관통)'); },
+  report: async () => { keepActive(); const f = await saveFile(outName('html'), RP.html(project(), analysis())); if (f) say(`보고서 (HTML, 인쇄용): ${f.name}`); },
+  csv: async () => { const sh = RP.sheets(project(), analysis()).find(s => s.name === 'Deck 덕트망'); await saveFile(outName('csv'), '﻿' + [sh.head, ...sh.rows].map(r => r.map(U.csvCell).join(',')).join('\r\n')); },
+  contract: () => saveFile(`hvac-grid-contract-${stamp()}.json`, JSON.stringify(S.contract, null, 1), { id: 'contract' }) };
+ // the project: to its file (Ctrl+S), or a new one (first time, Ctrl+Shift+S); true when saved
+ async function saveProject(as = false) {
+  if (!S.contract) throw new Error('저장할 계약이 없습니다');
+  const f = await saveFile(!as && S.file?.name ? S.file.name : outName('json'), projectJson(), { handle: as ? null : S.file?.handle, id: 'project' });
+  if (!f) return false;
+  S.file = f; S.dirty = false; if (f.handle) remember(f.handle);
+  say(`프로젝트 저장: ${f.name}`); toast(`저장했습니다: ${f.name}`); status(); return true;
+ }
 
  // ---------- commands ----------
  // labels are Korean; the old BOX / PHG D codes stay in the tooltip ("이전 단축") so existing users still find them
@@ -257,12 +294,12 @@
  const SAMPLES = [c('sample', 'S5 예제 계약', () => act('예제 계약 여는 중', () => openSample('s5')), { title: 'BOX 내장 S5 예제 (5 Deck · 94실)' }), c('deck', 'T3 시험선', () => act('T3 시험선 여는 중', () => openSample('t3')), { title: '4 Deck 화물선 거주구 · 다층 급기·배기·환기 · 케이싱·조리실 (samples/t3)' })];
  const STEPS = [
   { id: 'room', name: '도면·격실', view: 'box', groups: () => [
-   ['파일', [c('open', 'DXF 열기', boxFile('dxfFile', '.dxf'), { code: 'DXF' }), c('bg', '배경', boxFile('backgroundFile', ''), { code: 'BG' }), c('json', 'JSON 열기', boxFile('jsonFile', '.json'), { code: 'J↓', title: 'BOX 프로젝트 (samples/t3/T3.box.json 시험선 포함)' }), c('save', 'JSON 저장', boxCmd('saveBtn'), { code: 'S' }), c('dxfOut', 'DXF 출력', boxCmd('exportBtn'), { code: 'D↑' })]],
+   ['파일', [c('open', 'DXF 열기', boxFile('dxfFile', '.dxf'), { code: 'DXF' }), c('bg', '배경', boxFile('backgroundFile', ''), { code: 'BG' }), c('json', 'BOX 열기', boxFile('jsonFile', '.json'), { code: 'J↓', title: 'BOX 프로젝트 JSON 열기 (samples/t3/T3.box.json 시험선 포함) — HVAC Grid 프로젝트는 머리줄 폴더 단추' }), c('save', 'BOX 저장', boxCmd('saveBtn'), { code: 'S' }), c('dxfOut', 'BOX DXF 출력', boxCmd('exportBtn'), { code: 'D↑' })]],
    ['보기', [c('fit', '전체 보기', boxCmd('fitBtn'), { code: '⌕' }), c('reset', '초기화', boxCmd('newBtn'), { code: '⟲' })]],
    ['격실', [c('ol', '하부 외곽선', boxCmd('outlineBtn'), { code: '하부 OL' }), c('olu', '상부 외곽선', boxCmd('outlineUpperBtn'), { code: '상부 OL' }), c('olv', '외곽선 검증', boxCmd('outlineVerifyBtn'), { code: 'OL 검증' }), c('vl', '가상선', boxCmd('hullLinkBtn'), { code: 'VL' }), c('area', '면적', boxCmd('measureBtn'), { code: 'AR' }), c('apoly', '면적 POLY', boxCmd('areaPolygonBtn'), { code: 'AP' }),
     c('roomNo', '실 번호', boxCmd('autoRoomNoBtn'), { code: 'RN' }), c('roomFix', '실 지정', boxCmd('manualRoomBtn'), { code: 'RM' }), c('list', '격실 목록', boxCmd('roomBtn'), { code: 'RL' }), c('face', '접한 면적', boxCmd('contactBtn'), { code: 'A6' })]],
    ['검사', [c('lines', '선 검사', boxCmd('lineCheckBtn'), { code: 'CK' }), c('geo', '도형 검사', boxCmd('l4GeometryCheckBtn'), { code: 'GX' }), c('cube', '3D 검사', boxCmd('l4MeshCheckBtn')), c('water', '흘수선', boxCmd('waterlineBtn'))]],
-   ['예제', [c('sample', 'S5 예제', boxCmd('s5ExampleBtn'), { code: 'S5', title: '5 Deck · 94 공간 · 12 × 8 m' }), c('sample', 'H5 예제', boxCmd('h5ExampleBtn'), { code: 'H5', title: 'KCS 실선 치수 예제' }),
+   ['예제', [c('sample', 'S5 예제', boxCmd('s5ExampleBtn'), { code: 'S5', title: '5 Deck · 94 공간 · 12 × 8 m' }), c('sample', 'H5 예제', boxCmd('h5ExampleBtn'), { code: 'H5', title: 'BOX 내장 H5 예제 — KCS 실선 치수' }),
     c('deck', 'T3 시험선', () => act('T3 시험선 여는 중', async () => { const t = await (await fetch('../samples/t3/T3.box.json', { cache: 'no-store' })).text(); await box.load(); box.setFile('jsonFile', new File([t], 'T3.box.json', { type: 'application/json' })); say(`T3 시험선 → BOX (4 Deck · ${(t.match(/"roomNo"/g) || []).length}실)`); }), { title: 'HVAC Grid 시험선 BOX 프로젝트 (samples/t3/T3.box.json)' })]]] },
   { id: 'load', name: '부하', view: 'box', groups: () => [
    ['계산', [c('cal', 'CAL 열기', () => act('BOX CAL 여는 중', async () => { await box.load(); await box.openCal(); }), { code: 'CAL', title: '설계 조건·K값·냉난방 부하·OA·AHU' })]],
@@ -276,22 +313,21 @@
    ['계통', [kindSeg(), sysField(false)]],
    ['공조기 · 수직 덕트', [c('pin', '위치 지정', () => { S.pickRoot = !S.pickRoot; say(S.pickRoot ? `평면에서 ${curPlan()?.isUnitDeck === false ? '수직 덕트(샤프트)' : '공조기'} 위치를 클릭하세요 (Esc 취소)` : ''); render(); }, { disabled: () => !curKey(), pressed: () => S.pickRoot, title: '공조기 Deck: 공조기·팬 위치 · 다른 Deck: 수직 덕트(샤프트) 위치' }), c('unpin', '지정 해제', () => act(null, clearRoot), { disabled: () => !S.contract?.roots?.[curKey()] }), unitDeckField()]],
    ['보기', [seg('평면 보기', S.overlay, [['air', '풍량'], ['fire', '방화']], v => { S.overlay = v; })]],
-   ['계약', [...SAMPLES, c('open', '열기', () => act(null, openProject), { title: 'HVAC Grid 프로젝트 또는 계약 JSON' }), c('save', '계약 저장', OUT.contract, { disabled: needContract })]]] },
+   ['계약', [...SAMPLES, c('open', '열기', () => act(null, openProject), { title: 'HVAC Grid 프로젝트 또는 계약 JSON' }), c('save', '계약 저장', () => act(null, OUT.contract), { disabled: needContract })]]] },
   { id: 'duct', name: 'RU·덕트', view: 'phg', groups: () => [
    ['HVAC Grid', [sysField(true), c('send', 'PHG D로 보내기', () => act('PHG D로 보내는 중', () => sendPlan()), { primary: true, disabled: () => !curKey(), title: 'Deck 격실 도면 + 공조기·수직 덕트 + 격실별 RU(풍량)' }), c('auto', '보내기 + AUTO', () => act('AUTO 계산 중', () => autoKey()), { disabled: () => !curKey(), title: 'AUTO → 첫 후보 → 덕트 지정 → 계산 → 압력' }), c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '결과 읽기', () => act(null, readBack), { disabled: () => !S.active, title: 'PHG D에서 고친 결과를 HVAC Grid로' })]],
    ['계통', [c('root', '공조기', phgCmd('rootBtn'), { code: 'R', title: 'Root · 계통 시작점(공조기) 배치' }), c('ru', 'RU 배치', phgCmd('diffuserBtn'), { code: 'RU' }), c('ruAuto', 'RU 자동', phgCmd('autoDiffuserBtn')), c('flow', '풍량 초안', phgCmd('phgdFlowBtn'))]],
    ['자동 라우팅', [c('zone', '금지 영역', phgText('금지 영역')), c('auto', 'AUTO', phgCmd('autoRouteOpenBtn'), { title: 'AUTO · 편집 가능한 경로 객체 생성 · 덕트 지정으로 덕트화' }), c('cmp', '비교', phgCmd('phgdCompareBtn')), c('set', '설정', phgCmd('phgdAutoSettingsBtn'))]],
    ['덕트', [c('ml', '주 덕트', phgCmd('assignMainLineBtn'), { code: 'ML' }), c('br', '분기', phgCmd('assignBranchBtn'), { code: 'BR' }), c('sbr', '보조 분기', phgCmd('assignSubBranchBtn'), { code: 'SBR' }), c('ad', '덕트 지정', phgCmd('makeDuctBtn'), { code: 'AD' })]],
    ['계산', [c('lines', '선 검사', phgCmd('lineCheckBtn')), c('calc', '계산', phgCmd('calculateBtn'), { title: '풍량과 덕트 크기' }), c('noise', '소음', phgCmd('noiseCalcBtn')), c('press', '압력', phgCmd('pressureCalcBtn'))]],
-   ['파일', [c('save', 'JSON 저장', phgCmd('saveJsonBtn')), c('dxfOut', 'DXF 출력', phgCmd('exportDxfBtn')), c('xlsx', 'XLSX', phgCmd('exportXlsxBtn')), c('fit', '전체 보기', phgCmd('zoomAllBtn'))]],
-   ['패널', [c('dockL', '왼쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-left-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('left'), title: 'PHG D 도구·레이어 패널' }), c('dockR', '오른쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-right-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('right'), title: 'PHG D 프로젝트 상태·검증 패널' })]]] },
+   ['보기', [c('fit', '전체 보기', phgCmd('zoomAllBtn')), c('dockL', '왼쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-left-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('left'), title: 'PHG D 도구·레이어 패널' }), c('dockR', '오른쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-right-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('right'), title: 'PHG D 프로젝트 상태·검증 패널' })]]] },
   { id: 'review', name: '검토·출력', view: 'report', groups: () => [
    ['덕트망', [c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { primary: true, disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '남은 것만', () => act('AUTO 계산 중', () => runAll(undefined, { onlyNeeded: true })), { disabled: needContract, title: 'AUTO가 없거나 다시 보내야 하는 계통만' })]],
    ['방화 (SOLAS)', [field(`<label class="field">선종<select id="shipSel" ${S.contract ? '' : 'disabled'}>${Object.values(SO.DATA.ships).map(s => `<option value="${s.key}" ${s.key === (S.contract?.solas?.ship || SO.DEFAULT_SETTINGS.ship) ? 'selected' : ''}>${esc(s.label)} · ${s.tB}/${s.tD}</option>`).join('')}</select></label>`),
     field(`<label class="field">방화방식<select id="methodSel" ${S.contract && (S.contract.solas?.ship || 'CARG') === 'CARG' ? '' : 'disabled'}>${['IC', 'IIC', 'IIIC'].map(m => `<option ${m === (S.contract?.solas?.method || 'IC') ? 'selected' : ''}>${m}</option>`).join('')}</select></label>`),
     field(`<label class="field">최하층 아래<select id="belowSel" ${S.contract ? '' : 'disabled'}><option value="">미지정 (확인 필요)</option>${spaceOptions(S.contract?.solas?.lowestBelow || '', ['기관실 — A류', '보일러실', '화물창', '기타'])}</select></label>`),
     field(`<label class="field">스프링클러<select id="sprinklerSel" ${S.contract && S.contract.solas?.ship === 'P36M' ? '' : 'disabled'} title="여객선 36명 이하 Table 9.3/9.4: 양쪽 실 모두 스프링클러 설치이면 작은 값"><option value="">없음·한쪽</option><option value="1" ${S.contract?.solas?.sprinkler ? 'selected' : ''}>양쪽 설치</option></select></label>`)]],
-   ['출력', [c('save', '프로젝트 저장', OUT.project, { disabled: needContract, title: '한 파일: 계약 + 모든 PHG D 덕트망 + 결과 (hvac-grid-project/1)' }), c('xlsx', '통합 XLSX', () => act(null, OUT.xlsx), { disabled: needContract }), c('dxfOut', '통합 DXF', () => act(null, OUT.dxf), { disabled: needContract }), c('report', '보고서', () => act(null, OUT.report), { disabled: needContract, title: 'HTML 보고서 (Deck 평면·계통·수직 덕트·방화·관통·물량)' }), c('csv', '요약 CSV', OUT.csv, { disabled: needContract }), c('contract', '계약 저장', OUT.contract, { disabled: needContract })]]] }];
+   ['출력', [c('save', '프로젝트 저장', () => act(null, () => saveProject()), { disabled: needContract, title: '한 파일: 계약 + 모든 PHG D 덕트망 + 결과 (Ctrl+S)' }), c('save', '다른 이름으로', () => act(null, () => saveProject(true)), { disabled: needContract, title: '다른 이름·위치로 저장 (Ctrl+Shift+S)' }), c('xlsx', '통합 XLSX', () => act(null, OUT.xlsx), { disabled: needContract }), c('dxfOut', '통합 DXF', () => act(null, OUT.dxf), { disabled: needContract }), c('report', '보고서', () => act(null, OUT.report), { disabled: needContract, title: 'HTML 보고서 (Deck 평면·계통·수직 덕트·방화·관통·물량)' }), c('csv', '요약 CSV', OUT.csv, { disabled: needContract }), c('contract', '계약 저장', OUT.contract, { disabled: needContract })]]] }];
  // the system of the deck: of the chosen kind (③), or every system of the deck with its kind (④)
  function sysField(allKinds) {
   const ps = allKinds ? deckPlans() : deckPlans(S.kind);
@@ -575,9 +611,12 @@
  function status() {
   const C = S.contract, r = C?.rooms.find(x => x.id === S.room), ps = plans();
   const done = ps.filter(p => result(p.key)?.auto && !result(p.key).stale).length, n = k => C.systems.filter(s => s.kind === k).length;
-  $('status').innerHTML = (C ? `<span>선박 전체: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> · 계통 급기 <b>${n('supply')}</b> 배기 <b>${n('exhaust')}</b> 환기 <b>${n('return')}</b> · 급기 <b>${fmt(C.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))}</b> CMH · 덕트망 <b>${done}</b>/${ps.length}</span><span>선택: <b>${esc(deckName(S.deck))}</b>${r ? ` · ${esc(r.no)} ${esc(r.name)}` : ''}</span>` : '<span>계약 없음 — ① 도면 → ② 부하 → 계약 만들기</span>')
+  const [nextText, nextTo] = nextStep();
+  $('status').innerHTML = `<button class="next" id="nextBtn" title="다음에 할 일">다음: ${esc(nextText)}</button>` + (C ? `<span>선박 전체: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> · 계통 급기 <b>${n('supply')}</b> 배기 <b>${n('exhaust')}</b> 환기 <b>${n('return')}</b> · 급기 <b>${fmt(C.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))}</b> CMH · 덕트망 <b>${done}</b>/${ps.length}</span><span>선택: <b>${esc(deckName(S.deck))}</b>${r ? ` · ${esc(r.no)} ${esc(r.name)}` : ''}</span>` : '<span>계약 없음 — ① 도면 → ② 부하 → 계약 만들기</span>')
    + (S.active ? `<span>PHG D: <b>${esc(S.active.replace('__', ' · '))}</b></span>` : '') + `<span class="msg${S.msgErr ? ' err' : ''}" role="status">${esc(S.msg)}</span>`;
   $('proj').textContent = C ? `${RP.PROJECT_NAME(C) || '계약'} · ${C.rooms.length}실` : '계약 없음';
+  $('proj').title = S.file?.name ? `파일: ${S.file.name}${S.dirty ? ' (저장 안 한 변경 있음)' : ''}` : '아직 저장하지 않음';
+  $('nextBtn').onclick = () => nextTo ? (nextTo === S.step && nextTo === 'review' ? (S.tab = 'checks', render()) : go(nextTo)) : act(null, () => saveProject());
   document.title = C ? `${RP.PROJECT_NAME(C) || '계약'}${S.dirty ? ' *' : ''} — HVAC Grid` : 'HVAC Grid';
  }
  // the plan legend opens and closes; it starts closed when the plan is narrow (it would cover rooms)
@@ -598,6 +637,30 @@
   $('phgHint').querySelectorAll('button').forEach(b => b.onclick = () => ({ auto: () => act('AUTO 계산 중', () => autoKey()), send: () => act('PHG D로 보내는 중', () => sendPlan()), all: () => act('AUTO 계산 중', () => runAll()), off: () => { S.hintOff = { ...(S.hintOff || {}), [key]: true }; show($('phgHint'), false); } })[b.dataset.a]());
  }
  const busyNow = () => !$('busy').hidden;
+ // help (F1, ?)
+ function help() { const d = $('help'); if (!d.open) d.showModal(); }
+ // the folder button: open, recent projects, save, save as
+ async function fileMenu() {
+  const m = $('fileMenu'); if (!m.hidden) { show(m, false); return; }
+  const recent = FS ? await recentFiles() : [], r = $('openProjectBtn').getBoundingClientRect();
+  m.innerHTML = '<button data-a="open">열기…<kbd>Ctrl+O</kbd></button><button data-a="save" ' + (S.contract ? '' : 'disabled') + '>저장<kbd>Ctrl+S</kbd></button><button data-a="saveAs" ' + (S.contract ? '' : 'disabled') + '>다른 이름으로 저장…<kbd>Ctrl+Shift+S</kbd></button>'
+   + (recent.length ? '<div class="menu-sep">최근 프로젝트</div>' + recent.map((x, i) => `<button data-a="recent" data-i="${i}" title="${esc(x.name)} · ${esc(U.localTime(x.at))}">${esc(x.name)}</button>`).join('') : '')
+   + (FS ? '' : '<div class="menu-sep muted">이 브라우저는 다운로드로 저장합니다</div>');
+  m.style.top = r.bottom + 4 + 'px'; m.style.right = innerWidth - r.right + 'px'; show(m, true);
+  m.querySelectorAll('button').forEach(b => b.onclick = () => { show(m, false); const a = b.dataset.a;
+   act(null, () => a === 'open' ? openProject() : a === 'save' ? saveProject() : a === 'saveAs' ? saveProject(true) : openProject(recent[+b.dataset.i].handle)); });
+ }
+ document.addEventListener('click', e => { if (!$('fileMenu').hidden && !$('fileMenu').contains(e.target)) show($('fileMenu'), false); });
+ // what to do next, for the status bar
+ function nextStep() {
+  if (!S.contract) return ['② 부하에서 계약 만들기 (또는 ③에서 예제·T3 열기)', 'load'];
+  const a = analysis(), assumed = a.plans.filter(p => p.isUnitDeck && p.rootSource.startsWith('assumed')).length;
+  if (assumed) return [`③ 공조기 위치 확인 (임시 ${assumed}개 계통)`, 'air'];
+  if (a.done < a.total) return [`④ 모든 계통 AUTO (${a.done}/${a.total})`, 'duct'];
+  if (a.count.fail) return [`⑤ 검토 실패 ${a.count.fail}건 확인`, 'review'];
+  if (S.dirty) return ['프로젝트 저장 (Ctrl+S)', null];
+  return ['⑤ 통합 XLSX·DXF·보고서 출력', 'review'];
+ }
  function render() { steps(); ribbon(); tree(); center(); inspector(); status(); $('main').classList.toggle('left-off', S.leftOff === true); $('main').classList.toggle('right-off', S.rightOff === true); }
 
  // ---------- wiring ----------
@@ -607,19 +670,24 @@
  $('rightToggle').onclick = () => { S.rightOff = !S.rightOff; render(); };
  $('undoBtn').onclick = () => act(null, () => { const f = frameOnScreen(); if (f) f.click('undoBtn'); else undoShell(); });
  $('redoBtn').onclick = () => act(null, () => { const f = frameOnScreen(); if (f) f.click('redoBtn'); else redoShell(); });
- $('openProjectBtn').onclick = () => act(null, openProject);
- $('saveProjectBtn').onclick = () => S.contract ? OUT.project() : say('저장할 계약이 없습니다', true);
+ $('openProjectBtn').onclick = e => { e.stopPropagation(); fileMenu(); };
+ $('helpBtn').onclick = () => help();
+ $('helpClose').onclick = () => $('help').close();
+ $('saveProjectBtn').onclick = () => act(null, () => saveProject());
  $('themeBtn').onclick = () => { const d = document.documentElement, dark = d.dataset.theme !== 'dark'; d.dataset.theme = dark ? 'dark' : ''; try { localStorage.setItem('hvac-grid-theme', dark ? 'dark' : ''); } catch {} if (S.step === 'air' && S.contract) plan(); };
  try { if (localStorage.getItem('hvac-grid-theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch {}
  // Alt+1..5 switch steps, also while the focus is inside a vendor frame; Ctrl+Z / Ctrl+Y undo HVAC Grid edits in ③ ⑤
  const onKey = e => {
   if (e.altKey && /^[1-5]$/.test(e.key)) { e.preventDefault(); go(STEPS[+e.key - 1].id); return true; }
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && /^s$/i.test(e.key)) { e.preventDefault(); act(null, () => saveProject(e.shiftKey)); return true; }
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && /^o$/i.test(e.key)) { e.preventDefault(); act(null, () => openProject()); return true; }
+  if (e.key === 'F1') { e.preventDefault(); help(); return true; }
   if (e.key === 'Escape' && S.pickRoot) { S.pickRoot = false; say(''); render(); return true; }
   const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName || '');
   if ((e.ctrlKey || e.metaKey) && !typing && !frameOnScreen() && S.contract && /^[zy]$/i.test(e.key)) { e.preventDefault(); act(null, () => (e.key.toLowerCase() === 'y' || e.shiftKey) ? redoShell() : undoShell()); return true; }
   return false;
  };
- document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) ? onKey(e) : false;
+ document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) || ((e.ctrlKey || e.metaKey) && /^[so]$/i.test(e.key)) || e.key === 'F1' ? onKey(e) : false;
  window.addEventListener('resize', () => { if (S.step === 'air' && S.contract) plan(); });
  window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, openSample, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
   runAll: (keys, opt) => act('AUTO 계산 중', () => runAll(keys, opt)) };   // with the busy overlay and error message, as from the ribbon
