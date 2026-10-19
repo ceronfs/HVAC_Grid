@@ -86,3 +86,9 @@ test('R2-06: RUs of different plans in one room never share a point', () => {
   for (const us of Object.values(by)) for (let i = 0; i < us.length; i++) for (let j = i + 1; j < us.length; j++) assert.ok(Math.hypot(us[i].x - us[j].x, us[i].y - us[j].y) >= 400, `${f} ${us[i].id} ${us[j].id}`);
  }
 });
+
+test('R2-08: crossings of two parallel walls 40 mm apart stay two penetrations; a T-junction stays one', () => {
+ const c = { decks: [{ id: 'D', elevationMm: 0 }], rooms: [R('a', 'D', '기관실', 0, 0, 4000, 4000), R('t', 'D', '덕트 트렁크', 4000, 0, 4040, 4000), R('b', 'D', '선원침실', 4040, 0, 8000, 4000)], systems: [] };
+ const pens = SO.penetrations(c, SO.boundaries(c), net([[[6000, 2000], [2000, 2000]]]));
+ assert.equal(pens.length, 2, JSON.stringify(pens.map(p => [p.x, p.boundaryIds])));
+});
