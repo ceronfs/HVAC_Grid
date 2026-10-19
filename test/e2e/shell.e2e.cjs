@@ -88,13 +88,24 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   await p.evaluate(([i, w, h]) => HVACGrid.resizeDuct('S3__AHU-AC-01', i, { widthMm: w, heightMm: h }), [di, d0.widthMm + 100, d0.heightMm]); await idle();
   const d1 = await H(() => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts[HVACGrid.S.duct.i]);   // the same duct, picked again after PHG D calculated
   assert.deepEqual([d1.widthMm, d1.heightMm, d1.manualSize], [d0.widthMm + 100, d0.heightMm, true]); assert.ok(await H(() => HVACGrid.result('S3__AHU-AC-01').edited));
-  // an RU dragged with the mouse stays where it was dropped and AUTO runs again; Ctrl+Z takes the move back
+  // an RU dragged with the mouse stays where it was dropped and AUTO runs again; Ctrl+Z takes the move back with the
+  // ducts it made (the plan shows the network of before, not new ducts under the RU that went back), Ctrl+Y again
+  const net = () => H(() => JSON.stringify(HVACGrid.S.geometry['S3__AHU-AC-01']));
+  const netResized = await net();
   const ru = await p.$('#plan .ru.drag'), rb = await ru.boundingBox(), ruId = await ru.getAttribute('data-ru');
   await p.mouse.move(rb.x + rb.width / 2, rb.y + rb.height / 2); await p.mouse.down(); await p.mouse.move(rb.x + rb.width / 2 + 6, rb.y + rb.height / 2 + 6, { steps: 4 }); await p.mouse.up(); await p.waitForTimeout(300); await idle();
   assert.ok(await p.evaluate(id => !!HVACGrid.S.contract.ruMoves?.[id], ruId), 'RU moved'); assert.ok(!(await H(() => HVACGrid.result('S3__AHU-AC-01').stale)), 'AUTO ran again');
+  const netMoved = await net(); assert.notEqual(netMoved, netResized, 'the move made other ducts');
   await p.keyboard.press('Control+z'); await idle();
   assert.ok(await p.evaluate(id => !HVACGrid.S.contract.ruMoves?.[id], ruId), 'Ctrl+Z takes the RU move back (not PHG D)');
-  await H(() => HVACGrid.runAll(['S3__AHU-AC-01'])); await idle();
+  assert.equal(await net(), netResized, 'Ctrl+Z puts the ducts of before back'); assert.ok(!(await H(() => HVACGrid.result('S3__AHU-AC-01').stale)), 'and they are current');
+  await p.keyboard.press('Control+y'); await idle();
+  assert.ok(await p.evaluate(id => !!HVACGrid.S.contract.ruMoves?.[id], ruId)); assert.equal(await net(), netMoved, 'Ctrl+Y: the moved RU and its ducts');
+  await p.keyboard.press('Control+z'); await idle();
+  // the duct size by hand is in the history too
+  await p.keyboard.press('Control+z'); await idle();
+  const d2 = await p.evaluate(i => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts[i], di);
+  assert.deepEqual([d2.widthMm, d2.heightMm, !!d2.manualSize], [d0.widthMm, d0.heightMm, !!d0.manualSize], 'Ctrl+Z: the size of before'); log('undo / redo: RU move and duct size with their ducts');
   // PHG D as the detail editor, and back
   await ribbon('PHG D 편집기').click(); await idle();
   assert.ok(await p.evaluate(() => getComputedStyle(document.getElementById('phgFrame')).visibility === 'visible'), 'editor open'); await shot('4-duct-editor');
@@ -132,6 +143,13 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   log('downloads', [fProject, fXlsx, fDxf, fHtml].map(f => path.basename(f) + ' ' + fs.statSync(f).size).join(' · '));
   await p.setViewportSize({ width: 1280, height: 800 }); await p.click('.step[data-step=duct]'); await idle(); await p.waitForTimeout(400); await shot('4-duct-1280');
   await p.click('.step[data-step=air]'); await idle(); await H(() => { document.documentElement.dataset.theme = 'dark'; HVACGrid.render(); }); await p.waitForTimeout(200); await shot('3-air-dark');
+  // 새로 시작 (header ⟲): asks in the app, then BOX, the design data, the duct networks and the history are gone
+  await p.click('#resetBtn'); await p.locator('#dlgBtns button[data-v=ok], #dlgBtns button[data-v=discard]').first().click(); await idle();
+  const fresh = await H(() => ({ step: HVACGrid.S.step, contract: HVACGrid.S.contract, results: Object.keys(HVACGrid.S.results).length, undo: HVACGrid.S.undo.length, drawing: HVACGrid.box.hasDrawing(), cal: HVACGrid.box.doc.getElementById('calEnhancePanel')?.hidden ?? true }));
+  assert.deepEqual(fresh, { step: 'room', contract: null, results: 0, undo: 0, drawing: false, cal: true }, '새로 시작'); log('새로 시작', JSON.stringify(fresh));
+  await ribbon('S5 예제').click(); await p.waitForFunction(() => HVACGrid.box.win.CAD_APP.st.decks.length === 5, null, { timeout: 180000 });
+  await p.click('.step[data-step=load]'); await idle(); await ribbon('CAL 열기').click(); await idle(); await ribbon('설계 데이터 만들기').click(); await idle();
+  assert.equal(await H(() => HVACGrid.S.contract.rooms.length), 94, 'works again after 새로 시작');
   log('page errors', errors.length, errors.slice(0, 5));
   assert.equal(errors.length, 0, 'no page errors');
   log('E2E PASS');

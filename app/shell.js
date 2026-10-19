@@ -106,13 +106,28 @@
  }
 
  // ---------- contract edits (undo / redo in the shell's own views) ----------
- function edit(label, fn) {
-  const before = JSON.stringify(S.contract); fn(); invalidate(); S.dirty = true;
-  S.undo.push({ label, contract: before }); if (S.undo.length > 60) S.undo.shift(); S.redo = [];
+ // an entry keeps the design data and, for the plans the edit touched (keys), their duct work: the PHG D project, the
+ // result and the plan drawing - undo puts the plan back as it was, not the new ducts under RUs that went back
+ const workOf = keys => Object.fromEntries(keys.map(k => [k, { project: S.projects[k] ?? null, result: S.results[k] ? JSON.stringify(S.results[k]) : null, geometry: S.geometry[k] ? JSON.stringify(S.geometry[k]) : null }]));
+ function record(label, keys = []) {
+  if (keys.length) keepActive();
+  S.undo.push({ label, contract: JSON.stringify(S.contract), keys, work: workOf(keys) }); if (S.undo.length > 60) S.undo.shift(); S.redo = []; S.dirty = true;
  }
+ function edit(label, fn, keys = []) { record(label, keys); fn(); invalidate(); }
  function stepHistory(from, to, verb) {
   const u = from.pop(); if (!u) { say(verb + '할 HVAC Grid 편집이 없습니다'); return; }
-  to.push({ label: u.label, contract: JSON.stringify(S.contract) }); S.contract = JSON.parse(u.contract); invalidate(); pickSystem();
+  const keys = u.keys || []; if (keys.length) keepActive();
+  to.push({ label: u.label, contract: JSON.stringify(S.contract), keys, work: workOf(keys) });
+  S.contract = JSON.parse(u.contract);
+  for (const k of keys) {
+   const w = u.work[k];
+   if (w.project) S.projects[k] = w.project; else delete S.projects[k];
+   if (w.result) S.results[k] = JSON.parse(w.result); else delete S.results[k];
+   if (w.geometry) S.geometry[k] = JSON.parse(w.geometry); else delete S.geometry[k];
+  }
+  // PHG D still holds the project of before: it opens the restored one when it is needed next
+  if (keys.includes(S.active)) S.active = null;
+  invalidate(); S.duct = null; S.dirty = true; pickSystem();
   say(`${verb}: ${u.label}`);
  }
  const undoShell = () => stepHistory(S.undo, S.redo, '실행 취소'), redoShell = () => stepHistory(S.redo, S.undo, '다시 실행');
@@ -149,6 +164,22 @@
   setContract(await (await fetch(`../samples/${name}.contract.json`, { cache: 'no-store' })).json());
   S.dirty = false; say(name === 't3' ? 'T3 시험선 설계 데이터를 열었습니다 (4 Deck · 다층 계통)' : '예제 설계 데이터(S5)를 열었습니다'); if (S.step === 'room' || S.step === 'load') S.step = 'air';
  }
+ // 새로 시작: the BOX drawing, the design data, every duct network and the edit history go; the app is as just opened
+ async function newStart() {
+  const work = Object.keys(S.results).length, drawing = box.loading && box.hasDrawing();
+  if (!S.contract && !drawing) { say('이미 빈 상태입니다'); return; }
+  const text = `BOX 도면${S.contract ? ', 설계 데이터' : ''}${work ? `, PHG D 덕트망 ${work}개` : ''}와 실행 취소 기록을 모두 비우고 처음부터 시작합니다.`;
+  const v = await ask(S.dirty && work ? text + ' 저장할까요?' : text, S.dirty && work ? [['save', '저장하고 새로 시작', true], ['discard', '저장하지 않고 새로 시작'], ['cancel', '취소']] : [['ok', '새로 시작', true], ['cancel', '취소']]);
+  if (v === 'cancel' || (v === 'save' && !(await saveProject()))) return;
+  if (box.loading) {
+   box.closeCal(); box.calSig = null;
+   // BOX's own 새 도면 asks with confirm(); the user has just answered that here
+   const w = box.win, c = w.confirm; w.confirm = () => true; try { box.click('newBtn'); } finally { w.confirm = c; }
+  }
+  if (phg.loading) phg.open(phg.blank, 'HVAC Grid');
+  Object.assign(S, { contract: null, projects: {}, results: {}, geometry: {}, active: null, undo: [], redo: [], dirty: false, file: null, deck: null, sys: null, room: null, duct: null, phgEditor: false, pickRoot: false, fieldErr: {} });
+  invalidate(); await go('room'); say('새로 시작: 빈 도면입니다. ① 도면을 열거나 예제를 불러오세요.');
+ }
  function applyDeltaT() {
   const v = +$('dT').value, pp = +$('pPct').value, pb = $('pBasis').value, mo = +$('minOa').value;
   const bad = [['dT', !(v >= 3 && v <= 25), '급기 ΔT는 3–25 K'], ['pPct', !(pp >= 0 && pp <= 30), '가압은 0–30 %'], ['minOa', !(mo >= 0 && mo <= 100), '최소 신기 비율은 0–100 %']].filter(x => x[1]);
@@ -163,7 +194,7 @@
   // a unit or a shaft stands in a room of its deck
   const q = { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 }, room = S.contract.rooms.find(r => r.deckId === S.deck && GE.inRoom(q, r));
   if (!room) { say('실 밖입니다 — 공조기·수직 덕트 위치는 실 안을 클릭하세요', true); return false; }
-  edit(`${S.sys} ${pl?.isUnitDeck ? '공조기' : '수직 덕트'} 위치`, () => { S.contract.roots = { ...(S.contract.roots || {}), [key]: { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 } }; });
+  edit(`${S.sys} ${pl?.isUnitDeck ? '공조기' : '수직 덕트'} 위치`, () => { S.contract.roots = { ...(S.contract.roots || {}), [key]: { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 } }; }, [key]);
   S.pickRoot = false; say(`${S.sys} ${pl?.isUnitDeck ? '공조기' : '수직 덕트'} 위치 지정 (${deckName(S.deck)})`); return true;
  }
  function clearRoot() { const key = curKey(); if (!S.contract.roots?.[key]) return; edit('위치 지정 해제', () => { const { [key]: _, ...rest } = S.contract.roots; S.contract.roots = rest; }); say('지정 해제 — 팬룸·샤프트 또는 복도 끝을 씁니다'); }
@@ -247,7 +278,8 @@
  async function reroute(key = curKey()) {
   const r0 = result(key); if (!r0?.auto) throw new Error('먼저 AUTO로 덕트망을 만드세요');
   if (r0.candidates === 1) throw new Error('PHG D가 찾은 경로가 하나뿐입니다 — RU나 공조기를 끌어서 옮기면 다른 경로가 나옵니다');
-  await autoKey(key, { pick: (r0.pick ?? 0) + 1 }); const r = result(key); S.duct = null;
+  record(`${key.replace('__', ' · ')} 다른 경로`, [key]);
+  try { await autoKey(key, { pick: (r0.pick ?? 0) + 1 }); } catch (e) { S.undo.pop(); throw e; } const r = result(key); S.duct = null;
   say(`${key.replace('__', ' · ')}: 경로 후보 ${(r.pick ?? 0) + 1}/${r.candidates ?? '?'} · 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa`);
  }
  // a duct's section by hand (null: PHG D sizes it again); the network is calculated again in PHG D
@@ -255,7 +287,8 @@
   const d = S.geometry[key]?.ducts?.[i]; if (!d) throw new Error('덕트를 고르세요');
   if (!S.projects[key]) throw new Error('이 계통의 덕트망이 없습니다 — AUTO 먼저');
   await loadPhg(); if (S.active !== key) await openKey(key);
-  const r = await phg.setDuctSize(d.id, size); store(key, { edited: true }, { keepSig: true });
+  record(`${d.displayName} 크기`, [key]);
+  let r; try { r = await phg.setDuctSize(d.id, size); } catch (e) { S.undo.pop(); throw e; } store(key, { edited: true }, { keepSig: true });
   // PHG D may number its ducts again when it calculates: the duct is found by id, else by its name
   const ds = S.geometry[key]?.ducts || [], at = ds.findIndex(x => x.id === d.id); S.duct = { key, i: Math.max(0, at >= 0 ? at : ds.findIndex(x => x.displayName === d.displayName)) };
   say(`${d.displayName}: ${size ? (size.diameterMm ? 'Ø' + size.diameterMm : size.widthMm + '×' + size.heightMm) + ' (수동)' : 'PHG D 자동 크기'} · 계통 최대 ${r.indexPa ?? '—'} Pa`);
@@ -265,13 +298,13 @@
   const pl = plans().find(x => x.key === key), u = pl?.rus.find(x => x.id === ruId), room = u && S.contract.rooms.find(r => r.id === u.roomId);
   const q = { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 };
   if (!room || !GE.inRoom(q, room)) { say(`RU는 자기 실(${room ? room.no + ' ' + room.name : '?'}) 안에만 둘 수 있습니다`, true); return; }
-  edit(`RU ${ruId} 이동`, () => { S.contract = { ...S.contract, ruMoves: { ...(S.contract.ruMoves || {}), [ruId]: q } }; });
+  edit(`RU ${ruId} 이동`, () => { S.contract = { ...S.contract, ruMoves: { ...(S.contract.ruMoves || {}), [ruId]: q } }; }, [key]);
   await autoKey(key);
  }
  // this plan's RUs back where the plan puts them
  async function resetRuMoves(key = curKey()) {
   const pl = plans().find(x => x.key === key), ids = new Set((pl?.rus || []).filter(u => u.moved).map(u => u.id)); if (!ids.size) return;
-  edit('RU 위치 초기화', () => { S.contract = { ...S.contract, ruMoves: Object.fromEntries(Object.entries(S.contract.ruMoves || {}).filter(([k]) => !ids.has(k))) }; });
+  edit('RU 위치 초기화', () => { S.contract = { ...S.contract, ruMoves: Object.fromEntries(Object.entries(S.contract.ruMoves || {}).filter(([k]) => !ids.has(k))) }; }, [key]);
   await autoKey(key);
  }
  // dragging an RU or the unit / shaft of the current system on the ④ plan
@@ -787,6 +820,7 @@
  $('rightToggle').onclick = () => { S.rightOff = !S.rightOff; render(); };
  $('undoBtn').onclick = () => act(null, () => { const f = frameOnScreen(); if (f) f.click('undoBtn'); else undoShell(); });
  $('redoBtn').onclick = () => act(null, () => { const f = frameOnScreen(); if (f) f.click('redoBtn'); else redoShell(); });
+ $('resetBtn').onclick = () => act(null, newStart);
  $('openProjectBtn').onclick = e => { e.stopPropagation(); fileMenu(); };
  $('helpBtn').onclick = () => help();
  $('helpClose').onclick = () => $('help').close();
@@ -806,7 +840,7 @@
  };
  document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) || ((e.ctrlKey || e.metaKey) && /^[so]$/i.test(e.key)) || ((e.ctrlKey || e.metaKey) && /^[zy]$/i.test(e.key) && !frameOnScreen()) || e.key === 'F1' ? onKey(e) : false;
  window.addEventListener('resize', () => { if (S.step === 'air' && S.contract) plan(); });
- window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act('RU 옮기고 다시 AUTO', () => moveRu(k, id, p)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
+ window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, newStart: () => act(null, newStart), undo: () => act(null, undoShell), redo: () => act(null, redoShell), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act('RU 옮기고 다시 AUTO', () => moveRu(k, id, p)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
   runAll: (keys, opt) => act('AUTO 계산 중', () => runAll(keys, opt)) };   // with the busy overlay and error message, as from the ribbon
  render(); go('room');
 })();

@@ -17,6 +17,7 @@
   <div class="baricons">
    <button class="ib" id="undoBtn" title="실행 취소"><svg viewBox="0 0 20 20"><path d="M7 5L3 9l4 4M3 9h9a4 4 0 010 8H9"/></svg></button>
    <button class="ib" id="redoBtn" title="다시 실행"><svg viewBox="0 0 20 20"><path d="M13 5l4 4-4 4M17 9H8a4 4 0 000 8h3"/></svg></button>
+   <button class="ib" id="resetBtn" title="새로 시작 — BOX 도면 · 설계 데이터 · 덕트망 · 실행 취소 기록을 모두 비움" aria-label="새로 시작"><svg viewBox="0 0 20 20"><path d="M4 10a6 6 0 106-6H6M6 1L3 4l3 3"/></svg></button>
    <span class="sep"></span>
    <button class="ib" id="openProjectBtn" title="파일: 열기 · 최근 프로젝트 · 저장 (Ctrl+O)" aria-haspopup="menu"><svg viewBox="0 0 20 20"><path d="M3 6h5l2 2h7v8H3z"/></svg></button>
    <button class="ib" id="saveProjectBtn" title="프로젝트 저장 (Ctrl+S) · 설계 데이터 + PHG D 덕트망 + 결과"><svg viewBox="0 0 20 20"><path d="M4 3h10l3 3v11H4zM7 3v5h6V3M7 17v-5h7v5"/></svg></button>
@@ -65,7 +66,8 @@
     <tr><td>Ctrl + S</td><td>프로젝트 저장 (처음이면 위치와 이름 고르기)</td></tr>
     <tr><td>Ctrl + Shift + S</td><td>다른 이름으로 저장</td></tr>
     <tr><td>Ctrl + O</td><td>프로젝트 열기</td></tr>
-    <tr><td>Ctrl + Z / Ctrl + Y</td><td>실행 취소 / 다시 실행 (①② BOX, ④ PHG D, ③⑤ HVAC Grid 편집 — 화면마다 따로)</td></tr>
+    <tr><td>Ctrl + Z / Ctrl + Y</td><td>실행 취소 / 다시 실행 (①② BOX, ③④⑤ HVAC Grid 편집 — RU·공조기 이동, 덕트 크기, 다른 경로는 덕트망까지 되돌림 · ④ PHG D 편집기에서는 PHG D)</td></tr>
+    <tr><td>⟲ (머리줄)</td><td>새로 시작 — BOX 도면·설계 데이터·덕트망·실행 취소 기록을 모두 비움 (확인 후)</td></tr>
     <tr><td>Esc</td><td>위치 지정 취소 · 대화상자 닫기</td></tr>
     <tr><td>F1</td><td>이 도움말</td></tr></tbody></table></section>
    <section><h4>용어</h4><dl class="terms">
