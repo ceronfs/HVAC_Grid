@@ -29,13 +29,14 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 
 - Node.js 20 이상, Microsoft Edge(헤드리스 실행·E2E용 — 다른 브라우저는 `HVAC_GRID_BROWSER=chrome`)
 - `npm install` — devDependency `playwright-core`(브라우저 내려받기 없음, 설치된 Edge를 씀). 이미 설치된 Playwright를 쓰려면 `PLAYWRIGHT_MODULE=<경로>`
-- 셸만 쓸 때는 `npm start` 하나면 됩니다(브라우저에서 엶).
+- 셸만 쓸 때는 **`HVAC_Grid.bat`을 더블클릭**하면 됩니다(로컬 서버를 켜고 기본 브라우저로 엶, 창을 닫으면 종료). 명령줄에서는 `npm start`.
 
-처음 써 보기: `npm start` → 브라우저 http://127.0.0.1:8792/app/ → ③에서 **T3 시험선** → ⑤ **모든 계통 AUTO**(약 40초) → ⑤ **보고서**.
+처음 써 보기: `HVAC_Grid.bat` 더블클릭 → 브라우저 http://127.0.0.1:8792/app/ → ③에서 **T3 시험선** → ⑤ **모든 계통 AUTO**(약 50초) → ⑤ **보고서**.
 
 ## 실행
 
 ```
+HVAC_Grid.bat               # 더블클릭: 서버 + 기본 브라우저 (이미 켜져 있으면 브라우저만)
 npm start                   # 통합 셸 → 브라우저에서 http://127.0.0.1:8792/app/
 npm test                    # 단위 테스트 60개
 npm run test:e2e            # E2E: S5 셸 흐름 + T3 시험선 전체 (실제 BOX·PHG D, 캡처 out/e2e*/)

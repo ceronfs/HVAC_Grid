@@ -185,5 +185,10 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .plan .xfer.set line{stroke-dasharray:none}.plan .xfer.acls line{stroke:var(--warn)}.plan .xfer.acls polygon,.plan .xfer.acls text{fill:var(--warn)}
 /* open items grouped by level and field */
 .grp-items{margin:0 0 6px}.grp-items>summary{cursor:pointer;padding:4px 2px;font-weight:600}.grp-items>summary .muted{font-weight:400}.grp-items>table{margin:2px 0 8px 18px}
-/* ribbon overflow buttons */
-.ribbon .rb-more{position:sticky;z-index:2;flex:none;align-self:stretch;width:22px;border:1px solid var(--line);background:var(--panel);color:var(--accent);font-size:18px;font-weight:700;cursor:pointer;border-radius:4px;box-shadow:0 0 8px rgba(0,0,0,.18)}.ribbon .rb-more.left{left:0}.ribbon .rb-more.right{right:0;margin-left:auto}.ribbon .rb-more:hover{background:var(--soft)}
+/* ribbon overflow buttons: over the ribbon's ends, outside its scroll box */
+.ribbon-wrap{position:relative;min-width:0}
+.rb-more{position:absolute;top:4px;bottom:4px;z-index:3;width:24px;border:1px solid var(--line);background:var(--panel);color:var(--accent);font-size:18px;font-weight:700;cursor:pointer;border-radius:4px;box-shadow:0 0 10px rgba(0,0,0,.2)}.rb-more.left{left:2px}.rb-more.right{right:2px}.rb-more:hover{background:var(--soft)}
+/* a table in a horizontal scroll box: its header sticks to that box, so no offset (else it covers the first row) */
+.report .scrollx th{top:0}
+/* grouped open items: one column of text, left aligned */
+.report table.checks.grp-table td,.report table.checks.grp-table td:first-child{text-align:left;white-space:normal;width:auto}

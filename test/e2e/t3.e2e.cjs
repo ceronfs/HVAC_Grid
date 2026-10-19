@@ -45,12 +45,19 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   await shot('5-review-nets');
   await p.locator('#report .tabs button', { hasText: '계통' }).click(); await shot('5-review-systems');
   await p.locator('#report .tabs button', { hasText: '방화' }).click(); await shot('5-review-fire');
+  // run test P2-1: the first penetration row is not under the table header (sticky header in a scroll box)
+  const firstRow = await H(() => { const tr = document.querySelector('#report .scrollx tbody tr'); tr.scrollIntoView({ block: 'center' }); const b = tr.getBoundingClientRect(), el = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2); return { tag: el?.tagName, inRow: tr.contains(el) }; });
+  assert.ok(firstRow.inRow, 'first penetration row visible: ' + JSON.stringify(firstRow));
+  // run test P3-1: nothing was edited in PHG D, so no result is marked edited
+  await p.click('.step[data-step=duct]'); await idle(); await p.click('.step[data-step=review]'); await idle();
+  assert.equal(await H(() => Object.values(HVACGrid.S.results).filter(r => r.edited).length), 0, 'no false "edited in PHG D"');
   await p.click('.step[data-step=air]'); await idle(); await p.locator('.seg[data-seg="평면 보기"] button', { hasText: '방화' }).click(); await H(() => { HVACGrid.S.deck = 'D1'; HVACGrid.render(); }); await p.waitForTimeout(200); await shot('3-air-fire-D1');
   await p.locator('.seg[data-seg="평면 보기"] button', { hasText: '풍량' }).click(); await H(() => { HVACGrid.S.deck = 'D2'; HVACGrid.render(); }); await p.waitForTimeout(200); await shot('3-air-ducts-D2');
   // save, start over, open the saved project: the same results without running anything
   const [d] = await Promise.all([p.waitForEvent('download'), p.click('#saveProjectBtn')]); const file = path.join(OUT, 't3.project.json'); await d.saveAs(file);
   await H(() => HVACGrid.openSample('s5'));
   const [chooser] = await Promise.all([p.waitForEvent('filechooser'), p.click('#openProjectBtn')]); await chooser.setFiles(file); await idle();
+  await p.waitForFunction(() => HVACGrid.S.contract?.rooms.length === 79 && HVACGrid.S.contract.solas, null, { timeout: 30000 });   // the file is read without the busy overlay
   const back = await H(() => { const a = HVACGrid.analysis(); return { rooms: HVACGrid.S.contract.rooms.length, done: a.done, below: HVACGrid.S.contract.solas.lowestBelow, pens: a.solas.summary.penetrations }; });
   assert.deepEqual(back, { rooms: 79, done: 17, below: '기관실 — A류', pens: a.pens }); log('project round trip', JSON.stringify(back));
   // the saved PHG D project opens in PHG D as it was

@@ -67,3 +67,13 @@ test('R4: over-pressurization flagged; minOaPct validated', () => {
  assert.ok(!PJ.airChecks(make(rooms, { minOaPct: 0 })).some(x => x.code === 'RELIEF'));
  assert.deepEqual(K.validate({ ...c, rules: { ...c.rules, minOaPct: 150 } }), ['rules.minOaPct']);
 });
+
+test('run test: project names without file extensions; the room summary names stair transfer failures', () => {
+ const RP = require('../lib/report.cjs'), PJ = require('../lib/project.cjs');
+ assert.equal(RP.PROJECT_NAME({ source: { project: 'T3.box.json' } }), 'T3 시험선');
+ assert.equal(RP.PROJECT_NAME({ source: { project: 'Ship 123.box.json' } }), 'Ship 123');
+ assert.equal(RP.PROJECT_NAME({ source: { project: 'built-in S5 example' } }), 'S5 예제 (BOX 내장)');
+ const t3 = require('../samples/t3.contract.json'), wc = t3.rooms.find(r => r.no === '404'), st = t3.rooms.find(r => r.no === '403');
+ const c = K.applyRules({ ...t3, transfers: { [wc.id]: st.id } }), a = PJ.analyze({ contract: c, results: {}, geometry: {}, projects: {} });
+ const air = a.checks.find(k => k.id === 'air'); assert.equal(air.level, 'fail'); assert.match(air.text, /계단실 전달 공기 1/);
+});

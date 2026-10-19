@@ -26,6 +26,8 @@
   return Object.fromEntries(files.filter(f => f.endsWith('.cjs')).map(f => [f.replace('.cjs', ''), require(f)]));
  }
 
+ // JSON with sorted keys and without time stamps (save and calculation times), for comparing two saves of one project
+ const canonical = v => JSON.stringify(v, (k, x) => typeof x === 'string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(x) ? undefined : x && typeof x === 'object' && !Array.isArray(x) ? Object.fromEntries(Object.keys(x).sort().map(n => [n, x[n]])) : x);
  class VendorFrame {
   constructor(frame, { url, css, ready }) { Object.assign(this, { frame, url, css, readyTest: ready }); this.loading = null; }
   get win() { return this.frame.contentWindow; }
@@ -105,7 +107,8 @@
   async load() { await super.load(); this.doc.getElementById('autosaveRecoveryBar')?.remove(); if (!this.blank) this.blank = this.serialize(); return this; }
   clickMenu(text) { this.clickText('header.topbar button', text); }
   serialize() { return JSON.stringify(this.win.LineDesignV2.serializeTypedProject()); }
-  open(text, name) { this.win.LineDesignV2.loadTypedProjectJson(text, name); this.win.LineDesignLegacy.renderEverything(); this.fit(); }
+  // opened: what PHG D made of a stored project right after loading it (it fills in defaults), the base for changedSince
+  open(text, name) { this.win.LineDesignV2.loadTypedProjectJson(text, name); this.win.LineDesignLegacy.renderEverything(); this.fit(); try { this.opened = { text, base: this.serialize() }; } catch { this.opened = null; } }
   fit() { try { this.click('zoomAllBtn'); } catch {} }
   // one deck + supply system from lib/phg-plan.cjs: empty project, room drawing as background, Root and RUs.
   // PHG D shows DXF y upward as screen y downward: app y = -DXF y
@@ -166,7 +169,9 @@
    return { ...this.result(), seconds: Math.round((performance.now() - t) / 100) / 10, candidate: c.label, unconnected: c.unconnectedRuIds?.length || 0, zonesRelaxed };
   }
   // the project open in PHG D differs from the stored text (edited in PHG D since)
-  changedSince(text) { try { return this.serialize() !== text; } catch { return false; } }
+  // content changed since text (a saved project)? PHG D writes keys in another order, new time stamps and default fields
+  // when it reloads a project: a project opened from text is compared with what PHG D made of it, in a canonical form
+  changedSince(text) { try { const base = this.opened?.text === text ? this.opened.base : text; return canonical(JSON.parse(this.serialize())) !== canonical(JSON.parse(base)); } catch { return false; } }
   // what the inspector and the review table show for the project now open in PHG D
   result() {
    const w = this.win, st = w.LineDesignLegacy.getState(), len = d => d.points.slice(1).reduce((s, q, i) => s + Math.hypot(q.x - d.points[i].x, q.y - d.points[i].y), 0);
