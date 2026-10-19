@@ -4,7 +4,8 @@
 // systems, transfer air, stairs stacked through all decks, CO2 and battery rooms with their own exhaust. v2 (after
 // review 1): the AC room and the trunk open onto the corridor, so ducts need not pass the casing or the stair. v2.1
 // (after review 2): laundry, changing and drying rooms on the corridor (their make-up air through a corridor door),
-// a galley fan room next to the galley, room ceiling heights.
+// a galley fan room next to the galley, room ceiling heights. v2.2: a cabin toilet is numbered cabin + 50 (211 -> 261),
+// digits only - BOX reads only a digits-only DXF text as a room number, so "211T" became part of the name, no number.
 //   node tools/make-test-ship.cjs [outDir=samples/t3]
 // Writes T3.box.json (a BOX CAL project, the same format as BOX's own S5 example: deck outline LINEs and RECT / POLY
 // rooms carrying the room data) and one general-arrangement DXF per deck (T3_<deck>.dxf: deck outline, closed room
@@ -56,14 +57,15 @@ const USE = {
 const rooms = [];   // { deck, no, name, use, rect:[x0,y0,x1,y1] } or { ..., poly:[[x,y]...] }
 const R = (deck, no, name, use, x0, y0, x1, y1) => rooms.push({ deck, no, name, use, rect: [x0, y0, x1, y1] });
 const P = (deck, no, name, use, pts) => rooms.push({ deck, no, name, use, poly: pts });
-// a cabin bay: L-shaped cabin + its toilet on the corridor side (wcW x wcD)
+// a cabin bay: L-shaped cabin + its toilet on the corridor side (wcW x wcD); the toilet number is the cabin's + 50
 function bay(deck, no, name, use, x0, x1, side, wcW = 1600, wcD = 2000) {
+ const wc = String(+no + 50);
  if (side === 'stbd') {                       // y 0 (ship side) .. 7000 (corridor)
   P(deck, no, name, use, [[x0, 0], [x1, 0], [x1, 7000], [x0 + wcW, 7000], [x0 + wcW, 7000 - wcD], [x0, 7000 - wcD]]);
-  R(deck, no + 'T', name + ' 화장실', 'cabinWc', x0, 7000 - wcD, x0 + wcW, 7000);
+  R(deck, wc, name + ' 화장실', 'cabinWc', x0, 7000 - wcD, x0 + wcW, 7000);
  } else {                                     // y 9000 (corridor) .. 16000 (ship side)
   P(deck, no, name, use, [[x0, 9000 + wcD], [x0 + wcW, 9000 + wcD], [x0 + wcW, 9000], [x1, 9000], [x1, 16000], [x0, 16000]]);
-  R(deck, no + 'T', name + ' 화장실', 'cabinWc', x0, 9000, x0 + wcW, 9000 + wcD);
+  R(deck, wc, name + ' 화장실', 'cabinWc', x0, 9000, x0 + wcW, 9000 + wcD);
  }
 }
 // the core every accommodation deck shares: the engine casing on the corridor (A-60), the corridor the full length,
@@ -135,7 +137,7 @@ function boxProject(template) {
  const deckTpl = template.source.decks[0];
  return { ...template, source: { ...template.source, entities: ents, decks: DECKS.map(d => ({ ...deckTpl, id: d.id, name: d.name, z: d.z, height: HEIGHT })), backgrounds: [] },
   view: { ...template.view, activeDeck: 'D1', hidden: [], hiddenRooms: [], hiddenDeckLayers: [] },
-  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.1', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
+  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.2', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
 }
 
 // ---------- general arrangement DXF ----------

@@ -79,7 +79,7 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
    return { entities: st.entities.length, cabin: at(5500, 2500), wc: at(4800, 6000), corridor: at(12000, 8000) };
   }, dxf);
   log('PHG D import T3_D2.dxf', JSON.stringify(phgRooms));
-  assert.ok(phgRooms.entities >= 26); assert.match(phgRooms.cabin, /211/); assert.match(phgRooms.wc, /211T/); assert.match(phgRooms.corridor, /202/);
+  assert.ok(phgRooms.entities >= 26); assert.match(phgRooms.cabin, /211/); assert.match(phgRooms.wc, /261/); assert.match(phgRooms.corridor, /202/);
   await shot('4-duct-dxf-import');
   await p.click('.step[data-step=room]'); await idle();
   const boxEnt = await H(async text => { const X = HVACGrid.box; X.setFile('dxfFile', new File([text], 'T3_D2.dxf', { type: 'application/dxf' }));
