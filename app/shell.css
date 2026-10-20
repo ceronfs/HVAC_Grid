@@ -262,3 +262,9 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
  .ribbon{padding-left:6px;padding-right:6px}.grp{padding:0 4px}.cmd{min-width:38px;padding:3px 3px}
  .field{padding:0 2px}.field input{min-width:0;width:4.2em}.field select{min-width:118px;max-width:150px}
 }
+/* ④: a network made before its plan changed, said on the canvas */
+.stale-banner{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:10px;padding:6px 8px 6px 14px;background:var(--panel);border:1px solid var(--warn);border-radius:8px;color:var(--warn);font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+/* ⑤ wide tables: the first column stays while the rest scrolls */
+.report .scrollx tbody td:first-child,.report .scrollx thead th:first-child{position:sticky;left:0;z-index:1;background:var(--panel)}
+.report .scrollx thead th:first-child{z-index:3}
+.plan .xfer text{paint-order:stroke;stroke:var(--canvas);stroke-linejoin:round}

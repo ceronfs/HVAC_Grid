@@ -144,7 +144,9 @@
    fills, selection, tools and status step aside (the side columns keep their width so the canvas does not move) */
 html.hg-bg #roomZoneLayer,html.hg-bg #roomHighlightLayer,html.hg-bg #gripLayer,html.hg-bg #previewLayer,html.hg-bg #osnapLayer,
 html.hg-bg #olWorkflowOverlay,html.hg-bg #l4DiagnosticsOverlay{display:none!important}
-html.hg-bg .main>.side,html.hg-bg #canvas>.viewbar,html.hg-bg #canvas>.status{visibility:hidden!important}`;
+html.hg-bg .main>.side,html.hg-bg #canvas>.viewbar,html.hg-bg #canvas>.status{visibility:hidden!important}
+html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}
+html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
  const CAL_APPLY = new Set(['K7', 'C✓']);
  const CAL_IDS = { RL: 'roomBtn', A6: 'contactBtn', DC: 'designConditionsBtn', BC: 'faceBoundaryBtn', KD: 'kDataBtn', K7: 'iso7547KBtn', KC: 'calculatedKBtn', 'C✓': 'calculatedKApplyBtn', KU: 'userKBtn',
   LR: 'roomLoadResultBtn', OA: 'systemFreshAirBtn', RH: 'ahuHeatingBtn', 'R↑': 'exportRoomSheetBtn', 'A↑': 'exportFaceSheetBtn', 'I↑': 'exportRoomLoadSheetBtn', 'N↑': 'exportNonIsoRoomLoadSheetBtn', 'Σ↑': 'exportSystemSummaryBtn', LX: 'loadSheetBtn' };
@@ -157,10 +159,12 @@ html.hg-bg .main>.side,html.hg-bg #canvas>.viewbar,html.hg-bg #canvas>.status{vi
     clearBtn: 'CL · 선택 해제', hideBtn: 'HD · 선택 객체 숨기기', restoreBtn: 'RS · 숨긴 객체 복원', zoomBtn: 'ZT · 선택 객체 확대', showLayers: 'SA · 모든 레이어 표시', hideLayers: 'HA · 모든 레이어 숨기기', stackTransformCanvas: 'MV · 캔버스 기준점 이동 다시 시작' })) set('#' + id, t);
   }
   // BOX's own table windows (격실 목록, 접한 면적) open through the shell too, dressed like the app
-  async load() { await super.load(); if (!this.win.__hvacGridOpen) { this.win.__hvacGridOpen = true; this.win.open = (...a) => openPopup(...a); } return this; }
+  async load() { await super.load(); this.theme(); if (!this.win.__hvacGridOpen) { this.win.__hvacGridOpen = true; this.win.open = (...a) => openPopup(...a); } return this; }
   hasDrawing() { const s = this.win.CAD_APP?.st; return !!(s && s.entities.length && s.decks.length); }
+  // BOX's own light / dark follows the shell
+  theme() { try { this.doc.documentElement.dataset.theme = document.documentElement.dataset.theme || ''; } catch {} }
   // BOX's canvas as the background of ③ ④ (BOX_CSS hg-bg); BOX itself is not changed
-  backdrop(on) { try { this.doc.documentElement.classList.toggle('hg-bg', !!on); } catch {} }
+  backdrop(on, duct = false) { try { const c = this.doc.documentElement.classList; c.toggle('hg-bg', !!on); c.toggle('hg-duct', !!on && duct); } catch {} }
   // BOX's 2D view moved so a deck (world box) sits inside a strip of the shell's screen (the canvas between the floating
   // panels); zoomed out only, never in. A view change, as a pan / zoom in BOX - the same view in ① ② afterwards
   fitDeck(b, strip, pad = 24) {

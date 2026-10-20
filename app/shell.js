@@ -127,7 +127,7 @@
   }
   // PHG D still holds the project of before: it opens the restored one when it is needed next
   if (keys.includes(S.active)) S.active = null;
-  invalidate(); S.duct = null; S.dirty = true; pickSystem();
+  invalidate(); S.duct = null; S.dirty = true; S.fieldErr = {}; pickSystem();
   say(`${verb}: ${u.label}`);
  }
  const undoShell = () => stepHistory(S.undo, S.redo, '실행 취소'), redoShell = () => stepHistory(S.redo, S.undo, '다시 실행');
@@ -298,11 +298,14 @@
   let ran = 0;
   // one undo entry for the whole run: Ctrl+Z puts every network it made back as it was
   if (todo.length) record(`${onlyNeeded ? '남은 것만' : '모든 계통'} AUTO (${todo.length}개)`, todo);
+  const rus = k => Math.max(1, plans().find(p => p.key === k)?.rus.length || 1), allRu = todo.reduce((t, k) => t + rus(k), 0);
+  let doneRu = 0;
   for (const [i, key] of todo.entries()) {
    if (stopped) break;
-   const per = i ? (performance.now() - t0) / 1000 / i : null;
-   busy(`${i + 1}/${todo.length} · ${key.replace('__', ' · ')} AUTO`, { done: i, total: todo.length, eta: per != null ? per * (todo.length - i) : null, stop: todo.length > 1 ? stop : null });
-   await autoKey(key); ran++;
+   // after a few plans (or a tenth of the RUs): seconds per RU so far x RUs left
+   const perRu = i >= 2 || doneRu >= allRu / 10 ? (performance.now() - t0) / 1000 / doneRu : null;
+   busy(`${i + 1}/${todo.length} · ${key.replace('__', ' · ')} AUTO`, { done: i, total: todo.length, eta: perRu != null ? perRu * (allRu - doneRu) : null, stop: todo.length > 1 ? stop : null });
+   await autoKey(key); ran++; doneRu += rus(key);
   }
   const done = keys.filter(k => result(k)?.auto && !result(k).stale).length;
   say(`AUTO ${stopped ? '멈춤' : '완료'}: ${done}/${keys.length} (이번에 ${ran}개${stopped ? ` · 남은 ${todo.length - ran}개는 "남은 것만"으로` : ''})`);
@@ -402,7 +405,7 @@
   xlsx: async () => { keepActive(); const f = await saveFile(outName('xlsx'), XL.xlsx(RP.sheets(project(), analysis()))); if (f) say('통합 XLSX (격실·계통·덕트망·수직 덕트·방화·관통·물량·검토)'); },
   dxf: async () => { const a = analysis(), f = await saveFile(outName('dxf'), DX.integratedDxf(S.contract, { diagrams: DG.systemDiagrams(S.contract, a), plans: a.plans, geometry: S.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers })); if (f) say('통합 DXF (Deck별 격실·RU·덕트·공조기·수직 덕트·방화 경계·관통)'); },
   report: async () => { keepActive(); const f = await saveFile(outName('html'), RP.html(project(), analysis())); if (f) say(`보고서 (HTML, 인쇄용): ${f.name}`); },
-  csv: async () => { const sh = RP.sheets(project(), analysis()).find(s => s.name === 'Deck 덕트망'); await saveFile(outName('csv'), '﻿' + [sh.head, ...sh.rows].map(r => r.map(U.csvCell).join(',')).join('\r\n')); },
+  csv: async () => { const sh = RP.sheets(project(), analysis()).find(s => s.name === 'Deck 덕트망'); const f = await saveFile(outName('csv'), '﻿' + [sh.head, ...sh.rows].map(r => r.map(U.csvCell).join(',')).join('\r\n')); if (f) say(`요약 CSV (Deck·계통 덕트망 ${sh.rows.length}행): ${f.name}`); },
   contract: () => saveFile(`hvac-grid-contract-${stamp()}.json`, JSON.stringify(S.contract, null, 1), { id: 'contract' }) };
  // the project: to its file (Ctrl+S), or a new one (first time, Ctrl+Shift+S); true when saved
  async function saveProject(as = false) {
@@ -417,6 +420,13 @@
  // labels are Korean; the old BOX / PHG D codes stay in the tooltip ("이전 단축") so existing users still find them
  const c = (ic, label, run, more = {}) => ({ icon: ic, label, run, ...more });
  const boxCmd = id => () => act(null, async () => { await box.load(); box.click(id); });
+ // a command that replaces the BOX drawing: the app's question first (only over a drawing), BOX's confirm() then answered
+ async function boxReplace(what, fn) {
+  await box.load();
+  if (box.hasDrawing() && (await ask(`${what}: 지금 BOX 도면(①)을 바꿉니다. 저장하지 않은 BOX 작업은 사라집니다. 계속할까요?`, [['ok', '계속', true], ['cancel', '취소']])) !== 'ok') return false;
+  const w = box.win, c = w.confirm; w.confirm = () => true; try { await fn(); } finally { w.confirm = c; } return true;
+ }
+ const boxSample = (id, what) => () => act(null, () => boxReplace(what, () => box.click(id)));
  // a CAL command: CAL calculates in the background (its panel stays out of sight); tables open in their own window, the
  // commands that apply values say how it went on the status line
  const CAL_SAY = { K7: 'ISO 적용', 'C✓': 'LY 적용' };
@@ -430,13 +440,13 @@
  const kindSeg = () => seg('계통 종류', S.kind, PL.KINDS.map(k => [k, KL[k], deckPlans(k).length]), v => { S.kind = v; S.sys = null; pickSystem(); S.pickRoot = false; });
  const STEPS = [
   { id: 'room', name: '도면·격실', view: 'box', groups: () => [
-   ['파일', [c('open', 'DXF 열기', boxFile('dxfFile', '.dxf'), { code: 'DXF' }), c('bg', '배경', boxFile('backgroundFile', ''), { code: 'BG' }), c('json', 'BOX 열기', boxFile('jsonFile', '.json'), { code: 'J↓', title: 'BOX 프로젝트 JSON 열기 (samples/t3/T3.box.json 시험선 포함) — HVAC Grid 프로젝트는 머리줄 폴더 단추' }), c('save', 'BOX 저장', boxCmd('saveBtn'), { code: 'S' }), c('dxfOut', 'BOX DXF 출력', boxCmd('exportBtn'), { code: 'D↑' })]],
-   ['보기', [c('fit', '전체 보기', boxCmd('fitBtn'), { code: '⌕' }), c('reset', '초기화', boxCmd('newBtn'), { code: '⟲' })]],
-   ['격실', [c('ol', '하부 외곽선', boxCmd('outlineBtn'), { code: '하부 OL' }), c('olu', '상부 외곽선', boxCmd('outlineUpperBtn'), { code: '상부 OL' }), c('olv', '외곽선 검증', boxCmd('outlineVerifyBtn'), { code: 'OL 검증' }), c('vl', '가상선', boxCmd('hullLinkBtn'), { code: 'VL' }), c('area', '면적', boxCmd('measureBtn'), { code: 'AR' }), c('apoly', '면적 POLY', boxCmd('areaPolygonBtn'), { code: 'AP' }),
+   ['파일', [c('open', 'DXF 열기', boxFile('dxfFile', '.dxf'), { code: 'DXF' }), c('bg', '배경', boxFile('backgroundFile', ''), { code: 'BG' }), c('json', 'BOX 열기', boxFile('jsonFile', '.json'), { code: 'J↓', title: 'BOX 프로젝트 JSON 열기 (T3 시험선 같은 BOX 프로젝트 파일) — HVAC Grid 프로젝트는 머리줄 폴더 단추' }), c('save', 'BOX 저장', boxCmd('saveBtn'), { code: 'S' }), c('dxfOut', 'BOX DXF 출력', boxCmd('exportBtn'), { code: 'D↑' })]],
+   ['보기', [c('fit', '전체 보기', boxCmd('fitBtn'), { code: '⌕' }), c('reset', '초기화', boxSample('newBtn', '초기화'), { code: '⟲' })]],
+   ['격실', [c('ol', '하부 외곽선', boxCmd('outlineBtn'), { code: '하부 OL' }), c('olu', '상부 외곽선', boxCmd('outlineUpperBtn'), { code: '상부 OL' }), c('olv', '외곽선 검증', boxCmd('outlineVerifyBtn'), { code: 'OL 검증' }), c('vl', '가상선', boxCmd('hullLinkBtn'), { code: 'VL' }), c('area', '면적', boxCmd('measureBtn'), { code: 'AR' }), c('apoly', '면적 다각형', boxCmd('areaPolygonBtn'), { code: 'AP' }),
     c('roomNo', '실 번호', boxCmd('autoRoomNoBtn'), { code: 'RN' }), c('roomFix', '실 지정', boxCmd('manualRoomBtn'), { code: 'RM' }), c('list', '격실 목록', boxCmd('roomBtn'), { code: 'RL' }), c('face', '접한 면적', boxCmd('contactBtn'), { code: 'A6' })]],
    ['검사', [c('lines', '선 검사', boxCmd('lineCheckBtn'), { code: 'CK' }), c('geo', '도형 검사', boxCmd('l4GeometryCheckBtn'), { code: 'GX' }), c('cube', '3D 검사', boxCmd('l4MeshCheckBtn')), c('water', '흘수선', boxCmd('waterlineBtn'))]],
-   ['예제', [c('sample', 'S5 예제', boxCmd('s5ExampleBtn'), { code: 'S5', title: '5 Deck · 94 공간 · 12 × 8 m' }), c('sample', 'H5 예제', boxCmd('h5ExampleBtn'), { code: 'H5', title: 'BOX 내장 H5 예제 — KCS 실선 치수' }),
-    c('deck', 'T3 시험선', () => act('T3 시험선 여는 중', async () => { const t = await (await fetch('../samples/t3/T3.box.json', { cache: 'no-store' })).text(); await box.load(); box.setFile('jsonFile', new File([t], 'T3.box.json', { type: 'application/json' })); say(`T3 시험선 → BOX (4 Deck · ${(t.match(/"roomNo"/g) || []).length}실)`); }), { title: 'HVAC Grid 시험선 BOX 프로젝트 (samples/t3/T3.box.json)' })]]] },
+   ['예제', [c('sample', 'S5 예제', boxSample('s5ExampleBtn', 'S5 예제'), { code: 'S5', title: '5 Deck · 94 공간 · 12 × 8 m' }), c('sample', 'H5 예제', boxSample('h5ExampleBtn', 'H5 예제'), { code: 'H5', title: 'BOX 내장 H5 예제 — KCS 실선 치수' }),
+    c('deck', 'T3 시험선', () => act('T3 시험선 여는 중', async () => { const t = await (await fetch('../samples/t3/T3.box.json', { cache: 'no-store' })).text(); if (!(await boxReplace('T3 시험선', () => box.setFile('jsonFile', new File([t], 'T3.box.json', { type: 'application/json' }))))) return; say(`T3 시험선 → BOX (4 Deck · ${(t.match(/"roomNo"/g) || []).length}실)`); }), { title: 'HVAC Grid 시험선 BOX 프로젝트 (4 Deck · 79실 · 다층 계통)' })]]] },
   { id: 'load', name: '부하', view: 'box', groups: () => [
    ['격실', [c('cal', '격실 입력', boxCal('RL'), { code: 'RL', title: '격실 입력 · 실마다 계통(SUP·EXH·RET)·재실인원·최소신기·장비 발열·환기 횟수·ISO 구분·냉난방 온습도 (CAL 격실 리스트)' })]],
    ['조건', [c('cond', '설계 조건', boxCal('DC'), { code: 'DC' }), c('bound', '경계 조건', boxCal('BC'), { code: 'BC' })]],
@@ -453,7 +463,7 @@
   { id: 'duct', name: 'RU·덕트', view: 'plan', groups: () => S.phgEditor ? [
    ['편집기', [c('back', '평면으로', () => act(null, closeEditor), { primary: true, title: 'PHG D에서 고친 내용을 읽고 HVAC Grid 평면으로 돌아갑니다' })]],
    ['HVAC Grid', [sysField(true), c('send', 'PHG D로 보내기', () => act('PHG D로 보내는 중', () => sendPlan()), { primary: true, disabled: () => !curKey(), title: 'Deck 격실 도면 + 공조기·수직 덕트 + 격실별 RU(풍량)' }), c('auto', '보내기 + AUTO', () => act('AUTO 계산 중', () => autoKey()), { disabled: () => !curKey(), title: 'AUTO → 첫 후보 → 덕트 지정 → 계산 → 압력' }), c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '결과 읽기', () => act(null, readBack), { disabled: () => !S.active, title: 'PHG D에서 고친 결과를 HVAC Grid로' })]],
-   ['계통', [c('root', '공조기', phgCmd('rootBtn'), { code: 'R', title: 'Root · 계통 시작점(공조기) 배치' }), c('ru', 'RU 배치', phgCmd('diffuserBtn'), { code: 'RU' }), c('ruAuto', 'RU 자동', phgCmd('autoDiffuserBtn')), c('flow', '풍량 초안', phgCmd('phgdFlowBtn'))]],
+   ['계통', [c('root', '공조기', phgCmd('rootBtn'), { code: 'R', title: '공조기 · 계통 시작점 배치' }), c('ru', 'RU 배치', phgCmd('diffuserBtn'), { code: 'RU' }), c('ruAuto', 'RU 자동', phgCmd('autoDiffuserBtn')), c('flow', '풍량 초안', phgCmd('phgdFlowBtn'))]],
    ['자동 라우팅', [c('zone', '금지 영역', phgText('금지 영역')), c('auto', 'AUTO', phgCmd('autoRouteOpenBtn'), { title: 'AUTO · 편집 가능한 경로 객체 생성 · 덕트 지정으로 덕트화' }), c('cmp', '비교', phgCmd('phgdCompareBtn')), c('set', '설정', phgCmd('phgdAutoSettingsBtn'))]],
    ['덕트', [c('ml', '주 덕트', phgCmd('assignMainLineBtn'), { code: 'ML' }), c('br', '분기', phgCmd('assignBranchBtn'), { code: 'BR' }), c('sbr', '보조 분기', phgCmd('assignSubBranchBtn'), { code: 'SBR' }), c('ad', '덕트 지정', phgCmd('makeDuctBtn'), { code: 'AD' })]],
    ['계산', [c('lines', '선 검사', phgCmd('lineCheckBtn')), c('calc', '계산', phgCmd('calculateBtn'), { title: '풍량과 덕트 크기' }), c('noise', '소음', phgCmd('noiseCalcBtn')), c('press', '압력', phgCmd('pressureCalcBtn'))]],
@@ -566,7 +576,7 @@
    const rooms = C.rooms.filter(r => r.deckId === d.id).filter(r => (!q || `${r.no} ${r.name}`.toLowerCase().includes(q)) && filters[S.filter][1](r));
    count += rooms.length; const open = d.id === S.deck || (q && rooms.length);
    return `<div class="deck"><button class="deckh" data-deck="${esc(d.id)}" aria-expanded="${!!open}">${open ? '▾' : '▸'} ${esc(d.name)} <small>Z ${fmt(d.elevationMm)} · ${rooms.length}실</small></button>${open ? rooms.map(r => { const sid = r.systems[S.kind];
-    return `<button class="room" data-room="${esc(r.id)}" aria-selected="${r.id === S.room}" title="${esc(r.no)} ${esc(r.name)}${r.isoClass ? ' · ISO 분류 ' + esc(r.isoClass) : ''} · SOLAS ${esc(cls[r.id]?.space || '미분류')}"><span class="no">${esc(r.no)}</span><span class="nm">${dots ? `<span class="dot" style="background:${sid ? sysColor(sid) : 'transparent'};${sid ? '' : 'border:1px solid var(--line)'}"></span>` : ''}${esc(r.name)}</span><span class="cmh">${value(r, C)}</span></button>`; }).join('') : ''}</div>`;
+    return `<button class="room" data-room="${esc(r.id)}" aria-selected="${r.id === S.room}" title="${esc(r.no)} ${esc(r.name)}${r.isoClass ? ' · ISO 분류 ' + esc(isoName(r.isoClass)) : ''} · SOLAS ${esc(cls[r.id]?.space || '미분류')}"><span class="no">${esc(r.no)}</span><span class="nm">${dots ? `<span class="dot" style="background:${sid ? sysColor(sid) : 'transparent'};${sid ? '' : 'border:1px solid var(--line)'}"></span>` : ''}${esc(r.name)}</span><span class="cmh">${value(r, C)}</span></button>`; }).join('') : ''}</div>`;
   }).join('');
   $('treeCount').textContent = count + '실';
   $('tree').querySelectorAll('.deckh').forEach(e => e.onclick = () => { S.deck = e.dataset.deck; S.room = null; pickSystem(); render(); if (S.step === 'duct' && S.phgEditor) act(null, async () => { const k = curKey(); if (k && S.projects[k]) await openKey(k); }); });
@@ -615,7 +625,7 @@
    }
   }
   const onBox = !!bv;
-  $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); box.backdrop(onBox); svg.classList.toggle('on-box', onBox);
+  $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); box.backdrop(onBox, S.step === 'duct'); svg.classList.toggle('on-box', onBox);
   let minX, minY, maxX, maxY, k;
   // the legend opens by itself only where it does not cover the deck (on BOX's view it may not)
   if (bv) { ({ minX, minY, maxX, maxY, k } = bv); const sideR = $('main').classList.contains('plan-view') ? $('right').offsetWidth : 0; legendRoom = rc.width - sideR - (Math.max(...xs) - minX) * k >= 320; }
@@ -671,7 +681,7 @@
     const len = px(16), h = px(6), fx = m.x - ux * len, fy = m.y - uy * len, tx = m.x + ux * len, ty = m.y + uy * len;
     const bd = a.solas.boundaries.find(b => b.kind === 'bulkhead' && ((b.roomA === r.id && b.roomB === src.id) || (b.roomB === r.id && b.roomA === src.id))), aClass = /^A/.test(bd?.grade || '');
     html += `<g class="xfer${A.transferSet ? ' set' : ''}${aClass ? ' acls' : ''}"><line x1="${fx}" y1="${Y(fy)}" x2="${tx}" y2="${Y(ty)}"/><polygon points="${tx + ux * h},${Y(ty + uy * h)} ${tx - uy * h * .6},${Y(ty + ux * h * .6)} ${tx + uy * h * .6},${Y(ty - ux * h * .6)}"/>`
-     + `<text x="${tx + ux * h + px(3)}" y="${Y(ty + uy * h) - px(3)}" style="font-size:${px(10)}px">${fmt(A.transferInCmh)}</text>`
+     + `<text x="${m.x - uy * px(9)}" y="${Y(m.y + ux * px(9)) + px(3)}" text-anchor="middle" style="font-size:${px(10)}px;stroke-width:${px(3)}px">${fmt(A.transferInCmh)}</text>`
      + `<title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${bd?.grade ? ' · 경계 ' + esc(bd.grade) : ''}${A.transferSet ? ' (지정)' : ' (자동)'}</title></g>`; }
    // ducts of the chosen kind that PHG D made, thin, under the markers
    // in ④ (the shared canvas): the chosen system's network strong and pickable, others of the deck faint as asked
@@ -722,13 +732,18 @@
   } else {
    const sys = [...new Set(rooms.map(r => r.systems[S.kind]).filter(Boolean))].sort();
    if (ductMode) { const res = cur && result(cur.key);
-    $('legend').innerHTML = cur ? `<b>${esc(deckName(S.deck))} · ${KL[cur.kind]} ${esc(cur.systemId)}</b><br>${res?.auto ? `덕트 ${res.ducts}개 · ${res.lengthM} m · 최대 ${res.indexPa ?? '—'} Pa${res.stale ? ' · <span class="warn">다시 보내기 필요</span>' : ''}` : '<span class="warn">덕트망 없음 — 보내기 + AUTO</span>'}<br><span class="ln" style="background:${sysColor(cur.systemId)};height:4px"></span>주 덕트 · <span class="ln" style="background:${sysColor(cur.systemId)};height:2px"></span>분기<br><span class="muted">● 급기 RU · ◆ 환기 RU · ■ 배기 RU · 덕트를 누르면 크기·풍량<br>RU·공조기는 끌어서 옮김 → 놓으면 다시 AUTO</span>` : '<span class="muted">이 Deck에 계통이 없습니다</span>';
+    // a network made before the plan changed (air, unit, RUs): said on the canvas, with the way out
+    let banner = $('staleBanner'); if (!banner) { banner = document.createElement('div'); banner.id = 'staleBanner'; banner.className = 'stale-banner'; $('center').appendChild(banner); }
+    show(banner, !!res?.auto && !!res.stale && !S.phgEditor);
+    if (res?.stale) { banner.innerHTML = `↻ 이 덕트망은 풍량·위치가 바뀌기 전 것입니다 <button class="btn primary">다시 AUTO</button>`; banner.querySelector('button').onclick = () => act('AUTO 계산 중', () => autoKey()); }
+    const view = S.ductShow || 'sys', shown = deckPlans().filter(p => p.key !== cur?.key && (view === 'all' || (view === 'kind' && p.kind === S.kind))), keyOthers = shown.length ? `<br>${shown.map(p => `<span class="ln" style="background:${sysColor(p.systemId)};height:3px;opacity:.6"></span>${KL[p.kind]} ${esc(p.systemId)}${result(p.key)?.auto ? '' : ' <span class="muted">(덕트망 없음)</span>'}`).join('<br>')}` : '';
+    $('legend').innerHTML = cur ? `<b>${esc(deckName(S.deck))} · ${KL[cur.kind]} ${esc(cur.systemId)}</b><br>${res?.auto ? `덕트 ${res.ducts}개 · ${res.lengthM} m · 최대 ${res.indexPa ?? '—'} Pa${res.stale ? ' · <span class="warn">다시 보내기 필요</span>' : ''}` : '<span class="warn">덕트망 없음 — 보내기 + AUTO</span>'}<br><span class="ln" style="background:${sysColor(cur.systemId)};height:4px"></span>주 덕트 · <span class="ln" style="background:${sysColor(cur.systemId)};height:2px"></span>분기${keyOthers}<br><span class="muted">● 급기 RU · ◆ 환기 RU · ■ 배기 RU · 덕트를 누르면 크기·풍량<br>RU·공조기는 끌어서 옮김 → 놓으면 다시 AUTO</span>` : '<span class="muted">이 Deck에 계통이 없습니다</span>';
    } else $('legend').innerHTML = `<b>${esc(deckName(S.deck))} ${KL[S.kind]} 계통</b><br>${sys.map(id => `<span class="dot" style="background:${sysColor(id)}"></span>${esc(id)} · ${fmt(C.systems.find(s => s.id === id && s.kind === S.kind)?.designCmh)} CMH`).join('<br>') || '<span class="muted">이 Deck에 없음</span>'}<br><span class="muted">${UNIT_WORD[S.kind]} □ 공조기·팬 · ⇅ ○ 수직 덕트 · 채움 = 지정 · 점선 = 임시</span>${C.rooms.some(r => r.deckId === S.deck && C.airflow[r.id].transferInCmh && C.rooms.some(x => x.id === C.airflow[r.id].transferFrom)) ? '<br><span class="muted">→ 전달 공기 CMH (실선 = 지정 · 주황 = A급 경계)</span>' : ''}`;
   }
  }
  // ⑤ review: tabs over the analysis
  const TABS = [['nets', '덕트망'], ['systems', '계통·수직 덕트'], ['diagram', '계통도'], ['fire', '방화 (SOLAS)'], ['checks', '검토']];
- const tableHtml = (sh, { keys, limit, cls, tip = '두 번 클릭: ④ RU·덕트에서 열기' } = {}) => `<table><thead><tr>${sh.head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${sh.rows.slice(0, limit || sh.rows.length).map((r, i) => `<tr${keys ? ` data-key="${esc(keys[i])}" class="${keys[i] === S.active ? 'active' : ''}" title="${esc(tip)}"` : ''}>${r.map((v, j) => `<td class="${typeof v === 'number' ? 'n ' : ''}${cls ? cls(r, j, i) : ''}">${esc(typeof v === 'number' ? v.toLocaleString() : v)}</td>`).join('')}</tr>`).join('')}</tbody></table>${limit && sh.rows.length > limit ? `<p class="muted">… ${sh.rows.length - limit}행 더 — 통합 XLSX 참조</p>` : ''}`;
+ const tableHtml = (sh, { keys, limit, cls, tip = '두 번 클릭: ④ RU·덕트에서 열기' } = {}) => `<div class="scrollx"><table><thead><tr>${sh.head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${sh.rows.slice(0, limit || sh.rows.length).map((r, i) => `<tr${keys ? ` data-key="${esc(keys[i])}" class="${keys[i] === S.active ? 'active' : ''}" title="${esc(tip)}"` : ''}>${r.map((v, j) => `<td class="${typeof v === 'number' ? 'n ' : ''}${cls ? cls(r, j, i) : ''}">${esc(typeof v === 'number' ? v.toLocaleString() : v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${limit && sh.rows.length > limit ? `<p class="muted">… ${sh.rows.length - limit}행 더 — 통합 XLSX 참조</p>` : ''}`;
  // a sheet with one column moved forward (the status of a row first on a narrow screen; the XLSX keeps its order)
  const front = (sh, name, at) => { const i = sh.head.indexOf(name); if (i < 0) return sh; const mv = r => { const c = r.slice(); const [v] = c.splice(i, 1); c.splice(at, 0, v); return c; }; return { ...sh, head: mv(sh.head), rows: sh.rows.map(mv) }; };
  // the penetration list for the screen: what to do at each crossing first (the XLSX has every column)
@@ -763,15 +778,15 @@
     ${a.solas.passages.length ? `<h3 class="err">제한 구역 통과 ${a.solas.passages.length}건 (II-2/9.7.2)</h3>${tableHtml(get('제한 구역 통과'), { cls: (r, j) => j === 0 ? (r[0] === '실패' ? 'err' : 'warn') : '' })}` : '<p class="ok">✓ 제한 구역(A류 기관구역·조리실·CO₂실·계단 등)을 지나는 덕트 없음</p>'}
     <h3>SOLAS 점검표 <small class="muted">계통 분리 경고 · 조리실 배기(9.7.5) · 축전지실·CO₂실 · 통풍 정지·폐쇄(5.2)</small></h3>${tableHtml(get('SOLAS 점검표'), { cls: (r, j) => j === 0 ? (r[0] === '실패' ? 'err' : 'warn') : '' })}
     <h3>덕트 관통 ${pens.length}${gf ? ` / ${sum.penetrations}` : ''}곳 <small class="muted">슬리브 ${Object.entries(sum.sleeves).map(([m, n]) => `${m} mm × ${n}`).join(', ') || '없음'} · 행을 누르면 ③ 방화 보기에서 위치 표시${sum.penetrations && !Object.keys(S.geometry).length ? ' · Deck 덕트는 AUTO 후 판정 (지금은 수직 덕트만)' : ''}</small></h3>
-    <div class="scrollx">${tableHtml(pt, { limit: 300, keys: pens.map(p => 'pen:' + p.no), tip: '눌러서 ③ 방화 보기에서 위치 보기', cls: (r, j) => j === 1 && /^A-60/.test(r[1]) ? 'err' : j === 2 && /방화댐퍼|판정|확인|미정|샤프트/.test(r[2]) ? 'warn' : '' })}</div>`;
+    <div>${tableHtml(pt, { limit: 300, keys: pens.map(p => 'pen:' + p.no), tip: '눌러서 ③ 방화 보기에서 위치 보기', cls: (r, j) => j === 1 && /^A-60/.test(r[1]) ? 'err' : j === 2 && /방화댐퍼|판정|확인|미정|샤프트/.test(r[2]) ? 'warn' : '' })}</div>`;
   } else {
    const items = RP.openItems(project(), a);
    body = `<h3>검토 <small class="muted">실패 ${a.count.fail} · 확인 필요 ${a.count.check} · 통과 ${a.count.ok}</small></h3><table class="checks"><tbody>${['fail', 'check'].flatMap(lv => a.checks.filter(k => k.level === lv)).map(k => `<tr><td class="${LV[k.level][0]}">${LV[k.level][1]}</td><td>${esc(k.text)}</td></tr>`).join('')}</tbody></table>${a.count.ok ? `<details class="grp-items ok-items"><summary><span class="${LV.ok[0]}">${LV.ok[1]}</span> ${a.count.ok}건</summary><table class="checks"><tbody>${a.checks.filter(k => k.level === 'ok').map(k => `<tr><td class="${LV.ok[0]}">${LV.ok[1]}</td><td>${esc(k.text)}</td></tr>`).join('')}</tbody></table></details>` : ''}
     <h3>미해결 확인 사항 ${items.length}건</h3>${items.length ? groups(items).map(([lv, area, rows]) => `<details class="grp-items" ${lv === 'fail' || rows.length <= 5 ? 'open' : ''}><summary><span class="${LV[lv][0]}">${LV[lv][1]}</span> ${esc(area)} <span class="muted">${rows.length}건</span></summary><table class="checks wide grp-table"><tbody>${rows.slice(0, 200).map(text => `<tr><td>${esc(text)}</td></tr>`).join('')}</tbody></table>${rows.length > 200 ? `<p class="muted">… ${rows.length - 200}건 더 (XLSX 확인 사항 시트)</p>` : ''}</details>`).join('') : '<p class="ok">없음</p>'}
     <p class="muted">설계 보조 결과 — 최종 판단은 설계자·주관청·선급. 출력: 위 리본의 통합 XLSX·통합 DXF·보고서.</p>`;
   }
-  const badge = id => id === 'fire' ? (a.solas.summary.passagesFail + a.solas.warnings.length + a.solas.summary.checklistFail ? ` <span class="badge fail">✕ ${a.solas.summary.passagesFail + a.solas.warnings.length + a.solas.summary.checklistFail}</span>` : a.solas.summary.unclassified.length ? ` <span class="badge warn">● ${a.solas.summary.unclassified.length}</span>` : '')
-   : id === 'checks' ? (a.count.fail ? ` <span class="badge fail">✕ ${a.count.fail}</span>` : a.count.check ? ` <span class="badge warn">● ${a.count.check}</span>` : '') : id === 'systems' && a.zones.some(z => !z.ok) ? ' <span class="badge fail">✕</span>' : '';
+  const badge = id => id === 'fire' ? (a.solas.summary.passagesFail + a.solas.warnings.length + a.solas.summary.checklistFail ? ` <span class="badge fail" title="방화 실패 항목: 제한 구역 통과 ${a.solas.summary.passagesFail} · 계통 분리 경고 ${a.solas.warnings.length} · 점검표 위반 ${a.solas.summary.checklistFail} (검토 탭에서는 한 줄씩 묶여 셈)">✕ ${a.solas.summary.passagesFail + a.solas.warnings.length + a.solas.summary.checklistFail}</span>` : a.solas.summary.unclassified.length ? ` <span class="badge warn">● ${a.solas.summary.unclassified.length}</span>` : '')
+   : id === 'checks' ? (a.count.fail ? ` <span class="badge fail" title="실패한 검토 항목 ${a.count.fail}줄 (한 줄에 여러 건이 묶일 수 있음)">✕ ${a.count.fail}</span>` : a.count.check ? ` <span class="badge warn">● ${a.count.check}</span>` : '') : id === 'systems' && a.zones.some(z => !z.ok) ? ' <span class="badge fail">✕</span>' : '';
   $('report').innerHTML = `<div class="tabs" role="tablist">${TABS.map(([id, l]) => `<button role="tab" data-tab="${id}" aria-selected="${S.tab === id}">${l}${badge(id)}</button>`).join('')}</div>${body}`;
   $('report').querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; render(); });
   $('report').querySelectorAll('tbody tr[data-key]').forEach(tr => {
@@ -818,7 +833,7 @@
   const now = { room: 'geo', load: 'load', air: S.overlay === 'fire' ? 'fire' : 'air', duct: 'duct', review: S.tab === 'fire' ? 'fire' : 'duct' }[S.step], card = (id, title, from, body) => `<div class="card${id === now ? ' now' : ''}"><h4>${title}<span class="from">${from}</span></h4>${body}</div>`;
   const bnd = a.solas.boundaries.filter(b => b.roomA === r.id || b.roomB === r.id), worst = bnd.filter(b => b.grade).sort((x, y) => SO.rank(x.grade) - SO.rank(y.grade))[0];
   $('inspTitle').innerHTML = `${esc(r.no)} ${esc(r.name)}`;
-  $('insp').innerHTML = card('geo', '형상', 'BOX', `<div class="kv"><span>면적</span><span>${r.areaM2.toFixed(1)} m²</span><span>체적</span><span>${r.volumeM3.toFixed(1)} m³</span><span>ISO 분류</span><span>${esc(r.isoClass || '—')}</span></div>`)
+  $('insp').innerHTML = card('geo', '형상', 'BOX', `<div class="kv"><span>면적</span><span>${r.areaM2.toFixed(1)} m²</span><span>체적</span><span>${r.volumeM3.toFixed(1)} m³</span><span>ISO 분류</span><span>${esc(isoName(r.isoClass))}</span></div>`)
    + card('load', '부하', 'BOX CAL', `<div class="big">${fmt(L.coolingSensibleW)} W</div><div class="muted">냉방 현열</div><div class="kv" style="margin-top:6px"><span>냉방 잠열</span><span>${fmt(L.coolingLatentW)} W</span><span>냉방 합계</span><span>${fmt(L.coolingW)} W</span><span>난방</span><span>${fmt(L.heatingW)} W</span><span>최소 신기(OA)</span><span>${fmt(L.minFreshAirCmh)} CMH</span><span>상태</span><span class="${L.complete ? 'ok' : 'warn'}">${esc(L.status || (L.complete ? '완료' : '미완료'))}</span></div>`)
    + card('air', '풍량', 'HVAC Grid', `<div class="kv"><span>급기(SA)</span><span><b>${fmt(A.supplyCmh)}</b> CMH</span><span>배기(EA)</span><span>${fmt(A.exhaustCmh)} CMH</span><span>환기(RA)</span><span>${fmt(A.returnCmh)} CMH</span>${A.transferInCmh ? `<span>전달 공기 받음</span><span>${fmt(A.transferInCmh)} CMH · ${A.transferFrom === 'own-inlet' ? '자체 흡입구' : A.transferFrom === 'outside' ? '이웃 급기 실 없음' : esc(roomName(A.transferFrom))}</span>` : ''}${A.transferOutCmh ? `<span>전달 공기 보냄</span><span>${fmt(A.transferOutCmh)} CMH</span>` : ''}${A.makeupCmh ? `<span>보충 급기</span><span>+${fmt(A.makeupCmh)} CMH</span>` : ''}</div>${A.transferInCmh && !/CO2|CO₂|소화제|배터리|축전지|BATTERY|페인트|PAINT/i.test(r.name || '') ? `<label class="field" style="margin-top:6px">전달 공기 출처<select id="xferSel"><option value="">자동 (${A.transferSet ? '—' : A.transferFrom === 'outside' ? '이웃 없음' : esc(roomName(A.transferFrom))})</option><option value="own-inlet" ${C.transfers?.[r.id] === 'own-inlet' ? 'selected' : ''}>자체 흡입구 (외기 그릴)</option>${C.rooms.filter(n => n !== r && n.deckId === r.deckId && GE.sharedLength(r, n) >= 300 && (a.solas.classes[n.id]?.space !== '계단격실' || C.transfers?.[r.id] === n.id)).map(n => `<option value="${esc(n.id)}" ${C.transfers?.[r.id] === n.id ? 'selected' : ''}>${esc(n.no)} ${esc(n.name)}</option>`).join('')}</select></label>` : ''}<div class="muted" style="margin-top:6px">급기 = 올림(냉방 현열 W × 안전율 ${K.marginOf(C).toFixed(2)} × 3 ÷ ΔT ${C.rules.supplyDeltaTK} K), 최소 신기 이상<br>배기 = 올림(환기 횟수 × 체적) · 환기 = 공조 구역 수지</div>${a.air.filter(x => x.roomId === r.id && x.level !== 'info').map(x => `<div class="${x.level === 'fail' ? 'err' : 'warn'}" style="margin-top:4px">${x.level === 'fail' ? '✕' : '●'} ${esc(x.text.split(': ').slice(1).join(': '))}</div>`).join('')}`)
    + card('sys', '계통', '', `<div class="kv">${PL.KINDS.map(k => `<span>${KL[k]}</span><span>${r.systems[k] ? `<span class="dot" style="background:${sysColor(r.systems[k])}"></span>${esc(r.systems[k])}` : '—'}</span>`).join('')}</div>`)
@@ -831,6 +846,7 @@
  function center() {
   const view = viewOf(S.step), noContract = !S.contract && (view === 'plan' || view === 'report' || view === 'phg');
   $('boxFrame').style.visibility = view === 'box' ? 'visible' : 'hidden';
+  if ($('staleBanner') && (S.step !== 'duct' || !S.contract)) show($('staleBanner'), false);
   // BOX's canvas is a background only in the plan (plan() decides); back in ① ② it is BOX again
   if (view !== 'plan') { $('boxFrame').classList.remove('backdrop'); if (box.loading) box.backdrop(false); }
   $('phgFrame').style.visibility = view === 'phg' && !noContract ? 'visible' : 'hidden';
@@ -859,7 +875,7 @@
  }
  // the plan legend opens and closes; it starts closed when the plan is narrow (it would cover rooms)
  let legendRoom = true;
- function legendOpen() { return S.legendOpen ?? (legendRoom && $('center').getBoundingClientRect().width > 1000); }
+ function legendOpen() { return S.legendOpen ?? ((legendRoom || (S.overlay === 'fire' && S.step === 'air')) && $('center').getBoundingClientRect().width > 1000); }
  function legendFold() {
   const lg = $('legend'), open = legendOpen();
   if (!open) lg.innerHTML = '<button class="lg-tog" title="범례 펼치기" aria-expanded="false">범례 ▾</button>';
@@ -869,13 +885,16 @@
  // ④ with a plan not in PHG D yet: what to do, over the empty canvas
  function phgHint(view) {
   const key = curKey(), on = S.step === 'duct' && !!S.contract && !!key && !busyNow() && !S.hintOff?.[key] && (S.phgEditor ? S.active !== key : !result(key)?.auto);
-  show($('phgHint'), on); if (!on) return;
-  const pl = curPlan();
+  const pl = on ? curPlan() : null;
+  show($('phgHint'), !!pl); if (!pl) return;
   $('phgHint').innerHTML = `<div><b>${esc(deckName(pl.deckId))} · ${KL[pl.kind]} ${esc(pl.systemId)}는 아직 PHG D에 없습니다</b><p>격실 도면·공조기·RU(풍량)를 PHG D로 보내 AUTO로 덕트망을 만들고, 이 평면에 그립니다.</p>
    <button class="btn primary" data-a="auto">보내기 + AUTO</button><button class="btn" data-a="send">PHG D로 보내기만</button><button class="btn" data-a="all">모든 계통 AUTO</button><p class="phg-hint-off"><button class="linkbtn" data-a="off">닫고 PHG D에서 직접 그리기</button></p></div>`;
   $('phgHint').querySelectorAll('button').forEach(b => b.onclick = () => ({ auto: () => act('AUTO 계산 중', () => autoKey()), send: () => act('PHG D로 보내는 중', () => sendPlan()), all: () => act('AUTO 계산 중', () => runAll()), off: () => { S.hintOff = { ...(S.hintOff || {}), [key]: true }; show($('phgHint'), false); if (!S.phgEditor) act('PHG D 여는 중', openEditor); } })[b.dataset.a]());
  }
  const busyNow = () => !$('busy').hidden;
+ // BOX's ISO 7547 room classes in words
+ const ISO_NAME = { AC: '공조 격실', WHEELHOUSE: '조타실', ALLEY_SOUND: '방음 복도', ALLEY_NON_SOUND: '비방음 복도', ENGINE: '기관 공간', CONTROL: '기관제어실', BOILER: '보일러실', NON_AC: '비공조 공간' };
+ const isoName = c => c ? (ISO_NAME[c] ? `${ISO_NAME[c]} (${c})` : c) : '—';
  // help (F1, ?)
  function help() { const d = $('help'); if (!d.open) d.showModal(); }
  // the folder button: open, recent projects, save, save as
@@ -895,7 +914,7 @@
   if (!S.contract) return ['② 부하에서 설계 데이터 만들기 (또는 ③에서 예제·T3 열기)', 'load'];
   if (!S.contract.systems.length) return ['② 격실 입력에서 실마다 계통(SUP·EXH·RET) 지정 → 설계 데이터 다시 만들기', 'load'];
   const a = analysis(), assumed = a.plans.filter(p => p.isUnitDeck && p.rootSource.startsWith('assumed')).length;
-  if (assumed) return [`③ 공조기 위치 확인 (임시 ${assumed}개 계통)`, 'air'];
+  if (assumed && a.done < a.total) return [`③ 공조기 위치 확인 (임시 ${assumed}개 계통)`, 'air'];
   if (a.done < a.total) return [`④ 모든 계통 AUTO (${a.done}/${a.total})`, 'duct'];
   if (a.count.fail) return [`⑤ 검토 실패 ${a.count.fail}건 확인`, 'review'];
   if (S.dirty) return ['프로젝트 저장 (Ctrl+S)', null];
@@ -920,7 +939,7 @@
  $('helpBtn').onclick = () => help();
  $('helpClose').onclick = () => $('help').close();
  $('saveProjectBtn').onclick = () => act(null, () => saveProject());
- $('themeBtn').onclick = () => { const d = document.documentElement, dark = d.dataset.theme !== 'dark'; d.dataset.theme = dark ? 'dark' : ''; B.themePopups(); try { localStorage.setItem('hvac-grid-theme', dark ? 'dark' : ''); } catch {} if (S.step === 'air' && S.contract) plan(); };
+ $('themeBtn').onclick = () => { const d = document.documentElement, dark = d.dataset.theme !== 'dark'; d.dataset.theme = dark ? 'dark' : ''; B.themePopups(); box.theme(); try { localStorage.setItem('hvac-grid-theme', dark ? 'dark' : ''); } catch {} if (S.step === 'air' && S.contract) plan(); };
  try { if (localStorage.getItem('hvac-grid-theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch {}
  // Alt+1..5 switch steps, also while the focus is inside a vendor frame; Ctrl+Z / Ctrl+Y undo HVAC Grid edits in ③ ⑤
  const onKey = e => {

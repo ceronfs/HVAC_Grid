@@ -40,7 +40,7 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   await ribbon('설계 데이터 만들기').click(); await idle();
   assert.equal(await H(() => HVACGrid.S.contract.systems.length), 0); assert.match(await H(() => document.getElementById('nextBtn').textContent), /격실 입력/); log('H5: 0 systems -> 다음: 격실 입력');
   await p.click('.step[data-step=room]'); await idle();
-  await ribbon('S5 예제').click();
+  await ribbon('S5 예제').click(); await p.locator('#dlg[open] button[data-v=ok]').click({ timeout: 5000 });   // over the H5 drawing: the app asks first
   await p.waitForFunction(() => HVACGrid.box.win.CAD_APP.st.decks.length === 5, null, { timeout: 180000 }); await p.waitForTimeout(1000);
   log('S5 loaded'); await shot('1-room-s5');
   await p.click('.step[data-step=load]'); await idle();

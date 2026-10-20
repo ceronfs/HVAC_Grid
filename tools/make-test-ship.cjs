@@ -24,7 +24,8 @@ const OUTLINE = { D1: [0, 0, 20000, 16000], D2: [0, 0, 20000, 16000], D3: [0, 0,
 // ceilingHeight: the room's ceiling (mm) - BOX takes the volume (and the ACH air) from it; 0 = the deck height
 // windowSolarMode: solar gain through a window as BOX's S5 example has it (ISO 7547:2022 5.3: clear double glass with an
 // interior shade, Gs 240 W/m²). Without it BOX takes a manual coefficient, 0 by default - no sun through any window (v2.3)
-const BASE = { coolTemp: 25, coolingRh: 55, heatTemp: 22, heatingRh: 40, sup: '', exh: '', ret: '', lighting: 10, windowArea: 0, windowSolarMode: 'auto-double-interior-shade', people: 0, minimumFreshAir: 0, equipW: 0, minimumAch: 0, isoClass: 'AC', ceilingHeight: 2200 };
+// rooms at ISO 7547's indoor design condition 27 °C / 50 % (v2.4; was 25 °C / 55 %, 25 % more temperature difference)
+const BASE = { coolTemp: 27, coolingRh: 50, heatTemp: 22, heatingRh: 40, sup: '', exh: '', ret: '', lighting: 10, windowArea: 0, windowSolarMode: 'auto-double-interior-shade', people: 0, minimumFreshAir: 0, equipW: 0, minimumAch: 0, isoClass: 'AC', ceilingHeight: 2200 };
 const USE = {
  cabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 1, minimumFreshAir: 28.8, equipW: 200, windowArea: 0.8 },
  bigCabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 2, minimumFreshAir: 57.6, equipW: 400, windowArea: 1.6 },
@@ -141,7 +142,9 @@ function boxProject(template) {
   ents.push({ ...geo, roomNo: r.no, roomName: r.name, ...data, deck: r.deck, layer, id: `T3_${r.deck}_${r.no}`, persistentUuid: uuid(r.deck + r.no) });
  }
  const deckTpl = template.source.decks[0];
- return { ...template, source: { ...template.source, entities: ents, decks: DECKS.map(d => ({ ...deckTpl, id: d.id, name: d.name, z: d.z, height: HEIGHT })), backgrounds: [] },
+ // fresh-air latent load from the psychrometric (humidity) model of BOX, not the fixed 7.5 W per CMH (about a third low)
+ const settings = { ...template.settings, designConditions: { ...template.settings.designConditions, latentModel: 'humidity' } };
+ return { ...template, settings, source: { ...template.source, entities: ents, decks: DECKS.map(d => ({ ...deckTpl, id: d.id, name: d.name, z: d.z, height: HEIGHT })), backgrounds: [] },
   view: { ...template.view, activeDeck: 'D1', hidden: [], hiddenRooms: [], hiddenDeckLayers: [] },
   extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.4', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
 }
