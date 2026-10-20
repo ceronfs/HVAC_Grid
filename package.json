@@ -9,7 +9,7 @@
     "start": "node tools/serve.cjs",
     "run:t3": "node tools/hvac-run.cjs samples/t3.contract.json out/t3 --shots --solas=samples/t3/T3.solas.json",
     "run:s5": "node tools/hvac-run.cjs samples/s5.contract.json out/s5 --shots",
-    "make:t3": "node tools/make-test-ship.cjs && node tools/box-extract.cjs samples/t3/T3.box.json samples/t3.contract.json",
+    "make:t3": "node tools/make-test-ship.cjs && node tools/t3-box-lines.cjs && node tools/box-extract.cjs samples/t3/T3.box.json samples/t3.contract.json",
     "extract:s5": "node tools/box-extract.cjs s5 samples/s5.contract.json",
     "solas:extract": "node tools/solas-extract.cjs",
     "solas:check": "node tools/solas-extract.cjs --check",

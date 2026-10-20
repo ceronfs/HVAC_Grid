@@ -40,3 +40,10 @@ test('T3 drawings are LINEs only, and every room reads back with its number', ()
   const cmp = X.compare(X.rooms(text), C, f.slice(3)); assert.ok(cmp.ok, f + ' ' + JSON.stringify(cmp).slice(0, 200));
  }
 });
+
+test('T3 BOX project (① T3 시험선) is LINEs and TEXT too; the room data hangs on the room ids BOX gives', () => {
+ const j = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'samples', 't3', 'T3.box.json'), 'utf8'));
+ assert.deepEqual([...new Set(j.source.entities.map(e => e.type))].sort(), ['LINE', 'TEXT'], 'no RECT, no POLY');
+ const ids = new Set(j.source.entities.filter(e => e.type === 'TEXT').map(e => e.id)), ov = j.overrides.roomOverrides;
+ assert.equal(ov.length, 79); assert.ok(ov.every(([id, d]) => ids.has(id) && d.roomNo && 'sup' in d), 'every room: a number TEXT id and its data');
+});
