@@ -55,7 +55,7 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 | rooms.polygon / holes | `polygon`, `holes` | **선박 좌표(mm)** — BOX가 Deck 변위·회전·축척을 적용해 보고함(90° 회전·변위 Deck으로 확인, 고정 시험 `samples/fixtures/offset-deck`). 그래서 Deck 사이(갑판 경계, 수직 덕트) 좌표를 그대로 비교 |
 | rooms.areaM2 / volumeM3 / ceilingHeightMm | `floor`, `volume`, `ceilingHeight` | ceilingHeight 0은 null |
 | rooms.systems | `sup`, `exh`, `ret` | 급기·배기·환기 계통 이름 |
-| loads.coolingSensibleW … heatingW | `coolingSensibleW`, `coolingLatentW`, `coolingW`, `heatingW` | 안전율 포함, 외기부하 제외(BOX 기준) |
+| loads.coolingSensibleW … heatingW | `coolingSensibleW`, `coolingLatentW`, `coolingW`, `heatingW` | `coolingSensibleW`·`coolingLatentW`는 안전율 **전**, `coolingW`·`heatingW`는 안전율(`conditions.safetyFactorPct`, 기본 10 %) **포함**. 외기부하 제외(BOX 기준) |
 | loads.minFreshAirCmh | `minimumFreshAirCmh` | 인원 × 1인 신기량 |
 | loads.minAch / achAirCmh | `minimumAch`, `ventilationAirCmh` | 환기 횟수와 그 풍량(ACH × 체적) |
 | loads.complete / status | `calculationComplete`, `calculationStatus` | 미완료 격실은 풍량 0(대기) |
@@ -85,7 +85,7 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 
 | 풍량 | 규칙 | 근거 |
 |---|---|---|
-| 급기 | 급기 계통이 있는 격실: ⌈max(냉방 현열 W × 3 ÷ ΔT, 최소 신기)⌉₁₀, ΔT 기본 10 K. 전달 공기를 보내는 실은 ⌈자기 배기 + 보내는 전달 공기 × (1 + 가압 %)⌉₁₀ 이상(보충 급기) | 이전 통합(Box_PHG_Integrated, HVAC Studio)과 같은 근사(1/(ρ·cp) ≈ 2.99) |
+| 급기 | 급기 계통이 있는 격실: ⌈max(냉방 현열 W × 안전율(1 + `conditions.safetyFactorPct`/100, BOX 기본 1.10) × 3 ÷ ΔT, 최소 신기)⌉₁₀ (2026-10-20부터 — 이전에는 안전율 전 현열이라 BOX AHU 풍량보다 약 9 % 적었음), ΔT 기본 10 K. 전달 공기를 보내는 실은 ⌈자기 배기 + 보내는 전달 공기 × (1 + 가압 %)⌉₁₀ 이상(보충 급기) | 이전 통합(Box_PHG_Integrated, HVAC Studio)과 같은 근사(1/(ρ·cp) ≈ 2.99) |
 | 배기 | 배기 계통이 있는 격실: ⌈ACH × 체적⌉₁₀ | BOX `ventilationAirCmh` |
 | 전달 공기 | 배기 > 급기이고 환기가 없는 실(화장실·탈의실·배식실): 부족분을 같은 Deck의 급기 실에서. 순서: 사용자 지정(`contract.transfers`) → 딸린 실(이름이 그 실 이름으로 시작하거나 둘레 40 % 이상을 그 실이 감쌈) → 복도(가장 긴 이웃 벽의 절반 이상 공유) → 벽을 가장 길게 공유하는 실. 출처는 급기 > 배기인 실만, 계단·개방갑판·창고·트렁크·팬룸·조리실·기관구역·밀폐 실은 제외(이름 또는 SOLAS 공간). CO₂·축전지·페인트 실은 자체 흡입구 | 문 그릴·언더컷 |
 | 환기 | **공조 구역**(급기 계통 하나)마다: 신기 = max(최소 신기 합, 구역 배기 + 가압(기본 배기의 5 %, `pressurizationBasis: 'supply'`면 급기의 %), 급기 × `minOaPct`(기본 25 %, 선주 사양, ③ 리본에서 0~100 %)), 가압이 급기의 10 %를 넘으면 릴리프 확인(`RELIEF`), 환기 = 급기 − 신기를 환기 실에 "급기 − 자기 배기 − 보낸 전달 공기" 비율로 배분(10 CMH 단위). 환기 실이 없는 구역(조리실 급기팬)은 전외기 | 거주구 약가압 유지 (리뷰 1차 R1-ENG-01) |

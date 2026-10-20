@@ -253,16 +253,33 @@
   S.results[key] = {}; store(key);
   say(`${deckName(pl.deckId)} · ${KL[pl.kind]} ${pl.systemId}: RU ${pl.rus.length}개 · ${fmt(pl.designCmh)} CMH를 PHG D로 보냄`);
  }
+ // AUTO makes the network again: duct sizes set by hand are put back on the duct of the same name and kind in the new
+ // network (a route that changed may not have it any more - said, not hidden); other edits made in the PHG D editor are
+ // not kept by AUTO, the message says so (Ctrl+Z brings them back)
  async function autoKey(key = curKey(), { pick = 0 } = {}) {
-  const r0 = result(key); if (pick || S.active !== key || !r0 || r0.stale) await sendPlan(key);
-  const r = await phg.auto({ pick }); store(key, { auto: true, seconds: r.seconds, candidate: r.candidate, candidates: r.candidates, pick: r.pick, unconnected: r.unconnected, zonesRelaxed: r.zonesRelaxed, edited: false });
-  say(`${key.replace('__', ' · ')}: 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa · ${r.seconds} s${r.zonesRelaxed ? ({ all: ' · 금지 영역과 선체 밖 영역을 모두 해제해야 경로가 나옴 — 경로 검토', rooms: ' · 제한 구역을 지키는 경로가 없어 해제(선체 밖은 유지) — 경로 검토', outside: ' · 선체 밖 금지 영역을 풀어야 모든 RU에 닿음(제한 구역은 유지) — 실 밖 덕트 검토' }[r.zonesRelaxed] || '') : ''}`, !!r.zonesRelaxed);
+  const r0 = result(key), manual = (S.geometry[key]?.ducts || []).filter(d => d.manualSize), wasEdited = !!r0?.edited && !manual.length;
+  if (pick || S.active !== key || !r0 || r0.stale) await sendPlan(key);
+  let r = await phg.auto({ pick }); const kept = [], lost = [];
+  if (manual.length) {
+   for (const m of manual) {
+    // PHG D may number its ducts again after each calculation: read them again for every duct
+    const d = (phg.geometry().ducts || []).find(x => x.displayName === m.displayName && x.type === m.type);
+    if (!d) { lost.push(m.displayName); continue; }
+    r = { ...r, ...(await phg.setDuctSize(d.id, m.diameterMm ? { diameterMm: m.diameterMm } : { widthMm: m.widthMm, heightMm: m.heightMm })) }; kept.push(m.displayName);
+   }
+  }
+  store(key, { auto: true, seconds: r.seconds, candidate: r.candidate, candidates: r.candidates, pick: r.pick, unconnected: r.unconnected, zonesRelaxed: r.zonesRelaxed, edited: kept.length > 0 });
+  const note = (kept.length ? ` · 수동 크기 ${kept.length}개 유지` : '') + (lost.length ? ` · 수동 크기 ${lost.length}개는 새 경로에 같은 덕트가 없어 다시 지정 필요(${lost.join(', ')})` : '') + (wasEdited ? ' · PHG D 편집기 수정은 AUTO로 다시 만들어짐(Ctrl+Z로 되돌리기)' : '');
+  if (note) toast(`${key.replace('__', ' · ')}${note}`);
+  say(`${key.replace('__', ' · ')}: 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa · ${r.seconds} s${note}${r.zonesRelaxed ? ({ all: ' · 금지 영역과 선체 밖 영역을 모두 해제해야 경로가 나옴 — 경로 검토', rooms: ' · 제한 구역을 지키는 경로가 없어 해제(선체 밖은 유지) — 경로 검토', outside: ' · 선체 밖 금지 영역을 풀어야 모든 RU에 닿음(제한 구역은 유지) — 실 밖 덕트 검토' }[r.zonesRelaxed] || '') : ''}`, !!r.zonesRelaxed);
  }
  // the plans one after another; 멈춤 stops after the plan running now (the done ones keep their results)
  async function runAll(keys = plans().map(p => p.key), { onlyNeeded = false } = {}) {
   const todo = onlyNeeded ? keys.filter(k => { const r = result(k); return !r?.auto || r.stale; }) : keys, t0 = performance.now();
   let stopped = false; const stop = () => { stopped = true; $('busyStop').disabled = true; $('busyText').textContent += ' — 지금 계통까지 하고 멈춤'; };
   let ran = 0;
+  // one undo entry for the whole run: Ctrl+Z puts every network it made back as it was
+  if (todo.length) record(`${onlyNeeded ? '남은 것만' : '모든 계통'} AUTO (${todo.length}개)`, todo);
   for (const [i, key] of todo.entries()) {
    if (stopped) break;
    const per = i ? (performance.now() - t0) / 1000 / i : null;
@@ -411,7 +428,7 @@
    ['내보내기', [c('xlsxIso', 'ISO 시트', boxCal('I↑'), { code: 'I↑' }), c('xlsx', '미적용 시트', boxCal('N↑'), { code: 'N↑' }), c('sum', 'SUP 요약', boxCal('Σ↑'), { code: 'Σ↑' }), c('xlsxAll', '전체 XLSX', boxCal('LX'), { code: 'LX' }), c('sheet', '격실 시트', boxCal('R↑'), { code: 'R↑' }), c('face', '면적 시트', boxCal('A↑'), { code: 'A↑' })]],
    ['HVAC Grid', [c('contract', '설계 데이터 만들기', () => act('BOX 격실·부하 읽는 중', extractContract), { primary: true, title: 'BOX 격실·부하 → 격실 풍량·계통 (③ 풍량·계통으로 이동)' })]]] },
   { id: 'air', name: '풍량·계통', view: 'plan', groups: () => [
-   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="25" step="1" value="${fv('dT', S.contract?.rules.supplyDeltaTK ?? 10)}" ${fe('dT')}></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${fv('pPct', S.contract?.rules.pressurizationPct ?? 5)}" ${fe('pPct')} style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), field(`<label class="field" title="재순환 공조 구역의 신기 하한(선주 사양). 사양이 없으면 0">최소 신기 (%)<input id="minOa" type="number" min="0" max="100" step="1" value="${fv('minOa', S.contract?.rules.minOaPct ?? 25)}" ${fe('minOa')} style="width:4em"></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(냉방 현열 W × 3 ÷ ΔT)' })]],
+   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="25" step="1" value="${fv('dT', S.contract?.rules.supplyDeltaTK ?? 10)}" ${fe('dT')}></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${fv('pPct', S.contract?.rules.pressurizationPct ?? 5)}" ${fe('pPct')} style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), field(`<label class="field" title="재순환 공조 구역의 신기 하한(선주 사양). 사양이 없으면 0">최소 신기 (%)<input id="minOa" type="number" min="0" max="100" step="1" value="${fv('minOa', S.contract?.rules.minOaPct ?? 25)}" ${fe('minOa')} style="width:4em"></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(냉방 현열 W × 안전율(BOX 설계 조건) × 3 ÷ ΔT)' })]],
    ['계통', [kindSeg(), sysField(false)]],
    ['공조기 · 수직 덕트', [c('pin', '위치 지정', () => { S.pickRoot = !S.pickRoot; say(S.pickRoot ? `평면에서 ${curPlan()?.isUnitDeck === false ? '수직 덕트(샤프트)' : '공조기'} 위치를 클릭하세요 (Esc 취소)` : ''); render(); }, { disabled: () => !curKey(), pressed: () => S.pickRoot, title: '공조기 Deck: 공조기·팬 위치 · 다른 Deck: 수직 덕트(샤프트) 위치' }), c('unpin', '지정 해제', () => act(null, clearRoot), { disabled: () => !S.contract?.roots?.[curKey()] }), unitDeckField()]],
    ['보기', [seg('평면 보기', S.overlay, [['air', '풍량'], ['fire', '방화']], v => { S.overlay = v; })]],

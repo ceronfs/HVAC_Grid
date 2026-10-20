@@ -19,6 +19,18 @@ test('room airflow rules', () => {
  assert.equal(roomAirflow(room({ supply: 'AHU' }), ld({ complete: false }), DEFAULT_RULES).source, 'pending');
  // dT changes the supply
  assert.equal(roomAirflow(room({ supply: 'AHU' }), ld(), { ...DEFAULT_RULES, supplyDeltaTK: 12 }).supplyCmh, 710);
+ // the safety factor (BOX coolingSensibleW is before it): ceil10(2804 x 1.1 x 3 / 10) = 930
+ assert.equal(roomAirflow(room({ supply: 'AHU' }), ld(), DEFAULT_RULES, 1.1).supplyCmh, 930);
+});
+
+test('supply uses the safety factor of the design conditions', () => {
+ const { marginOf } = require('../lib/contract.cjs');
+ assert.equal(marginOf(s5), 1.1); assert.equal(marginOf({ conditions: null }), 1);
+ // every S5 room: supply = ceil10(max(sensible x 1.1 x 3 / dT, min fresh air)), before make-up air
+ for (const r of s5.rooms.filter(x => x.systems.supply)) {
+  const l = s5.loads[r.id], want = Math.ceil(Math.max(l.coolingSensibleW * 1.1 * 3 / s5.rules.supplyDeltaTK, l.minFreshAirCmh) / 10 - 1e-9) * 10;
+  assert.ok(s5.airflow[r.id].supplyCmh >= want, r.no);
+ }
 });
 
 test('S5 sample contract (BOX CAL Enhance built-in example)', () => {
@@ -28,11 +40,11 @@ test('S5 sample contract (BOX CAL Enhance built-in example)', () => {
  const supply = s5.systems.filter(s => s.kind === 'supply');
  assert.equal(supply.length, 10);
  assert.ok(supply.every(s => s.deckIds.length === 1), 'each S5 supply system serves one deck');
- // 10,420 CMH from the loads (as in H1) + 190 CMH make-up supply for the transfer air the rooms give their toilets
- assert.equal(s5.rooms.reduce((t, r) => t + s5.airflow[r.id].supplyCmh - (s5.airflow[r.id].makeupCmh || 0), 0), 10420);
- assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 10610);   // round 2: no transfer air from the bridge wing, archive, refrigerator; round 3: make-up covers the 5 % pressurization
+ // 11,350 CMH from the loads with BOX's 10 % safety factor (10,420 before it, as in H1) + 160 CMH make-up supply for the transfer air
+ assert.equal(s5.rooms.reduce((t, r) => t + s5.airflow[r.id].supplyCmh - (s5.airflow[r.id].makeupCmh || 0), 0), 11350);
+ assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 11510);   // round 2: no transfer air from the bridge wing, archive, refrigerator; round 3: make-up covers the 5 % pressurization
  const wheelhouse = s5.rooms.find(r => r.no === '501');
- assert.equal(wheelhouse.isoClass, 'WHEELHOUSE'); assert.equal(s5.airflow[wheelhouse.id].supplyCmh, 850);
+ assert.equal(wheelhouse.isoClass, 'WHEELHOUSE'); assert.equal(s5.airflow[wheelhouse.id].supplyCmh, 930);
  // deck ids of a system in elevation order
  assert.deepEqual(s5.systems.find(s => s.id === 'RET-ROOM').deckIds, ['S1', 'S3', 'S4', 'S5']);
 });

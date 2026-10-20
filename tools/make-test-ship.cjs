@@ -22,7 +22,9 @@ const OUTLINE = { D1: [0, 0, 20000, 16000], D2: [0, 0, 20000, 16000], D3: [0, 0,
 
 // room data defaults (BOX field names); USE picks the HVAC systems and the internal loads by room type
 // ceilingHeight: the room's ceiling (mm) - BOX takes the volume (and the ACH air) from it; 0 = the deck height
-const BASE = { coolTemp: 25, coolingRh: 55, heatTemp: 22, heatingRh: 40, sup: '', exh: '', ret: '', lighting: 10, windowArea: 0, people: 0, minimumFreshAir: 0, equipW: 0, minimumAch: 0, isoClass: 'AC', ceilingHeight: 2200 };
+// windowSolarMode: solar gain through a window as BOX's S5 example has it (ISO 7547:2022 5.3: clear double glass with an
+// interior shade, Gs 240 W/m²). Without it BOX takes a manual coefficient, 0 by default - no sun through any window (v2.3)
+const BASE = { coolTemp: 25, coolingRh: 55, heatTemp: 22, heatingRh: 40, sup: '', exh: '', ret: '', lighting: 10, windowArea: 0, windowSolarMode: 'auto-double-interior-shade', people: 0, minimumFreshAir: 0, equipW: 0, minimumAch: 0, isoClass: 'AC', ceilingHeight: 2200 };
 const USE = {
  cabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 1, minimumFreshAir: 28.8, equipW: 200, windowArea: 0.8 },
  bigCabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 2, minimumFreshAir: 57.6, equipW: 400, windowArea: 1.6 },
@@ -37,9 +39,10 @@ const USE = {
  rec: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 8, minimumFreshAir: 230.4, equipW: 600, windowArea: 2.4, lighting: 12 },
  office: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 900, windowArea: 1.2, lighting: 12 },
  gym: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 1200, lighting: 12 },
- pantry: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 20, equipW: 1500 },   // no cooking: sanitary exhaust, not through the galley system
- // galley: own supply fan and exhaust (II-2/9.7.2.1, 9.7.5), exhaust > supply (the rest comes from the mess)
- galley: { sup: 'SF-GAL', exh: 'EF-GAL', ceilingHeight: 2400, minimumAch: 45, people: 3, equipW: 9000, lighting: 15, windowArea: 1.2 },
+ pantry: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 22, equipW: 1500 },   // no cooking: sanitary exhaust, not through the galley system
+ // galley: own supply fan and exhaust (II-2/9.7.2.1, 9.7.5), exhaust > supply (the rest comes from the mess); 50 ACH and the
+// pantry 22 ACH since v2.3 (window sun and the safety factor raised their supply past 45 / 20 ACH exhaust)
+ galley: { sup: 'SF-GAL', exh: 'EF-GAL', ceilingHeight: 2400, minimumAch: 50, people: 3, equipW: 9000, lighting: 15, windowArea: 1.2 },
  laundry: { sup: 'AHU-ACC', exh: 'EF-LAU', minimumAch: 40, equipW: 2000 },
  changing: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 10 },
  // CO2 room and battery room: each its own exhaust (FSS Code 5, class rules)
@@ -138,7 +141,7 @@ function boxProject(template) {
  const deckTpl = template.source.decks[0];
  return { ...template, source: { ...template.source, entities: ents, decks: DECKS.map(d => ({ ...deckTpl, id: d.id, name: d.name, z: d.z, height: HEIGHT })), backgrounds: [] },
   view: { ...template.view, activeDeck: 'D1', hidden: [], hiddenRooms: [], hiddenDeckLayers: [] },
-  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.2', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
+  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.3', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
 }
 
 // ---------- general arrangement DXF ----------

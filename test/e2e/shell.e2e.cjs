@@ -118,6 +118,9 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   await p.mouse.move(rb.x + rb.width / 2, rb.y + rb.height / 2); await p.mouse.down(); await p.mouse.move(rb.x + rb.width / 2 + 6, rb.y + rb.height / 2 + 6, { steps: 4 }); await p.mouse.up(); await p.waitForTimeout(300); await idle();
   assert.ok(await p.evaluate(id => !!HVACGrid.S.contract.ruMoves?.[id], ruId), 'RU moved'); assert.ok(!(await H(() => HVACGrid.result('S3__AHU-AC-01').stale)), 'AUTO ran again');
   const netMoved = await net(); assert.notEqual(netMoved, netResized, 'the move made other ducts');
+  // the size set by hand is kept by the new AUTO (on the duct of the same name)
+  const kept = await p.evaluate(n => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts.find(d => d.displayName === n), d0.displayName);
+  assert.deepEqual([kept?.widthMm, kept?.heightMm, kept?.manualSize], [d0.widthMm + 100, d0.heightMm, true], 'manual size kept by AUTO'); assert.match(await H(() => HVACGrid.S.msg), /수동 크기 1개 유지/);
   await p.keyboard.press('Control+z'); await idle();
   assert.ok(await p.evaluate(id => !HVACGrid.S.contract.ruMoves?.[id], ruId), 'Ctrl+Z takes the RU move back (not PHG D)');
   assert.equal(await net(), netResized, 'Ctrl+Z puts the ducts of before back'); assert.ok(!(await H(() => HVACGrid.result('S3__AHU-AC-01').stale)), 'and they are current');
@@ -145,6 +148,10 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   // step 5: the second S3 supply system too, then the review tabs
   await p.click('.step[data-step=review]'); await idle();
   await H(() => HVACGrid.runAll(['S3__AHU-AC-02'])); await idle();
+  // 모든 계통 AUTO is one undo entry: Ctrl+Z takes the network it made back
+  assert.match(await H(() => HVACGrid.S.undo.at(-1).label), /AUTO \(1개\)/);
+  await H(() => HVACGrid.undo()); await idle(); assert.ok(!(await H(() => HVACGrid.result('S3__AHU-AC-02')?.auto)), 'undo AUTO');
+  await H(() => HVACGrid.redo()); await idle(); assert.ok(await H(() => HVACGrid.result('S3__AHU-AC-02')?.auto), 'redo AUTO'); log('모든 계통 AUTO undo / redo');
   const rows = await p.locator('#report tbody tr[data-key]').count(), ok = await p.locator('#report td.ok').count();
   log('review rows', rows, 'AUTO done', ok); assert.equal(rows, 18); assert.ok(ok >= 3);
   await shot('5-review');
