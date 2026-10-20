@@ -161,6 +161,19 @@ html.hg-bg .main>.side,html.hg-bg #canvas>.viewbar,html.hg-bg #canvas>.status{vi
   hasDrawing() { const s = this.win.CAD_APP?.st; return !!(s && s.entities.length && s.decks.length); }
   // BOX's canvas as the background of ③ ④ (BOX_CSS hg-bg); BOX itself is not changed
   backdrop(on) { try { this.doc.documentElement.classList.toggle('hg-bg', !!on); } catch {} }
+  // BOX's 2D view moved so a deck (world box) sits inside a strip of the shell's screen (the canvas between the floating
+  // panels); zoomed out only, never in. A view change, as a pan / zoom in BOX - the same view in ① ② afterwards
+  fitDeck(b, strip, pad = 24) {
+   try {
+    const A = this.win.CAD_APP, svg = this.doc.getElementById('svg'), r = svg.getBoundingClientRect(), fr = this.frame.getBoundingClientRect(), m = svg.getScreenCTM();
+    if (!A || !m || !(r.width > 0)) return false;
+    const dw = b.maxX - b.minX, dh = b.maxY - b.minY, k = Math.min(m.a, (strip.right - strip.left - 2 * pad) / dw, (strip.bottom - strip.top - 2 * pad) / dh);
+    if (!(k > 0)) return false;
+    const cx = (strip.left + strip.right) / 2 - fr.left - r.left, cy = (strip.top + strip.bottom) / 2 - fr.top - r.top;
+    Object.assign(A.st.view, { w: r.width / k, h: r.height / k, x: (b.minX + b.maxX) / 2 - cx / k, y: (b.minY + b.maxY) / 2 - cy / k });
+    A.render(); return true;
+   } catch { return false; }
+  }
   // the deck BOX shows - a view change, as a click on BOX's deck card (not selectDeck, which selects the deck's objects)
   showDeck(id) { const A = this.win?.CAD_APP; if (!A || A.st.activeDeck === id || !A.st.decks.some(d => d.id === id)) return false; A.st.activeDeck = id; A.render(); return true; }
   calStatus() { return this.doc.querySelector('#calEnhancePanel [role=status]')?.textContent || ''; }

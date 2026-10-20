@@ -256,3 +256,9 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .diagrams .deckbox{cursor:pointer}.diagrams .deckbox:hover{fill:#eef5fc}
 /* the diagrams carry their own strokes: the shell's svg{stroke:currentColor} would outline every glyph */
 svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
+/* a narrow window (1280-1366): the ribbon tighter so ③ fits without scrolling - number fields as wide as their numbers,
+   lists narrower, commands closer */
+@media (max-width:1366px){
+ .ribbon{padding-left:6px;padding-right:6px}.grp{padding:0 4px}.cmd{min-width:38px;padding:3px 3px}
+ .field{padding:0 2px}.field input{min-width:0;width:4.2em}.field select{min-width:118px;max-width:150px}
+}

@@ -280,7 +280,7 @@
    "no": "405",
    "name": "선교팬룸",
    "deckId": "D4",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 10500,
@@ -670,7 +670,7 @@
    "no": "304",
    "name": "덕트 트렁크",
    "deckId": "D3",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 4000,
@@ -780,7 +780,7 @@
    "no": "307",
    "name": "문서보관실",
    "deckId": "D3",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 4000,
@@ -1598,7 +1598,7 @@
    "no": "204",
    "name": "덕트 트렁크",
    "deckId": "D2",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 4000,
@@ -2224,7 +2224,7 @@
    "no": "226",
    "name": "린넨창고",
    "deckId": "D2",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 0,
@@ -2680,7 +2680,7 @@
    "no": "104",
    "name": "덕트 트렁크",
    "deckId": "D1",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 4000,
@@ -2866,7 +2866,7 @@
    "no": "109",
    "name": "세제·린넨 창고",
    "deckId": "D1",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 4000,
@@ -3086,7 +3086,7 @@
    "no": "115",
    "name": "건식식품창고",
    "deckId": "D1",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 16500,
@@ -3120,7 +3120,7 @@
    "no": "116",
    "name": "조리실 팬룸",
    "deckId": "D1",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 16500,
@@ -3154,7 +3154,7 @@
    "no": "120",
    "name": "공조기실",
    "deckId": "D1",
-   "isoClass": "AC",
+   "isoClass": "NON_AC",
    "polygon": [
     {
      "x": 0,
@@ -3300,10 +3300,10 @@
  ],
  "loads": {
   "T3_D4_401_N": {
-   "coolingSensibleW": 13751.44,
+   "coolingSensibleW": 13822,
    "coolingLatentW": 150,
-   "coolingW": 15291.584000000003,
-   "heatingW": 7879.872000000001,
+   "coolingW": 15369.2,
+   "heatingW": 8012.928000000001,
    "minFreshAirCmh": 86.4,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3311,10 +3311,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D4_402_N": {
-   "coolingSensibleW": 333.6,
+   "coolingSensibleW": 388.48,
    "coolingLatentW": 0,
-   "coolingW": 366.96000000000004,
-   "heatingW": 565.4879999999999,
+   "coolingW": 427.32800000000003,
+   "heatingW": 668.9760000000001,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3322,10 +3322,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D4_403_N": {
-   "coolingSensibleW": 226.1,
+   "coolingSensibleW": 265.29999999999995,
    "coolingLatentW": 0,
-   "coolingW": 248.71,
-   "heatingW": 464.31,
+   "coolingW": 291.83,
+   "heatingW": 538.23,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3333,10 +3333,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D4_404_N": {
-   "coolingSensibleW": 180.88,
+   "coolingSensibleW": 212.24,
    "coolingLatentW": 0,
-   "coolingW": 198.96800000000002,
-   "heatingW": 371.44800000000004,
+   "coolingW": 233.46400000000003,
+   "heatingW": 430.58400000000006,
    "minFreshAirCmh": 0,
    "minAch": 15,
    "achAirCmh": 165,
@@ -3344,10 +3344,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D4_405_N": {
-   "coolingSensibleW": 324.45,
+   "coolingSensibleW": 258.29999999999995,
    "coolingLatentW": 0,
-   "coolingW": 356.89500000000004,
-   "heatingW": 436.59000000000003,
+   "coolingW": 284.13,
+   "heatingW": 311.85,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3388,10 +3388,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D4_409_N": {
-   "coolingSensibleW": 2123.48,
+   "coolingSensibleW": 2131.32,
    "coolingLatentW": 50,
-   "coolingW": 2390.8280000000004,
-   "heatingW": 944.3280000000001,
+   "coolingW": 2399.452,
+   "heatingW": 959.1120000000001,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3399,10 +3399,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D4_410_N": {
-   "coolingSensibleW": 2771.32,
+   "coolingSensibleW": 2818.36,
    "coolingLatentW": 0,
-   "coolingW": 3048.452,
-   "heatingW": 557.1720000000001,
+   "coolingW": 3100.1960000000004,
+   "heatingW": 645.8760000000001,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3410,10 +3410,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_301_N": {
-   "coolingSensibleW": 350.4,
+   "coolingSensibleW": 153.6,
    "coolingLatentW": 0,
-   "coolingW": 385.44,
-   "heatingW": 909.216,
+   "coolingW": 168.96,
+   "heatingW": 541.2,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3421,10 +3421,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_302_N": {
-   "coolingSensibleW": 670.4,
+   "coolingSensibleW": 855.1999999999999,
    "coolingLatentW": 0,
-   "coolingW": 737.44,
-   "heatingW": 909.216,
+   "coolingW": 940.72,
+   "heatingW": 1121.1200000000001,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3443,10 +3443,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_304_N": {
-   "coolingSensibleW": 46.349999999999994,
+   "coolingSensibleW": 36.9,
    "coolingLatentW": 0,
-   "coolingW": 50.985,
-   "heatingW": 62.37,
+   "coolingW": 40.59,
+   "heatingW": 44.55,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3454,10 +3454,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_305_N": {
-   "coolingSensibleW": 46.349999999999994,
+   "coolingSensibleW": 93.39,
    "coolingLatentW": 0,
-   "coolingW": 50.985,
-   "heatingW": 62.37,
+   "coolingW": 102.72900000000001,
+   "heatingW": 151.07400000000004,
    "minFreshAirCmh": 0,
    "minAch": 10,
    "achAirCmh": 49.5,
@@ -3465,10 +3465,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_306_N": {
-   "coolingSensibleW": 177,
+   "coolingSensibleW": 239.72,
    "coolingLatentW": 0,
-   "coolingW": 194.70000000000002,
-   "heatingW": 207.9,
+   "coolingW": 263.692,
+   "heatingW": 326.172,
    "minFreshAirCmh": 0,
    "minAch": 15,
    "achAirCmh": 247.5,
@@ -3476,10 +3476,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_307_N": {
-   "coolingSensibleW": 430.4,
+   "coolingSensibleW": 292.64,
    "coolingLatentW": 0,
-   "coolingW": 473.44,
-   "heatingW": 909.216,
+   "coolingW": 321.904,
+   "heatingW": 649.44,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3487,10 +3487,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_308_N": {
-   "coolingSensibleW": 1689.8400000000001,
+   "coolingSensibleW": 1752.56,
    "coolingLatentW": 150,
-   "coolingW": 2023.8240000000003,
-   "heatingW": 435.204,
+   "coolingW": 2092.8160000000003,
+   "heatingW": 553.476,
    "minFreshAirCmh": 86.4,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3498,10 +3498,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_310_N": {
-   "coolingSensibleW": 1929.6,
+   "coolingSensibleW": 2090.88,
    "coolingLatentW": 150,
-   "coolingW": 2287.56,
-   "heatingW": 1291.752,
+   "coolingW": 2464.9680000000003,
+   "heatingW": 1459.3040000000003,
    "minFreshAirCmh": 86.4,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3509,10 +3509,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_311_N": {
-   "coolingSensibleW": 1817.76,
+   "coolingSensibleW": 1898.4,
    "coolingLatentW": 100,
-   "coolingW": 2109.536,
-   "heatingW": 1578.1920000000002,
+   "coolingW": 2198.2400000000002,
+   "heatingW": 1661.9680000000003,
    "minFreshAirCmh": 57.6,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3542,10 +3542,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_320_N": {
-   "coolingSensibleW": 2765.36,
+   "coolingSensibleW": 2941.2,
    "coolingLatentW": 400,
-   "coolingW": 3481.8960000000006,
-   "heatingW": 2345.112,
+   "coolingW": 3675.32,
+   "heatingW": 2676.6960000000004,
    "minFreshAirCmh": 230.4,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3553,10 +3553,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_321_N": {
-   "coolingSensibleW": 843.568,
+   "coolingSensibleW": 906.288,
    "coolingLatentW": 50,
-   "coolingW": 982.9248,
-   "heatingW": 468.6528000000002,
+   "coolingW": 1051.9168000000002,
+   "heatingW": 586.9248000000001,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3564,10 +3564,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_322_N": {
-   "coolingSensibleW": 843.568,
+   "coolingSensibleW": 847.768,
    "coolingLatentW": 50,
-   "coolingW": 982.9248,
-   "heatingW": 468.6528000000002,
+   "coolingW": 987.5448000000001,
+   "heatingW": 476.57280000000014,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3586,10 +3586,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_361_N": {
-   "coolingSensibleW": 75.52000000000001,
+   "coolingSensibleW": 156.16,
    "coolingLatentW": 0,
-   "coolingW": 83.07200000000002,
-   "heatingW": 88.70400000000001,
+   "coolingW": 171.776,
+   "heatingW": 172.48000000000002,
    "minFreshAirCmh": 0,
    "minAch": 15,
    "achAirCmh": 105.6,
@@ -3619,10 +3619,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_371_N": {
-   "coolingSensibleW": 25.6,
+   "coolingSensibleW": 43.52,
    "coolingLatentW": 0,
-   "coolingW": 28.160000000000004,
-   "heatingW": 0,
+   "coolingW": 47.87200000000001,
+   "heatingW": 33.79200000000001,
    "minFreshAirCmh": 0,
    "minAch": 15,
    "achAirCmh": 105.6,
@@ -3630,10 +3630,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D3_372_N": {
-   "coolingSensibleW": 25.6,
+   "coolingSensibleW": 28.96,
    "coolingLatentW": 0,
-   "coolingW": 28.160000000000004,
-   "heatingW": 0,
+   "coolingW": 31.856000000000005,
+   "heatingW": 6.336,
    "minFreshAirCmh": 0,
    "minAch": 15,
    "achAirCmh": 105.6,
@@ -3652,10 +3652,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_201_N": {
-   "coolingSensibleW": 221.76,
+   "coolingSensibleW": 120.96000000000001,
    "coolingLatentW": 0,
-   "coolingW": 243.936,
-   "heatingW": 465.696,
+   "coolingW": 133.056,
+   "heatingW": 277.20000000000005,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3663,10 +3663,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_202_N": {
-   "coolingSensibleW": 481.28,
+   "coolingSensibleW": 666.0799999999999,
    "coolingLatentW": 0,
-   "coolingW": 529.408,
-   "heatingW": 465.696,
+   "coolingW": 732.688,
+   "heatingW": 677.6,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3696,10 +3696,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_205_N": {
-   "coolingSensibleW": 11.25,
+   "coolingSensibleW": 34.77,
    "coolingLatentW": 0,
-   "coolingW": 12.375000000000002,
-   "heatingW": 0,
+   "coolingW": 38.24700000000001,
+   "heatingW": 44.35200000000001,
    "minFreshAirCmh": 0,
    "minAch": 10,
    "achAirCmh": 49.5,
@@ -3707,10 +3707,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_206_N": {
-   "coolingSensibleW": 60,
+   "coolingSensibleW": 83.52000000000001,
    "coolingLatentW": 0,
-   "coolingW": 66,
-   "heatingW": 0,
+   "coolingW": 91.87200000000001,
+   "heatingW": 44.35200000000001,
    "minFreshAirCmh": 0,
    "minAch": 15,
    "achAirCmh": 247.5,
@@ -3718,10 +3718,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_207_N": {
-   "coolingSensibleW": 2186.24,
+   "coolingSensibleW": 2338.56,
    "coolingLatentW": 400,
-   "coolingW": 2844.864,
-   "heatingW": 753.9840000000002,
+   "coolingW": 3012.416,
+   "heatingW": 1041.2160000000001,
    "minFreshAirCmh": 230.4,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3740,10 +3740,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_210_N": {
-   "coolingSensibleW": 1851.3600000000001,
+   "coolingSensibleW": 2012.6399999999999,
    "coolingLatentW": 150,
-   "coolingW": 2201.496,
-   "heatingW": 814.9680000000002,
+   "coolingW": 2378.904,
+   "heatingW": 982.5200000000001,
    "minFreshAirCmh": 86.4,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3751,10 +3751,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_211_N": {
-   "coolingSensibleW": 843.568,
+   "coolingSensibleW": 986.928,
    "coolingLatentW": 50,
-   "coolingW": 982.9248,
-   "heatingW": 468.6528000000002,
+   "coolingW": 1140.6208,
+   "heatingW": 670.7008000000001,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3762,10 +3762,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_212_N": {
-   "coolingSensibleW": 843.568,
+   "coolingSensibleW": 878.848,
    "coolingLatentW": 50,
-   "coolingW": 982.9248,
-   "heatingW": 468.6528000000002,
+   "coolingW": 1021.7328,
+   "heatingW": 535.1808000000002,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3784,10 +3784,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_214_N": {
-   "coolingSensibleW": 843.568,
+   "coolingSensibleW": 855.328,
    "coolingLatentW": 50,
-   "coolingW": 982.9248,
-   "heatingW": 468.6528000000002,
+   "coolingW": 995.8608,
+   "heatingW": 490.8288000000002,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3795,10 +3795,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_215_N": {
-   "coolingSensibleW": 1134.88,
+   "coolingSensibleW": 1242.4,
    "coolingLatentW": 50,
-   "coolingW": 1303.3680000000002,
-   "heatingW": 1283.6208000000001,
+   "coolingW": 1421.6400000000003,
+   "heatingW": 1486.3727999999999,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3806,10 +3806,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_220_N": {
-   "coolingSensibleW": 1726.32,
+   "coolingSensibleW": 1879.76,
    "coolingLatentW": 0,
-   "coolingW": 1898.952,
-   "heatingW": 349.27200000000005,
+   "coolingW": 2067.7360000000003,
+   "heatingW": 638.6160000000001,
    "minFreshAirCmh": 0,
    "minAch": 10,
    "achAirCmh": 264,
@@ -3850,10 +3850,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_226_N": {
-   "coolingSensibleW": 402.56,
+   "coolingSensibleW": 261.44,
    "coolingLatentW": 0,
-   "coolingW": 442.81600000000003,
-   "heatingW": 931.392,
+   "coolingW": 287.584,
+   "heatingW": 665.28,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3861,10 +3861,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_261_N": {
-   "coolingSensibleW": 25.6,
+   "coolingSensibleW": 106.23999999999998,
    "coolingLatentW": 0,
-   "coolingW": 28.160000000000004,
-   "heatingW": 0,
+   "coolingW": 116.86399999999999,
+   "heatingW": 83.776,
    "minFreshAirCmh": 0,
    "minAch": 15,
    "achAirCmh": 105.6,
@@ -3905,10 +3905,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D2_265_N": {
-   "coolingSensibleW": 25.6,
+   "coolingSensibleW": 43.52,
    "coolingLatentW": 0,
-   "coolingW": 28.160000000000004,
-   "heatingW": 0,
+   "coolingW": 47.87200000000001,
+   "heatingW": 33.79200000000001,
    "minFreshAirCmh": 0,
    "minAch": 15,
    "achAirCmh": 105.6,
@@ -3949,10 +3949,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_101_N": {
-   "coolingSensibleW": 365.76,
+   "coolingSensibleW": 120.96000000000001,
    "coolingLatentW": 0,
-   "coolingW": 402.336,
-   "heatingW": 1130.976,
+   "coolingW": 133.056,
+   "heatingW": 277.20000000000005,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3960,10 +3960,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_102_N": {
-   "coolingSensibleW": 841.28,
+   "coolingSensibleW": 1431.68,
    "coolingLatentW": 0,
-   "coolingW": 925.408,
-   "heatingW": 2128.896,
+   "coolingW": 1574.8480000000002,
+   "heatingW": 1572.5600000000002,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3971,10 +3971,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_103_N": {
-   "coolingSensibleW": 106.25,
+   "coolingSensibleW": 151.25,
    "coolingLatentW": 0,
-   "coolingW": 116.87500000000001,
-   "heatingW": 259.875,
+   "coolingW": 166.375,
+   "heatingW": 105.18750000000001,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3982,10 +3982,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_104_N": {
-   "coolingSensibleW": 31.5,
+   "coolingSensibleW": 31.05,
    "coolingLatentW": 0,
-   "coolingW": 34.650000000000006,
-   "heatingW": 93.555,
+   "coolingW": 34.155,
+   "heatingW": 9.9,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3993,10 +3993,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_105_N": {
-   "coolingSensibleW": 31.5,
+   "coolingSensibleW": 94.74000000000001,
    "coolingLatentW": 0,
-   "coolingW": 34.650000000000006,
-   "heatingW": 93.555,
+   "coolingW": 104.21400000000001,
+   "heatingW": 126.57150000000003,
    "minFreshAirCmh": 0,
    "minAch": 10,
    "achAirCmh": 49.5,
@@ -4004,10 +4004,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_106_N": {
-   "coolingSensibleW": 127.5,
+   "coolingSensibleW": 205.02,
    "coolingLatentW": 0,
-   "coolingW": 140.25,
-   "heatingW": 311.85,
+   "coolingW": 225.52200000000002,
+   "heatingW": 170.577,
    "minFreshAirCmh": 0,
    "minAch": 15,
    "achAirCmh": 247.5,
@@ -4015,10 +4015,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_107_N": {
-   "coolingSensibleW": 2330.24,
+   "coolingSensibleW": 2508.16,
    "coolingLatentW": 400,
-   "coolingW": 3003.264,
-   "heatingW": 1419.2640000000001,
+   "coolingW": 3198.976,
+   "heatingW": 1141.536,
    "minFreshAirCmh": 230.4,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4026,10 +4026,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_108_N": {
-   "coolingSensibleW": 1791.09,
+   "coolingSensibleW": 1872.09,
    "coolingLatentW": 150,
-   "coolingW": 2135.199,
-   "heatingW": 902.9789999999999,
+   "coolingW": 2224.299,
+   "heatingW": 624.5415,
    "minFreshAirCmh": 86.4,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4037,10 +4037,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_109_N": {
-   "coolingSensibleW": 522.2,
+   "coolingSensibleW": 442.82,
    "coolingLatentW": 0,
-   "coolingW": 574.4200000000001,
-   "heatingW": 1309.77,
+   "coolingW": 487.10200000000003,
+   "heatingW": 498.9600000000001,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4048,21 +4048,21 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_110_N": {
-   "coolingSensibleW": 2166.25,
+   "coolingSensibleW": 2409.57,
    "coolingLatentW": 0,
-   "coolingW": 2382.875,
-   "heatingW": 363.82500000000005,
+   "coolingW": 2650.5270000000005,
+   "heatingW": 367.79050000000007,
    "minFreshAirCmh": 0,
-   "minAch": 40,
-   "achAirCmh": 770,
+   "minAch": 45,
+   "achAirCmh": 866.25,
    "complete": true,
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_111_N": {
-   "coolingSensibleW": 465.36,
+   "coolingSensibleW": 760.08,
    "coolingLatentW": 0,
-   "coolingW": 511.8960000000001,
-   "heatingW": 1313.928,
+   "coolingW": 836.0880000000001,
+   "heatingW": 1273.1840000000002,
    "minFreshAirCmh": 0,
    "minAch": 6,
    "achAirCmh": 158.39999999999998,
@@ -4070,10 +4070,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_112_N": {
-   "coolingSensibleW": 166.25,
+   "coolingSensibleW": 268.45,
    "coolingLatentW": 0,
-   "coolingW": 182.87500000000003,
-   "heatingW": 363.82500000000005,
+   "coolingW": 295.295,
+   "heatingW": 221.1825,
    "minFreshAirCmh": 0,
    "minAch": 10,
    "achAirCmh": 192.5,
@@ -4081,10 +4081,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_113_N": {
-   "coolingSensibleW": 2859.8,
+   "coolingSensibleW": 3065.88,
    "coolingLatentW": 600,
-   "coolingW": 3805.7800000000007,
-   "heatingW": 1510.7400000000002,
+   "coolingW": 4032.4680000000003,
+   "heatingW": 1094.478,
    "minFreshAirCmh": 460.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4092,10 +4092,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_114_N": {
-   "coolingSensibleW": 10521.72,
+   "coolingSensibleW": 10858.28,
    "coolingLatentW": 150,
-   "coolingW": 11738.892,
-   "heatingW": 1977.8220000000003,
+   "coolingW": 12109.108000000002,
+   "heatingW": 1405.1730000000002,
    "minFreshAirCmh": 86.4,
    "minAch": 50,
    "achAirCmh": 3779.9999999999995,
@@ -4103,10 +4103,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_115_N": {
-   "coolingSensibleW": 453.74,
+   "coolingSensibleW": 327.81000000000006,
    "coolingLatentW": 0,
-   "coolingW": 499.11400000000003,
-   "heatingW": 1324.323,
+   "coolingW": 360.5910000000001,
+   "heatingW": 636.0200000000001,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4114,10 +4114,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_116_N": {
-   "coolingSensibleW": 365.53999999999996,
+   "coolingSensibleW": 301.35,
    "coolingLatentW": 0,
-   "coolingW": 402.094,
-   "heatingW": 916.839,
+   "coolingW": 331.48500000000007,
+   "heatingW": 344.96000000000004,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4125,10 +4125,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_120_N": {
-   "coolingSensibleW": 880.8800000000001,
+   "coolingSensibleW": 681.24,
    "coolingLatentW": 0,
-   "coolingW": 968.9680000000002,
-   "heatingW": 2444.904,
+   "coolingW": 749.364,
+   "heatingW": 1037.96,
    "minFreshAirCmh": 0,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4136,10 +4136,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_121_N": {
-   "coolingSensibleW": 2961.02,
+   "coolingSensibleW": 3137.42,
    "coolingLatentW": 600,
-   "coolingW": 3917.1220000000003,
-   "heatingW": 1714.482,
+   "coolingW": 4111.162,
+   "heatingW": 1108.107,
    "minFreshAirCmh": 460.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4147,10 +4147,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_122_N": {
-   "coolingSensibleW": 1876.88,
+   "coolingSensibleW": 1977.68,
    "coolingLatentW": 0,
-   "coolingW": 2064.568,
-   "heatingW": 814.968,
+   "coolingW": 2175.4480000000003,
+   "heatingW": 468.468,
    "minFreshAirCmh": 0,
    "minAch": 22,
    "achAirCmh": 677.6,
@@ -4158,10 +4158,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "T3_D1_123_N": {
-   "coolingSensibleW": 2849.36,
+   "coolingSensibleW": 3050.96,
    "coolingLatentW": 400,
-   "coolingW": 3574.2960000000003,
-   "heatingW": 2733.1920000000005,
+   "coolingW": 3796.0560000000005,
+   "heatingW": 2040.192,
    "minFreshAirCmh": 230.4,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4223,7 +4223,7 @@
    "roomIds": [
     "T3_D1_110_N"
    ],
-   "designCmh": 770
+   "designCmh": 870
   },
   {
    "id": "EF-SAN",
@@ -4298,7 +4298,7 @@
     "T3_D1_121_N",
     "T3_D1_123_N"
    ],
-   "designCmh": 11520
+   "designCmh": 12250
   },
   {
    "id": "RA-BRG",
@@ -4314,7 +4314,7 @@
     "T3_D4_409_N",
     "T3_D4_410_N"
    ],
-   "designCmh": 5890
+   "designCmh": 5940
   },
   {
    "id": "AHU-ACC",
@@ -4360,7 +4360,7 @@
     "T3_D1_122_N",
     "T3_D1_123_N"
    ],
-   "designCmh": 16420
+   "designCmh": 17140
   },
   {
    "id": "AHU-BRG",
@@ -4377,7 +4377,7 @@
     "T3_D4_409_N",
     "T3_D4_410_N"
    ],
-   "designCmh": 7860
+   "designCmh": 7930
   },
   {
    "id": "SF-GAL",
@@ -4388,16 +4388,16 @@
    "roomIds": [
     "T3_D1_114_N"
    ],
-   "designCmh": 3480
+   "designCmh": 3590
   }
  ],
  "rus": [],
  "ducts": {},
  "airflow": {
   "T3_D4_401_N": {
-   "supplyCmh": 4540,
+   "supplyCmh": 4570,
    "exhaustCmh": 0,
-   "returnCmh": 3510,
+   "returnCmh": 3540,
    "freshAirCmh": 86.4,
    "source": "load",
    "transferInCmh": 0,
@@ -4406,9 +4406,9 @@
    "makeupCmh": 0
   },
   "T3_D4_402_N": {
-   "supplyCmh": 120,
+   "supplyCmh": 130,
    "exhaustCmh": 0,
-   "returnCmh": 90,
+   "returnCmh": 100,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
@@ -4417,7 +4417,7 @@
    "makeupCmh": 0
   },
   "T3_D4_403_N": {
-   "supplyCmh": 80,
+   "supplyCmh": 90,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
@@ -4463,7 +4463,7 @@
   "T3_D4_407_N": {
    "supplyCmh": 730,
    "exhaustCmh": 0,
-   "returnCmh": 570,
+   "returnCmh": 560,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -4494,9 +4494,9 @@
    "makeupCmh": 0
   },
   "T3_D4_410_N": {
-   "supplyCmh": 920,
+   "supplyCmh": 940,
    "exhaustCmh": 0,
-   "returnCmh": 710,
+   "returnCmh": 730,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
@@ -4516,15 +4516,15 @@
    "makeupCmh": 0
   },
   "T3_D3_302_N": {
-   "supplyCmh": 270,
+   "supplyCmh": 290,
    "exhaustCmh": 0,
-   "returnCmh": 20,
+   "returnCmh": 40,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 250,
-   "makeupCmh": 40
+   "makeupCmh": 0
   },
   "T3_D3_303_N": {
    "supplyCmh": 20,
@@ -4582,9 +4582,9 @@
    "makeupCmh": 0
   },
   "T3_D3_308_N": {
-   "supplyCmh": 560,
+   "supplyCmh": 580,
    "exhaustCmh": 0,
-   "returnCmh": 550,
+   "returnCmh": 570,
    "freshAirCmh": 86.4,
    "source": "load",
    "transferInCmh": 0,
@@ -4593,9 +4593,9 @@
    "makeupCmh": 0
   },
   "T3_D3_310_N": {
-   "supplyCmh": 640,
+   "supplyCmh": 690,
    "exhaustCmh": 0,
-   "returnCmh": 630,
+   "returnCmh": 680,
    "freshAirCmh": 86.4,
    "source": "load",
    "transferInCmh": 0,
@@ -4604,9 +4604,9 @@
    "makeupCmh": 0
   },
   "T3_D3_311_N": {
-   "supplyCmh": 600,
+   "supplyCmh": 630,
    "exhaustCmh": 0,
-   "returnCmh": 480,
+   "returnCmh": 510,
    "freshAirCmh": 57.6,
    "source": "load",
    "transferInCmh": 0,
@@ -4637,9 +4637,9 @@
    "makeupCmh": 0
   },
   "T3_D3_320_N": {
-   "supplyCmh": 920,
+   "supplyCmh": 980,
    "exhaustCmh": 0,
-   "returnCmh": 860,
+   "returnCmh": 920,
    "freshAirCmh": 230.4,
    "source": "load",
    "transferInCmh": 0,
@@ -4648,9 +4648,9 @@
    "makeupCmh": 0
   },
   "T3_D3_321_N": {
-   "supplyCmh": 280,
+   "supplyCmh": 300,
    "exhaustCmh": 0,
-   "returnCmh": 170,
+   "returnCmh": 190,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -4766,7 +4766,7 @@
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 520,
-   "makeupCmh": 390
+   "makeupCmh": 330
   },
   "T3_D2_203_N": {
    "supplyCmh": 20,
@@ -4813,9 +4813,9 @@
    "makeupCmh": 0
   },
   "T3_D2_207_N": {
-   "supplyCmh": 730,
+   "supplyCmh": 780,
    "exhaustCmh": 0,
-   "returnCmh": 670,
+   "returnCmh": 720,
    "freshAirCmh": 230.4,
    "source": "load",
    "transferInCmh": 0,
@@ -4835,9 +4835,9 @@
    "makeupCmh": 0
   },
   "T3_D2_210_N": {
-   "supplyCmh": 620,
+   "supplyCmh": 670,
    "exhaustCmh": 0,
-   "returnCmh": 610,
+   "returnCmh": 660,
    "freshAirCmh": 86.4,
    "source": "load",
    "transferInCmh": 0,
@@ -4846,9 +4846,9 @@
    "makeupCmh": 0
   },
   "T3_D2_211_N": {
-   "supplyCmh": 280,
+   "supplyCmh": 330,
    "exhaustCmh": 0,
-   "returnCmh": 170,
+   "returnCmh": 220,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -4857,9 +4857,9 @@
    "makeupCmh": 0
   },
   "T3_D2_212_N": {
-   "supplyCmh": 280,
+   "supplyCmh": 300,
    "exhaustCmh": 0,
-   "returnCmh": 170,
+   "returnCmh": 190,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -4879,9 +4879,9 @@
    "makeupCmh": 0
   },
   "T3_D2_214_N": {
-   "supplyCmh": 280,
+   "supplyCmh": 290,
    "exhaustCmh": 0,
-   "returnCmh": 170,
+   "returnCmh": 180,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -4890,9 +4890,9 @@
    "makeupCmh": 0
   },
   "T3_D2_215_N": {
-   "supplyCmh": 380,
+   "supplyCmh": 410,
    "exhaustCmh": 0,
-   "returnCmh": 260,
+   "returnCmh": 290,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -4936,7 +4936,7 @@
   "T3_D2_223_N": {
    "supplyCmh": 380,
    "exhaustCmh": 0,
-   "returnCmh": 260,
+   "returnCmh": 270,
    "freshAirCmh": 28.8,
    "source": "load",
    "transferInCmh": 0,
@@ -5055,18 +5055,18 @@
    "makeupCmh": 0
   },
   "T3_D1_102_N": {
-   "supplyCmh": 780,
+   "supplyCmh": 660,
    "exhaustCmh": 0,
    "returnCmh": 40,
    "freshAirCmh": 0,
    "source": "load",
    "transferInCmh": 0,
    "transferFrom": null,
-   "transferOutCmh": 740,
-   "makeupCmh": 500
+   "transferOutCmh": 620,
+   "makeupCmh": 180
   },
   "T3_D1_103_N": {
-   "supplyCmh": 40,
+   "supplyCmh": 50,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
@@ -5110,9 +5110,9 @@
    "makeupCmh": 0
   },
   "T3_D1_107_N": {
-   "supplyCmh": 770,
+   "supplyCmh": 830,
    "exhaustCmh": 0,
-   "returnCmh": 710,
+   "returnCmh": 770,
    "freshAirCmh": 230.4,
    "source": "load",
    "transferInCmh": 0,
@@ -5121,9 +5121,9 @@
    "makeupCmh": 0
   },
   "T3_D1_108_N": {
-   "supplyCmh": 600,
+   "supplyCmh": 620,
    "exhaustCmh": 0,
-   "returnCmh": 590,
+   "returnCmh": 610,
    "freshAirCmh": 86.4,
    "source": "load",
    "transferInCmh": 0,
@@ -5143,12 +5143,12 @@
    "makeupCmh": 0
   },
   "T3_D1_110_N": {
-   "supplyCmh": 720,
-   "exhaustCmh": 770,
+   "supplyCmh": 800,
+   "exhaustCmh": 870,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "transferInCmh": 50,
+   "transferInCmh": 70,
    "transferFrom": "T3_D1_102_N",
    "transferOutCmh": 0,
    "makeupCmh": 0
@@ -5165,20 +5165,20 @@
    "makeupCmh": 0
   },
   "T3_D1_112_N": {
-   "supplyCmh": 60,
+   "supplyCmh": 90,
    "exhaustCmh": 200,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "transferInCmh": 140,
+   "transferInCmh": 110,
    "transferFrom": "T3_D1_102_N",
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "T3_D1_113_N": {
-   "supplyCmh": 950,
+   "supplyCmh": 1020,
    "exhaustCmh": 0,
-   "returnCmh": 940,
+   "returnCmh": 1010,
    "freshAirCmh": 460.8,
    "source": "load",
    "transferInCmh": 0,
@@ -5187,12 +5187,12 @@
    "makeupCmh": 0
   },
   "T3_D1_114_N": {
-   "supplyCmh": 3480,
+   "supplyCmh": 3590,
    "exhaustCmh": 3780,
    "returnCmh": 0,
    "freshAirCmh": 86.4,
    "source": "load",
-   "transferInCmh": 300,
+   "transferInCmh": 190,
    "transferFrom": "T3_D1_102_N",
    "transferOutCmh": 0,
    "makeupCmh": 0
@@ -5231,31 +5231,31 @@
    "makeupCmh": 0
   },
   "T3_D1_121_N": {
-   "supplyCmh": 980,
+   "supplyCmh": 1040,
    "exhaustCmh": 0,
-   "returnCmh": 910,
+   "returnCmh": 1010,
    "freshAirCmh": 460.8,
    "source": "load",
    "transferInCmh": 0,
    "transferFrom": null,
-   "transferOutCmh": 60,
+   "transferOutCmh": 20,
    "makeupCmh": 0
   },
   "T3_D1_122_N": {
-   "supplyCmh": 620,
+   "supplyCmh": 660,
    "exhaustCmh": 680,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "transferInCmh": 60,
+   "transferInCmh": 20,
    "transferFrom": "T3_D1_121_N",
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "T3_D1_123_N": {
-   "supplyCmh": 950,
+   "supplyCmh": 1010,
    "exhaustCmh": 0,
-   "returnCmh": 940,
+   "returnCmh": 1000,
    "freshAirCmh": 230.4,
    "source": "load",
    "transferInCmh": 0,
@@ -5327,14 +5327,14 @@
     "T3_D1_106_N",
     "T3_D1_114_N"
    ],
-   "saCmh": 16420,
-   "eaCmh": 4660,
+   "saCmh": 17140,
+   "eaCmh": 4650,
    "minOaCmh": 2880,
-   "oaCmh": 4900,
-   "raCmh": 11520,
+   "oaCmh": 4890,
+   "raCmh": 12250,
    "recirculating": true,
-   "oaNeedCmh": 4893,
-   "oaPct": 29.8,
+   "oaNeedCmh": 4883,
+   "oaPct": 28.5,
    "pressurizationCmh": 240,
    "ok": true
   },
@@ -5352,15 +5352,15 @@
    "transferRoomIds": [
     "T3_D4_404_N"
    ],
-   "saCmh": 7860,
+   "saCmh": 7930,
    "eaCmh": 170,
    "minOaCmh": 173,
-   "oaCmh": 1970,
-   "raCmh": 5890,
+   "oaCmh": 1990,
+   "raCmh": 5940,
    "recirculating": true,
-   "oaNeedCmh": 1965,
+   "oaNeedCmh": 1983,
    "oaPct": 25.1,
-   "pressurizationCmh": 1800,
+   "pressurizationCmh": 1820,
    "ok": true
   },
   {
@@ -5369,13 +5369,13 @@
     "T3_D1_114_N"
    ],
    "transferRoomIds": [],
-   "saCmh": 3480,
-   "eaCmh": 3480,
+   "saCmh": 3590,
+   "eaCmh": 3590,
    "minOaCmh": 86,
-   "oaCmh": 3480,
+   "oaCmh": 3590,
    "raCmh": 0,
    "recirculating": false,
-   "oaNeedCmh": 3480,
+   "oaNeedCmh": 3590,
    "oaPct": 100,
    "pressurizationCmh": 0,
    "ok": true

@@ -43,14 +43,16 @@ const USE = {
  // galley: own supply fan and exhaust (II-2/9.7.2.1, 9.7.5), exhaust > supply (the rest comes from the mess); 50 ACH and the
 // pantry 22 ACH since v2.3 (window sun and the safety factor raised their supply past 45 / 20 ACH exhaust)
  galley: { sup: 'SF-GAL', exh: 'EF-GAL', ceilingHeight: 2400, minimumAch: 50, people: 3, equipW: 9000, lighting: 15, windowArea: 1.2 },
- laundry: { sup: 'AHU-ACC', exh: 'EF-LAU', minimumAch: 40, equipW: 2000 },
+ laundry: { sup: 'AHU-ACC', exh: 'EF-LAU', minimumAch: 45, equipW: 2000 },   // 45 ACH since v2.4 (warmer neighbours raised its supply)
  changing: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 10 },
  // CO2 room and battery room: each its own exhaust (FSS Code 5, class rules)
  co2: { exh: 'EF-CO2', minimumAch: 6, lighting: 5 },
  battery: { exh: 'EF-BAT', minimumAch: 12, lighting: 5 },
- store: { lighting: 5, ceilingHeight: 0 },
- none: { lighting: 5, ceilingHeight: 0 },
- casing: { isoClass: 'ENGINE', lighting: 0, ceilingHeight: 0 },
+ // spaces no system serves (stores, fan rooms, the AC room, trunks): non-air-conditioned (ISO K 0.8 to them), at BOX's NON_AC
+ // preset 32 / 10 °C; the engine casing as BOX's S5 engine spaces, 43 / 5 °C (v2.3 - they were 25 °C, as if air-conditioned)
+ store: { lighting: 5, ceilingHeight: 0, isoClass: 'NON_AC', coolTemp: 32, heatTemp: 10 },
+ none: { lighting: 5, ceilingHeight: 0, isoClass: 'NON_AC', coolTemp: 32, heatTemp: 10 },
+ casing: { isoClass: 'ENGINE', lighting: 0, ceilingHeight: 0, coolTemp: 43, heatTemp: 5 },
  wheel: { sup: 'AHU-BRG', ret: 'RA-BRG', ceilingHeight: 2600, people: 3, minimumFreshAir: 86.4, equipW: 6000, windowArea: 20, isoClass: 'WHEELHOUSE', lighting: 8 },
  brgRoom: { sup: 'AHU-BRG', ret: 'RA-BRG', people: 1, minimumFreshAir: 28.8, equipW: 1500, windowArea: 0.8, lighting: 10 },
  brgEquip: { sup: 'AHU-BRG', ret: 'RA-BRG', equipW: 2500, lighting: 8 },
@@ -141,7 +143,7 @@ function boxProject(template) {
  const deckTpl = template.source.decks[0];
  return { ...template, source: { ...template.source, entities: ents, decks: DECKS.map(d => ({ ...deckTpl, id: d.id, name: d.name, z: d.z, height: HEIGHT })), backgrounds: [] },
   view: { ...template.view, activeDeck: 'D1', hidden: [], hiddenRooms: [], hiddenDeckLayers: [] },
-  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.3', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
+  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.4', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
 }
 
 // ---------- general arrangement DXF ----------

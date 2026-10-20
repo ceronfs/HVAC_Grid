@@ -157,12 +157,28 @@
   for (const k of gone) { delete S.results[k]; delete S.projects[k]; delete S.geometry[k]; } if (gone.includes(S.active)) S.active = null;
   const sup = S.contract.systems.filter(s => s.kind === 'supply'), stale = Object.keys(S.results).filter(k => result(k)?.stale).length;
   say(`설계 데이터 만듦: Deck ${S.contract.decks.length} · 격실 ${S.contract.rooms.length} · 계통 ${S.contract.systems.length} (급기 ${sup.length}) · 급기 ${fmt(sup.reduce((t, s) => t + s.designCmh, 0))} CMH${Object.keys(S.results).length ? ` · PHG D 결과 유지, 다시 보내기 ${stale}` : ''}`);
+  if (!S.contract.systems.length) toast('계통이 하나도 없습니다 — ② 격실 입력에서 실마다 SUP·EXH·RET 계통을 넣고 설계 데이터를 다시 만드세요', true);
   followBoxDeck(); S.step = 'air';
  }
+ // an example opens as a user would: its drawing in BOX (① ② have it too), then the design data made from it (②) - not a
+ // design data file next to an empty BOX. S5 is BOX's own example; T3 the test ship's BOX project and its SOLAS setting
  async function openSample(name = 's5') {
-  if (!(await keepsWork('예제 설계 데이터 열기'))) return;
-  setContract(await (await fetch(`../samples/${name}.contract.json`, { cache: 'no-store' })).json());
-  S.dirty = false; say(name === 't3' ? 'T3 시험선 설계 데이터를 열었습니다 (4 Deck · 다층 계통)' : '예제 설계 데이터(S5)를 열었습니다'); if (S.step === 'room' || S.step === 'load') S.step = 'air';
+  if (!(await keepsWork('예제 열기'))) return;
+  await box.load(); box.closeCal(); box.calSig = null;
+  const w = box.win, ask = w.confirm; w.confirm = () => true;   // BOX asks before it replaces a drawing; the app has asked
+  try {
+   if (name === 't3') { const t = await (await fetch('../samples/t3/T3.box.json', { cache: 'no-store' })).text(); box.setFile('jsonFile', new File([t], 'T3.box.json', { type: 'application/json' })); }
+   else box.click('s5ExampleBtn');
+  } finally { w.confirm = ask; }
+  const n = name === 't3' ? 79 : 94;
+  await B.until(() => { try { return box.hasDrawing() && box.win.CAD_APP.rooms().length >= n; } catch { return false; } }, 180000, '예제 도면');
+  // a new ship: nothing of the previous design data or its networks carries over
+  Object.assign(S, { contract: null, projects: {}, results: {}, geometry: {}, active: null, file: null, duct: null, phgEditor: false });
+  if (phg.loading) phg.open(phg.blank, 'HVAC Grid');
+  await extractContract();
+  if (name === 't3') { S.contract.solas = { ...(S.contract.solas || {}), ...(await (await fetch('../samples/t3/T3.solas.json', { cache: 'no-store' })).json()) }; invalidate(); }
+  S.undo = []; S.redo = []; S.dirty = false;
+  say(name === 't3' ? `T3 시험선: 도면(①)과 설계 데이터를 열었습니다 — 4 Deck · ${S.contract.rooms.length}실 · 다층 계통` : `S5 예제: 도면(①)과 설계 데이터를 열었습니다 — 5 Deck · ${S.contract.rooms.length}실`);
  }
  // 새로 시작: the BOX drawing, the design data, every duct network and the edit history go; the app is as just opened
  async function newStart() {
@@ -195,7 +211,9 @@
   const q = { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 }, room = S.contract.rooms.find(r => r.deckId === S.deck && GE.inRoom(q, r));
   if (!room) { say('실 밖입니다 — 공조기·수직 덕트 위치는 실 안을 클릭하세요', true); return false; }
   edit(`${S.sys} ${pl?.isUnitDeck ? '공조기' : '수직 덕트'} 위치`, () => { S.contract.roots = { ...(S.contract.roots || {}), [key]: { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 } }; }, [key]);
-  S.pickRoot = false; say(`${S.sys} ${pl?.isUnitDeck ? '공조기' : '수직 덕트'} 위치 지정 (${deckName(S.deck)})`); return true;
+  // the room named; a space that cannot take a unit or a shaft (stair, CO2, galley, machinery …) is said at once (and stays in ⑤ 검토)
+  const space = analysis().solas.classes[room.id]?.space || '', bad = PJ.UNIT_BAD.test(space), what = pl?.isUnitDeck ? '공조기' : '수직 덕트';
+  S.pickRoot = false; say(`${S.sys} ${what} 위치: ${room.no} ${room.name} (${deckName(S.deck)})${bad ? ` — ${space}에는 ${what}를 둘 수 없습니다(피난로·화재 위험 구역). 다른 실을 고르세요` : ''}`, bad); return true;
  }
  function clearRoot() { const key = curKey(); if (!S.contract.roots?.[key]) return; edit('위치 지정 해제', () => { const { [key]: _, ...rest } = S.contract.roots; S.contract.roots = rest; }); say('지정 해제 — 팬룸·샤프트 또는 복도 끝을 씁니다'); }
  function setUnitDeck(deckId) { const pl = curPlan(); if (!pl) return; edit(`${pl.systemId} 공조기 Deck`, () => { S.contract.unitDecks = { ...(S.contract.unitDecks || {}), [pl.systemKey]: deckId }; }); say(`${pl.systemId} 공조기 Deck: ${deckName(deckId)}`); }
@@ -410,7 +428,6 @@
  const field = html => ({ field: html });
  const seg = (name, value, options, onchange) => ({ field: `<div class="seg" role="radiogroup" aria-label="${esc(name)}" data-seg="${esc(name)}">${options.map(([v, l, n]) => `<button role="radio" data-v="${esc(v)}" aria-checked="${v === value}" ${n === 0 ? 'disabled' : ''}>${esc(l)}${n != null ? ` <small>${n}</small>` : ''}</button>`).join('')}</div>`, seg: onchange, segName: name });
  const kindSeg = () => seg('계통 종류', S.kind, PL.KINDS.map(k => [k, KL[k], deckPlans(k).length]), v => { S.kind = v; S.sys = null; pickSystem(); S.pickRoot = false; });
- const SAMPLES = [c('sample', 'S5 예제', () => act('예제 설계 데이터 여는 중', () => openSample('s5')), { title: 'BOX 내장 S5 예제 (5 Deck · 94실)' }), c('deck', 'T3 시험선', () => act('T3 시험선 여는 중', () => openSample('t3')), { title: '4 Deck 화물선 거주구 · 다층 급기·배기·환기 · 케이싱·조리실 (samples/t3)' })];
  const STEPS = [
   { id: 'room', name: '도면·격실', view: 'box', groups: () => [
    ['파일', [c('open', 'DXF 열기', boxFile('dxfFile', '.dxf'), { code: 'DXF' }), c('bg', '배경', boxFile('backgroundFile', ''), { code: 'BG' }), c('json', 'BOX 열기', boxFile('jsonFile', '.json'), { code: 'J↓', title: 'BOX 프로젝트 JSON 열기 (samples/t3/T3.box.json 시험선 포함) — HVAC Grid 프로젝트는 머리줄 폴더 단추' }), c('save', 'BOX 저장', boxCmd('saveBtn'), { code: 'S' }), c('dxfOut', 'BOX DXF 출력', boxCmd('exportBtn'), { code: 'D↑' })]],
@@ -432,7 +449,7 @@
    ['계통', [kindSeg(), sysField(false)]],
    ['공조기 · 수직 덕트', [c('pin', '위치 지정', () => { S.pickRoot = !S.pickRoot; say(S.pickRoot ? `평면에서 ${curPlan()?.isUnitDeck === false ? '수직 덕트(샤프트)' : '공조기'} 위치를 클릭하세요 (Esc 취소)` : ''); render(); }, { disabled: () => !curKey(), pressed: () => S.pickRoot, title: '공조기 Deck: 공조기·팬 위치 · 다른 Deck: 수직 덕트(샤프트) 위치' }), c('unpin', '지정 해제', () => act(null, clearRoot), { disabled: () => !S.contract?.roots?.[curKey()] }), unitDeckField()]],
    ['보기', [seg('평면 보기', S.overlay, [['air', '풍량'], ['fire', '방화']], v => { S.overlay = v; })]],
-   ['설계 데이터', [...SAMPLES, c('open', '열기', () => act(null, openProject), { title: 'HVAC Grid 프로젝트 또는 설계 데이터 JSON' }), c('save', '설계 데이터 저장', () => act(null, OUT.contract), { disabled: needContract })]]] },
+   ['설계 데이터', [c('open', '열기', () => act(null, openProject), { title: 'HVAC Grid 프로젝트 또는 설계 데이터 JSON' }), c('save', '설계 데이터 저장', () => act(null, OUT.contract), { disabled: needContract })]]] },
   { id: 'duct', name: 'RU·덕트', view: 'plan', groups: () => S.phgEditor ? [
    ['편집기', [c('back', '평면으로', () => act(null, closeEditor), { primary: true, title: 'PHG D에서 고친 내용을 읽고 HVAC Grid 평면으로 돌아갑니다' })]],
    ['HVAC Grid', [sysField(true), c('send', 'PHG D로 보내기', () => act('PHG D로 보내는 중', () => sendPlan()), { primary: true, disabled: () => !curKey(), title: 'Deck 격실 도면 + 공조기·수직 덕트 + 격실별 RU(풍량)' }), c('auto', '보내기 + AUTO', () => act('AUTO 계산 중', () => autoKey()), { disabled: () => !curKey(), title: 'AUTO → 첫 후보 → 덕트 지정 → 계산 → 압력' }), c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '결과 읽기', () => act(null, readBack), { disabled: () => !S.active, title: 'PHG D에서 고친 결과를 HVAC Grid로' })]],
@@ -536,8 +553,8 @@
  function tree() {
   if (!S.contract) {
    $('chips').innerHTML = ''; $('treeCount').textContent = '';
-   $('tree').innerHTML = `<div class="hint">② 부하 단계에서 <b>설계 데이터 만들기</b>를 누르면 BOX의 Deck·격실이 여기에 나타납니다.<br><button class="btn" id="treeSample">예제 설계 데이터 열기 (S5)</button><button class="btn" id="treeT3">T3 시험선 열기</button></div>`;
-   $('treeSample').onclick = () => act('예제 설계 데이터 여는 중', () => openSample('s5')); $('treeT3').onclick = () => act('T3 시험선 여는 중', () => openSample('t3')); return;
+   $('tree').innerHTML = `<div class="hint">② 부하 단계에서 <b>설계 데이터 만들기</b>를 누르면 BOX의 Deck·격실이 여기에 나타납니다.<br><button class="btn" id="treeSample">S5 예제 열기 (도면 + 설계 데이터)</button><button class="btn" id="treeT3">T3 시험선 열기</button></div>`;
+   $('treeSample').onclick = () => act('S5 예제 여는 중', () => openSample('s5')); $('treeT3').onclick = () => act('T3 시험선 여는 중', () => openSample('t3')); return;
   }
   const C = S.contract, q = $('q').value.trim().toLowerCase(), cls = analysis().solas.classes;
   const [unit, value] = VALUE[S.step] || ['CMH', r => C.airflow[r.id][FIELD[S.kind]] || ''], dots = !VALUE[S.step];
@@ -587,7 +604,17 @@
   // BOX shows this deck; when its canvas frames it (boxView), that canvas is the background and the plan draws only what
   // BOX has not got - system colours, flows, units, RUs, ducts, fire boundaries - not the walls or the room labels again
   if (box.loading) try { if (box.hasDrawing()) box.showDeck(S.deck); } catch {}
-  const rc = svg.getBoundingClientRect(), bv = boxView(xs, ys, rc), onBox = !!bv;
+  const rc = svg.getBoundingClientRect();
+  let bv = boxView(xs, ys, rc);
+  // BOX's view with the deck under a floating panel (a narrow window): BOX's view moves so the deck sits between them
+  if (bv && $('main').classList.contains('plan-view')) {
+   const L = rc.left + $('left').offsetWidth, R = rc.right - $('right').offsetWidth, sx = x => rc.left + (x - bv.minX) * bv.k;
+   if (sx(Math.min(...xs)) < L + 8 || sx(Math.max(...xs)) > R - 8) {
+    const deck = { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
+    if (box.fitDeck(deck, { left: L, right: R, top: rc.top, bottom: rc.bottom })) bv = boxView(xs, ys, rc);
+   }
+  }
+  const onBox = !!bv;
   $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); box.backdrop(onBox); svg.classList.toggle('on-box', onBox);
   let minX, minY, maxX, maxY, k;
   // the legend opens by itself only where it does not cover the deck (on BOX's view it may not)
@@ -810,8 +837,8 @@
   show($('plan'), view === 'plan' && !noContract); show($('legend'), view === 'plan' && !noContract); show($('report'), view === 'report' && !noContract);
   show($('empty'), noContract);
   if (noContract) {
-   $('empty').innerHTML = `<div><b>아직 설계 데이터가 없습니다</b>BOX의 격실·부하를 HVAC Grid 설계 데이터로 만들어야 풍량·계통과 덕트 단계를 쓸 수 있습니다.<br><button class="btn primary" id="emptyGo">② 부하에서 설계 데이터 만들기</button><button class="btn" id="emptySample">예제 설계 데이터 열기 (S5)</button><button class="btn" id="emptyT3">T3 시험선 열기</button></div>`;
-   $('emptyGo').onclick = () => go('load'); $('emptySample').onclick = () => act('예제 설계 데이터 여는 중', () => openSample('s5')); $('emptyT3').onclick = () => act('T3 시험선 여는 중', () => openSample('t3'));
+   $('empty').innerHTML = `<div><b>아직 설계 데이터가 없습니다</b>BOX의 격실·부하를 HVAC Grid 설계 데이터로 만들어야 풍량·계통과 덕트 단계를 쓸 수 있습니다.<br><button class="btn primary" id="emptyGo">② 부하에서 설계 데이터 만들기</button><button class="btn" id="emptySample">S5 예제 열기 (도면 + 설계 데이터)</button><button class="btn" id="emptyT3">T3 시험선 열기</button></div>`;
+   $('emptyGo').onclick = () => go('load'); $('emptySample').onclick = () => act('S5 예제 여는 중', () => openSample('s5')); $('emptyT3').onclick = () => act('T3 시험선 여는 중', () => openSample('t3'));
   }
   if (view === 'plan' && S.contract) { plan(); legendFold(); }
   phgHint(view);
@@ -866,6 +893,7 @@
  // what to do next, for the status bar
  function nextStep() {
   if (!S.contract) return ['② 부하에서 설계 데이터 만들기 (또는 ③에서 예제·T3 열기)', 'load'];
+  if (!S.contract.systems.length) return ['② 격실 입력에서 실마다 계통(SUP·EXH·RET) 지정 → 설계 데이터 다시 만들기', 'load'];
   const a = analysis(), assumed = a.plans.filter(p => p.isUnitDeck && p.rootSource.startsWith('assumed')).length;
   if (assumed) return [`③ 공조기 위치 확인 (임시 ${assumed}개 계통)`, 'air'];
   if (a.done < a.total) return [`④ 모든 계통 AUTO (${a.done}/${a.total})`, 'duct'];

@@ -36,6 +36,9 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   assert.equal(await win.title(), '격실 입력 · 포함 7개 — HVAC Grid'); await win.close(); await idle();
   assert.equal(await H(() => getComputedStyle(HVACGrid.box.doc.getElementById('calEnhancePanel')).visibility), 'hidden', 'the CAL panel is never on screen');
   assert.match(await H(() => document.getElementById('status').textContent), /CAL: 격실 7개 계산됨/); log('H5: CAL in the background, 격실 입력 window');
+  // H5 has no SUP/EXH/RET: its design data has no system, and the next step says where to put them
+  await ribbon('설계 데이터 만들기').click(); await idle();
+  assert.equal(await H(() => HVACGrid.S.contract.systems.length), 0); assert.match(await H(() => document.getElementById('nextBtn').textContent), /격실 입력/); log('H5: 0 systems -> 다음: 격실 입력');
   await p.click('.step[data-step=room]'); await idle();
   await ribbon('S5 예제').click();
   await p.waitForFunction(() => HVACGrid.box.win.CAD_APP.st.decks.length === 5, null, { timeout: 180000 }); await p.waitForTimeout(1000);

@@ -3053,9 +3053,9 @@
     {
      "roomNo": "405",
      "roomName": "선교팬룸",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -3067,7 +3067,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -3191,9 +3191,9 @@
     {
      "roomNo": "301",
      "roomName": "기관실 케이싱",
-     "coolTemp": 25,
+     "coolTemp": 43,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 5,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -3260,9 +3260,9 @@
     {
      "roomNo": "304",
      "roomName": "덕트 트렁크",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -3274,7 +3274,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -3329,9 +3329,9 @@
     {
      "roomNo": "307",
      "roomName": "문서보관실",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -3343,7 +3343,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -3697,9 +3697,9 @@
     {
      "roomNo": "201",
      "roomName": "기관실 케이싱",
-     "coolTemp": 25,
+     "coolTemp": 43,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 5,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -3766,9 +3766,9 @@
     {
      "roomNo": "204",
      "roomName": "덕트 트렁크",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -3780,7 +3780,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -4111,9 +4111,9 @@
     {
      "roomNo": "226",
      "roomName": "린넨창고",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -4125,7 +4125,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -4318,9 +4318,9 @@
     {
      "roomNo": "101",
      "roomName": "기관실 케이싱",
-     "coolTemp": 25,
+     "coolTemp": 43,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 5,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -4387,9 +4387,9 @@
     {
      "roomNo": "104",
      "roomName": "덕트 트렁크",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -4401,7 +4401,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -4502,9 +4502,9 @@
     {
      "roomNo": "109",
      "roomName": "세제·린넨 창고",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -4516,7 +4516,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -4538,7 +4538,7 @@
      "people": 0,
      "minimumFreshAir": 0,
      "equipW": 2000,
-     "minimumAch": 40,
+     "minimumAch": 45,
      "isoClass": "AC",
      "ceilingHeight": 2200
     }
@@ -4640,9 +4640,9 @@
     {
      "roomNo": "115",
      "roomName": "건식식품창고",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -4654,7 +4654,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -4663,9 +4663,9 @@
     {
      "roomNo": "116",
      "roomName": "조리실 팬룸",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -4677,7 +4677,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -4686,9 +4686,9 @@
     {
      "roomNo": "120",
      "roomName": "공조기실",
-     "coolTemp": 25,
+     "coolTemp": 32,
      "coolingRh": 55,
-     "heatTemp": 22,
+     "heatTemp": 10,
      "heatingRh": 40,
      "sup": "",
      "exh": "",
@@ -4700,7 +4700,7 @@
      "minimumFreshAir": 0,
      "equipW": 0,
      "minimumAch": 0,
-     "isoClass": "AC",
+     "isoClass": "NON_AC",
      "ceilingHeight": 0
     }
    ],
@@ -4775,7 +4775,128 @@
    ]
   ],
   "manual3dFaces": [],
-  "faceBoundaryOverrides": {},
+  "faceBoundaryOverrides": {
+   "T3_D1_101_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_102_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_103_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_104_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_105_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_106_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_107_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_108_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_109_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_110_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_111_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_112_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_113_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_114_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_115_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_116_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_120_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_121_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_122_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   },
+   "T3_D1_123_N::%ED%95%98::OUT": {
+    "type": "NON_AC",
+    "label": "최하층 아래 기관실",
+    "coolingTemp": 43,
+    "heatingTemp": 5
+   }
+  },
   "userKData": [],
   "userKAssignments": {}
  },
@@ -4934,7 +5055,7 @@
   "format": "CAD-2",
   "selected": [],
   "t3": {
-   "id": "HVAC-GRID-T3-v2.3",
+   "id": "HVAC-GRID-T3-v2.4",
    "note": "HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.",
    "drawing": "LINE walls + TEXT number/name; room data in overrides.roomOverrides by BOX room id"
   }
