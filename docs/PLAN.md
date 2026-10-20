@@ -107,6 +107,7 @@ HVACGridProject {
 | 시험 도면·PHG D Deck 도면은 DXF 2007(AC1021) | 한글을 UTF-8 그대로 쓸 수 있는 가장 낮은 판. R12는 코드 페이지 문자라 PHG D·BOX가 한글을 못 읽음. 출력용 통합 DXF는 R12(`\U+`) 유지 | `lib/phg-plan.cjs deckDxf`, `tools/make-test-ship.cjs` |
 | 화면·문서 용어 "계약" → "설계 데이터" (2026-10-19, 사용자 결정) | 사용자 요청. 격실·부하·풍량·계통을 다 담고 처음 쓰는 사람도 바로 아는 말 | 화면 문구·도움말·문서. 코드 이름(`contract`), 형식 `hvac-grid/0`, `*.contract.json` 파일 이름은 그대로(이미 저장한 파일 호환) |
 | ② 부하는 상단 리본 중심 (2026-10-19, 사용자 결정): CAL 패널은 화면에 내지 않고 뒤에서 계산, 상태 줄에 "CAL: 격실 N개". 리본에 "격실 입력"(CAL 격실 리스트: 계통·인원·신기·장비) 추가, "CAL 열기" 없앰. K값 "구조 계산·구조 적용" → "LY·LY 적용". 표 창(BOX·CAL)은 셸이 열어 app/popup.css로 앱과 같은 모양·테마·한국어 제목 | 패널 단추 18개 중 16개가 리본과 같은 명령이고, 리본에 없던 것은 계통 입력표(RL)뿐; 패널은 도면을 가리는 빈 화면이었음. vendor는 읽기 전용이라 창 모양은 밖에서 입힘(BOX가 읽는 제목·RST 글자는 바꾸지 않고 화면에만 덧씀) | `app/shell.js` ② 리본, `app/bridge.js` openPopup·cal, `app/popup.css` |
+| ①②③④ 캔버스를 같게 (2026-10-20, 사용자 결정): ③④ HVAC Grid 평면을 BOX 캔버스와 같은 방향(BOX의 Y가 화면 아래로)·같은 흰 바탕(격자 없음)·같은 실 선 색(ROOM 파랑)으로, 덱은 가운데 맞춤. 축 표시는 왼쪽 위(선수 →, 좌현 ↓) | ②→③에서 같은 Deck이 위아래 뒤집혀 보였음(BOX는 CAD처럼 Y를 화면 아래로 그림) | `app/shell.js` plan()의 Y(), `app/shell.css` .plan |
 
 ### H5 남은 것
 1. BOX·PHG D 편집과 HVAC Grid 편집을 하나의 Undo 기록으로 (지금은 화면별: ①② BOX, ④ PHG D, ③⑤ HVAC Grid)

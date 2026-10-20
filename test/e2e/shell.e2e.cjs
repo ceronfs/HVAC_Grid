@@ -58,8 +58,14 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   await p.selectOption('#sysSel', 'AHU-AC-01');
   await ribbon('위치 지정').click();
   const box = await p.locator('#plan').boundingBox();   // the middle of the deck strip (the corridor), clear of the legend
-  await p.mouse.click(box.x + box.width * 0.36, box.y + box.height / 2);
-  assert.equal(await H(() => HVACGrid.plans().find(x => x.key === 'S3__AHU-AC-01').rootSource), 'user'); log('unit location set');
+  const clickAt = { x: box.x + box.width * 0.36, y: box.y + box.height / 2 };
+  const roomUnder = await p.evaluate(q => document.elementFromPoint(q.x, q.y)?.closest('[data-room]')?.dataset.room, clickAt);
+  await p.mouse.click(clickAt.x, clickAt.y);
+  assert.equal(await H(() => HVACGrid.plans().find(x => x.key === 'S3__AHU-AC-01').rootSource), 'user');
+  // the plan is drawn as BOX draws it (y down the screen): the unit lands in the room that was clicked
+  assert.ok(roomUnder, 'a room under the click');
+  assert.ok(await p.evaluate(id => { const r = HVACGrid.S.contract.rooms.find(x => x.id === id), q = HVACGrid.S.contract.roots['S3__AHU-AC-01']; let c = false; for (let i = 0, j = r.polygon.length - 1; i < r.polygon.length; j = i++) { const a = r.polygon[i], b = r.polygon[j]; if ((a.y > q.y) !== (b.y > q.y) && q.x < (b.x - a.x) * (q.y - a.y) / (b.y - a.y) + a.x) c = !c; } return c; }, roomUnder), 'unit inside the clicked room');
+  log('unit location set in', roomUnder);
   await p.fill('#dT', '12'); await ribbon('적용').click();
   const sup12 = await H(() => HVACGrid.S.contract.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0));
   assert.ok(sup12 < 10420, 'dT 12 lowers supply'); log('dT 12 ->', sup12, 'CMH');

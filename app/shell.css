@@ -1,9 +1,9 @@
 /* HVAC Grid shell - NODE tokens shared by BOX CAL and PHG D (docs/UI_REVIEW.md) */
 :root{--bg:#f5f4ef;--panel:#fff;--line:#dedcd5;--line2:#ecebe6;--text:#292927;--muted:#595852;--accent:#185fa5;--accent-hover:#124d87;--soft:#e6f1fb;--soft-line:#cfe3f6;--ok:#2e7d32;--warn:#8f5600;--red:#a32d2d;
- --canvas:#fff;--gridline:#efeee9;--room-stroke:#5b6b7a;--sel-halo:#fff;--shade:rgba(245,244,239,.72)}
+ --canvas:#fff;--gridline:#efeee9;--room-stroke:#185fa5;--sel-halo:#fff;--shade:rgba(245,244,239,.72)}
 /* warm dark (docs/UI_DESIGN_REVIEW.md 18) */
 html[data-theme=dark]{--bg:#1c1b19;--panel:#242320;--line:#3a3934;--line2:#302f2b;--text:#ecebe6;--muted:#a8a69e;--accent:#4ea3e6;--accent-hover:#6bb4ec;--soft:#1f3346;--soft-line:#2c4a66;--ok:#7bc67e;--warn:#e0a24a;--red:#e57373;
- --canvas:#1a1917;--gridline:#2a2925;--room-stroke:#8d8b83;--sel-halo:#1a1917;--shade:rgba(28,27,25,.72)}
+ --canvas:#1a1917;--gridline:#2a2925;--room-stroke:#6fa3d6;--sel-halo:#1a1917;--shade:rgba(28,27,25,.72)}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--text);font:12px/1.4 "Noto Sans KR","Malgun Gothic","Segoe UI",system-ui,sans-serif;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere;line-break:strict}
@@ -83,7 +83,8 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 /* center */
 .center{position:relative;min-width:0;min-height:0;background:var(--canvas)}
 .center iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
-.plan{position:absolute;inset:0;width:100%;height:100%;stroke:none;background-image:linear-gradient(var(--gridline) 1px,transparent 1px),linear-gradient(90deg,var(--gridline) 1px,transparent 1px);background-size:20px 20px}
+/* the ③ ④ plan is the same canvas as BOX in ① ②: white, no grid, room lines in BOX's ROOM blue */
+.plan{position:absolute;inset:0;width:100%;height:100%;stroke:none;background:var(--canvas)}
 .plan.picking{cursor:crosshair}
 .plan .rm{stroke:var(--room-stroke);stroke-width:1.2;vector-effect:non-scaling-stroke;cursor:pointer}
 /* selection: canvas-colour halo + accent line, visible on any fill; red is kept for errors only */

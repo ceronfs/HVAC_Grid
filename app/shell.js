@@ -309,7 +309,7 @@
  }
  // dragging an RU or the unit / shaft of the current system on the ④ plan
  function planDrag(svg) {
-  const toPlan = ev => { const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()); return { x: q.x, y: -q.y }; };
+  const toPlan = ev => { const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()); return { x: q.x, y: Y(q.y) }; };
   svg.querySelectorAll('.drag').forEach(el => el.onpointerdown = ev => {
    if (ev.button !== 0 || S.pickRoot) return;
    const x0 = ev.clientX, y0 = ev.clientY, a = toPlan(ev); let moved = false;
@@ -543,26 +543,29 @@
   if (S.step === 'duct' && phg.loading && S.active?.startsWith(r.deckId + '__')) phg.zoomTo(r.polygon.map(p => ({ x: p.x, y: -p.y })), 1500);
   render();
  }
+ // the ③ ④ plan shows a deck as the ① ② canvas (BOX) does: BOX y runs down the screen. Y() turns a BOX y into the plan's
+ // y and back (PHG D's duct points come with y already turned: app y = -BOX y)
+ const Y = v => v;
  function plan() {
   const C = S.contract, svg = $('plan'), rooms = C.rooms.filter(r => r.deckId === S.deck); if (!rooms.length) { svg.innerHTML = ''; return; }
-  const xs = rooms.flatMap(r => r.polygon.map(p => p.x)), ys = rooms.flatMap(r => r.polygon.map(p => -p.y));
+  const xs = rooms.flatMap(r => r.polygon.map(p => p.x)), ys = rooms.flatMap(r => r.polygon.map(p => Y(p.y)));
   // the legend (top right, ~300 px) gets its own strip right of the deck so it never covers rooms
   const rc = svg.getBoundingClientRect(), legendPx = legendOpen() && rc.width > 900 ? 300 : 0, minX = Math.min(...xs) - 900, minY = Math.min(...ys) - 900, maxY = Math.max(...ys) + 900;
   let maxX = Math.max(...xs) + 900; const k0 = Math.min((rc.width - legendPx) / (maxX - minX), rc.height / (maxY - minY)); if (k0 > 0 && legendPx) maxX += legendPx / k0;
-  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'xMinYMid meet');
+  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   // sizes in screen px: k = px per mm of the fitted plan
   const k = Math.min(rc.width / (maxX - minX), rc.height / (maxY - minY)) || 0.08, px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', fire = S.overlay === 'fire' && !ductMode, a = analysis();
   let html = '', sel = '';
   for (const r of rooms) {
-   const sid = r.systems[S.kind], bx = r.polygon.map(p => p.x), by = r.polygon.map(p => -p.y), x0 = Math.min(...bx), y0 = Math.min(...by), wPx = (Math.max(...bx) - x0) * k, hPx = (Math.max(...by) - y0) * k;
-   const pts = r.polygon.map(p => p.x + ',' + -p.y).join(' '), cl = a.solas.classes[r.id], flow = C.airflow[r.id][FIELD[S.kind]];
+   const sid = r.systems[S.kind], bx = r.polygon.map(p => p.x), by = r.polygon.map(p => Y(p.y)), x0 = Math.min(...bx), y0 = Math.min(...by), wPx = (Math.max(...bx) - x0) * k, hPx = (Math.max(...by) - y0) * k;
+   const pts = r.polygon.map(p => p.x + ',' + Y(p.y)).join(' '), cl = a.solas.classes[r.id], flow = C.airflow[r.id][FIELD[S.kind]];
    const fill = fire ? (cl?.cat ? 'transparent' : 'var(--warn-fill)') : sid ? sysColor(sid) + (sid === cur?.systemId ? (ductMode ? '1f' : '38') : (ductMode ? '0d' : '1a')) : 'transparent';
    html += `<polygon class="rm${fire && !cl?.cat ? ' uncls' : ''}" data-room="${esc(r.id)}" points="${pts}" fill="${fill}"><title>${esc(r.no)} ${esc(r.name)} · ${fire ? 'SOLAS ' + esc(cl?.space || '미분류') + (cl?.cat ? ` (${cl.cat}) ` + esc(SO.catName(a.solas.settings.ship, cl.cat)) : '') : `${KL[S.kind]} ${flow} CMH`}</title></polygon>`;
    // labels pinned to the top-left corner inside the room (RUs and the unit sit at the centre); an L-shaped room whose
    // corner is cut out gets them at its interior point; narrow rooms keep only the number
    if (wPx >= 28 && hPx >= 18) {
     let lx = x0 + px(6), ly = y0 + px(17);
-    if (!PL.inside({ x: lx, y: -(ly + px(15)) }, r.polygon) || !PL.inside({ x: lx + px(40), y: -(ly - px(10)) }, r.polygon)) { const ip = PL.interiorPoint(r.polygon, 100, r.holes); lx = ip.x - px(20); ly = -ip.y - px(18); }
+    if (!PL.inside({ x: lx, y: Y(ly + px(15)) }, r.polygon) || !PL.inside({ x: lx + px(40), y: Y(ly - px(10)) }, r.polygon)) { const ip = PL.interiorPoint(r.polygon, 100, r.holes); lx = ip.x - px(20); ly = Y(ip.y) - px(18); }
     html += `<text class="lbl no" x="${lx}" y="${ly}" style="font-size:${px(12)}px">${esc(r.no)}</text>`;
     const sub = fire ? (cl?.cat ? `(${cl.cat})` : '미분류') : flow ? `${flow} CMH` : '';
     if (wPx >= 64 && hPx >= 36 && sub) html += `<text class="lbl${fire && !cl?.cat ? ' warnt' : ''}" x="${lx}" y="${ly + px(15)}" style="font-size:${px(11)}px">${esc(sub)}</text>`;
@@ -571,15 +574,15 @@
   }
   if (fire) {
    for (const b of a.solas.boundaries.filter(x => x.deckId === S.deck && x.a && x.b && x.grade && !['-', '*', 'C'].includes(x.grade)))
-    html += `<line class="fb" x1="${b.a.x}" y1="${-b.a.y}" x2="${b.b.x}" y2="${-b.b.y}" stroke="${SVG.GRADE_COLORS[b.grade]}" stroke-width="${/^A-60/.test(b.grade) ? 4 : /^A/.test(b.grade) ? 3 : 2}"><title>${esc(b.grade)} · ${esc(b.aSpace || '?')} ↔ ${esc(b.bSpace || '?')} (Table ${esc(b.table)})${b.check.length ? ' · ' + esc(b.check.join(' / ')) : ''}</title></line>`;
+    html += `<line class="fb" x1="${b.a.x}" y1="${Y(b.a.y)}" x2="${b.b.x}" y2="${Y(b.b.y)}" stroke="${SVG.GRADE_COLORS[b.grade]}" stroke-width="${/^A-60/.test(b.grade) ? 4 : /^A/.test(b.grade) ? 3 : 2}"><title>${esc(b.grade)} · ${esc(b.aSpace || '?')} ↔ ${esc(b.bSpace || '?')} (Table ${esc(b.table)})${b.check.length ? ' · ' + esc(b.check.join(' / ')) : ''}</title></line>`;
    // penetrations: circle; fire damper = square with a slash; deck penetration (vertical duct) = diamond
    for (const pn of a.solas.penetrations.filter(x => x.deckId === S.deck)) {
-    const x = pn.x, y = -pn.y, r = px(pn.damper ? 6 : 4.5), cls = `pen${/SIZE|CHECK/.test(pn.code) || pn.note ? ' chk' : ''}`, tip = `<title>${esc(pn.no)} ${esc(pn.systemId)} ${esc(pn.duct)} · ${esc(pn.grade || '미정')} · ${esc(pn.size)} · ${esc(pn.text)}${pn.note ? ' · ' + esc(pn.note) : ''}</title>`;
+    const x = pn.x, y = Y(pn.y), r = px(pn.damper ? 6 : 4.5), cls = `pen${/SIZE|CHECK/.test(pn.code) || pn.note ? ' chk' : ''}`, tip = `<title>${esc(pn.no)} ${esc(pn.systemId)} ${esc(pn.duct)} · ${esc(pn.grade || '미정')} · ${esc(pn.size)} · ${esc(pn.text)}${pn.note ? ' · ' + esc(pn.note) : ''}</title>`;
     html += pn.boundaryKind === 'deck' ? `<path class="${cls} dk${pn.damper ? ' fd' : ''}" d="M${x} ${y - r}L${x + r} ${y}L${x} ${y + r}L${x - r} ${y}Z">${tip}</path>`
      : pn.damper ? `<g class="${cls} fd"><rect x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}"/><line x1="${x - r}" y1="${y + r}" x2="${x + r}" y2="${y - r}"/>${tip}</g>` : `<circle class="${cls}" cx="${x}" cy="${y}" r="${r}">${tip}</circle>`;
    }
    for (const p of a.solas.passages.filter(x => x.deckId === S.deck && x.roomId)) { const r = C.rooms.find(x => x.id === p.roomId); if (!r) continue;
-    html += `<polygon class="pass ${p.level}" points="${r.polygon.map(q => q.x + ',' + -q.y).join(' ')}"><title>${esc(p.systemId)}: ${esc(p.text)} (${esc(p.rule)})</title></polygon>`; }
+    html += `<polygon class="pass ${p.level}" points="${r.polygon.map(q => q.x + ',' + Y(q.y)).join(' ')}"><title>${esc(p.systemId)}: ${esc(p.text)} (${esc(p.rule)})</title></polygon>`; }
   } else {
    // transfer air: a short arrow across the middle of the wall the two rooms share (where the door grille or transfer
    // duct goes), with its CMH; solid when the user chose the source, orange through an A-class boundary
@@ -591,14 +594,14 @@
     else { const p = PL.interiorPoint(src.polygon, 100, src.holes), q = PL.interiorPoint(r.polygon, 100, r.holes), L = Math.hypot(q.x - p.x, q.y - p.y) || 1; ux = (q.x - p.x) / L; uy = (q.y - p.y) / L; m = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 }; }
     const len = px(16), h = px(6), fx = m.x - ux * len, fy = m.y - uy * len, tx = m.x + ux * len, ty = m.y + uy * len;
     const bd = a.solas.boundaries.find(b => b.kind === 'bulkhead' && ((b.roomA === r.id && b.roomB === src.id) || (b.roomB === r.id && b.roomA === src.id))), aClass = /^A/.test(bd?.grade || '');
-    html += `<g class="xfer${A.transferSet ? ' set' : ''}${aClass ? ' acls' : ''}"><line x1="${fx}" y1="${-fy}" x2="${tx}" y2="${-ty}"/><polygon points="${tx + ux * h},${-(ty + uy * h)} ${tx - uy * h * .6},${-(ty + ux * h * .6)} ${tx + uy * h * .6},${-(ty - ux * h * .6)}"/>`
-     + `<text x="${tx + ux * h + px(3)}" y="${-(ty + uy * h) - px(3)}" style="font-size:${px(10)}px">${fmt(A.transferInCmh)}</text>`
+    html += `<g class="xfer${A.transferSet ? ' set' : ''}${aClass ? ' acls' : ''}"><line x1="${fx}" y1="${Y(fy)}" x2="${tx}" y2="${Y(ty)}"/><polygon points="${tx + ux * h},${Y(ty + uy * h)} ${tx - uy * h * .6},${Y(ty + ux * h * .6)} ${tx + uy * h * .6},${Y(ty - ux * h * .6)}"/>`
+     + `<text x="${tx + ux * h + px(3)}" y="${Y(ty + uy * h) - px(3)}" style="font-size:${px(10)}px">${fmt(A.transferInCmh)}</text>`
      + `<title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${bd?.grade ? ' · 경계 ' + esc(bd.grade) : ''}${A.transferSet ? ' (지정)' : ' (자동)'}</title></g>`; }
    // ducts of the chosen kind that PHG D made, thin, under the markers
    // in ④ (the shared canvas): the chosen system's network strong and pickable, others of the deck faint as asked
    const show = S.ductShow || 'sys', ductPlans = ductMode ? deckPlans().filter(p => show === 'all' || (show === 'kind' ? p.kind === S.kind : p.key === cur?.key)) : deckPlans(S.kind);
    for (const p of ductPlans) (S.geometry[p.key]?.ducts || []).forEach((d, i) => {
-    const on = p.key === cur?.key, w = ductMode ? (d.type === 'main' ? 4 : d.type === 'branch' ? 2.6 : 1.6) : (d.type === 'main' ? 2.5 : 1.5), pts = d.points.map(q => `${q.x},${q.y}`).join(' ');
+    const on = p.key === cur?.key, w = ductMode ? (d.type === 'main' ? 4 : d.type === 'branch' ? 2.6 : 1.6) : (d.type === 'main' ? 2.5 : 1.5), pts = d.points.map(q => `${q.x},${Y(-q.y)}`).join(' ');
     if (ductMode && S.duct?.key === p.key && S.duct.i === i) html += `<polyline class="duct dsel" points="${pts}" stroke-width="${w + 7}"></polyline>`;
     html += `<polyline class="duct${ductMode ? ' pick' : ''}" data-key="${esc(p.key)}" data-i="${i}" points="${pts}" stroke="${sysColor(p.systemId)}" stroke-width="${w}" opacity="${on ? .95 : ductMode ? .3 : .45}"><title>${esc(p.systemId)} ${esc(d.displayName)} ${d.widthMm ? d.widthMm + '×' + d.heightMm : d.diameterMm ? 'Ø' + d.diameterMm : ''} · ${d.flowCmh} CMH</title></polyline>`;
    });
@@ -607,11 +610,11 @@
     for (const d of (S.geometry[cur.key]?.ducts || []).filter(d => d.type === 'main' && d.points.length > 1)) {
      const [p0, p1] = [d.points[0], d.points.at(-1)], L = Math.hypot(p1.x - p0.x, p1.y - p0.y) * k; if (L < 70) continue;
      const size = d.widthMm ? `${d.widthMm}×${d.heightMm}` : d.diameterMm ? `Ø${d.diameterMm}` : ''; if (!size) continue;
-     const vert = Math.abs(p1.x - p0.x) < Math.abs(p1.y - p0.y), mx = (p0.x + p1.x) / 2, my = (p0.y + p1.y) / 2;
+     const vert = Math.abs(p1.x - p0.x) < Math.abs(p1.y - p0.y), mx = (p0.x + p1.x) / 2, my = Y(-(p0.y + p1.y) / 2);
      html += `<text class="dsz" x="${mx + (vert ? px(6) : 0)}" y="${my - (vert ? 0 : px(6))}" text-anchor="${vert ? 'start' : 'middle'}" style="font-size:${px(10)}px">${size}</text>`;
     }
     // the plan's RUs: supply circle, return diamond, exhaust square (shape and colour)
-    for (const u of cur.rus) { const x = u.x, y = -u.y, r = px(4.5), t = `<title>${esc(u.id)} · ${fmt(u.flowCmh)} CMH${u.moved ? ' · 옮김' : ''} — 끌어서 옮기기</title>`, dg = `data-key="${esc(cur.key)}" data-ru="${esc(u.id)}"`;
+    for (const u of cur.rus) { const x = u.x, y = Y(u.y), r = px(4.5), t = `<title>${esc(u.id)} · ${fmt(u.flowCmh)} CMH${u.moved ? ' · 옮김' : ''} — 끌어서 옮기기</title>`, dg = `data-key="${esc(cur.key)}" data-ru="${esc(u.id)}"`;
      html += cur.kind === 'supply' ? `<circle class="ru drag${u.moved ? ' moved' : ''}" ${dg} cx="${x}" cy="${y}" r="${r}" fill="${sysColor(cur.systemId)}">${t}</circle>`
       : cur.kind === 'return' ? `<path class="ru drag${u.moved ? ' moved' : ''}" ${dg} d="M${x} ${y - r * 1.2}L${x + r * 1.2} ${y}L${x} ${y + r * 1.2}L${x - r * 1.2} ${y}Z" fill="${sysColor(cur.systemId)}">${t}</path>`
       : `<rect class="ru drag${u.moved ? ' moved' : ''}" ${dg} x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}" fill="${sysColor(cur.systemId)}">${t}</rect>`; }
@@ -620,23 +623,23 @@
   html += sel;
   // units (filled = set by the user, dashed = a guess) on the unit deck; vertical duct shafts (circles) on the other decks
   for (const p of deckPlans(S.kind)) {
-   const col = sysColor(p.systemId), on = p.key === cur?.key, user = p.rootSource === 'user', firm = user || /^(fan|shaft|own)-room|above-unit/.test(p.rootSource), s = px(on ? 22 : 18), cx = p.root.x, cy = -p.root.y;
+   const col = sysColor(p.systemId), on = p.key === cur?.key, user = p.rootSource === 'user', firm = user || /^(fan|shaft|own)-room|above-unit/.test(p.rootSource), s = px(on ? 22 : 18), cx = p.root.x, cy = Y(p.root.y);
    const tip = `${esc(p.systemId)} ${p.isUnitDeck ? (p.kind === 'supply' ? '공조기' : '팬') : '수직 덕트'} · ${esc(rootText(p.rootSource))}`;
    html += p.isUnitDeck ? `<g class="mk${ductMode && on ? ' drag' : ''}" data-key="${esc(p.key)}" opacity="${on ? 1 : .6}"><rect class="root${firm ? '' : ' guess'}" x="${cx - s / 2}" y="${cy - s / 2}" width="${s}" height="${s}" rx="${px(3)}" ${user ? `fill="${col}" stroke="${col}"` : `stroke="${col}"`}><title>${tip}</title></rect><text class="ahu${user ? '' : ' guess'}" x="${cx}" y="${cy + px(3)}" text-anchor="middle" style="font-size:${px(8)}px">${UNIT_WORD[p.kind]}</text></g>`
     : `<g class="mk${ductMode && on ? ' drag' : ''}" data-key="${esc(p.key)}" opacity="${on ? 1 : .6}"><circle class="root shaft${firm ? '' : ' guess'}" cx="${cx}" cy="${cy}" r="${s / 2}" ${user ? `fill="${col}" stroke="${col}"` : `stroke="${col}"`}><title>${tip}</title></circle><text class="ahu${user ? '' : ' guess'}" x="${cx}" y="${cy + px(4)}" text-anchor="middle" style="font-size:${px(11)}px">⇅</text></g>`;
   }
   // a place picked in ⑤ (penetration row): a ring that fades
-  if (S.focus && S.focus.deckId === S.deck) html += `<circle class="focus" cx="${S.focus.x}" cy="${-S.focus.y}" r="${px(18)}"/>`;
-  // ship directions: +x forward, +y port (BOX)
-  const ox = minX + px(24), oy = maxY - px(24);
-  html += `<g class="dir" style="font-size:${px(11)}px"><line x1="${ox}" y1="${oy}" x2="${ox + px(46)}" y2="${oy}"/><path d="M${ox + px(46)} ${oy - px(4)}L${ox + px(54)} ${oy}L${ox + px(46)} ${oy + px(4)}Z"/><text x="${ox + px(58)}" y="${oy + px(4)}">선수 FWD</text><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy - px(40)}"/><path d="M${ox - px(4)} ${oy - px(40)}L${ox} ${oy - px(48)}L${ox + px(4)} ${oy - px(40)}Z"/><text x="${ox + px(6)}" y="${oy - px(40)}">좌현 P</text></g>`;
+  if (S.focus && S.focus.deckId === S.deck) html += `<circle class="focus" cx="${S.focus.x}" cy="${Y(S.focus.y)}" r="${px(18)}"/>`;
+  // ship directions: +x forward, +y port (BOX) - BOX draws +y down the screen, its axes at the top left
+  const ox = minX + px(24), oy = minY + px(24), dy = Math.sign(Y(1));
+  html += `<g class="dir" style="font-size:${px(11)}px"><line x1="${ox}" y1="${oy}" x2="${ox + px(46)}" y2="${oy}"/><path d="M${ox + px(46)} ${oy - px(4)}L${ox + px(54)} ${oy}L${ox + px(46)} ${oy + px(4)}Z"/><text x="${ox + px(58)}" y="${oy + px(4)}">선수 FWD</text><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy + dy * px(40)}"/><path d="M${ox - px(4)} ${oy + dy * px(40)}L${ox} ${oy + dy * px(48)}L${ox + px(4)} ${oy + dy * px(40)}Z"/><text x="${ox}" y="${oy + dy * px(62)}" text-anchor="middle">좌현</text></g>`;
   svg.innerHTML = html; svg.classList.toggle('picking', S.pickRoot);
   svg.querySelectorAll('.rm').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); selectRoom(e.dataset.room); });
   if (ductMode) planDrag(svg);
   svg.querySelectorAll('.mk').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); if (e.dataset.dragged) { delete e.dataset.dragged; return; } S.sys = plans().find(p => p.key === e.dataset.key).systemKey; render(); });
   // ④: a duct picked on the plan (a duct of another system makes that system the current one)
   svg.querySelectorAll('.duct.pick').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); const p = plans().find(x => x.key === e.dataset.key); if (p) { S.sys = p.systemKey; S.kind = p.kind; } S.duct = { key: e.dataset.key, i: +e.dataset.i }; S.room = null; render(); });
-  svg.onclick = ev => { if (!S.pickRoot) return; const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()); setRoot({ x: q.x, y: -q.y }); render(); };
+  svg.onclick = ev => { if (!S.pickRoot) return; const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()); setRoot({ x: q.x, y: Y(q.y) }); render(); };
   if (fire) {
    const sum = a.solas.summary, on = a.solas.boundaries.filter(x => x.deckId === S.deck), cnt = g => on.filter(x => x.grade === g).length;
    $('legend').innerHTML = `<b>${esc(deckName(S.deck))} 방화 경계</b> <span class="muted">${esc(SO.DATA.ships[a.solas.settings.ship].label)}</span><br>${['A-60', 'A-30', 'A-15', 'A-0', 'B-15', 'B-0'].filter(cnt).map(g => `<span class="ln" style="background:${SVG.GRADE_COLORS[g]}"></span>${g} · ${cnt(g)}`).join('<br>')}<br><span class="pd fd"></span>방화댐퍼 ${a.solas.penetrations.filter(x => x.deckId === S.deck && x.damper).length} · <span class="pd"></span>관통 ${a.solas.penetrations.filter(x => x.deckId === S.deck).length} · <span class="pd dk"></span>갑판 관통<br>${a.solas.passages.some(x => x.deckId === S.deck) ? '<span class="err">▨ 제한 구역 통과</span><br>' : ''}${sum.unclassified.length ? `<span class="warn">미분류 실 ${sum.unclassified.length} (전체) — 실 선택 후 오른쪽에서 지정</span>` : '<span class="muted">모든 실 분류됨</span>'}`;
