@@ -155,7 +155,14 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   const rows = await p.locator('#report tbody tr[data-key]').count(), ok = await p.locator('#report td.ok').count();
   log('review rows', rows, 'AUTO done', ok); assert.equal(rows, 18); assert.ok(ok >= 3);
   await shot('5-review');
-  await p.locator('#report .tabs button', { hasText: '계통' }).click(); assert.ok(await p.locator('#report table').count() >= 2); await shot('5-review-systems');
+  await p.locator('#report .tabs button', { hasText: '계통·수직' }).click(); assert.ok(await p.locator('#report table').count() >= 2); await shot('5-review-systems');
+  // 계통도: one diagram per system; the AUTO-done S3 supply system shows its network numbers; a deck box opens ④
+  await p.locator('#report .tabs button', { hasText: '계통도' }).click();
+  const dia = await H(() => ({ n: document.querySelectorAll('#report svg.sysdia').length, systems: HVACGrid.analysis().systems.length, ac1: [...document.querySelectorAll('#report svg.sysdia[data-key="AHU-AC-01"] text')].map(t => t.textContent).join(' | ') }));
+  assert.equal(dia.n, dia.systems); assert.match(dia.ac1, /덕트 \d+개 · [\d.]+ m · Deck [\d.]+ Pa/); await shot('5-review-diagram');
+  await p.locator('#report svg.sysdia[data-key="AHU-AC-01"] .deckbox').first().dblclick(); await idle();
+  assert.deepEqual(await H(() => [HVACGrid.S.step, HVACGrid.S.sys]), ['duct', 'AHU-AC-01']); log('계통도', dia.n, 'systems; deck box -> ④');
+  await p.click('.step[data-step=review]'); await idle();
   await p.locator('#report .tabs button', { hasText: '방화' }).click();
   const unc = await H(() => HVACGrid.analysis().solas.summary.unclassified.length);
   const first = p.locator('#report select[data-solas]').first(); await first.selectOption('전기설비실'); await idle();

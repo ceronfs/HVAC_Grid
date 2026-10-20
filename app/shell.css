@@ -249,3 +249,10 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .center iframe.backdrop{pointer-events:none}
 .plan.on-box{background:transparent}
 .plan.on-box .rm{stroke:none}
+/* ⑤ 계통도: one card per system, two columns where they fit */
+.diagrams{display:grid;grid-template-columns:repeat(auto-fill,minmax(720px,1fr));gap:12px}
+.diagrams .dia{margin:0;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:6px;overflow-x:auto}
+.diagrams .dia svg{display:block;max-width:100%;height:auto}
+.diagrams .deckbox{cursor:pointer}.diagrams .deckbox:hover{fill:#eef5fc}
+/* the diagrams carry their own strokes: the shell's svg{stroke:currentColor} would outline every glyph */
+svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}

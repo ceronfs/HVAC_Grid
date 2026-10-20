@@ -43,7 +43,7 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   log(`AUTO ${a.done}/${a.total} in ${((Date.now() - ta) / 1000).toFixed(0)} s · review ${JSON.stringify(a.count)} · penetrations ${a.pens} · fire dampers ${a.fd} · restricted passed ${a.pass} · outside ${a.out} m · zones relaxed ${a.relaxed} · AHU-ACC ESP ${a.acc.indexPa} Pa (${a.acc.indexDeckId}) fan ${a.acc.fanPa} Pa`);
   assert.equal(a.done, 17); assert.equal(a.out, 0, "no duct outside the rooms"); assert.deepEqual(a.fails, []); assert.equal(a.pass, 0, 'AUTO keeps out of the casing, galley, CO2 room, stairs'); assert.ok(a.pens > 20); assert.ok(a.fd > 0); assert.ok(a.acc.complete && a.acc.indexPa > 0 && a.acc.fanPa > a.acc.indexPa);
   await shot('5-review-nets');
-  await p.locator('#report .tabs button', { hasText: '계통' }).click(); await shot('5-review-systems');
+  await p.locator('#report .tabs button', { hasText: '계통·수직' }).click(); await shot('5-review-systems');
   await p.locator('#report .tabs button', { hasText: '방화' }).click(); await shot('5-review-fire');
   // run test P2-1: the first penetration row is not under the table header (sticky header in a scroll box)
   const firstRow = await H(() => { const tr = document.querySelector('#report .scrollx tbody tr'); tr.scrollIntoView({ block: 'center' }); const b = tr.getBoundingClientRect(), el = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2); return { tag: el?.tagName, inRow: tr.contains(el) }; });
