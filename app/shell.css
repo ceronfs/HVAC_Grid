@@ -245,3 +245,7 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 @media (max-width:1366px){.main.plan-view>#left{width:208px}.main.plan-view>#right{width:256px}.main.plan-view .legend{right:268px}}
 .main.plan-view.left-off>#left,.main.plan-view.right-off>#right{width:28px}
 .main.plan-view.right-off .legend{right:40px}
+/* ③ ④ on BOX's canvas: BOX draws the walls and the room labels underneath; the plan is a clear layer over it */
+.center iframe.backdrop{pointer-events:none}
+.plan.on-box{background:transparent}
+.plan.on-box .rm{stroke:none}

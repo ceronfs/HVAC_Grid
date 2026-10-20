@@ -51,6 +51,9 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   assert.equal(ctmPlan.deck, ctmBox.deck, '③ opens on the deck BOX showed');
   assert.ok(Math.abs(ctmPlan.a - ctmBox.a) < 1e-6 && Math.abs(ctmPlan.e - ctmBox.e) < 0.5 && Math.abs(ctmPlan.f - ctmBox.f) < 0.5, `same scale and place ② ${JSON.stringify(ctmBox)} ③ ${JSON.stringify(ctmPlan)}`);
   log('② -> ③ same canvas', ctmPlan.deck, ctmPlan.a.toFixed(4));
+  // drawn once: BOX's canvas is the background (walls, room labels), the plan only adds what BOX has not got
+  const bg = await H(() => ({ frame: getComputedStyle(document.getElementById('boxFrame')).visibility, backdrop: HVACGrid.box.doc.documentElement.classList.contains('hg-bg'), ownLabels: document.querySelectorAll('#plan .lbl.no').length, boxLabels: HVACGrid.box.doc.querySelectorAll('#roomLabelLayer text').length, flows: document.querySelectorAll('#plan .lbl').length }));
+  assert.deepEqual([bg.frame, bg.backdrop, bg.ownLabels], ['visible', true, 0], JSON.stringify(bg)); assert.ok(bg.boxLabels > 0 && bg.flows > 0);
   const c = await H(() => ({ step: HVACGrid.S.step, rooms: HVACGrid.S.contract?.rooms.length, plans: HVACGrid.plans().length, supply: HVACGrid.plans().filter(x => x.kind === 'supply').length }));
   log('contract', JSON.stringify(c));
   assert.equal(c.step, 'air'); assert.equal(c.rooms, 94); assert.equal(c.supply, 10); assert.equal(c.plans, 18);
@@ -166,6 +169,7 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   await p.click('#resetBtn'); await p.locator('#dlgBtns button[data-v=ok], #dlgBtns button[data-v=discard]').first().click(); await idle();
   const fresh = await H(() => ({ step: HVACGrid.S.step, contract: HVACGrid.S.contract, results: Object.keys(HVACGrid.S.results).length, undo: HVACGrid.S.undo.length, drawing: HVACGrid.box.hasDrawing(), cal: HVACGrid.box.doc.getElementById('calEnhancePanel')?.hidden ?? true }));
   assert.deepEqual(fresh, { step: 'room', contract: null, results: 0, undo: 0, drawing: false, cal: true }, '새로 시작'); log('새로 시작', JSON.stringify(fresh));
+  assert.equal(await H(() => HVACGrid.box.doc.documentElement.classList.contains('hg-bg')), false, '① is BOX again, not a background');
   await ribbon('S5 예제').click(); await p.waitForFunction(() => HVACGrid.box.win.CAD_APP.st.decks.length === 5, null, { timeout: 180000 });
   await p.click('.step[data-step=load]'); await idle(); await ribbon('설계 데이터 만들기').click(); await idle();
   assert.equal(await H(() => HVACGrid.S.contract.rooms.length), 94, 'works again after 새로 시작');

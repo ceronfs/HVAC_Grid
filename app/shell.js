@@ -567,7 +567,11 @@
  function plan() {
   const C = S.contract, svg = $('plan'), rooms = C.rooms.filter(r => r.deckId === S.deck); if (!rooms.length) { svg.innerHTML = ''; return; }
   const xs = rooms.flatMap(r => r.polygon.map(p => p.x)), ys = rooms.flatMap(r => r.polygon.map(p => Y(p.y)));
-  const rc = svg.getBoundingClientRect(), bv = boxView(xs, ys, rc);
+  // BOX shows this deck; when its canvas frames it (boxView), that canvas is the background and the plan draws only what
+  // BOX has not got - system colours, flows, units, RUs, ducts, fire boundaries - not the walls or the room labels again
+  if (box.loading) try { if (box.hasDrawing()) box.showDeck(S.deck); } catch {}
+  const rc = svg.getBoundingClientRect(), bv = boxView(xs, ys, rc), onBox = !!bv;
+  $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); box.backdrop(onBox); svg.classList.toggle('on-box', onBox);
   let minX, minY, maxX, maxY, k;
   // the legend opens by itself only where it does not cover the deck (on BOX's view it may not)
   if (bv) { ({ minX, minY, maxX, maxY, k } = bv); const sideR = $('main').classList.contains('plan-view') ? $('right').offsetWidth : 0; legendRoom = rc.width - sideR - (Math.max(...xs) - minX) * k >= 320; }
@@ -594,9 +598,9 @@
    if (wPx >= 28 && hPx >= 18) {
     let lx = x0 + px(6), ly = y0 + px(17);
     if (!PL.inside({ x: lx, y: Y(ly + px(15)) }, r.polygon) || !PL.inside({ x: lx + px(40), y: Y(ly - px(10)) }, r.polygon)) { const ip = PL.interiorPoint(r.polygon, 100, r.holes); lx = ip.x - px(20); ly = Y(ip.y) - px(18); }
-    html += `<text class="lbl no" x="${lx}" y="${ly}" style="font-size:${px(12)}px">${esc(r.no)}</text>`;
+    if (!onBox) html += `<text class="lbl no" x="${lx}" y="${ly}" style="font-size:${px(12)}px">${esc(r.no)}</text>`;   // on BOX's canvas BOX labels the room
     const sub = fire ? (cl?.cat ? `(${cl.cat})` : '미분류') : flow ? `${flow} CMH` : '';
-    if (wPx >= 64 && hPx >= 36 && sub) html += `<text class="lbl${fire && !cl?.cat ? ' warnt' : ''}" x="${lx}" y="${ly + px(15)}" style="font-size:${px(11)}px">${esc(sub)}</text>`;
+    if (wPx >= 64 && hPx >= 36 && sub) html += `<text class="lbl${fire && !cl?.cat ? ' warnt' : ''}" x="${lx}" y="${onBox ? ly : ly + px(15)}" style="font-size:${px(11)}px">${esc(sub)}</text>`;
    }
    if (r.id === S.room) sel = `<polygon class="selhalo" points="${pts}"/><polygon class="selline" points="${pts}"/>`;
   }
@@ -660,7 +664,7 @@
   if (S.focus && S.focus.deckId === S.deck) html += `<circle class="focus" cx="${S.focus.x}" cy="${Y(S.focus.y)}" r="${px(18)}"/>`;
   // ship directions: +x forward, +y port (BOX) - BOX draws +y down the screen, its axes at the top left
   const ox = Math.min(...xs) - px(34), oy = Math.min(...ys) - px(30), dy = Math.sign(Y(1));   // at the deck's top-left corner
-  html += `<g class="dir" style="font-size:${px(11)}px"><line x1="${ox}" y1="${oy}" x2="${ox + px(46)}" y2="${oy}"/><path d="M${ox + px(46)} ${oy - px(4)}L${ox + px(54)} ${oy}L${ox + px(46)} ${oy + px(4)}Z"/><text x="${ox + px(58)}" y="${oy + px(4)}">선수 FWD</text><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy + dy * px(40)}"/><path d="M${ox - px(4)} ${oy + dy * px(40)}L${ox} ${oy + dy * px(48)}L${ox + px(4)} ${oy + dy * px(40)}Z"/><text x="${ox}" y="${oy + dy * px(62)}" text-anchor="middle">좌현</text></g>`;
+  if (!onBox) html += `<g class="dir" style="font-size:${px(11)}px"><line x1="${ox}" y1="${oy}" x2="${ox + px(46)}" y2="${oy}"/><path d="M${ox + px(46)} ${oy - px(4)}L${ox + px(54)} ${oy}L${ox + px(46)} ${oy + px(4)}Z"/><text x="${ox + px(58)}" y="${oy + px(4)}">선수 FWD</text><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy + dy * px(40)}"/><path d="M${ox - px(4)} ${oy + dy * px(40)}L${ox} ${oy + dy * px(48)}L${ox + px(4)} ${oy + dy * px(40)}Z"/><text x="${ox}" y="${oy + dy * px(62)}" text-anchor="middle">좌현</text></g>`;
   svg.innerHTML = html; svg.classList.toggle('picking', S.pickRoot);
   svg.querySelectorAll('.rm').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); selectRoom(e.dataset.room); });
   if (ductMode) planDrag(svg);
@@ -779,6 +783,8 @@
  function center() {
   const view = viewOf(S.step), noContract = !S.contract && (view === 'plan' || view === 'report' || view === 'phg');
   $('boxFrame').style.visibility = view === 'box' ? 'visible' : 'hidden';
+  // BOX's canvas is a background only in the plan (plan() decides); back in ① ② it is BOX again
+  if (view !== 'plan') { $('boxFrame').classList.remove('backdrop'); if (box.loading) box.backdrop(false); }
   $('phgFrame').style.visibility = view === 'phg' && !noContract ? 'visible' : 'hidden';
   show($('plan'), view === 'plan' && !noContract); show($('legend'), view === 'plan' && !noContract); show($('report'), view === 'report' && !noContract);
   show($('empty'), noContract);

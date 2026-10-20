@@ -139,7 +139,12 @@
  // tables open in their own window - and shows its status itself
  const BOX_CSS = `header.top,.app>.summary{display:none!important}
 .app{grid-template-rows:minmax(0,1fr)!important;border:0!important}
-#calEnhancePanel{visibility:hidden!important;pointer-events:none!important}`;
+#calEnhancePanel{visibility:hidden!important;pointer-events:none!important}
+/* ③ ④: BOX's canvas is the background of the HVAC Grid layer - the walls and BOX's room labels stay, BOX's room
+   fills, selection, tools and status step aside (the side columns keep their width so the canvas does not move) */
+html.hg-bg #roomZoneLayer,html.hg-bg #roomHighlightLayer,html.hg-bg #gripLayer,html.hg-bg #previewLayer,html.hg-bg #osnapLayer,
+html.hg-bg #olWorkflowOverlay,html.hg-bg #l4DiagnosticsOverlay{display:none!important}
+html.hg-bg .main>.side,html.hg-bg #canvas>.viewbar,html.hg-bg #canvas>.status{visibility:hidden!important}`;
  const CAL_APPLY = new Set(['K7', 'C✓']);
  const CAL_IDS = { RL: 'roomBtn', A6: 'contactBtn', DC: 'designConditionsBtn', BC: 'faceBoundaryBtn', KD: 'kDataBtn', K7: 'iso7547KBtn', KC: 'calculatedKBtn', 'C✓': 'calculatedKApplyBtn', KU: 'userKBtn',
   LR: 'roomLoadResultBtn', OA: 'systemFreshAirBtn', RH: 'ahuHeatingBtn', 'R↑': 'exportRoomSheetBtn', 'A↑': 'exportFaceSheetBtn', 'I↑': 'exportRoomLoadSheetBtn', 'N↑': 'exportNonIsoRoomLoadSheetBtn', 'Σ↑': 'exportSystemSummaryBtn', LX: 'loadSheetBtn' };
@@ -154,6 +159,10 @@
   // BOX's own table windows (격실 목록, 접한 면적) open through the shell too, dressed like the app
   async load() { await super.load(); if (!this.win.__hvacGridOpen) { this.win.__hvacGridOpen = true; this.win.open = (...a) => openPopup(...a); } return this; }
   hasDrawing() { const s = this.win.CAD_APP?.st; return !!(s && s.entities.length && s.decks.length); }
+  // BOX's canvas as the background of ③ ④ (BOX_CSS hg-bg); BOX itself is not changed
+  backdrop(on) { try { this.doc.documentElement.classList.toggle('hg-bg', !!on); } catch {} }
+  // the deck BOX shows - a view change, as a click on BOX's deck card (not selectDeck, which selects the deck's objects)
+  showDeck(id) { const A = this.win?.CAD_APP; if (!A || A.st.activeDeck === id || !A.st.decks.some(d => d.id === id)) return false; A.st.activeDeck = id; A.render(); return true; }
   calStatus() { return this.doc.querySelector('#calEnhancePanel [role=status]')?.textContent || ''; }
   calIdle() { const b = this.doc.querySelector('#calEnhancePanel .cal-enhance-busy'); return !b || b.hidden; }
   // BOX keeps its model revision private, so the shell fingerprints the drawing the CAL panel was loaded from
