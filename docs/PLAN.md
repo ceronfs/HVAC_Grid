@@ -111,6 +111,11 @@ HVACGridProject {
 | ②→③ 같은 캔버스 (2026-10-20, 사용자 결정): ③④에서도 캔버스가 화면 폭 전체(①②와 같은 자리), 왼쪽 목록·오른쪽 속성은 그 위에 떠 있는 패널(BOX의 도구판처럼). ③은 BOX가 보여 주던 Deck으로 열리고, BOX가 그 Deck을 2D로 담고 있으면 BOX와 같은 축척·같은 위치(픽셀 일치). 아니면(다른 도면, 3D, Deck 배치가 있는 H5 같은 도면) 패널 사이에 맞춤. 범례는 실을 가릴 자리면 접힌 채 시작 | ②에서 ③으로 넘어가면 캔버스가 좁아지고 Deck이 다른 크기·위치로 다시 그려졌음 | `app/shell.js` boxView·followBoxDeck·legendRoom, `app/shell.css` .plan-view |
 | ③④ 배경은 BOX 캔버스 (2026-10-20, 사용자 결정): Deck을 두 번 그리지 않는다. BOX가 그 Deck을 2D로 담고 있으면 BOX 캔버스(벽·실 번호·이름·축)를 그대로 배경으로 두고, HVAC Grid 층은 BOX에 없는 것(계통 색·CMH·공조기·RU·덕트·방화)만 투명하게 겹친다. BOX의 실 채움·선택·도구판·상태 줄은 배경에서만 숨김(BOX 자체는 그대로). 그렇지 않으면(3D, 다른 도면, 선박 좌표 배치 도면) 지금처럼 HVAC Grid가 그린 평면 | 같은 Deck을 BOX와 HVAC Grid가 따로 그려 모양이 달랐음 | `app/shell.js` plan() onBox, `app/bridge.js` backdrop·showDeck·BOX_CSS hg-bg |
 | 계통도 (2026-10-20): 계통당 한 장, 위아래 = Deck 높이 순, 왼쪽 공조기·팬, 가운데 수직 덕트, 오른쪽 Deck별 덕트망 상자. 화면·보고서는 SVG, DXF는 같은 도형을 선·글자로(1 단위 = 20 mm) | 검토(2026-10-20)에서 계통도가 어디에도 없었음. 데이터는 analysis().systems·risers에 이미 있음 | `lib/diagram.cjs`, ⑤ 탭, `lib/report.cjs`, `lib/dxf-out.cjs` |
+| ISO 7547:2022 대조 (2026-10-21, 사용자 부재 중): 실내 여름 25 °C / 55 %로 되돌림(BOX 사본 패치 M·N, T3 v2.5), 급기에 겨울 풍량(난방 W × 3 ÷ 22 K) | 원문 4.2 b)·6.2.1 b)·6.3. 검토 L8이 기억에 의존해 거꾸로 바꿨던 것 | `docs/ISO7547_CHECK.md`, `rules.heatingSupplyDeltaTK` |
+| 기관실 경계는 43/5 °C 유지(검토 보고서의 45 °C 권고 따르지 않음) | 5.2.2는 표 1의 ΔT(18/17 K)를 쓰라고 함 — 25 °C 실 + 18 K = 43 °C. 45 °C는 27 °C 실을 전제한 값 | `tools/make-test-ship.cjs` casing, `tools/t3-box-lines.cjs` |
+| 난방 풍량은 거주구역만(제어실·조타실·기관·비공조 공간 제외) | C.3.1·D.3.1 별도 난방, 1장 범위(거주구역) | `SEPARATE_HEATING` (`lib/contract.cjs`) |
+| 표 1 인접 ΔT·창 +200 mm·일사 지붕 + 벽은 BOX 사본을 고치지 않고 권고(O·P·J) | BOX 계산 구조를 바꾸는 일 — 원본 개발 중. T3는 입력(급기 없는 실 온도)으로 맞출 수 있는 만큼 맞춤 | `docs/VENDOR_PATCHES.md` |
+| 실별 신기 부족(ROOM_OA)은 검사로 두고 구역 신기를 자동으로 올리지 않음 | 가장 불리한 실에 맞추면 T3 AHU-ACC 신기 47 % — 설계자 결정 | `lib/project.cjs` ROOM_OA |
 
 ### H5 남은 것
 1. BOX·PHG D 편집과 HVAC Grid 편집을 하나의 Undo 기록으로 (지금은 화면별: ①② BOX, ④ PHG D, ③⑤ HVAC Grid)

@@ -8,7 +8,7 @@
  },
  "BOX_CAL_Enhance.html": {
   "from": "C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html",
-  "sha256_16": "a8421581c1fe4f42",
+  "sha256_16": "991d51c92372261d",
   "commit": "CAL_Enhance 32976f8",
   "copied": "2026-10-18",
   "sha256_16_original": "bd942611477ddfe5",
@@ -23,6 +23,18 @@
     "id": "B",
     "date": "2026-10-20",
     "what": "openCalEnhance: an open CAL panel loads again when the BOX session or model revision changed (it kept the old drawing)",
+    "test": "test/e2e/vendor.e2e.cjs"
+   },
+   {
+    "id": "M",
+    "date": "2026-10-21",
+    "what": "CAL design conditions: indoor summer default 25 °C / 55 % (ISO 7547:2022 4.2 b; was 27 / 50, the 2002 value under the \"4.2\" label)",
+    "test": "test/e2e/vendor.e2e.cjs"
+   },
+   {
+    "id": "N",
+    "date": "2026-10-21",
+    "what": "CAL AHU heating: supply at most 22 K above the room (ISO 7547:2022 6.3; was 23) and its three labels",
     "test": "test/e2e/vendor.e2e.cjs"
    }
   ],

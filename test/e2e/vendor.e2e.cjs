@@ -2,6 +2,8 @@
 // controls - not through the shell, which has its own guards for both.
 //   A  a DXF room text with a letter (211T) is the room's number, not part of its name
 //   B  CAL left open on one drawing loads again when BOX's CAL button is pressed on the next
+//   M  CAL's indoor summer default is ISO 7547:2022 4.2 b) 25 °C / 55 %
+//   N  CAL's AHU heating supply limit is 22 K above the room (6.3)
 'use strict';
 const path = require('path'), assert = require('node:assert/strict');
 const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs');
@@ -44,6 +46,14 @@ const dxf = () => {
   await H(() => { HVACGrid.box.doc.querySelector('#calEnhancePanel [role=status]').dataset.mark = '1'; });
   await calButton();
   assert.equal(await H(() => HVACGrid.box.doc.querySelector('#calEnhancePanel [role=status]').dataset.mark), '1', 'same drawing: kept');
+
+  // M, N: in the CAL frame as BOX ships it (base64) - the frame keeps its defaults to itself (a project's saved conditions win)
+  const fs = require('fs'), html = fs.readFileSync(path.join(__dirname, '..', '..', 'vendor', 'BOX_CAL_Enhance.html'), 'utf8');
+  const frame = Buffer.from(html.match(/const CAL_ENHANCE_FRAME_BASE64 = '([A-Za-z0-9+/=]+)'/)[1], 'base64').toString('utf8');
+  assert.match(frame, /key: "indoorCoolTemp", label: "[^"]+", unit: "℃", value: 25,/, 'patch M: 25 °C');
+  assert.match(frame, /key: "indoorCoolRh", label: "[^"]+", unit: "%", value: 55,/, 'patch M: 55 %');
+  assert.match(frame, /const limitRise = 22;/, 'patch N: 22 K'); assert.ok(!frame.includes('실온 +23°C') && !frame.includes('실온+23°C'), 'patch N: no 23 K label left');
+  log('M N frame defaults 25 °C / 55 %, heating limit 22 K');
 
   log('page errors', errors.length, errors.slice(0, 3)); assert.equal(errors.length, 0);
   log('E2E VENDOR PASS');

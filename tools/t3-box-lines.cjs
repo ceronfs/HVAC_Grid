@@ -60,9 +60,10 @@ if (require.main === module) (async () => {
   if (first.length !== rooms || missing.length) throw new Error(`BOX가 찾은 실 ${first.length}/${rooms} · 번호 없음 ${missing.slice(0, 5).join(', ')}`);
   project.overrides.roomOverrides = first.map(r => [r.id, data.get(`${r.deck}|${r.no}`)]);
   // the floor of the lowest deck: the engine room below (as T3.solas.json says), not the outside air BOX takes for a floor
-  // with no deck under it - BOX's legacy face key room id :: 하 :: OUT
+  // with no deck under it - BOX's legacy face key room id :: 하 :: OUT. ISO 7547 Table 1 #3: 18 K summer, 17 K winter from
+  // the 25 / 22 °C rooms; Table 2 #2: K 0.8 (without the K type BOX takes its general internal 0.9)
   const lowest = T.DECKS[0].id, key = id => [id, '하', 'OUT'].map(encodeURIComponent).join('::');
-  project.overrides.faceBoundaryOverrides = Object.fromEntries(first.filter(r => r.deck === lowest).map(r => [key(r.id), { type: 'NON_AC', label: '최하층 아래 기관실', coolingTemp: 43, heatingTemp: 5 }]));
+  project.overrides.faceBoundaryOverrides = Object.fromEntries(first.filter(r => r.deck === lowest).map(r => [key(r.id), { type: 'NON_AC', label: '최하층 아래 기관실', coolingTemp: 43, heatingTemp: 5, kType: 'K7-NON_AIR_CONDITIONED' }]));
   // 2 again, with the data: the same ids, every room numbered and named
   const second = await load(project);
   const same = second.length === rooms && second.every(r => first.some(f => f.id === r.id && f.no === r.no && f.deck === r.deck));

@@ -24,42 +24,60 @@ const OUTLINE = { D1: [0, 0, 20000, 16000], D2: [0, 0, 20000, 16000], D3: [0, 0,
 // ceilingHeight: the room's ceiling (mm) - BOX takes the volume (and the ACH air) from it; 0 = the deck height
 // windowSolarMode: solar gain through a window as BOX's S5 example has it (ISO 7547:2022 5.3: clear double glass with an
 // interior shade, Gs 240 W/m²). Without it BOX takes a manual coefficient, 0 by default - no sun through any window (v2.3)
-// rooms at ISO 7547's indoor design condition 27 °C / 50 % (v2.4; was 25 °C / 55 %, 25 % more temperature difference)
-const BASE = { coolTemp: 27, coolingRh: 50, heatTemp: 22, heatingRh: 40, sup: '', exh: '', ret: '', lighting: 10, windowArea: 0, windowSolarMode: 'auto-double-interior-shade', people: 0, minimumFreshAir: 0, equipW: 0, minimumAch: 0, isoClass: 'AC', ceilingHeight: 2200 };
+// rooms at ISO 7547:2022's indoor design condition 4.2 b) 25 °C / 55 %, winter 4.3 b) 22 °C (v2.5: v2.4 had 27 / 50 % - wrongly
+// taken for the standard's; 27 °C is only where Table 4 gives the heat from persons)
+// lighting (5.5): none in a room with daylight (a window); else the rated W/m² (Table 5 LED where it has the room)
+const BASE = { coolTemp: 25, coolingRh: 55, heatTemp: 22, heatingRh: 40, sup: '', exh: '', ret: '', lighting: 10, windowArea: 0, windowSolarMode: 'auto-double-interior-shade', people: 0, minimumFreshAir: 0, equipW: 0, minimumAch: 0, isoClass: 'AC', ceilingHeight: 2200 };
 const USE = {
- cabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 1, minimumFreshAir: 28.8, equipW: 200, windowArea: 0.8 },
- bigCabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 2, minimumFreshAir: 57.6, equipW: 400, windowArea: 1.6 },
+ cabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 1, minimumFreshAir: 28.8, equipW: 200, windowArea: 0.8, lighting: 0 },
+ bigCabin: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 4, minimumFreshAir: 115.2, equipW: 400, windowArea: 1.6, lighting: 0 },
  // toilets: exhaust only, the make-up air comes from the cabin / corridor (transfer air, door grille)
- cabinWc: { exh: 'EF-SAN', minimumAch: 15, lighting: 8 },
- wc: { exh: 'EF-SAN', minimumAch: 15, lighting: 8 },
- locker: { exh: 'EF-SAN', minimumAch: 10, lighting: 5 },
- drying: { exh: 'EF-SAN', minimumAch: 10, equipW: 1500, lighting: 5 },
+ // rooms without supply at the temperature ISO 7547 Table 1 gives them against the 25 / 22 °C rooms (v2.5): BOX takes the
+ // temperature difference to a neighbour from the two rooms' temperatures - #7 b) private sanitary not exposed +1 / 0 K,
+ // #6 public sanitary +6 / 0 K, #8 store rooms, equipment rooms, trunks +2 / -5 K
+ cabinWc: { exh: 'EF-SAN', minimumAch: 15, lighting: 8, coolTemp: 26 },
+ wc: { exh: 'EF-SAN', minimumAch: 15, lighting: 8, coolTemp: 31 },
+ locker: { exh: 'EF-SAN', minimumAch: 10, lighting: 5, coolTemp: 27, heatTemp: 17 },
+ // drying room: 15 ACH at least (ISO 7547 6.4.1); from v2.5 supplied too - 15 ACH as transfer air from the corridor needs a
+ // door grille over 0.05 m² (II-2/9.4.2) - exhaust above its supply (6.5)
+ drying: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 25, equipW: 1500, lighting: 5 },
  corridor: { sup: 'AHU-ACC', ret: 'RA-ACC', isoClass: 'ALLEY_SOUND', lighting: 8 },
  stair: { sup: 'AHU-ACC', lighting: 8 },
- mess: { sup: 'AHU-ACC', ret: 'RA-ACC', ceilingHeight: 2300, people: 12, minimumFreshAir: 460.8, equipW: 800, windowArea: 2.4, lighting: 12 },
- rec: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 8, minimumFreshAir: 230.4, equipW: 600, windowArea: 2.4, lighting: 12 },
- office: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 900, windowArea: 1.2, lighting: 12 },
- gym: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 3, minimumFreshAir: 86.4, equipW: 1200, lighting: 12 },
- pantry: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 22, equipW: 1500 },   // no cooking: sanitary exhaust, not through the galley system
- // galley: own supply fan and exhaust (II-2/9.7.2.1, 9.7.5), exhaust > supply (the rest comes from the mess); 50 ACH and the
-// pantry 22 ACH since v2.3 (window sun and the safety factor raised their supply past 45 / 20 ACH exhaust)
- galley: { sup: 'SF-GAL', exh: 'EF-GAL', ceilingHeight: 2400, minimumAch: 50, people: 3, equipW: 9000, lighting: 15, windowArea: 1.2 },
+ mess: { sup: 'AHU-ACC', ret: 'RA-ACC', ceilingHeight: 2300, m2PerPerson: 1.5, equipW: 800, windowArea: 2.4, lighting: 0 },
+ rec: { sup: 'AHU-ACC', ret: 'RA-ACC', m2PerPerson: 5, equipW: 600, windowArea: 2.4, lighting: 0 },
+ office: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 2, minimumFreshAir: 57.6, equipW: 900, windowArea: 1.2, lighting: 0 },
+ gym: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 4, minimumFreshAir: 115.2, equipW: 1200, lighting: 10 },
+ // pantry, no cooking: not through the galley system; from v2.5 its own exhaust, apart from the sanitary (ISO 7547 6.4.2),
+ // 20 % over its supply (6.4.1)
+ pantry: { sup: 'AHU-ACC', exh: 'EF-PAN', minimumAch: 28, equipW: 1500 },
+ // galley: own supply fan and exhaust (II-2/9.7.2.1, 9.7.5), exhaust > supply (the rest comes as transfer air); 50 ACH in
+ // v2.3-2.4 (window sun and the safety factor raised its supply past 45 ACH), 48 from v2.5 - the make-up air through the
+ // corridor door stays under a 0.05 m² grille (II-2/9.4.2) now that the daylit galley carries no lighting load
+ galley: { sup: 'SF-GAL', exh: 'EF-GAL', ceilingHeight: 2400, minimumAch: 48, people: 3, equipW: 9000, lighting: 0, windowArea: 1.2 },
  laundry: { sup: 'AHU-ACC', exh: 'EF-LAU', minimumAch: 45, equipW: 2000 },   // 45 ACH since v2.4 (warmer neighbours raised its supply)
  changing: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 10 },
  // CO2 room and battery room: each its own exhaust (FSS Code 5, class rules)
- co2: { exh: 'EF-CO2', minimumAch: 6, lighting: 5 },
- battery: { exh: 'EF-BAT', minimumAch: 12, lighting: 5 },
- // spaces no system serves (stores, fan rooms, the AC room, trunks): non-air-conditioned (ISO K 0.8 to them), at BOX's NON_AC
- // preset 32 / 10 °C; the engine casing as BOX's S5 engine spaces, 43 / 5 °C (v2.3 - they were 25 °C, as if air-conditioned)
- store: { lighting: 5, ceilingHeight: 0, isoClass: 'NON_AC', coolTemp: 32, heatTemp: 10 },
- none: { lighting: 5, ceilingHeight: 0, isoClass: 'NON_AC', coolTemp: 32, heatTemp: 10 },
+ co2: { exh: 'EF-CO2', minimumAch: 6, lighting: 5, coolTemp: 27, heatTemp: 17 },
+ battery: { exh: 'EF-BAT', minimumAch: 12, lighting: 5, coolTemp: 27, heatTemp: 17 },
+ // spaces no system serves (stores, fan rooms, the AC room, trunks): non-air-conditioned (ISO K 0.8 to them), at ISO 7547
+ // Table 1 #8 +2 / -5 K, 27 / 17 °C (v2.5; v2.3-2.4 BOX's NON_AC preset 32 / 10 °C); the engine casing Table 1 #3 18 / 17 K,
+ // 43 / 5 °C (v2.3 - they were 25 °C, as if air-conditioned)
+ store: { lighting: 5, ceilingHeight: 0, isoClass: 'NON_AC', coolTemp: 27, heatTemp: 17 },
+ none: { lighting: 5, ceilingHeight: 0, isoClass: 'NON_AC', coolTemp: 27, heatTemp: 17 },
  casing: { isoClass: 'ENGINE', lighting: 0, ceilingHeight: 0, coolTemp: 43, heatTemp: 5 },
- wheel: { sup: 'AHU-BRG', ret: 'RA-BRG', ceilingHeight: 2600, people: 3, minimumFreshAir: 86.4, equipW: 6000, windowArea: 20, isoClass: 'WHEELHOUSE', lighting: 8 },
- brgRoom: { sup: 'AHU-BRG', ret: 'RA-BRG', people: 1, minimumFreshAir: 28.8, equipW: 1500, windowArea: 0.8, lighting: 10 },
+ wheel: { sup: 'AHU-BRG', ret: 'RA-BRG', ceilingHeight: 2600, people: 5, minimumFreshAir: 144, equipW: 2000, windowArea: 20, isoClass: 'WHEELHOUSE', lighting: 0 },   // ISO 7547 D.2.2, D.3.3
+ brgRoom: { sup: 'AHU-BRG', ret: 'RA-BRG', people: 1, minimumFreshAir: 28.8, equipW: 1500, windowArea: 0.8, lighting: 0 },
+ radio: { sup: 'AHU-BRG', ret: 'RA-BRG', people: 1, minimumFreshAir: 28.8, equipW: 2500, windowArea: 0.8, lighting: 0 },   // radio cabin equipment 2.5 kW (5.5)
  brgEquip: { sup: 'AHU-BRG', ret: 'RA-BRG', equipW: 2500, lighting: 8 },
  brgCorr: { sup: 'AHU-BRG', ret: 'RA-BRG', isoClass: 'ALLEY_SOUND', lighting: 8 },
  brgStair: { sup: 'AHU-BRG', lighting: 8 },
- brgWc: { exh: 'EF-BRG', minimumAch: 15, lighting: 8 }};
+ brgWc: { exh: 'EF-BRG', minimumAch: 15, lighting: 8, coolTemp: 31 },
+ // a conference room: its seats (the area rule of 4.5 b) is for recreation rooms)
+ conf: { sup: 'AHU-ACC', ret: 'RA-ACC', people: 8, minimumFreshAir: 230.4, equipW: 600, windowArea: 2.4, lighting: 0 }};
+// occupancy (ISO 7547 4.5, no purchaser's numbers): m2PerPerson - messes 1.5 m², recreation rooms 5 m² a person; offices 2,
+// gymnasium 4, captain's and chief engineer's day-rooms 4 (bigCabin), wheelhouse 5 (D.2.2); fresh air 28.8 CMH a person (4.4)
+const occupancy = (data, r) => { if (!data.m2PerPerson) return data; const [x0, y0, x1, y1] = r.rect, people = Math.ceil((x1 - x0) * (y1 - y0) / 1e6 / data.m2PerPerson - 1e-9);
+ const { m2PerPerson, ...rest } = data; return { ...rest, people, minimumFreshAir: Math.round(people * 28.8 * 10) / 10 }; };
 
 const rooms = [];   // { deck, no, name, use, rect:[x0,y0,x1,y1] } or { ..., poly:[[x,y]...] }
 const R = (deck, no, name, use, x0, y0, x1, y1) => rooms.push({ deck, no, name, use, rect: [x0, y0, x1, y1] });
@@ -113,7 +131,7 @@ for (let k = 0; k < 5; k++) bay('D2', String(211 + k), `선원침실 ${String(k 
 // D3 B DK: officers
 core('D3', '3', '린넨로커');
 R('D3', '310', '선박사무실', 'office', 0, 0, 4000, 3000);
-R('D3', '320', '회의실', 'rec', 0, 9000, 4000, 16000);
+R('D3', '320', '회의실', 'conf', 0, 9000, 4000, 16000);
 R('D3', '307', '문서보관실', 'store', 4000, 12000, 8000, 16000);
 R('D3', '308', '선원사무실', 'office', 8000, 11500, 10500, 16000);
 bay('D3', '311', '선장실', 'bigCabin', 4000, 10000, 'stbd'); bay('D3', '312', '기관장실', 'bigCabin', 10000, 16000, 'stbd'); bay('D3', '313', '일등항해사실', 'cabin', 16000, 20000, 'stbd');
@@ -125,7 +143,7 @@ R('D4', '403', '계단실', 'brgStair', 8000, 9000, 10500, 11500);
 R('D4', '404', '선교화장실', 'brgWc', 8000, 11500, 10500, 13500);
 R('D4', '405', '선교팬룸', 'none', 10500, 9000, 14000, 13500);
 R('D4', '406', '배터리실', 'battery', 8000, 0, 11000, 3000);
-R('D4', '407', '무선실', 'brgRoom', 8000, 3000, 11000, 7000);
+R('D4', '407', '무선실', 'radio', 8000, 3000, 11000, 7000);
 R('D4', '408', '해도실', 'brgRoom', 11000, 0, 14000, 7000);
 R('D4', '409', '도선사실', 'brgRoom', 8000, 13500, 11000, 16000);
 R('D4', '410', '항해장비실', 'brgEquip', 11000, 13500, 14000, 16000);
@@ -137,16 +155,17 @@ function boxProject(template) {
  for (const d of DECKS) { const [x0, y0, x1, y1] = OUTLINE[d.id], c = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
   c.forEach((a, i) => { const b = c[(i + 1) % 4]; ents.push({ type: 'LINE', x1: a[0], y1: a[1], x2: b[0], y2: b[1], deck: d.id, layer: 'DECK-OUTLINE', id: `T3_${d.id}_OL${i + 1}`, persistentUuid: uuid(d.id + 'OL' + i) }); }); }
  for (const r of rooms) {
-  const data = { ...BASE, ...USE[r.use] }, layer = r.use === 'corridor' || r.use === 'brgCorr' ? 'CORRIDOR' : /stair/i.test(r.use) ? 'STAIR' : 'ROOM';
+  const data = occupancy({ ...BASE, ...USE[r.use] }, r), layer = r.use === 'corridor' || r.use === 'brgCorr' ? 'CORRIDOR' : /stair/i.test(r.use) ? 'STAIR' : 'ROOM';
   const geo = r.rect ? { type: 'RECT', x: r.rect[0], y: r.rect[1], w: r.rect[2] - r.rect[0], h: r.rect[3] - r.rect[1] } : { type: 'POLY', points: r.poly.map(([x, y]) => ({ x, y })), closed: true };
   ents.push({ ...geo, roomNo: r.no, roomName: r.name, ...data, deck: r.deck, layer, id: `T3_${r.deck}_${r.no}`, persistentUuid: uuid(r.deck + r.no) });
  }
  const deckTpl = template.source.decks[0];
  // fresh-air latent load from the psychrometric (humidity) model of BOX, not the fixed 7.5 W per CMH (about a third low)
- const settings = { ...template.settings, designConditions: { ...template.settings.designConditions, latentModel: 'humidity' } };
+ // and the project's indoor summer condition at ISO 7547 4.2 b) (S5 carries 27 °C / 50 %; v2.5)
+ const settings = { ...template.settings, designConditions: { ...template.settings.designConditions, latentModel: 'humidity', indoorCoolTemp: 25, indoorCoolRh: 55 } };
  return { ...template, settings, source: { ...template.source, entities: ents, decks: DECKS.map(d => ({ ...deckTpl, id: d.id, name: d.name, z: d.z, height: HEIGHT })), backgrounds: [] },
   view: { ...template.view, activeDeck: 'D1', hidden: [], hiddenRooms: [], hiddenDeckLayers: [] },
-  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.4', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
+  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.5', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
 }
 
 // ---------- general arrangement DXF ----------
