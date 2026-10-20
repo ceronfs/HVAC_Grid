@@ -43,8 +43,14 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   await p.click('.step[data-step=load]'); await idle();
   assert.equal(await H(() => HVACGrid.box.calCurrent()), false, 'CAL on H5 is not current for S5');
   assert.match(await H(() => document.getElementById('status').textContent), /CAL: 도면이 바뀜/);
+  // ② -> ③ on the same canvas: the plan maps the deck to the very pixels BOX's canvas did, on the deck BOX showed
+  const ctmBox = await H(() => { const m = HVACGrid.box.doc.getElementById('svg').getScreenCTM(), fr = document.getElementById('boxFrame').getBoundingClientRect(); return { a: m.a, e: m.e + fr.left, f: m.f + fr.top, deck: HVACGrid.box.win.CAD_APP.st.activeDeck }; });
   await ribbon('설계 데이터 만들기').click(); await idle();
   assert.equal(await H(() => HVACGrid.box.calRooms), 94, 'CAL calculated again on S5');
+  const ctmPlan = await H(() => { const m = document.getElementById('plan').getScreenCTM(); return { a: m.a, e: m.e, f: m.f, deck: HVACGrid.S.deck }; });
+  assert.equal(ctmPlan.deck, ctmBox.deck, '③ opens on the deck BOX showed');
+  assert.ok(Math.abs(ctmPlan.a - ctmBox.a) < 1e-6 && Math.abs(ctmPlan.e - ctmBox.e) < 0.5 && Math.abs(ctmPlan.f - ctmBox.f) < 0.5, `same scale and place ② ${JSON.stringify(ctmBox)} ③ ${JSON.stringify(ctmPlan)}`);
+  log('② -> ③ same canvas', ctmPlan.deck, ctmPlan.a.toFixed(4));
   const c = await H(() => ({ step: HVACGrid.S.step, rooms: HVACGrid.S.contract?.rooms.length, plans: HVACGrid.plans().length, supply: HVACGrid.plans().filter(x => x.kind === 'supply').length }));
   log('contract', JSON.stringify(c));
   assert.equal(c.step, 'air'); assert.equal(c.rooms, 94); assert.equal(c.supply, 10); assert.equal(c.plans, 18);

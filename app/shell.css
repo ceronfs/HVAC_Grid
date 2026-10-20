@@ -235,3 +235,13 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .plan .drag{cursor:grab}.plan .drag.dragging{cursor:grabbing;opacity:.75}.plan .ru.moved{stroke:#e8890c;stroke-width:2.5px}
 .plan .ru.drag{touch-action:none}.plan .mk.drag{touch-action:none}
 .btn:disabled{opacity:.5;cursor:default}
+/* ③ ④: the plan keeps the full width of the ① ② canvas (no jump from ② to ③); the tree and the inspector float over
+   its edges, as BOX's own palettes do over its canvas */
+.main.plan-view{grid-template-columns:minmax(0,1fr);position:relative}
+.main.plan-view>.side{position:absolute;top:0;bottom:0;z-index:6;width:240px}
+.main.plan-view>#left{left:0;box-shadow:2px 0 6px rgba(0,0,0,.05)}
+.main.plan-view>#right{right:0;width:280px;box-shadow:-2px 0 6px rgba(0,0,0,.05)}
+.main.plan-view .legend{right:292px}
+@media (max-width:1366px){.main.plan-view>#left{width:208px}.main.plan-view>#right{width:256px}.main.plan-view .legend{right:268px}}
+.main.plan-view.left-off>#left,.main.plan-view.right-off>#right{width:28px}
+.main.plan-view.right-off .legend{right:40px}

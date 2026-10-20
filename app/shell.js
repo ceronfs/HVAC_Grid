@@ -157,7 +157,7 @@
   for (const k of gone) { delete S.results[k]; delete S.projects[k]; delete S.geometry[k]; } if (gone.includes(S.active)) S.active = null;
   const sup = S.contract.systems.filter(s => s.kind === 'supply'), stale = Object.keys(S.results).filter(k => result(k)?.stale).length;
   say(`설계 데이터 만듦: Deck ${S.contract.decks.length} · 격실 ${S.contract.rooms.length} · 계통 ${S.contract.systems.length} (급기 ${sup.length}) · 급기 ${fmt(sup.reduce((t, s) => t + s.designCmh, 0))} CMH${Object.keys(S.results).length ? ` · PHG D 결과 유지, 다시 보내기 ${stale}` : ''}`);
-  S.step = 'air';
+  followBoxDeck(); S.step = 'air';
  }
  async function openSample(name = 's5') {
   if (!(await keepsWork('예제 설계 데이터 열기'))) return;
@@ -460,8 +460,11 @@
  const stepOf = id => STEPS.find(s => s.id === id);
  // the view a step shows: ④ is the shared HVAC Grid plan; PHG D only while its editor is open (S.phgEditor)
  const viewOf = id => id === 'duct' ? (S.phgEditor ? 'phg' : 'plan') : stepOf(id).view;
+ // ③ opens on the deck BOX showed in ① ② - the same deck on the same canvas
+ function followBoxDeck() { try { const a = box.loading && box.win.CAD_APP?.st?.activeDeck; if (a && S.contract?.decks.some(d => d.id === a) && S.deck !== a) { S.deck = a; S.room = null; pickSystem(); } } catch {} }
  async function go(id) {
   if (S.step === 'duct' && id !== 'duct') { if (S.phgEditor) readBackIfEdited(); S.phgEditor = false; }
+  if (viewOf(S.step) === 'box' && viewOf(id) === 'plan') followBoxDeck();
   S.step = id; S.pickRoot = false; render();
   const view = viewOf(id);
   if (view === 'box') await act(box.loading ? null : 'BOX CAL 여는 중', () => box.load());
@@ -546,15 +549,40 @@
  // the ③ ④ plan shows a deck as the ① ② canvas (BOX) does: BOX y runs down the screen. Y() turns a BOX y into the plan's
  // y and back (PHG D's duct points come with y already turned: app y = -BOX y)
  const Y = v => v;
+ // ② → ③ without a jump: the plan shows the part of the deck BOX showed, at BOX's scale and on the same pixels, when BOX
+ // holds this deck in 2D (its canvas lies on the same full-width area); null - the plan fits the deck itself
+ function boxView(xs, ys, rc) {
+  try {
+   if (!box.loading || !box.hasDrawing()) return null;
+   const d = box.doc, bs = d.getElementById('svg'); if (!bs || d.getElementById('canvas')?.classList.contains('iso')) return null;
+   const m = bs.getScreenCTM(), fr = $('boxFrame').getBoundingClientRect();
+   if (!m || !(m.a > 0) || Math.abs(m.b) > 1e-9 || Math.abs(m.c) > 1e-9 || Math.abs(m.a - m.d) > 1e-6 * m.a) return null;   // 2D, y down, one scale
+   const k = m.a, wx = sx => (sx - fr.left - m.e) / k, wy = sy => (sy - fr.top - m.f) / k, v = { minX: wx(rc.left), maxX: wx(rc.right), minY: wy(rc.top), maxY: wy(rc.bottom), k };
+   // only when BOX frames this deck (another drawing, another deck far away: no)
+   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+   const ix = Math.max(0, Math.min(x1, v.maxX) - Math.max(x0, v.minX)), iy = Math.max(0, Math.min(y1, v.maxY) - Math.max(y0, v.minY));
+   return ix * iy >= 0.9 * (x1 - x0) * (y1 - y0) ? v : null;
+  } catch { return null; }
+ }
  function plan() {
   const C = S.contract, svg = $('plan'), rooms = C.rooms.filter(r => r.deckId === S.deck); if (!rooms.length) { svg.innerHTML = ''; return; }
   const xs = rooms.flatMap(r => r.polygon.map(p => p.x)), ys = rooms.flatMap(r => r.polygon.map(p => Y(p.y)));
-  // the legend (top right, ~300 px) gets its own strip right of the deck so it never covers rooms
-  const rc = svg.getBoundingClientRect(), legendPx = legendOpen() && rc.width > 900 ? 300 : 0, minX = Math.min(...xs) - 900, minY = Math.min(...ys) - 900, maxY = Math.max(...ys) + 900;
-  let maxX = Math.max(...xs) + 900; const k0 = Math.min((rc.width - legendPx) / (maxX - minX), rc.height / (maxY - minY)); if (k0 > 0 && legendPx) maxX += legendPx / k0;
-  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-  // sizes in screen px: k = px per mm of the fitted plan
-  const k = Math.min(rc.width / (maxX - minX), rc.height / (maxY - minY)) || 0.08, px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', fire = S.overlay === 'fire' && !ductMode, a = analysis();
+  const rc = svg.getBoundingClientRect(), bv = boxView(xs, ys, rc);
+  let minX, minY, maxX, maxY, k;
+  // the legend opens by itself only where it does not cover the deck (on BOX's view it may not)
+  if (bv) { ({ minX, minY, maxX, maxY, k } = bv); const sideR = $('main').classList.contains('plan-view') ? $('right').offsetWidth : 0; legendRoom = rc.width - sideR - (Math.max(...xs) - minX) * k >= 320; }
+  else { legendRoom = true;
+   // the deck fits the free strip between the floating panels, and left of the legend (top right, ~300 px)
+   const sideL = $('main').classList.contains('plan-view') ? $('left').offsetWidth : 0, sideR = $('main').classList.contains('plan-view') ? $('right').offsetWidth : 0;
+   const legendPx = legendOpen() && rc.width - sideL - sideR > 900 ? 300 : 0, free = Math.max(200, rc.width - sideL - sideR - legendPx);
+   const x0 = Math.min(...xs) - 900, x1 = Math.max(...xs) + 900, y0 = Math.min(...ys) - 900, y1 = Math.max(...ys) + 900;
+   k = Math.min(free / (x1 - x0), rc.height / (y1 - y0)) || 0.08;
+   minX = (x0 + x1) / 2 - (sideL + free / 2) / k; maxX = minX + rc.width / k;
+   minY = (y0 + y1) / 2 - rc.height / 2 / k; maxY = minY + rc.height / k;
+  }
+  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'none');
+  // sizes in screen px: k = px per mm of the plan
+  const px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', fire = S.overlay === 'fire' && !ductMode, a = analysis();
   let html = '', sel = '';
   for (const r of rooms) {
    const sid = r.systems[S.kind], bx = r.polygon.map(p => p.x), by = r.polygon.map(p => Y(p.y)), x0 = Math.min(...bx), y0 = Math.min(...by), wPx = (Math.max(...bx) - x0) * k, hPx = (Math.max(...by) - y0) * k;
@@ -631,7 +659,7 @@
   // a place picked in ⑤ (penetration row): a ring that fades
   if (S.focus && S.focus.deckId === S.deck) html += `<circle class="focus" cx="${S.focus.x}" cy="${Y(S.focus.y)}" r="${px(18)}"/>`;
   // ship directions: +x forward, +y port (BOX) - BOX draws +y down the screen, its axes at the top left
-  const ox = minX + px(24), oy = minY + px(24), dy = Math.sign(Y(1));
+  const ox = Math.min(...xs) - px(34), oy = Math.min(...ys) - px(30), dy = Math.sign(Y(1));   // at the deck's top-left corner
   html += `<g class="dir" style="font-size:${px(11)}px"><line x1="${ox}" y1="${oy}" x2="${ox + px(46)}" y2="${oy}"/><path d="M${ox + px(46)} ${oy - px(4)}L${ox + px(54)} ${oy}L${ox + px(46)} ${oy + px(4)}Z"/><text x="${ox + px(58)}" y="${oy + px(4)}">선수 FWD</text><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy + dy * px(40)}"/><path d="M${ox - px(4)} ${oy + dy * px(40)}L${ox} ${oy + dy * px(48)}L${ox + px(4)} ${oy + dy * px(40)}Z"/><text x="${ox}" y="${oy + dy * px(62)}" text-anchor="middle">좌현</text></g>`;
   svg.innerHTML = html; svg.classList.toggle('picking', S.pickRoot);
   svg.querySelectorAll('.rm').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); selectRoom(e.dataset.room); });
@@ -776,7 +804,8 @@
   document.title = C ? `${RP.PROJECT_NAME(C) || '설계 데이터'}${S.dirty ? ' *' : ''} — HVAC Grid` : 'HVAC Grid';
  }
  // the plan legend opens and closes; it starts closed when the plan is narrow (it would cover rooms)
- function legendOpen() { return S.legendOpen ?? ($('center').getBoundingClientRect().width > 1000); }
+ let legendRoom = true;
+ function legendOpen() { return S.legendOpen ?? (legendRoom && $('center').getBoundingClientRect().width > 1000); }
  function legendFold() {
   const lg = $('legend'), open = legendOpen();
   if (!open) lg.innerHTML = '<button class="lg-tog" title="범례 펼치기" aria-expanded="false">범례 ▾</button>';
@@ -817,9 +846,12 @@
   if (S.dirty) return ['프로젝트 저장 (Ctrl+S)', null];
   return ['⑤ 통합 XLSX·DXF·보고서 출력', 'review'];
  }
- function render() { steps(); ribbon(); tree(); center(); inspector(); status(); $('main').classList.toggle('left-off', S.leftOff === true); $('main').classList.toggle('right-off', S.rightOff === true);
-  // ① ② are BOX's own screens: the HVAC Grid tree and inspector (design data, from ③ on) step aside for the drawing
-  $('main').classList.toggle('box-view', viewOf(S.step) === 'box'); }
+ // the layout first, so the plan measures the canvas it is drawn on
+ function render() { const m = $('main'); m.classList.toggle('left-off', S.leftOff === true); m.classList.toggle('right-off', S.rightOff === true);
+  // ① ② are BOX's own screens: the HVAC Grid tree and inspector (design data, from ③ on) step aside for the drawing;
+  // ③ ④ keep that full-width canvas, the tree and inspector float over its edges
+  m.classList.toggle('box-view', viewOf(S.step) === 'box'); m.classList.toggle('plan-view', viewOf(S.step) === 'plan');
+  steps(); ribbon(); tree(); center(); inspector(); status(); }
 
  // ---------- wiring ----------
  $('steps').onclick = e => { const b = e.target.closest('.step'); if (b) go(b.dataset.step); };
