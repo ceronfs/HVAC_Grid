@@ -6,8 +6,8 @@
 (async () => {
  const B = window.HVACGridBridge, $ = id => document.getElementById(id);
  const show = (el, on) => el.toggleAttribute('hidden', !on);   // works for the SVG plan too (no .hidden property on SVG elements)
- const LIB = await B.loadLibs('../lib/', ['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'diagram.cjs', 'dxf-out.cjs', 'fire-plan.cjs', 'report.cjs']);
- const K = LIB.contract, PL = LIB['phg-plan'], PJ = LIB.project, SO = LIB.solas, XL = LIB.xlsx, DX = LIB['dxf-out'], RP = LIB.report, SVG = LIB['plan-svg'], U = LIB.util, GE = LIB.geom, DG = LIB.diagram, FP = LIB['fire-plan'];
+ const LIB = await B.loadLibs('../lib/', ['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'diagram.cjs', 'dxf-out.cjs', 'fire-plan.cjs', 'report.cjs', 'k-change.cjs']);
+ const K = LIB.contract, PL = LIB['phg-plan'], PJ = LIB.project, SO = LIB.solas, XL = LIB.xlsx, DX = LIB['dxf-out'], RP = LIB.report, SVG = LIB['plan-svg'], U = LIB.util, GE = LIB.geom, DG = LIB.diagram, FP = LIB['fire-plan'], KCH = LIB['k-change'];
  const esc = U.esc, fmt = v => v == null || v === '' || Number.isNaN(+v) ? '—' : Math.round(v).toLocaleString();
  const box = new B.Box($('boxFrame')), phg = new B.Phg($('phgFrame'));
  const S = { step: 'room', contract: null, deck: null, room: null, kind: 'supply', sys: null, filter: 'all', overlay: 'air', tab: 'nets', gradeFilter: null, focus: null, projects: {}, results: {}, geometry: {}, active: null,
@@ -475,7 +475,31 @@
  // a CAL command: CAL calculates in the background (its panel stays out of sight); tables open in their own window, the
  // commands that apply values say how it went on the status line
  const CAL_SAY = { K7: 'ISO 적용', 'C✓': 'LY 적용' };
- const boxCal = code => () => act(CAL_SAY[code] ? CAL_SAY[code] + ' 중' : box.loading && box.calCurrent() ? null : 'BOX CAL 계산 중', async () => { await box.load(); const said = await box.cal(code); if (said) say(`${CAL_SAY[code]}: ${said}`); });
+ // ISO 적용 and LY 적용 change K values only: CAL's rooms are compared before and after, and the list says whether any
+ // room's design conditions moved (they should not) and which loads and airflows did - ISO → LY under a title of its own
+ const boxCal = code => () => act(CAL_SAY[code] ? CAL_SAY[code] + ' 중' : box.loading && box.calCurrent() ? null : 'BOX CAL 계산 중', async () => {
+  await box.load(); const watch = !!CAL_SAY[code] && box.hasDrawing(), before = watch ? await box.calSnapshot() : null;
+  const said = await box.cal(code); if (said) say(`${CAL_SAY[code]}: ${said}`);
+  if (!before) return;
+  const d = KCH.diff(before, await box.calSnapshot(), S.contract?.rules || {});
+  const title = d.from === 'iso-standard' && d.to === 'calculated' ? 'ISO → LY 변경 사항' : `${CAL_SAY[code]} 변경 사항 (${d.fromName} → ${d.toName})`;
+  showKChange(d, title);
+  say(`${CAL_SAY[code]}: ${said ? said + ' · ' : ''}${d.toName} · 설계 조건 변경 ${d.inputs.length + d.conditions.length}건 · 부하가 바뀐 격실 ${d.rooms.length}/${d.totals.roomsTotal}`);
+ });
+ // the K change list (dialog), and as CSV
+ let lastKChange = null;
+ function showKChange(d, title) {
+  lastKChange = { d, title }; $('kchgTitle').textContent = title; $('kchgBody').innerHTML = KCH.toHtml(d);
+  const dlg = $('kchg'); if (!dlg.open) dlg.showModal();
+ }
+ async function kChangeCsv() {
+  if (!lastKChange) return; const { d, title } = lastKChange;
+  const rows = [[title], ['K 방식', d.fromName, d.toName], [], ['구분', 'Deck', '격실', '항목', '변경 전', '변경 후'],
+   ...d.conditions.map(c => ['프로젝트 설계 조건', '', '', c.name, c.from, c.to]), ...d.inputs.map(c => ['격실 설계 조건', c.deck, c.room, c.name, c.from, c.to]),
+   ...d.rooms.flatMap(r => [...KCH.LOADS.map(([k, n]) => ['부하 W', r.deck, r.room, n, r.loads[k][0], r.loads[k][1]]), ['급기 CMH', r.deck, r.room, '급기', r.supplyCmh[0], r.supplyCmh[1]]])];
+  const f = await saveFile(`K값-변경-${stamp()}.csv`, '﻿' + rows.map(r => r.map(U.csvCell).join(',')).join('\r\n'), { id: 'kchange' });
+  if (f) say(`K값 변경 목록 저장: ${f.name}`);
+ }
  const boxFile = (id, accept) => () => act(null, async () => { const f = await pickFile(accept); await box.load(); box.setFile(id, f); say(f.name + ' → BOX'); });
  const phgCmd = id => () => act(null, async () => { await loadPhg(); phg.click(id); });
  const phgText = t => () => act(null, async () => { await loadPhg(); phg.clickMenu(t); });
@@ -995,6 +1019,7 @@
  $('openProjectBtn').onclick = e => { e.stopPropagation(); fileMenu(); };
  $('helpBtn').onclick = () => help();
  $('helpClose').onclick = () => $('help').close();
+ $('kchgClose').onclick = () => $('kchg').close(); $('kchgCsv').onclick = () => act(null, kChangeCsv);
  $('saveProjectBtn').onclick = () => act(null, () => saveProject());
  $('themeBtn').onclick = () => { const d = document.documentElement, dark = d.dataset.theme !== 'dark'; d.dataset.theme = dark ? 'dark' : ''; B.themePopups(); box.theme(); try { localStorage.setItem('hvac-grid-theme', dark ? 'dark' : ''); } catch {} if (S.step === 'air' && S.contract) plan(); };
  try { if (localStorage.getItem('hvac-grid-theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch {}

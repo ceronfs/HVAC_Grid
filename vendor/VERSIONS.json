@@ -8,7 +8,7 @@
  },
  "BOX_CAL_Enhance.html": {
   "from": "C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html",
-  "sha256_16": "4eb711a3aa198522",
+  "sha256_16": "b2add59e6d2fab13",
   "commit": "CAL_Enhance 32976f8",
   "copied": "2026-10-18",
   "sha256_16_original": "bd942611477ddfe5",
@@ -84,6 +84,12 @@
     "date": "2026-10-21",
     "what": "CAL daylight lighting: no lighting gain in a room with a window or in the wheelhouse (ISO 7547 5.5, D.3.3) - default of new projects; projects saved without the setting keep their lighting",
     "test": "test/e2e/vendor.e2e.cjs (static checks, BOX host self test 126/126, CAL unit self test 110/110); load workbook formulas checked in Excel"
+   },
+   {
+    "id": "V",
+    "date": "2026-10-21",
+    "what": "KU user K: added to ISO, to LY or a new K table - chosen in the KU window before applying (the boundaries with no user K take the ISO 7547 K, the KC structural K, or the project default K); kept as userKAssignments._base; projects without a choice keep the KC fallback",
+    "test": "test/e2e/k-change.e2e.cjs"
    }
   ],
   "patchDoc": "docs/VENDOR_PATCHES.md"

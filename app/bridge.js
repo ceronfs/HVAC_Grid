@@ -246,6 +246,16 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
    if (!said) line.textContent = before;
    return said || '적용함';
   }
+  // CAL's rooms for comparing a K change (lib/k-change.cjs): the K mode, the design conditions, each room's design
+  // conditions and loads - taken before and after ISO 적용 / LY 적용
+  async calSnapshot() {
+   await this.openCal();
+   const rep = this.doc.querySelector('#calEnhancePanel iframe').contentWindow.CAL_ENHANCE.report(), clone = v => JSON.parse(JSON.stringify(v ?? null));
+   const keep = ['id', 'no', 'name', 'deck', 'deckId', 'isoClass', 'polygon', 'holes', 'floor', 'volume', 'ceilingHeight', 'sup', 'exh', 'ret',
+    'coolTemp', 'coolingRh', 'heatTemp', 'heatingRh', 'people', 'activity', 'lighting', 'equipW', 'minimumFreshAir', 'loadIncluded', 'windowType', 'windowArea', 'windowK',
+    'coolingTransmissionW', 'heatingTransmissionW', 'solarTransmissionW', 'coolingSensibleW', 'coolingLatentW', 'coolingW', 'heatingW', 'minimumFreshAirCmh', 'minimumAch', 'ventilationAirCmh', 'calculationComplete', 'calculationStatus'];
+   return { kMode: rep.kMode ?? null, conditions: clone(rep.conditions), decks: clone(this.win.CAD_APP.stack.decks), rooms: rep.loads.map(x => Object.fromEntries(keep.map(k => [k, clone(x[k])]))) };
+  }
   // the raw BOX data the contract is built from (the same fields as tools/box-extract.cjs)
   async extract() {
    if (!this.hasDrawing()) throw new Error('BOX에 Deck·격실이 없습니다. 도면을 열거나 예제를 불러오세요.');
