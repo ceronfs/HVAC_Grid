@@ -53,7 +53,7 @@
 |---|---|---|---|
 | F01 | `tools/make-offline.cjs` | 복사 목록에 `samples/t3/T3.solas.json`·`vendor/VERSIONS.json` 추가. 셸 라이브러리 목록뿐 아니라 셸·브리지가 부르는 `../lib|samples|vendor/…` 경로를 모두 목록과 대조(`missingFiles`) — 빠지면 빌드 실패 | F01 |
 | F01 | `app/shell.js` openSample | T3 SOLAS 설정을 못 읽으면 예제는 열린 채 "기본값" 안내(전에는 예외로 중단). 읽으면 SOLAS 공간을 반영해 풍량을 다시 계산 | E2E |
-| F02 | `dist/HVAC_Grid_offline` | 새 도구로 다시 빌드(커밋·Node·파일별 SHA-256이 든 `MANIFEST.json`) | 빌드·독립망 T3 확인 |
+| F02 | `dist/HVAC_Grid_offline` | 새 도구로 cdf2e8d에서 다시 빌드(34개 파일, 커밋·Node·파일별 SHA-256이 든 `MANIFEST.json`) | 복사본의 자체 서버로 T3 예제 열기: 79실, 최하층 아래 "기관실 — A류" 적용, 급기 25,600 CMH, 페이지 오류 0, HTTP 오류 0 |
 | F03 | `lib/contract.cjs` validate, `lib/project.cjs` read | 부하 7개 값: 숫자·유한·범위(W는 ±1e7, 풍량·환기 횟수는 0~1e7 — 제품 한도이며 규정 값 아님). `PJ.read`가 파일과 **다시 계산한 결과** 둘 다 검사 | F03 (`'bad'`, 1e308, Infinity, −1, 2e7 거부; 음의 냉방 부하는 허용) |
 | F04 | `lib/contract.cjs` `systemsOf` | 계통 목록(실·Deck·합계)을 매번 실의 계통 배정으로 다시 만듦 — 파일의 목록은 믿지 않음. 다르면 읽을 때 알림 | F04 (빈 roomIds·가짜 계통 → 원래 합계·계획 수) |
 | F06 | `lib/contract.cjs` `carrySettings`, `app/shell.js` | BOX에서 다시 만들 때 Riser·공조기 Deck·SOLAS 분류에 더해 **전달 공기 지정**(남은 실끼리만)과 **RU 이동**(남은 RU만)도 넘기고 풍량을 다시 계산. 전에는 SOLAS 분류를 계산 뒤에 붙여 구역 수지에 반영되지 않았음. `tools/hvac-run.cjs --solas`도 같은 이유로 다시 계산 | F06 |

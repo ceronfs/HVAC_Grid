@@ -50,7 +50,7 @@ npm run solas:check         # lib/solas-data.json = SOLAS 도구 사본 확인
 node tools/hvac-run.cjs <설계 데이터 또는 프로젝트.json> <출력 폴더> [--shots] [--solas=<SOLAS 설정.json>]   # AUTO 미완료면 종료 1
 node tools/dxf-check.cjs <도면.dxf> <설계 데이터.json> <deckId>     # 도면과 설계 데이터의 실 번호·이름·면적 대조
 node tools/box-extract.cjs <BOX 프로젝트.json> <출력.json>      # BOX → 설계 데이터
-node tools/make-offline.cjs [폴더]                               # 독립망용 복사본: 실행에 필요한 파일 + runtime\node.exe → dist/HVAC_Grid_offline
+node tools/make-offline.cjs [폴더]                               # 독립망용 복사본: 실행에 필요한 파일 + runtime\node.exe + MANIFEST.json → dist/HVAC_Grid_offline (이 도구가 만든 폴더만 교체)
 ```
 
 셸 작업 순서: ① 도면·격실(BOX — S5·H5·**T3 시험선**) → ② 부하(BOX CAL) → **설계 데이터 만들기** → ③ 풍량·계통(ΔT, 급기·배기·환기, 공조기 위치·공조기 Deck·샤프트, 풍량·방화 보기) → ④ RU·덕트(③과 **같은 평면**: PHG D가 뒤에서 AUTO·크기·압력을 계산하고 덕트망을 이 평면에 그림, 덕트를 누르면 크기·풍량·풍속, 평면에서 **RU·공조기 끌어 옮기기**(놓으면 다시 AUTO)·**덕트 크기 바꾸기**(PHG D 수동 크기로 다시 계산)·**다른 경로**(AUTO 다음 후보), 그 밖의 세부 편집은 **PHG D 편집기** → **평면으로**가 고친 내용을 읽어 옴) → ⑤ 검토·출력(모든 계통 AUTO, 덕트망·계통·수직 덕트·**계통도**·방화·검토 탭, 선종·방화방식·최하층 아래·스프링클러, 프로젝트·XLSX·DXF·보고서). 검토는 통과·확인 필요·실패 3단계입니다. ③⑤에서 Ctrl+Z / Ctrl+Y는 HVAC Grid 편집(ΔT, 위치, 공조기 Deck, SOLAS 지정)을 되돌립니다.
