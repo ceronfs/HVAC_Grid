@@ -27,6 +27,14 @@ const { launch } = require('../../tools/browser.cjs'), { start } = require('../.
   assert.equal(back.rooms, 79); assert.equal(back.boxRooms.length, 79); assert.ok(back.boxRooms.every(id => ids.has(id)), 'BOX shows T3 again');
   assert.ok(back.carried); assert.match(back.status, /BOX 도면\(①②\)도 열림/);
   log('reopened: BOX', back.boxRooms.length, 'rooms');
+  // the examples one after the other: S5 (94 rooms) then T3 (79) - the design data is T3's, not made from S5's drawing
+  // while BOX replaces it (an "at least 79 rooms" wait passed at once over S5)
+  for (const [name, n] of [['s5', 94], ['t3', 79]]) {
+   await H(x => { HVACGrid.S.dirty = false; return HVACGrid.openSample(x); }, name); await idle();
+   const got = await H(() => ({ rooms: HVACGrid.S.contract.rooms.length, decks: HVACGrid.S.contract.decks.length, box: HVACGrid.box.roomIds().length }));
+   assert.deepEqual(got, { rooms: n, decks: name === 's5' ? 5 : 4, box: n }, name);
+  }
+  log('examples S5 then T3');
   log('page errors', errors.length, errors.slice(0, 3)); assert.equal(errors.length, 0);
   log('E2E PROJECT-BOX PASS');
  } catch (e) { console.error('E2E PROJECT-BOX FAIL', e); process.exitCode = 1; }

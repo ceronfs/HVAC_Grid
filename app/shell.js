@@ -173,7 +173,9 @@
    else box.click('s5ExampleBtn');
   } finally { w.confirm = ask; }
   const n = name === 't3' ? 79 : 94;
-  await B.until(() => { try { return box.hasDrawing() && box.win.CAD_APP.rooms().length >= n; } catch { return false; } }, 180000, '예제 도면');
+  // the example's own room count: "at least" would pass at once over the other example (S5 has more rooms than T3) and
+  // the design data would be made from the drawing BOX is still replacing (found by tools/offline-check.cjs)
+  await B.until(() => { try { return box.hasDrawing() && box.win.CAD_APP.rooms().length === n; } catch { return false; } }, 180000, '예제 도면');
   // a new ship: nothing of the previous design data or its networks carries over
   Object.assign(S, { contract: null, projects: {}, results: {}, geometry: {}, active: null, file: null, duct: null, phgEditor: false, boxFile: null });
   if (phg.loading) phg.open(phg.blank, 'HVAC Grid');
