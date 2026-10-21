@@ -5,7 +5,8 @@
 //   node tools/make-offline.cjs [folder]   (default dist/HVAC_Grid_offline; the folder is replaced)
 // The folder is replaced only when it is a copy this script made (its MANIFEST.json) - never the source folder, a
 // folder above it, a git work tree or a folder of other files (review 2026-10-21 F10). MANIFEST.json records the
-// commit, the Node.js and every file's SHA-256, so a copy on the closed network says what it is (A07).
+// commit, the Node.js and every file's SHA-256, so a copy on the closed network says what it is (A07). The copy also holds
+// SOLAS_방화등급표기.html, the fire-rating plan as a program of its own (tools/make-solas-tool.cjs).
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
 const ROOT = path.join(__dirname, '..');
@@ -57,6 +58,9 @@ function build(out = DEFAULT_OUT) {
  for (const f of FILES) copy(path.join(ROOT, f), path.join(out, f), f);
  const node = 'runtime/' + (process.platform === 'win32' ? 'node.exe' : 'node');
  copy(process.execPath, path.join(out, node), node);
+ // the standalone SOLAS 방화 등급 표기 (one HTML file, opened by double-click) beside the launcher
+ const tool = 'SOLAS_방화등급표기.html'; require('./make-solas-tool.cjs').build(path.join(out, tool));
+ { const b = fs.readFileSync(path.join(out, tool)); bytes += b.length; hashes[tool] = crypto.createHash('sha256').update(b).digest('hex'); }
  let commit = null; try { commit = require('child_process').execFileSync('git', ['-C', ROOT, 'describe', '--always', '--dirty'], { encoding: 'utf8' }).trim(); } catch { /* not a work tree */ }
  fs.writeFileSync(path.join(out, MANIFEST), JSON.stringify({ kind: KIND, builtAt: new Date().toISOString(), commit, node: process.version, files: hashes }, null, 1) + '\n');
  return { out, files: FILES.length + 1, bytes };

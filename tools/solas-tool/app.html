@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:">
+<title>SOLAS 방화 등급 표기</title>
+<style>
+ :root{--bg:#f4f6f8;--panel:#fff;--line:#d5dbe1;--ink:#1d2228;--muted:#5f6871;--accent:#1f5fa8;--warn:#9a6700;--err:#b3261e;--ok:#1b7a3d}
+ *{box-sizing:border-box}
+ body{margin:0;font:13px/1.5 "Malgun Gothic","Noto Sans KR",system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+ header{display:flex;align-items:center;gap:14px;padding:10px 16px;background:#16324f;color:#fff}
+ header h1{font-size:17px;margin:0}header .ver{color:#b8c7d8;font-size:12px}
+ main{display:grid;grid-template-columns:320px 1fr;gap:12px;padding:12px;min-height:calc(100vh - 48px)}
+ aside{display:flex;flex-direction:column;gap:10px}
+ section.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+ section.card h2{font-size:13px;margin:0 0 8px;color:var(--accent)}
+ label.f{display:flex;flex-direction:column;gap:2px;margin:6px 0;font-size:12px;color:var(--muted)}
+ label.f select,label.f input{font:inherit;color:var(--ink);padding:4px 6px;border:1px solid var(--line);border-radius:4px;background:#fff}
+ label.c{display:flex;align-items:center;gap:6px;margin:4px 0}
+ button{font:inherit;padding:5px 10px;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:pointer}
+ button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+ button:disabled{opacity:.5;cursor:default}
+ .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+ .muted{color:var(--muted)}.warn{color:var(--warn)}.err{color:var(--err)}.ok{color:var(--ok)}
+ #decks .deck{display:grid;grid-template-columns:1fr 78px 26px;gap:4px;align-items:center;margin:4px 0}
+ #decks .deck input{font:inherit;padding:3px 5px;border:1px solid var(--line);border-radius:4px;width:100%}
+ #decks .deck small{grid-column:1/-1;color:var(--muted);margin-top:-2px}
+ .work{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;min-width:0}
+ .tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:8px}
+ .tabs button{border:none;border-bottom:3px solid transparent;border-radius:0;background:none;padding:6px 10px}
+ .tabs button[aria-pressed=true]{border-bottom-color:var(--accent);font-weight:600}
+ .tabs small{color:var(--muted)}
+ .fp-legend,.fp-cats{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:12px;margin:4px 0}
+ .fp-legend span,.fp-cats span{display:inline-flex;align-items:center;gap:4px}
+ #drawing{overflow:auto;border:1px solid var(--line);border-radius:4px;background:#fff;margin:6px 0}
+ #drawing svg{display:block;max-width:100%;height:auto}
+ #drawing svg [data-run]{cursor:pointer}#drawing svg [data-room]{cursor:pointer}#drawing svg text:not([data-run]){pointer-events:none}
+ #drawing svg polygon.sel{stroke:#1f5fa8;stroke-width:6px}
+ table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid var(--line);padding:3px 6px;text-align:left;vertical-align:middle}th{background:#e8eef5}
+ td select{font:inherit;max-width:100%}
+ tr.uncls td{background:#fff6dc}tr.sel td{outline:2px solid var(--accent)}
+ .empty{padding:40px;text-align:center;color:var(--muted)}
+ #menu{position:fixed;display:none;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:6px;z-index:10}
+ #menu button{display:block;width:100%;text-align:left;border:none;padding:4px 10px}
+ #menu button:hover{background:#eef3f9}
+ #status{font-size:12px;margin-top:6px;min-height:18px}
+ details summary{cursor:pointer;color:var(--accent)}
+ @media (max-width:900px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>SOLAS 방화 등급 표기</h1><span class="ver">II-2/9 표 9.1~9.8 · 실 범주·격벽·갑판 등급을 도면에 표기 · 인터넷 없이 동작 · @@VERSION@@</span></header>
+<main>
+ <aside>
+  <section class="card"><h2>1. 도면</h2>
+   <div class="row"><button class="primary" id="openBtn">도면 열기 (DXF · JSON)</button><button id="sampleBtn">T3 예제</button></div>
+   <input type="file" id="fileIn" accept=".dxf,.json" multiple hidden>
+   <p class="muted" style="margin:6px 0 0">DXF 한 파일이 Deck 하나(벽 LINE 또는 닫힌 폴리라인 + 실 번호·이름 글자). HVAC Grid 프로젝트·설계 데이터 JSON, 이 도구의 작업 파일도 열립니다.</p>
+   <div id="decks"></div>
+  </section>
+  <section class="card"><h2>2. SOLAS 설정</h2>
+   <label class="f">선종<select id="ship"></select></label>
+   <label class="f">방화방식 (여객선은 무시)<select id="method"><option value="IC">IC</option><option value="IIC">IIC</option><option value="IIIC">IIIC</option></select></label>
+   <label class="c"><input type="checkbox" id="sprinkler"> 자동 스프링클러 (표 주석 적용)</label>
+   <label class="f">최하층 아래 공간<select id="below"></select></label>
+  </section>
+  <section class="card"><h2>3. 표기</h2>
+   <label class="c"><input type="checkbox" id="showC"> C급 표기</label>
+   <label class="c"><input type="checkbox" id="showOuter"> 외벽(*) 표기</label>
+   <label class="f">표기할 최소 벽 길이 (m)<input type="number" id="minLabel" min="0" step="0.5" value="1"></label>
+  </section>
+  <section class="card"><h2>4. 출력</h2>
+   <div class="row"><button id="dxfBtn" disabled>DXF 저장</button><button id="svgBtn" disabled>SVG (이 Deck)</button><button id="printBtn" disabled>인쇄 · PDF</button></div>
+   <div class="row" style="margin-top:6px"><button id="saveBtn" disabled>작업 저장</button><button id="clearBtn">새로 시작</button></div>
+   <div id="status" class="muted"></div>
+  </section>
+ </aside>
+ <div class="work">
+  <div class="tabs" id="tabs"></div>
+  <div id="view"><div class="empty">왼쪽 "도면 열기"로 Deck DXF를 열거나 "T3 예제"를 누르세요.<br>실은 이름으로 SOLAS 공간에 자동 분류되고, 아래 표에서 바꿀 수 있습니다. 벽을 누르면 등급을 직접 정할 수 있습니다.</div></div>
+ </div>
+</main>
+<div id="menu" role="menu"></div>
+<script>
+/*@@MODULES@@*/
+/*@@SAMPLES@@*/
+(() => {
+ 'use strict';
+ const SO = require('solas.cjs'), FP = require('fire-plan.cjs'), X = require('dxf-in.cjs'), U = require('util.cjs'), esc = U.esc;
+ const $ = id => document.getElementById(id);
+ // the work: decks (each a drawing), settings, the user's space per room, the user's rating per boundary
+ const S = { decks: [], ship: 'CARG', method: 'IC', sprinkler: false, below: '', user: {}, bounds: {}, showC: false, showOuter: false, minLabel: 1, cur: null, room: null, file: '' };
+ const say = (t, cls = 'muted') => { $('status').className = cls; $('status').textContent = t; };
+
+ // ---------- reading ----------
+ // DXF text: UTF-8 (DXF 2007 and later), else the Korean code page of older drawings
+ const decodeBytes = buf => { try { return new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch { return new TextDecoder('euc-kr').decode(buf); } };
+ function deckFromDxf(text, name, z) {
+  let rooms = X.rooms(text);
+  if (!rooms.length) rooms = X.rooms(text, { wallLayers: /./ });   // a drawing whose wall layers have other names: every LINE is a wall
+  rooms = rooms.filter(r => r.areaM2 >= 0.3);
+  const id = 'D' + (S.decks.length + 1) + '_' + Math.random().toString(36).slice(2, 6);
+  return { id, name, z, file: name, rooms: rooms.map((r, i) => ({ id: `${id}_${i + 1}`, no: r.no || '', name: r.name || '', polygon: r.polygon })) };
+ }
+ function fromJson(d, file) {
+  if (d && d.format === 'solas-tool/1') { Object.assign(S, { decks: d.decks, user: d.user || {}, bounds: d.bounds || {}, ...d.settings }); return; }
+  const c = d && d.contract ? d.contract : d;
+  if (!c || !Array.isArray(c.decks) || !Array.isArray(c.rooms)) throw new Error(file + ': HVAC Grid 프로젝트·설계 데이터나 이 도구의 작업 파일이 아닙니다');
+  S.decks = c.decks.slice().sort((a, b) => a.elevationMm - b.elevationMm).map(k => ({ id: k.id, name: k.name || k.id, z: k.elevationMm || 0, file,
+   rooms: c.rooms.filter(r => r.deckId === k.id).map(r => ({ id: r.id, no: r.no || '', name: r.name || '', polygon: r.polygon, holes: r.holes || [] })) }));
+  const so = c.solas || {};
+  if (so.ship) S.ship = so.ship; if (so.method) S.method = so.method; S.sprinkler = !!so.sprinkler; S.below = so.lowestBelow || '';
+  S.user = Object.fromEntries(Object.entries(so.rooms || {}).filter(([, v]) => v && v.space).map(([k, v]) => [k, v.space]));
+  S.bounds = Object.fromEntries(Object.entries(so.bounds || {}).filter(([, v]) => v && v.grade).map(([k, v]) => [k, v.grade]));
+ }
+ async function openFiles(files) {
+  const dxfs = [...files].filter(f => /\.dxf$/i.test(f.name)), jsons = [...files].filter(f => /\.json$/i.test(f.name));
+  for (const f of jsons) fromJson(JSON.parse(decodeBytes(await f.arrayBuffer())), f.name);
+  for (const f of dxfs.sort((a, b) => a.name.localeCompare(b.name, 'ko', { numeric: true }))) {
+   const z = S.decks.length ? Math.max(...S.decks.map(d => +d.z)) + 2800 : 0, d = deckFromDxf(decodeBytes(await f.arrayBuffer()), f.name.replace(/\.dxf$/i, ''), z);
+   S.decks.push(d); say(`${f.name}: 실 ${d.rooms.length}개`, d.rooms.length ? 'ok' : 'warn');
+  }
+  if (!S.cur || !S.decks.some(d => d.id === S.cur)) S.cur = S.decks[0]?.id || null;
+  render();
+ }
+
+ // ---------- the model ----------
+ const contract = () => ({ decks: S.decks.map(d => ({ id: d.id, name: d.name, elevationMm: +d.z || 0 })),
+  rooms: S.decks.flatMap(d => d.rooms.map(r => ({ ...r, deckId: d.id, holes: r.holes || [], systems: {} }))),
+  solas: { ship: S.ship, method: S.method, sprinkler: S.sprinkler, lowestBelow: S.below || null,
+   rooms: Object.fromEntries(Object.entries(S.user).map(([k, v]) => [k, { space: v }])), bounds: Object.fromEntries(Object.entries(S.bounds).map(([k, v]) => [k, { grade: v }])) } });
+ let cache = null;
+ function analysis() {
+  const c = contract(), b = SO.boundaries(c), m = FP.model(c, { ...b, penetrations: [] }, { showC: S.showC, showOuter: S.showOuter, minLabelMm: (+S.minLabel || 0) * 1000 });
+  return cache = { c, b, m };
+ }
+
+ // ---------- the screen ----------
+ const shipRow = () => SO.DATA.ships[S.ship], catCol = () => SO.DATA.catIndex[shipRow().cat];
+ const spaces = () => SO.SPACES.filter(r => r[catCol()] != null).sort((x, y) => x[catCol()] - y[catCol()] || x[0].localeCompare(y[0], 'ko'));
+ function settingsPanel() {
+  $('ship').innerHTML = Object.entries(SO.DATA.ships).map(([k, v]) => `<option value="${k}" ${k === S.ship ? 'selected' : ''}>${esc(v.label)}</option>`).join('');
+  $('method').value = S.method; $('sprinkler').checked = S.sprinkler; $('showC').checked = S.showC; $('showOuter').checked = S.showOuter; $('minLabel').value = S.minLabel;
+  $('below').innerHTML = `<option value="">미지정 (최하층 바닥 등급 미정)</option>` + spaces().map(r => `<option value="${esc(r[0])}" ${r[0] === S.below ? 'selected' : ''}>(${r[catCol()]}) ${esc(r[0])}</option>`).join('');
+  $('decks').innerHTML = S.decks.length ? `<p class="muted" style="margin:8px 0 2px">Deck 이름 · 높이 Z (mm, 아래에서 위로 쌓을 순서)</p>` + S.decks.map(d => `<div class="deck"><input data-dname="${esc(d.id)}" value="${esc(d.name)}"><input data-dz="${esc(d.id)}" type="number" step="100" value="${esc(d.z)}"><button data-ddel="${esc(d.id)}" title="이 Deck 빼기">✕</button><small>${esc(d.file || '')} · 실 ${d.rooms.length}개</small></div>`).join('') : '';
+  for (const b of ['dxfBtn', 'svgBtn', 'printBtn', 'saveBtn']) $(b).disabled = !S.decks.length;
+ }
+ function render() {
+  settingsPanel();
+  if (!S.decks.length) { $('tabs').innerHTML = ''; $('view').innerHTML = `<div class="empty">왼쪽 "도면 열기"로 Deck DXF를 열거나 "T3 예제"를 누르세요.</div>`; return; }
+  const { b, m } = analysis(), dk = m.decks.find(d => d.id === S.cur) || m.decks[0]; if (!dk) return; S.cur = dk.id;
+  $('tabs').innerHTML = m.decks.slice().reverse().map(d => `<button data-deck="${esc(d.id)}" aria-pressed="${d.id === dk.id}">${esc(d.name)} <small>${d.walls.filter(w => w.label).length}</small></button>`).join('');
+  const rooms = dk.rooms, cls = b.classes, opts = spaces();
+  const roomRows = rooms.map(r => { const c = cls[r.id] || {}, auto = !S.user[r.id];
+   return `<tr data-room="${esc(r.id)}" class="${c.cat ? '' : 'uncls'} ${r.id === S.room ? 'sel' : ''}"><td>${esc(r.no)}</td><td>${esc(r.name)}</td><td><select data-space="${esc(r.id)}"><option value="">${auto ? (c.space ? '자동: ' + esc(c.space) : '미분류 — 선택') : '자동 분류로'}</option>${opts.map(o => `<option value="${esc(o[0])}" ${!auto && o[0] === S.user[r.id] ? 'selected' : ''}>(${o[catCol()]}) ${esc(o[0])}</option>`).join('')}</select></td><td>${c.cat ? '(' + c.cat + ')' : '<span class="warn">—</span>'}</td><td>${r.floor ? esc(r.floor.grade) : ''}</td><td>${r.ceiling ? esc(r.ceiling.grade) : ''}</td></tr>`; }).join('');
+  const deckChecks = b.boundaries.filter(x => x.deckId === dk.id && ((x.check || []).length || !x.grade));
+  const roomOf = id => { const r = rooms.find(q => q.id === id) || cache.c.rooms.find(q => q.id === id); return r ? `${r.no} ${r.name}`.trim() : '(외부)'; };
+  const unc = rooms.filter(r => !(cls[r.id] || {}).cat).length;
+  $('view').innerHTML = `${FP.legendHtml(m)}<div id="drawing">${FP.toSvg(m, dk.id, { width: Math.max(700, $('view').clientWidth - 4) })}</div>
+   <p class="muted">벽(선)을 누르면 등급을 직접 정합니다 · 실을 누르면 아래 표에서 그 실을 찾습니다 · 노란 빗금 = 미분류 실, 주황 점선 = 등급 미정</p>
+   <h3 style="font-size:13px;margin:12px 0 4px">${esc(dk.name)} 격실 분류 <small class="muted">${rooms.length}실${unc ? ` · <span class="warn">미분류 ${unc}</span>` : ''}</small></h3>
+   <table><thead><tr><th>번호</th><th>이름</th><th>SOLAS 공간</th><th>범주</th><th>바닥</th><th>천장</th></tr></thead><tbody>${roomRows}</tbody></table>
+   <details style="margin-top:10px" ${deckChecks.length ? '' : ''}><summary>확인할 경계 ${deckChecks.length}건</summary><table><tbody>${deckChecks.slice(0, 300).map(x => `<tr><td>${esc(x.kind === 'deck' ? '갑판' : x.kind === 'floor' ? '바닥' : x.kind === 'ceiling' ? '천장' : x.kind === 'outer' ? '외벽' : '격벽')}</td><td>${esc(roomOf(x.roomA))} ↔ ${esc(roomOf(x.roomB))}</td><td>${esc(x.grade || '미정')}</td><td>${esc((x.check || []).join(' · ') || '등급 미정')}</td></tr>`).join('')}</tbody></table></details>`;
+  const sel = S.room && document.querySelector(`#drawing polygon[data-room="${CSS.escape(S.room)}"]`); if (sel) sel.classList.add('sel');
+  say(`${m.decks.length} Deck · 실 ${cache.c.rooms.length} · 경계 ${b.boundaries.length} · 표기 ${m.decks.reduce((t, d) => t + d.walls.filter(w => w.label).length, 0)}`);
+ }
+
+ // ---------- events ----------
+ $('openBtn').onclick = () => $('fileIn').click();
+ $('fileIn').onchange = e => openFiles(e.target.files).catch(err => say(err.message, 'err')).finally(() => { e.target.value = ''; });
+ $('sampleBtn').onclick = () => { S.decks = []; S.user = {}; S.bounds = {};
+  SAMPLES.t3.decks.forEach(([name, z, dxf]) => { const d = deckFromDxf(dxf, name, z); d.file = 'T3 예제'; S.decks.push(d); });
+  S.below = SAMPLES.t3.lowestBelow; S.cur = S.decks[0].id; render(); say('T3 예제: 4 Deck', 'ok'); };
+ $('clearBtn').onclick = () => { if (S.decks.length && !confirm('열린 도면과 분류를 모두 비웁니다.')) return; Object.assign(S, { decks: [], user: {}, bounds: {}, cur: null, room: null }); render(); };
+ for (const [id, key, num] of [['ship', 'ship'], ['method', 'method'], ['below', 'below'], ['minLabel', 'minLabel', true]]) $(id).onchange = e => { S[key] = num ? +e.target.value : e.target.value; render(); };
+ for (const [id, key] of [['sprinkler', 'sprinkler'], ['showC', 'showC'], ['showOuter', 'showOuter']]) $(id).onchange = e => { S[key] = e.target.checked; render(); };
+ $('decks').addEventListener('change', e => { const t = e.target;
+  if (t.dataset.dname) { S.decks.find(d => d.id === t.dataset.dname).name = t.value; render(); }
+  if (t.dataset.dz) { S.decks.find(d => d.id === t.dataset.dz).z = +t.value || 0; render(); } });
+ $('decks').addEventListener('click', e => { const id = e.target.dataset.ddel; if (!id) return; S.decks = S.decks.filter(d => d.id !== id); if (S.cur === id) S.cur = null; render(); });
+ $('tabs').onclick = e => { const b = e.target.closest('[data-deck]'); if (b) { S.cur = b.dataset.deck; render(); } };
+ $('view').addEventListener('change', e => { const id = e.target.dataset.space; if (id === undefined) return; if (e.target.value) S.user[id] = e.target.value; else delete S.user[id]; S.room = id; render(); });
+ // a wall: its rating chosen by hand (every boundary piece of the run), or back to the table's
+ const GRADES = ['A-60', 'A-30', 'A-15', 'A-0', 'B-15', 'B-0', 'C', '*', '-'];
+ $('view').addEventListener('click', e => {
+  const room = e.target.closest('[data-room]'); if (room && room.tagName !== 'TR') { S.room = room.dataset.room; render(); document.querySelector(`tr[data-room="${CSS.escape(S.room)}"]`)?.scrollIntoView({ block: 'center' }); return; }
+  const run = e.target.closest('[data-run]'); if (!run) return;
+  const w = cache.m.decks.find(d => d.id === S.cur).walls[+run.dataset.run], menu = $('menu');
+  menu.innerHTML = `<div class="muted" style="padding:2px 10px">${esc(w.grade || '미정')} · ${(w.lengthMm / 1000).toFixed(1)} m</div>` + GRADES.map(g => `<button data-grade="${g}">${g}</button>`).join('') + `<button data-grade="">표대로 (자동)</button>`;
+  Object.assign(menu.style, { display: 'block', left: Math.min(e.clientX, innerWidth - 160) + 'px', top: Math.min(e.clientY, innerHeight - 330) + 'px' });
+  menu.onclick = ev => { const g = ev.target.dataset.grade; if (g === undefined) return; for (const id of w.ids) { if (g) S.bounds[id] = g; else delete S.bounds[id]; } menu.style.display = 'none'; render(); };
+  e.stopPropagation();
+ });
+ document.addEventListener('click', e => { if (!e.target.closest('#menu')) $('menu').style.display = 'none'; });
+
+ // ---------- outputs ----------
+ const stamp = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; };
+ const download = (name, data, type) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
+ $('dxfBtn').onclick = () => { const { m } = analysis(); download(`방화등급도-${stamp()}.dxf`, FP.toDxf(m), 'application/dxf'); say('DXF 저장: 등급별 레이어 FIRE_A60 …, 표기 FIRE_TEXT_*, 범주 FIRE_CAT', 'ok'); };
+ $('svgBtn').onclick = () => { const { m } = analysis(), d = m.decks.find(x => x.id === S.cur); download(`방화등급도-${d.name}-${stamp()}.svg`, FP.toSvg(m, d.id, { width: 1600 }), 'image/svg+xml'); };
+ $('saveBtn').onclick = () => download(`방화등급-작업-${stamp()}.json`, JSON.stringify({ format: 'solas-tool/1', savedAt: new Date().toISOString(), decks: S.decks, user: S.user, bounds: S.bounds,
+  settings: { ship: S.ship, method: S.method, sprinkler: S.sprinkler, below: S.below, showC: S.showC, showOuter: S.showOuter, minLabel: S.minLabel } }), 'application/json');
+ // print: every deck on a page of its own, with the legend (the browser saves it as PDF)
+ $('printBtn').onclick = () => {
+  const { m } = analysis(), w = open('', '_blank'); if (!w) { say('팝업이 막혀 인쇄 창을 열 수 없습니다', 'err'); return; }
+  w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>방화 등급도</title><style>@page{size:A4 landscape;margin:10mm}body{font:11px "Malgun Gothic",sans-serif;margin:0}figure{margin:0;break-after:page}figure:last-child{break-after:auto}figcaption{font-weight:600;font-size:13px;margin:0 0 4px}svg{width:100%;height:auto;max-height:165mm}.fp-legend,.fp-cats{display:flex;flex-wrap:wrap;gap:3px 12px;align-items:center}.fp-legend span,.fp-cats span{display:inline-flex;align-items:center;gap:4px}</style></head><body>`
+   + m.decks.slice().reverse().map(d => `<figure><figcaption>방화 등급도 — ${esc(d.name)} · Z ${esc(d.elevationMm)} mm · ${esc(m.shipLabel)} · 방화방식 ${esc(m.method)}</figcaption>${FP.legendHtml(m)}${FP.toSvg(m, d.id, { width: 1500 })}</figure>`).join('')
+   + `<p style="color:#666">SOLAS II-2/9 표 9.1~9.8에 따른 설계 보조 결과입니다. 최종 판단은 주관청·선급에 따릅니다.</p></body></html>`);
+  w.document.close(); setTimeout(() => w.print(), 300);
+ };
+ addEventListener('resize', () => { if (S.decks.length) render(); });
+ window.SOLAS_TOOL = { S, render, analysis, openFiles };   // for the tests
+ render();
+})();
+</script>
+</body>
+</html>

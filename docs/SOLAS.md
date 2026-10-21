@@ -85,6 +85,16 @@ PHG D SOLAS 적용 계획(`PHG/docs/PHG_D_SOLAS_APPLY_PLAN.md`, P1~P4)을 **HVAC
 - 출력: ⑤ 검토·출력의 **"방화 등급도"** 탭(Deck 선택, C급·외벽 표기, DXF 저장), 리본 출력 **"방화 등급도 DXF"**(R12, 모든 Deck 나란히, 오른쪽에 범례 — 선은 등급별 레이어 `FIRE_A60`·`FIRE_A0`·`FIRE_B0` …, 등급 글자는 `FIRE_TEXT_*`, 범주 `FIRE_CAT`, 바닥·천장 `FIRE_DECK_TEXT`, 관통 `FIRE_PEN*` — 레이어별로 켜고 끔), 보고서의 Deck별 "방화 등급도" 쪽, `hvac-run`의 `fire-plan.dxf`.
 - 시험: `test/fire-plan.test.cjs`(모델·줄 합치기·SVG·DXF), `test/e2e/fireplan.e2e.cjs`(화면). DXF는 ezdxf 감사 오류 0(R12).
 
+## 6b. 별도 프로그램 — SOLAS 방화 등급 표기 (2026-10-21)
+
+HVAC Grid 없이 쓰는 **HTML 파일 하나**(`dist/SOLAS_방화등급표기.html`, 약 220 KB). 독립망 PC에서 더블클릭으로 열고(`file://`), 인터넷·서버·설치가 필요 없다(외부 요청 0 — 시험으로 확인). 만들기: `npm run make:solas-tool`(`tools/make-solas-tool.cjs`가 `tools/solas-tool/app.html`에 `lib/`의 SOLAS 표·판정·DXF 실 읽기·방화 등급도를 넣음). 독립망 복사본(`make-offline`)에도 같이 들어감.
+
+- 입력: Deck마다 DXF 하나(벽 LINE이 만드는 면 또는 닫힌 폴리라인 + 실 번호·이름 글자 — `lib/dxf-in.cjs`; 벽 레이어 이름이 달라 실이 0개면 모든 LINE을 벽으로 다시 읽음; 글자는 UTF-8, 아니면 CP949), HVAC Grid 프로젝트·설계 데이터 JSON, 이 도구의 작업 파일, T3 예제(4 Deck DXF 내장).
+- 설정: 선종·방화방식·스프링클러·최하층 아래 공간, Deck 이름·높이 Z(쌓는 순서 — 갑판 경계가 여기서 정해짐).
+- 작업: 실은 이름으로 자동 분류, 표에서 SOLAS 공간을 바꿈(범주가 바로 바뀜). 벽(선이나 등급 글자)을 누르면 그 줄의 등급을 직접 지정·되돌리기. 확인할 경계 목록.
+- 출력: 방화 등급도 DXF(HVAC Grid와 같은 레이어), Deck별 SVG, 인쇄(모든 Deck 한 쪽씩, PDF 저장), 작업 저장(JSON).
+- 시험: `test/e2e/solas-tool.e2e.cjs` — `file://`로 열어 T3 예제(DXF에서 20·27·22·10실), 공간 변경, 벽 등급 지정, 선종 변경, DXF 저장, 디스크의 DXF 열기, 외부 요청 0·페이지 오류 0.
+
 ## 7. 검사하지 않는 것 (한계)
 
 - 주수직구역·수평구역(여객선), 위험물 화물, 실별 스프링클러 구분 — 설정이나 확인 표시로만.

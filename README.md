@@ -51,6 +51,7 @@ node tools/hvac-run.cjs <설계 데이터 또는 프로젝트.json> <출력 폴�
 node tools/dxf-check.cjs <도면.dxf> <설계 데이터.json> <deckId>     # 도면과 설계 데이터의 실 번호·이름·면적 대조
 node tools/box-extract.cjs <BOX 프로젝트.json> <출력.json>      # BOX → 설계 데이터
 # 방화 등급도: ⑤ 검토·출력 "방화 등급도" 탭 · 리본 출력 "방화 등급도 DXF" · 보고서 (docs/SOLAS.md 6a)
+npm run make:solas-tool      # 별도 프로그램 SOLAS 방화 등급 표기 → dist/SOLAS_방화등급표기.html (한 파일, 독립망에서 더블클릭, docs/SOLAS.md 6b)
 node tools/make-offline.cjs [폴더]                               # 독립망용 복사본: 실행에 필요한 파일 + runtime\node.exe + MANIFEST.json → dist/HVAC_Grid_offline (이 도구가 만든 폴더만 교체)
 node tools/offline-check.cjs [복사본 폴더]                        # 복사본 인수 시험: MANIFEST 해시 + 자체 서버로 S5·T3 예제 (독립망 PC에서도)
 node tools/bench.cjs [Deck 수] [Deck당 실 수]                     # 대형선 처리 시간 (합성 선박)
