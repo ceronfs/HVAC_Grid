@@ -115,6 +115,9 @@ HVACGridProject {
 | 기관실 경계는 43/5 °C 유지(검토 보고서의 45 °C 권고 따르지 않음) | 5.2.2는 표 1의 ΔT(18/17 K)를 쓰라고 함 — 25 °C 실 + 18 K = 43 °C. 45 °C는 27 °C 실을 전제한 값 | `tools/make-test-ship.cjs` casing, `tools/t3-box-lines.cjs` |
 | 난방 풍량은 거주구역만(제어실·조타실·기관·비공조 공간 제외) | C.3.1·D.3.1 별도 난방, 1장 범위(거주구역) | `SEPARATE_HEATING` (`lib/contract.cjs`) |
 | 표 1 인접 ΔT·창 +200 mm·일사 지붕 + 벽은 BOX 사본을 고치지 않고 권고(O·P·J) | BOX 계산 구조를 바꾸는 일 — 원본 개발 중. T3는 입력(급기 없는 실 온도)으로 맞출 수 있는 만큼 맞춤 | `docs/VENDOR_PATCHES.md` |
+| BOX 계산 방식도 ISO 7547:2022로 (2026-10-21, 사용자 지시 "모두 수정"): 사본 패치 J·O~U. 이전에 저장한 프로젝트는 이전 방식(새 설정이 없으면), 새 프로젝트는 ISO 기본; BOX 예제 S5·H5는 명시한 일사 정책 유지 | 원본 개발자의 기존 결과를 바꾸지 않으면서 새 설계는 표준대로. 화면 계산과 XLSX 수식을 함께 고치고 Excel 재계산으로 확인 | `docs/VENDOR_PATCHES.md` |
+| 통합 프로젝트 파일에 BOX 도면(BOX 자신의 JSON)도 저장 (F05) | 한 파일로 ①~⑤ 복원. BOX의 "JSON 저장"을 그대로 써서 BOX 형식이 바뀌어도 맞음 | `PJ.make box`, `app/bridge.js projectJson` |
+| 수평 덕트 방화댐퍼 손실은 그 Deck 계획의 모든 댐퍼 합을 여유로 (A05) | PHG D가 최대 손실 경로를 알려 주지 않음 — 보수적, 따로 표시 | `lib/project.cjs` deckDamperPa |
 | 실별 신기 부족(ROOM_OA)은 검사로 두고 구역 신기를 자동으로 올리지 않음 | 가장 불리한 실에 맞추면 T3 AHU-ACC 신기 47 % — 설계자 결정 | `lib/project.cjs` ROOM_OA |
 
 ### H5 남은 것

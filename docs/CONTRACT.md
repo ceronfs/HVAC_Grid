@@ -37,8 +37,11 @@ BOX CAL이 계산한 격실·부하를 PHG D가 쓸 수 있는 형태로 옮기�
   contract,                                  // 위 설계 데이터 (사용자 지정 포함)
   projects: { [planKey]: '<PHG D 프로젝트 JSON 문자열>' },
   results:  { [planKey]: { rus, flowCmh, ducts, lengthM, indexPa, auto, unconnected, seconds, sig, at, ... } },
-  geometry: { [planKey]: { root, rus, ducts:[{ displayName, type, widthMm, heightMm, diameterMm, flowCmh, points }] } } }   // PHG D 좌표(y 아래)
+  geometry: { [planKey]: { root, rus, ducts:[{ displayName, type, widthMm, heightMm, diameterMm, flowCmh, points }] } },   // PHG D 좌표(y 아래)
+  box?:     { format: 'BOX JSON', json: '<BOX 프로젝트 JSON 문자열>', roomIds: [...] } }   // 2026-10-21 F05
 ```
+
+`box`는 저장할 때 BOX가 도면을 갖고 있으면 BOX 자신의 "JSON 저장"으로 만든 프로젝트(도면·Deck·격실 데이터·CAL 설정·배경)와 그 격실 ID다. 프로젝트를 열면 BOX(①②)에도 다시 열리고, 격실이 설계 데이터와 다르면 알린다. 64 MB 넘으면 읽지 않음(자르지 않음).
 
 - `sig`: 결과를 만든 계획(Root·RU 위치·풍량·흐름 방향)의 서명. 풍량 규칙·공조기 위치·공조기 Deck이 바뀌면 서명이 달라져 **그 계획만** "다시 보내기 필요"가 됩니다.
 - 읽기(`read`): `/0` 파일은 같은 구조로 읽되 서명이 없어 모든 결과가 "다시 보내기 필요", 설계 데이터 검사 실패는 거부, 지금 계획에 없는 키의 결과는 버림(보고). 풍량·구역 수지·계통 합계는 파일 값을 믿지 않고 지금 규칙으로 다시 계산합니다(다르면 보고). 좌표는 원점에서 ±1,000 m 안(mm)이어야 합니다.

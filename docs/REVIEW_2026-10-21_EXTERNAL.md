@@ -66,7 +66,22 @@
 
 고치지 않고 결정으로 남긴 것: F05(통합 파일에 BOX 원본 포함 여부 — 지금은 설계 데이터·PHG 결과·형상만 저장하는 설계), F09(BOX 일사 규칙, VENDOR_PATCHES J), F11(hvac-run 종료 코드 — 필요하면 `--strict`), A05(수평 방화댐퍼 손실 여유), A06(BOX 권고 O~U), A04·A08(성능 측정·독립망 현장 시험 계획). `package-lock.json`(A07 일부)은 런타임 의존성이 없고 개발용 playwright-core 하나라 이번에 넣지 않음.
 
-## 5. 고칠 순서 (권고, 조치 전 작성)
+## 5. 조치 내역 2 — 나머지 전부 (2026-10-21, 사용자 지시 "zip 파일 외 모두 수정")
+
+| # | 고친 곳 | 내용 | 시험 |
+|---|---|---|---|
+| F05 | `lib/project.cjs` make·read, `app/bridge.js` projectJson·roomIds, `app/shell.js` 저장·열기 | 통합 프로젝트 파일에 **BOX 프로젝트(BOX 자신의 "JSON 저장" 결과)와 그 격실 ID**를 함께 저장. 열면 BOX(①②)에도 다시 열리고, 격실이 설계 데이터와 다르면 상태 줄에 알림. BOX 도면이 없는 파일인데 BOX 화면에 다른 도면이 있으면 그것도 알림 | `test/e2e/project-box.e2e.cjs`: T3 저장(1.5 MB BOX JSON 포함) → S5로 바꿈 → 다시 열기 → BOX 79실 = 설계 데이터 |
+| F09 | BOX 사본 패치 J | 일사 "노출 상부 갑판 + 최대 외벽"(ISO 7547 5.3) 추가·새 프로젝트 기본 | vendor E2E, Excel 수식 검증 |
+| F11 | `tools/hvac-run.cjs` | `--strict`: 검토 실패가 있으면 종료 코드 3 (기본 동작은 그대로) | 명령 설명·사용법 |
+| A04 | `tools/bench.cjs`, `lib/contract.cjs` zoneBalance | 합성 대형선으로 측정: 515실 각 단계 0.3 s 이하, 2,030실 분석 2 s·규칙 적용 0.8 s·저장 8 ms. 측정에서 **L-05 수정의 성능 결함** 발견 — 실별 신기 제안이 배 전체 수지를 단계마다 다시 계산해 2,030실·부족 10실에서 검사 99 s → 그 구역만 다시 계산(`zoneBalance`)해 79 ms | `test/bench.test.cjs` |
+| A05 | `lib/project.cjs`, `lib/risers.cjs`, 보고서·화면·계통도 | 수평 덕트 방화댐퍼: 그 Deck 계획의 댐퍼마다 K 0.3 × 동압을 더함(경로를 몰라 모두 — 보수적), "방화댐퍼 여유"로 따로 표시. T3 옛 결과로 Deck당 10~22 Pa | `test/review-logic-p3.test.cjs` A05 |
+| A06 | BOX 사본 패치 O·P·Q·R·S·T·U | 표 1 실 온도, 창 전도 +200 mm, Gs 350, 탱크 경계, 활동도, 외기 잠열 기본, 주광 조명 | BOX 자체 시험 126/126·CAL 110/110, Excel로 T3 18,399개·H5(수선) 1,552개 수식 차이 0 |
+| A07 | `package-lock.json` | 잠금 파일 추가(개발용 playwright-core 1.64.1) | — |
+| A08 | `tools/offline-check.cjs` | 복사본 인수 시험: MANIFEST 해시 전부 + 복사본 자체 서버로 S5·T3 예제·설계 데이터, 페이지·HTTP 오류 0. 독립망 PC에서도 `runtime\node.exe tools\offline-check.cjs .`(브라우저 시험은 소스의 도구가 있을 때) | 다시 빌드한 dist로 실행(아래) |
+
+함께 고친 것: BOX 자체 시험이 패치 M 뒤 1건 실패(옛 27/50 기대) — 25/55로, vendor E2E가 BOX 자체 시험을 매번 돌림. 남은 것: 없음(zip 제외).
+
+## 6. 고칠 순서 (권고, 조치 전 작성)
 
 1. `tools/make-offline.cjs`: F01(파일·fetch 자체 검사) + F10(삭제 보호) + A07(MANIFEST) → 배포본 다시 빌드(F02), 독립망 T3 예제 한 번 확인(A08)
 2. `lib/contract.cjs`·`lib/project.cjs`: F04(계통 목록 재생성), F03(부하 수치 검사) — S5·T3 합계는 그대로여야 함

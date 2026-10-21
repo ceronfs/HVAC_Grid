@@ -53,7 +53,7 @@ const USE = {
  // galley: own supply fan and exhaust (II-2/9.7.2.1, 9.7.5), exhaust > supply (the rest comes as transfer air); 50 ACH in
  // v2.3-2.4 (window sun and the safety factor raised its supply past 45 ACH), 48 from v2.5 - the make-up air through the
  // corridor door stays under a 0.05 m² grille (II-2/9.4.2) now that the daylit galley carries no lighting load
- galley: { sup: 'SF-GAL', exh: 'EF-GAL', ceilingHeight: 2400, minimumAch: 48, people: 3, equipW: 9000, lighting: 0, windowArea: 1.2 },
+ galley: { sup: 'SF-GAL', exh: 'EF-GAL', ceilingHeight: 2400, minimumAch: 48, people: 3, activity: 'light', equipW: 9000, lighting: 0, windowArea: 1.2 },
  laundry: { sup: 'AHU-ACC', exh: 'EF-LAU', minimumAch: 45, equipW: 2000 },   // 45 ACH since v2.4 (warmer neighbours raised its supply)
  changing: { sup: 'AHU-ACC', exh: 'EF-SAN', minimumAch: 10 },
  // CO2 room and battery room: each its own exhaust (FSS Code 5, class rules)
@@ -161,11 +161,14 @@ function boxProject(template) {
  }
  const deckTpl = template.source.decks[0];
  // fresh-air latent load from the psychrometric (humidity) model of BOX, not the fixed 7.5 W per CMH (about a third low)
- // and the project's indoor summer condition at ISO 7547 4.2 b) (S5 carries 27 °C / 50 %; v2.5)
- const settings = { ...template.settings, designConditions: { ...template.settings.designConditions, latentModel: 'humidity', indoorCoolTemp: 25, indoorCoolRh: 55 } };
+ // and the project's indoor summer condition at ISO 7547 4.2 b) (S5 carries 27 °C / 50 %; v2.5); from v2.6 the solar
+ // rule of 5.3 (the exposed deck and the best wall - BOX vendor patch J; S5 keeps BOX's max-wall-or-roof) and 5.5's
+ // daylight rule (patch U) set on the project
+ const settings = { ...template.settings, designConditions: { ...template.settings.designConditions, latentModel: 'humidity', indoorCoolTemp: 25, indoorCoolRh: 55,
+  solarFaceMode: 'roof-plus-max-wall', solarPolicySource: 'explicit', daylightLighting: 'ignore' } };
  return { ...template, settings, source: { ...template.source, entities: ents, decks: DECKS.map(d => ({ ...deckTpl, id: d.id, name: d.name, z: d.z, height: HEIGHT })), backgrounds: [] },
   view: { ...template.view, activeDeck: 'D1', hidden: [], hiddenRooms: [], hiddenDeckLayers: [] },
-  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.5', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
+  extensions: { format: 'CAD-2', selected: [], t3: { id: 'HVAC-GRID-T3-v2.6', note: 'HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.' } } };
 }
 
 // ---------- general arrangement DXF ----------

@@ -4,6 +4,7 @@
 //   B  CAL left open on one drawing loads again when BOX's CAL button is pressed on the next
 //   M  CAL's indoor summer default is ISO 7547:2022 4.2 b) 25 °C / 55 %
 //   N  CAL's AHU heating supply limit is 22 K above the room (6.3)
+//   J O P Q R S T U  ISO 7547:2022 in CAL's load calculation (docs/VENDOR_PATCHES.md); BOX's own self tests pass
 'use strict';
 const path = require('path'), assert = require('node:assert/strict');
 const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs');
@@ -54,6 +55,29 @@ const dxf = () => {
   assert.match(frame, /key: "indoorCoolRh", label: "[^"]+", unit: "%", value: 55,/, 'patch M: 55 %');
   assert.match(frame, /const limitRise = 22;/, 'patch N: 22 K'); assert.ok(!frame.includes('실온 +23°C') && !frame.includes('실온+23°C'), 'patch N: no 23 K label left');
   log('M N frame defaults 25 °C / 55 %, heating limit 22 K');
+  // J O P Q R S T U (ISO 7547:2022 in the load calculation; their effect on T3 is checked by the T3 run against
+  // samples/t3.contract.json)
+  for (const [id, text] of [
+   ['J', 'key: "solarFaceMode", type: "select", label: "일사 외벽 선택 방식", unit: "", value: "roof-plus-max-wall"'],
+   ['J', "solarSelectedKind=mode==='legacy-all'?'all':both?"], ['J', 'IF(AND($I$29=\\"roof-plus-max-wall\\",E${r}=\\"상\\"),1,'],
+   ['O', 'if (/보일러실/.test(name)) return table1(28, 17, 60, 50);'], ['O', 'if (/복도|계단실/.test(name)) return table1(2, 5, 55, 45);'],
+   ['P', 'frameRequestedM2=requestedAreaM2>0?(Math.max(0,n(room.windowWidthMm))+200)/1000*(Math.max(0,n(room.windowHeightMm))+200)/1000'],
+   ['P', "netArea=Math.max(0,n(face.area)-ownedFrameArea)"], ['P', "for(let r=63;r<=Math.max(65,sheet.rows.length);r++)for(let c=18;c<25;c++){"],
+   ['Q', "windowSolarWm2:clear?350:auto?240:manualCoefficient"], ['R', 'TANK: Object.freeze({ coolingTemp: 38, heatingTemp: 5 })'],
+   ['S', "function activityHeat(room){return room?.activity==='light'?{sensible:85,latent:150"],
+   ['T', 'key: "latentModel", type: "select", label: "신기 잠열 계산 방식", unit: "", value: "humidity"'], ['T', "latentModel:Object.hasOwn(source,'latentModel')?source.latentModel:'fixed'"],
+   ['U', 'lightingW = lightingDaylight ? 0 : r.floor * r.lighting'], ['U', "daylightLighting:Object.hasOwn(source,'daylightLighting')?source.daylightLighting:'include'"]])
+   assert.ok(frame.includes(text.replace(/\\"/g, '"')), `patch ${id}: ${text.slice(0, 60)}`);
+  log('J O P Q R S T U in the CAL frame');
+
+  // BOX's own self tests on the patched copy: the host's end-to-end (H5, S5, loads, CAL) and CAL's unit tests - every
+  // patch must keep them passing (they are BOX's guard on its own calculation)
+  const host = await H(async () => { HVACGrid.box.win.unsavedChanges = false; try { return await HVACGrid.box.win.CAD_APP.selfTest(); } catch (e) { return { ok: false, failures: [e.message] }; } });
+  log('BOX selfTest', `${host.passed}/${host.total}`, host.failures?.slice(0, 3));
+  assert.equal(host.ok, true, 'BOX host self test: ' + (host.failures || []).join(' / '));
+  const unit = await H(() => [...HVACGrid.box.doc.querySelectorAll('iframe')].map(f => f.contentWindow).find(w => w?.CAL_ENHANCE)?.CAL_ENHANCE.unitSelfTest());
+  log('CAL unit selfTest', `${unit.passed}/${unit.total}`, unit.failures?.slice(0, 3));
+  assert.equal(unit.ok, true, 'CAL unit self test: ' + (unit.failures || []).join(' / '));
 
   log('page errors', errors.length, errors.slice(0, 3)); assert.equal(errors.length, 0);
   log('E2E VENDOR PASS');

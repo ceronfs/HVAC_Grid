@@ -4632,7 +4632,8 @@
      "equipW": 9000,
      "minimumAch": 48,
      "isoClass": "AC",
-     "ceilingHeight": 2400
+     "ceilingHeight": 2400,
+     "activity": "light"
     }
    ],
    [
@@ -4958,10 +4959,12 @@
      "heatingTemp": 10
     }
    },
-   "solarFaceMode": "max-wall-or-roof",
+   "solarFaceMode": "roof-plus-max-wall",
    "solarFaceModeSource": "S5 synthetic project policy: compare the best combined opaque-wall + owned-window gain against exposed top-roof gain; apply only the larger. Not full ISO 7547 conformity.",
    "indoorCoolTemp": 25,
-   "indoorCoolRh": 55
+   "indoorCoolRh": 55,
+   "solarPolicySource": "explicit",
+   "daylightLighting": "ignore"
   },
   "systemFreshAir": {},
   "iso7547K": true,
@@ -5077,7 +5080,7 @@
   "format": "CAD-2",
   "selected": [],
   "t3": {
-   "id": "HVAC-GRID-T3-v2.5",
+   "id": "HVAC-GRID-T3-v2.6",
    "note": "HVAC Grid synthetic test ship (cargo ship accommodation, 4 decks). Not a real design.",
    "drawing": "LINE walls + TEXT number/name; room data in overrides.roomOverrides by BOX room id"
   }

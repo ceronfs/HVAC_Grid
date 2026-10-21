@@ -8,7 +8,7 @@
  },
  "BOX_CAL_Enhance.html": {
   "from": "C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html",
-  "sha256_16": "991d51c92372261d",
+  "sha256_16": "4eb711a3aa198522",
   "commit": "CAL_Enhance 32976f8",
   "copied": "2026-10-18",
   "sha256_16_original": "bd942611477ddfe5",
@@ -28,7 +28,7 @@
    {
     "id": "M",
     "date": "2026-10-21",
-    "what": "CAL design conditions: indoor summer default 25 °C / 55 % (ISO 7547:2022 4.2 b; was 27 / 50, the 2002 value under the \"4.2\" label)",
+    "what": "CAL design conditions: indoor summer default 25 °C / 55 % (ISO 7547:2022 4.2 b; was 27 / 50, the 2002 value under the \"4.2\" label); BOX's own self test expects 25 / 55 % for rooms without a use (2026-10-21)",
     "test": "test/e2e/vendor.e2e.cjs"
    },
    {
@@ -36,6 +36,54 @@
     "date": "2026-10-21",
     "what": "CAL AHU heating: supply at most 22 K above the room (ISO 7547:2022 6.3; was 23) and its three labels",
     "test": "test/e2e/vendor.e2e.cjs"
+   },
+   {
+    "id": "J",
+    "date": "2026-10-21",
+    "what": "CAL solar face mode roof-plus-max-wall (ISO 7547:2022 5.3: the exposed deck and the best wall) - the default of new projects, in the calculation, the room popup and the workbook formulas",
+    "test": "test/e2e/vendor.e2e.cjs (static checks, BOX host self test 126/126, CAL unit self test 110/110); load workbook formulas checked in Excel"
+   },
+   {
+    "id": "O",
+    "date": "2026-10-21",
+    "what": "CAL room-use temperatures of non-air-conditioned spaces from ISO 7547 Table 1 against the project indoor condition (boiler +28/-17, engine +18/-17, laundry +11/-17, public sanitary +6/0, private +2/0, alleyways / stores / equipment / trunks +2/-5 K)",
+    "test": "test/e2e/vendor.e2e.cjs (static checks, BOX host self test 126/126, CAL unit self test 110/110); load workbook formulas checked in Excel"
+   },
+   {
+    "id": "P",
+    "date": "2026-10-21",
+    "what": "CAL window conduction on glazing + 200 mm, taken off the wall (ISO 7547 5.2.1, Figures 1-2); solar on the glass - calculation, workbook (column Y, E35, I41) and its layout map; BOX S5 load golden values updated",
+    "test": "test/e2e/vendor.e2e.cjs (static checks, BOX host self test 126/126, CAL unit self test 110/110); load workbook formulas checked in Excel"
+   },
+   {
+    "id": "Q",
+    "date": "2026-10-21",
+    "what": "CAL window solar auto-clear: clear glass without shading Gs 350 W/m2 (ISO 7547 5.3) beside the 240 W/m2 preset",
+    "test": "test/e2e/vendor.e2e.cjs (static checks, BOX host self test 126/126, CAL unit self test 110/110); load workbook formulas checked in Excel"
+   },
+   {
+    "id": "R",
+    "date": "2026-10-21",
+    "what": "CAL TANK boundary 38 / 5 C and K 0.8 (Table 1 #4, Table 2 #2; was 35 / -20 C on a bare plate K 7.9); NON_AC preset 38 / 5 C",
+    "test": "test/e2e/vendor.e2e.cjs (static checks, BOX host self test 126/126, CAL unit self test 110/110); load workbook formulas checked in Excel"
+   },
+   {
+    "id": "S",
+    "date": "2026-10-21",
+    "what": "CAL room activity: light work 85 / 150 W a person (ISO 7547 Table 4) beside the project seated values; room popup, calculation, workbook",
+    "test": "test/e2e/vendor.e2e.cjs (static checks, BOX host self test 126/126, CAL unit self test 110/110); load workbook formulas checked in Excel"
+   },
+   {
+    "id": "T",
+    "date": "2026-10-21",
+    "what": "CAL fresh-air latent default: psychrometric model (fixed 7.5 W/CMH is about 37 % low); projects saved without the setting keep the fixed coefficient",
+    "test": "test/e2e/vendor.e2e.cjs (static checks, BOX host self test 126/126, CAL unit self test 110/110); load workbook formulas checked in Excel"
+   },
+   {
+    "id": "U",
+    "date": "2026-10-21",
+    "what": "CAL daylight lighting: no lighting gain in a room with a window or in the wheelhouse (ISO 7547 5.5, D.3.3) - default of new projects; projects saved without the setting keep their lighting",
+    "test": "test/e2e/vendor.e2e.cjs (static checks, BOX host self test 126/126, CAL unit self test 110/110); load workbook formulas checked in Excel"
    }
   ],
   "patchDoc": "docs/VENDOR_PATCHES.md"

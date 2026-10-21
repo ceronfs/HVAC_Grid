@@ -5,7 +5,7 @@
  "source": {
   "app": "BOX CAL Enhance",
   "file": "vendor/BOX_CAL_Enhance.html",
-  "sha256": "991d51c92372261d",
+  "sha256": "4eb711a3aa198522",
   "project": "built-in S5 example",
   "path": null
  },
@@ -38,6 +38,7 @@
   "internalK": 0.9,
   "peopleSensibleW": 70,
   "peopleLatentW": 50,
+  "daylightLighting": "include",
   "latentModel": "fixed",
   "ventLatentWPerCmh": 7.5,
   "freshAirCmhPerPerson": 28.8,
@@ -3651,10 +3652,10 @@
  ],
  "loads": {
   "S5_E094": {
-   "coolingSensibleW": 2804.2312,
+   "coolingSensibleW": 2810.17744,
    "coolingLatentW": 250,
-   "coolingW": 3359.6543200000006,
-   "heatingW": 774.1087200000001,
+   "coolingW": 3366.195184,
+   "heatingW": 821.0996640000001,
    "minFreshAirCmh": 144,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3882,10 +3883,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E071": {
-   "coolingSensibleW": 746.7266666666667,
+   "coolingSensibleW": 752.8066666666667,
    "coolingLatentW": 200,
-   "coolingW": 1041.3993333333335,
-   "heatingW": 699.0060000000002,
+   "coolingW": 1048.0873333333334,
+   "heatingW": 747.0540000000002,
    "minFreshAirCmh": 115.2,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3904,10 +3905,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E073": {
-   "coolingSensibleW": 582.0266666666666,
+   "coolingSensibleW": 588.1066666666667,
    "coolingLatentW": 200,
-   "coolingW": 860.2293333333333,
-   "heatingW": 262.4160000000001,
+   "coolingW": 866.9173333333334,
+   "heatingW": 310.4640000000001,
    "minFreshAirCmh": 115.2,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3915,10 +3916,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E074": {
-   "coolingSensibleW": 311.2,
+   "coolingSensibleW": 316.672,
    "coolingLatentW": 50,
-   "coolingW": 397.32,
-   "heatingW": 221.76000000000005,
+   "coolingW": 403.33920000000006,
+   "heatingW": 265.00320000000005,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3926,10 +3927,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E075": {
-   "coolingSensibleW": 320.9866666666667,
+   "coolingSensibleW": 326.45866666666666,
    "coolingLatentW": 50,
-   "coolingW": 408.0853333333334,
-   "heatingW": 238.392,
+   "coolingW": 414.10453333333334,
+   "heatingW": 281.6352,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3937,10 +3938,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E076": {
-   "coolingSensibleW": 311.2,
+   "coolingSensibleW": 316.672,
    "coolingLatentW": 50,
-   "coolingW": 397.32,
-   "heatingW": 221.76000000000005,
+   "coolingW": 403.33920000000006,
+   "heatingW": 265.00320000000005,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3948,10 +3949,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E077": {
-   "coolingSensibleW": 320.9866666666667,
+   "coolingSensibleW": 326.45866666666666,
    "coolingLatentW": 50,
-   "coolingW": 408.0853333333334,
-   "heatingW": 238.392,
+   "coolingW": 414.10453333333334,
+   "heatingW": 281.6352,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3959,10 +3960,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E078": {
-   "coolingSensibleW": 311.2,
+   "coolingSensibleW": 316.672,
    "coolingLatentW": 50,
-   "coolingW": 397.32,
-   "heatingW": 221.76000000000005,
+   "coolingW": 403.33920000000006,
+   "heatingW": 265.00320000000005,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3981,10 +3982,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E080": {
-   "coolingSensibleW": 320.9866666666667,
+   "coolingSensibleW": 326.45866666666666,
    "coolingLatentW": 50,
-   "coolingW": 408.0853333333334,
-   "heatingW": 238.392,
+   "coolingW": 414.10453333333334,
+   "heatingW": 281.6352,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -3992,10 +3993,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E081": {
-   "coolingSensibleW": 311.2,
+   "coolingSensibleW": 316.672,
    "coolingLatentW": 50,
-   "coolingW": 397.32,
-   "heatingW": 221.76000000000005,
+   "coolingW": 403.33920000000006,
+   "heatingW": 265.00320000000005,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4091,10 +4092,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E051": {
-   "coolingSensibleW": 492.52,
+   "coolingSensibleW": 497.992,
    "coolingLatentW": 50,
-   "coolingW": 596.772,
-   "heatingW": 695.7720000000002,
+   "coolingW": 602.7912,
+   "heatingW": 739.0152,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4113,10 +4114,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E053": {
-   "coolingSensibleW": 333.22,
+   "coolingSensibleW": 338.692,
    "coolingLatentW": 50,
-   "coolingW": 421.5420000000001,
-   "heatingW": 259.182,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4124,10 +4125,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E054": {
-   "coolingSensibleW": 333.22,
+   "coolingSensibleW": 338.692,
    "coolingLatentW": 50,
-   "coolingW": 421.5420000000001,
-   "heatingW": 259.182,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4135,10 +4136,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E055": {
-   "coolingSensibleW": 333.22,
+   "coolingSensibleW": 338.692,
    "coolingLatentW": 50,
-   "coolingW": 421.5420000000001,
-   "heatingW": 259.182,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4146,10 +4147,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E056": {
-   "coolingSensibleW": 333.22,
+   "coolingSensibleW": 338.692,
    "coolingLatentW": 50,
-   "coolingW": 421.5420000000001,
-   "heatingW": 259.182,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4157,10 +4158,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E057": {
-   "coolingSensibleW": 333.22,
+   "coolingSensibleW": 338.692,
    "coolingLatentW": 50,
-   "coolingW": 421.5420000000001,
-   "heatingW": 259.182,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4179,10 +4180,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E059": {
-   "coolingSensibleW": 333.22,
+   "coolingSensibleW": 338.692,
    "coolingLatentW": 50,
-   "coolingW": 421.5420000000001,
-   "heatingW": 259.182,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4190,10 +4191,10 @@
    "status": "완료 · 흘수선 미검증"
   },
   "S5_E060": {
-   "coolingSensibleW": 333.22,
+   "coolingSensibleW": 338.692,
    "coolingLatentW": 50,
-   "coolingW": 421.5420000000001,
-   "heatingW": 259.182,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
    "minFreshAirCmh": 28.8,
    "minAch": 0,
    "achAirCmh": 0,
@@ -4743,7 +4744,7 @@
     "S5_E066",
     "S5_E009"
    ],
-   "designCmh": 5780
+   "designCmh": 5830
   },
   {
    "id": "AHU-AC-01",
@@ -4761,7 +4762,7 @@
     "S5_E065",
     "S5_E066"
    ],
-   "designCmh": 860
+   "designCmh": 880
   },
   {
    "id": "AHU-AC-02",
@@ -4779,7 +4780,7 @@
     "S5_E057",
     "S5_E058"
    ],
-   "designCmh": 880
+   "designCmh": 930
   },
   {
    "id": "AHU-BRG-01",
@@ -5426,7 +5427,7 @@
   "S5_E051": {
    "supplyCmh": 170,
    "exhaustCmh": 0,
-   "returnCmh": 160,
+   "returnCmh": 150,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -5448,9 +5449,9 @@
    "makeupCmh": 0
   },
   "S5_E053": {
-   "supplyCmh": 110,
+   "supplyCmh": 120,
    "exhaustCmh": 0,
-   "returnCmh": 100,
+   "returnCmh": 110,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -5460,9 +5461,9 @@
    "makeupCmh": 0
   },
   "S5_E054": {
-   "supplyCmh": 110,
+   "supplyCmh": 120,
    "exhaustCmh": 0,
-   "returnCmh": 100,
+   "returnCmh": 110,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -5472,9 +5473,9 @@
    "makeupCmh": 0
   },
   "S5_E055": {
-   "supplyCmh": 110,
+   "supplyCmh": 120,
    "exhaustCmh": 0,
-   "returnCmh": 100,
+   "returnCmh": 110,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -5484,9 +5485,9 @@
    "makeupCmh": 0
   },
   "S5_E056": {
-   "supplyCmh": 110,
+   "supplyCmh": 120,
    "exhaustCmh": 0,
-   "returnCmh": 100,
+   "returnCmh": 110,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -5496,7 +5497,7 @@
    "makeupCmh": 0
   },
   "S5_E057": {
-   "supplyCmh": 110,
+   "supplyCmh": 120,
    "exhaustCmh": 0,
    "returnCmh": 100,
    "freshAirCmh": 28.8,
@@ -5520,9 +5521,9 @@
    "makeupCmh": 0
   },
   "S5_E059": {
-   "supplyCmh": 110,
+   "supplyCmh": 120,
    "exhaustCmh": 0,
-   "returnCmh": 110,
+   "returnCmh": 120,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -5532,9 +5533,9 @@
    "makeupCmh": 0
   },
   "S5_E060": {
-   "supplyCmh": 110,
+   "supplyCmh": 120,
    "exhaustCmh": 0,
-   "returnCmh": 110,
+   "returnCmh": 120,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -6086,14 +6087,14 @@
     "S5_E066"
    ],
    "transferRoomIds": [],
-   "saCmh": 860,
+   "saCmh": 880,
    "eaCmh": 320,
    "minOaCmh": 317,
    "oaCmh": 340,
-   "raCmh": 520,
+   "raCmh": 540,
    "recirculating": true,
    "oaNeedCmh": 336,
-   "oaPct": 39.5,
+   "oaPct": 38.6,
    "pressurizationCmh": 20,
    "ok": true
   },
@@ -6110,15 +6111,15 @@
     "S5_E058"
    ],
    "transferRoomIds": [],
-   "saCmh": 880,
+   "saCmh": 930,
    "eaCmh": 0,
    "minOaCmh": 173,
-   "oaCmh": 220,
-   "raCmh": 660,
+   "oaCmh": 240,
+   "raCmh": 690,
    "recirculating": true,
-   "oaNeedCmh": 220,
-   "oaPct": 25,
-   "pressurizationCmh": 220,
+   "oaNeedCmh": 233,
+   "oaPct": 25.8,
+   "pressurizationCmh": 240,
    "ok": true
   },
   {
