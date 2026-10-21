@@ -158,7 +158,9 @@
   const keys = new Set(plans().map(p => p.key)), gone = Object.keys(S.results).filter(k => !keys.has(k));
   for (const k of gone) { delete S.results[k]; delete S.projects[k]; delete S.geometry[k]; } if (gone.includes(S.active)) S.active = null;
   const sup = S.contract.systems.filter(s => s.kind === 'supply'), stale = Object.keys(S.results).filter(k => result(k)?.stale).length;
-  say(`설계 데이터 만듦: Deck ${S.contract.decks.length} · 격실 ${S.contract.rooms.length} · 계통 ${S.contract.systems.length} (급기 ${sup.length}) · 급기 ${fmt(sup.reduce((t, s) => t + s.designCmh, 0))} CMH${Object.keys(S.results).length ? ` · PHG D 결과 유지, 다시 보내기 ${stale}` : ''}`);
+  // SOLAS choices whose room or wall is not in the new drawing (G-3): said here, and kept on the 검토 tab
+  const lost = old?.solas ? SO.staleSettings(S.contract) : { rooms: [], bounds: [] }, lostN = lost.rooms.length + lost.bounds.length;
+  say(`설계 데이터 만듦: Deck ${S.contract.decks.length} · 격실 ${S.contract.rooms.length} · 계통 ${S.contract.systems.length} (급기 ${sup.length}) · 급기 ${fmt(sup.reduce((t, s) => t + s.designCmh, 0))} CMH${Object.keys(S.results).length ? ` · PHG D 결과 유지, 다시 보내기 ${stale}` : ''}${lostN ? ` · SOLAS 지정 ${lostN}건이 새 도면과 맞지 않음(실 ${lost.rooms.length} · 경계 ${lost.bounds.length}) — 검토 탭 참고` : ''}`);
   if (!S.contract.systems.length) toast('계통이 하나도 없습니다 — ② 격실 입력에서 실마다 SUP·EXH·RET 계통을 넣고 설계 데이터를 다시 만드세요', true);
   followBoxDeck(); S.step = 'air';
  }
@@ -412,7 +414,12 @@
    if ((await h.queryPermission({ mode: 'readwrite' })) !== 'granted' && (await h.requestPermission({ mode: 'readwrite' })) !== 'granted') throw new Error(`${h.name}: 파일 권한이 없습니다`);
    f = await h.getFile();
   } else f = await pickFile('.json');
-  await loadProject(JSON.parse(await f.text()), f.name, h);
+  await loadProject(parseJson(await f.text(), f.name), f.name, h);
+ }
+ // a file that is not JSON: its name and the reason in Korean, not the parser's English (review 2026-10-21 G-2)
+ function parseJson(text, name) {
+  try { return JSON.parse(text.replace(/^﻿/, '')); }
+  catch (e) { throw new Error(`${name}: JSON 형식이 아닙니다 — HVAC Grid 프로젝트·설계 데이터 파일이 아니거나 손상됨 (${e.message})`); }
  }
  // a project (or design data) read from a file: the design data, the PHG D work and the BOX drawing it carries
  async function loadProject(data, name, h = null) {
@@ -1004,7 +1011,7 @@
  };
  document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) || ((e.ctrlKey || e.metaKey) && /^[so]$/i.test(e.key)) || ((e.ctrlKey || e.metaKey) && /^[zy]$/i.test(e.key) && !frameOnScreen()) || e.key === 'F1' ? onKey(e) : false;
  window.addEventListener('resize', () => { if (S.step === 'air' && S.contract) plan(); });
- window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, newStart: () => act(null, newStart), undo: () => act(null, undoShell), redo: () => act(null, redoShell), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act('RU 옮기고 다시 AUTO', () => moveRu(k, id, p)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, loadProject, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
+ window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, parseJson, newStart: () => act(null, newStart), undo: () => act(null, undoShell), redo: () => act(null, redoShell), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act('RU 옮기고 다시 AUTO', () => moveRu(k, id, p)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, loadProject, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
   runAll: (keys, opt) => act('AUTO 계산 중', () => runAll(keys, opt)) };   // with the busy overlay and error message, as from the ribbon
  render(); go('room');
 })();

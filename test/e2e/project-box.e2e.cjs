@@ -35,6 +35,15 @@ const { launch } = require('../../tools/browser.cjs'), { start } = require('../.
    assert.deepEqual(got, { rooms: n, decks: name === 's5' ? 5 : 4, box: n }, name);
   }
   log('examples S5 then T3');
+  // (review 2026-10-21 G-2) a project file that is not JSON: its name and the reason in Korean; a BOM is no reason
+  const bad = await H(() => { try { HVACGrid.parseJson('{ not json', 'broken.json'); return null; } catch (e) { return e.message; } });
+  assert.match(bad, /^broken\.json: JSON 형식이 아닙니다/); assert.deepEqual(await H(() => HVACGrid.parseJson('﻿{"a":1}', 'bom.json')), { a: 1 });
+  // (G-3) made again from BOX with a SOLAS choice whose room and one whose wall are not in the drawing: said on the status
+  // line and on the 검토 tab, the choices kept
+  await H(() => { const s = HVACGrid.S.contract.solas || (HVACGrid.S.contract.solas = {}); s.rooms = { ...(s.rooms || {}), GONE_ROOM: { space: '로커·창고 — 4㎡ 초과' } }; s.bounds = { ...(s.bounds || {}), 'B:x|y|1,2': { grade: 'A-0' } }; });
+  await H(() => HVACGrid.extractContract()); await idle();
+  const g3 = await H(() => ({ status: document.getElementById('status')?.textContent || '', check: HVACGrid.analysis().checks.find(k => k.id === 'solasStale')?.text || '', kept: !!HVACGrid.S.contract.solas.bounds['B:x|y|1,2'] }));
+  log('G-3', g3.status.slice(-80)); assert.match(g3.status, /SOLAS 지정 2건이 새 도면과 맞지 않음\(실 1 · 경계 1\)/); assert.match(g3.check, /실 분류 1 · 벽·갑판 등급 1/); assert.ok(g3.kept);
   log('page errors', errors.length, errors.slice(0, 3)); assert.equal(errors.length, 0);
   log('E2E PROJECT-BOX PASS');
  } catch (e) { console.error('E2E PROJECT-BOX FAIL', e); process.exitCode = 1; }
