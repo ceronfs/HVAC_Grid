@@ -26,6 +26,8 @@
  #decks .deck{display:grid;grid-template-columns:1fr 78px 26px;gap:4px;align-items:center;margin:4px 0}
  #decks .deck input{font:inherit;padding:3px 5px;border:1px solid var(--line);border-radius:4px;width:100%}
  #decks .deck small{grid-column:1/-1;color:var(--muted);margin-top:-2px}
+ #decks .deck .xy{grid-column:1/-1;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}#decks .deck .xy input{width:96px}
+ #decks .deck small button{padding:1px 6px;font-size:12px}
  .work{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;min-width:0}
  .tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:8px}
  .tabs button{border:none;border-bottom:3px solid transparent;border-radius:0;background:none;padding:6px 10px}
@@ -56,7 +58,7 @@
   <section class="card"><h2>1. 도면</h2>
    <div class="row"><button class="primary" id="openBtn">도면 열기 (DXF · JSON)</button><button id="sampleBtn">T3 예제</button></div>
    <input type="file" id="fileIn" accept=".dxf,.json" multiple hidden>
-   <p class="muted" style="margin:6px 0 0">DXF 한 파일이 Deck 하나(벽 LINE 또는 닫힌 폴리라인 + 실 번호·이름 글자). HVAC Grid 프로젝트·설계 데이터 JSON, 이 도구의 작업 파일도 열립니다.</p>
+   <p class="muted" style="margin:6px 0 0">DXF 한 파일이 Deck 하나(벽 LINE 또는 닫힌 폴리라인 + 실 번호·이름 글자). 여러 Deck을 나란히 그린 한 파일은 열고 "Deck N개로 나누기". HVAC Grid 프로젝트·설계 데이터 JSON, 이 도구의 작업 파일도 열립니다.</p>
    <div id="decks"></div>
   </section>
   <section class="card"><h2>2. SOLAS 설정</h2>
@@ -101,10 +103,55 @@
   if (!rooms.length) rooms = X.rooms(text, { wallLayers: /./ });   // a drawing whose wall layers have other names: every LINE is a wall
   rooms = rooms.filter(r => r.areaM2 >= 0.3);
   const id = 'D' + (S.decks.length + 1) + '_' + Math.random().toString(36).slice(2, 6);
-  return { id, name, z, file: name, rooms: rooms.map((r, i) => ({ id: `${id}_${i + 1}`, no: r.no || '', name: r.name || '', polygon: r.polygon })) };
+  const d = { id, name, z, dx: 0, dy: 0, file: name, rooms: rooms.map((r, i) => ({ id: `${id}_${i + 1}`, no: r.no || '', name: r.name || '', polygon: r.polygon })) };
+  d.parts = groups(d.rooms).length; return d;
  }
+ // rooms that lie apart in groups (a gap over 1.5 m): one drawing with every deck side by side. Groups of one or two rooms
+ // (a deck house, a store) go to the nearest big group. Ordered lowest deck first: left to right, or bottom to top.
+ const GAP = 1500;
+ function groups(rooms) {
+  const box = rooms.map(r => { const xs = r.polygon.map(p => p.x), ys = r.polygon.map(p => p.y); return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]; });
+  const up = rooms.map((_, i) => i), find = i => up[i] === i ? i : (up[i] = find(up[i])), dist = (a, b) => Math.max(a[0] - b[2], b[0] - a[2], a[1] - b[3], b[1] - a[3], 0);
+  for (let i = 0; i < rooms.length; i++) for (let j = i + 1; j < rooms.length; j++) if (dist(box[i], box[j]) <= GAP) up[find(i)] = find(j);
+  const by = new Map(); rooms.forEach((_, i) => { const k = find(i); if (!by.has(k)) by.set(k, []); by.get(k).push(i); });
+  const ext = ix => [Math.min(...ix.map(i => box[i][0])), Math.min(...ix.map(i => box[i][1])), Math.max(...ix.map(i => box[i][2])), Math.max(...ix.map(i => box[i][3]))];
+  let gs = [...by.values()].map(ix => ({ ix, b: ext(ix) })); const big = gs.filter(g => g.ix.length >= 3);
+  if (big.length < 2) return [rooms];
+  for (const g of gs) if (g.ix.length < 3) { const n = big.reduce((a, c) => dist(g.b, c.b) < dist(g.b, a.b) ? c : a); n.ix.push(...g.ix); }
+  gs = big; const cx = gs.map(g => g.b[0] + g.b[2]), cy = gs.map(g => g.b[1] + g.b[3]), wide = Math.max(...cx) - Math.min(...cx) >= Math.max(...cy) - Math.min(...cy);
+  gs.sort((a, b) => wide ? a.b[0] - b.b[0] : a.b[1] - b.b[1]);
+  return Object.assign(gs.map(g => ({ rooms: g.ix.sort((a, b) => a - b).map(i => rooms[i]), b: g.b })), { wide });
+ }
+ // one deck of several groups -> a deck per group, each moved over the deck below it. The move comes from the spaces that
+ // run through the decks (stairs, trunks, casings, lifts): the same kind of shaft on both decks votes for the move that
+ // puts one over the other. With no shaft in common, the groups' lower left corners are put together (to be checked).
+ const SHAFT = [/계단|STAIR/i, /트렁크|TRUNK/i, /케이싱|CASING/i, /승강기|엘리베이터|LIFT|ELEV/i];
+ const centre = r => { const n = r.polygon.length; return { x: r.polygon.reduce((s, p) => s + p.x, 0) / n, y: r.polygon.reduce((s, p) => s + p.y, 0) / n }; };
+ function shaftMove(below, above) {
+  const votes = new Map();
+  for (const re of SHAFT) for (const a of above.filter(r => re.test(r.name))) for (const b of below.filter(r => re.test(r.name))) {
+   const ca = centre(a), cb = centre(b), k = `${Math.round((cb.x - ca.x) / 50) * 50},${Math.round((cb.y - ca.y) / 50) * 50}`; votes.set(k, (votes.get(k) || 0) + 1); }
+  // a pair of shafts that agree outvotes a single pair; one pair alone is used as it is
+  const best = [...votes].sort((p, q) => q[1] - p[1])[0]; if (!best) return null;
+  const [dx, dy] = best[0].split(',').map(Number); return { dx, dy, votes: best[1] };
+ }
+ function splitDeck(id) {
+  const k = S.decks.findIndex(d => d.id === id), d = S.decks[k], gs = groups(d.rooms); if (gs.length < 2) return;
+  const parts = [], how = [];
+  gs.forEach((g, i) => {
+   let dx = +d.dx || 0, dy = +d.dy || 0;
+   if (i) { const prev = parts[i - 1], m = shaftMove(prev.rooms.map(r => ({ ...r, polygon: moved(r.polygon, prev) })), g.rooms);
+    if (m) { dx = m.dx; dy = m.dy; how.push(`${i + 1}: 수직 공간 ${m.votes}개로 맞춤`); } else { dx = prev.dx + gs[i - 1].b[0] - g.b[0]; dy = prev.dy + gs[i - 1].b[1] - g.b[1]; how.push(`${i + 1}: 공통 계단·트렁크 없음 → 왼쪽 아래 모서리로 맞춤 (확인 필요)`); } }
+   parts.push({ id: `${d.id}-${i + 1}`, name: `${d.name}-${i + 1}`, z: (+d.z || 0) + i * 2800, dx, dy, file: d.file, parts: 1, rooms: g.rooms });
+  });
+  S.decks.splice(k, 1, ...parts); S.cur = parts[0].id; render();
+  say(`${d.name}: Deck ${parts.length}개로 나눔 (아래 Deck부터 ${gs.wide ? '왼쪽→오른쪽' : '아래→위'}; ${how.join(' · ')}). 위아래 Deck이 제자리에 겹치는지 높이 Z와 이동 X·Y를 확인하세요 — 갑판 등급은 겹친 면에서 정해집니다`, 'warn');
+ }
+ const isWork = d => d && d.format === 'solas-tool/1' && Array.isArray(d.decks) && d.decks.every(k => k && k.id && Array.isArray(k.rooms) && k.rooms.every(r => r && r.id && Array.isArray(r.polygon) && r.polygon.length >= 3));
  function fromJson(d, file) {
-  if (d && d.format === 'solas-tool/1') { Object.assign(S, { decks: d.decks, user: d.user || {}, bounds: d.bounds || {}, ...d.settings }); return; }
+  if (d && d.format === 'solas-tool/1') {
+   if (!isWork(d)) throw new Error(file + ': 작업 파일이 손상되었습니다 (Deck·실 도형이 없음)');
+   Object.assign(S, { decks: d.decks, user: d.user || {}, bounds: d.bounds || {}, ...d.settings }); return; }
   const c = d && d.contract ? d.contract : d;
   if (!c || !Array.isArray(c.decks) || !Array.isArray(c.rooms)) throw new Error(file + ': HVAC Grid 프로젝트·설계 데이터나 이 도구의 작업 파일이 아닙니다');
   S.decks = c.decks.slice().sort((a, b) => a.elevationMm - b.elevationMm).map(k => ({ id: k.id, name: k.name || k.id, z: k.elevationMm || 0, file,
@@ -114,20 +161,32 @@
   S.user = Object.fromEntries(Object.entries(so.rooms || {}).filter(([, v]) => v && v.space).map(([k, v]) => [k, v.space]));
   S.bounds = Object.fromEntries(Object.entries(so.bounds || {}).filter(([, v]) => v && v.grade).map(([k, v]) => [k, v.grade]));
  }
+ // every file read on its own: one that fails is named in the status, the others still open
  async function openFiles(files) {
-  const dxfs = [...files].filter(f => /\.dxf$/i.test(f.name)), jsons = [...files].filter(f => /\.json$/i.test(f.name));
-  for (const f of jsons) fromJson(JSON.parse(decodeBytes(await f.arrayBuffer())), f.name);
+  const dxfs = [...files].filter(f => /\.dxf$/i.test(f.name)), jsons = [...files].filter(f => /\.json$/i.test(f.name)), notes = []; let lv = 0;   // 0 ok, 1 warn, 2 error
+  for (const f of [...files].filter(f => !dxfs.includes(f) && !jsons.includes(f))) { notes.push(`${f.name}: DXF·JSON 파일만 열 수 있습니다`); lv = 2; }
+  for (const f of jsons) {
+   let d; try { d = JSON.parse(decodeBytes(await f.arrayBuffer())); } catch (e) { notes.push(`${f.name}: JSON 형식이 아닙니다 (${e.message})`); lv = 2; continue; }
+   if (S.decks.length && !confirm(`${f.name}을(를) 열면 지금 열린 도면과 분류가 이 파일로 바뀝니다.`)) continue;
+   try { fromJson(d, f.name); notes.push(`${f.name}: Deck ${S.decks.length}개`); } catch (e) { notes.push(e.message); lv = 2; }
+  }
   for (const f of dxfs.sort((a, b) => a.name.localeCompare(b.name, 'ko', { numeric: true }))) {
-   const z = S.decks.length ? Math.max(...S.decks.map(d => +d.z)) + 2800 : 0, d = deckFromDxf(decodeBytes(await f.arrayBuffer()), f.name.replace(/\.dxf$/i, ''), z);
-   S.decks.push(d); say(`${f.name}: 실 ${d.rooms.length}개`, d.rooms.length ? 'ok' : 'warn');
+   const text = decodeBytes(await f.arrayBuffer());
+   if (!/^\s*0\s*\r?\n\s*SECTION/m.test(text)) { notes.push(`${f.name}: DXF 파일이 아닙니다 (AutoCAD에서 DXF로 저장한 파일이 필요)`); lv = 2; continue; }
+   const z = S.decks.length ? Math.max(...S.decks.map(d => +d.z || 0)) + 2800 : 0, d = deckFromDxf(text, f.name.replace(/\.dxf$/i, ''), z);
+   if (!d.rooms.length) { notes.push(`${f.name}: 실을 찾지 못했습니다 (벽 LINE이 닫힌 면이나 닫힌 폴리라인이 필요)`); lv = 2; continue; }
+   S.decks.push(d); notes.push(`${f.name}: 실 ${d.rooms.length}개` + (d.parts > 1 ? ` — 떨어진 도면 묶음 ${d.parts}개: Deck 여러 개를 한 파일에 그린 도면이면 "Deck ${d.parts}개로 나누기"` : ''));
+   if (d.parts > 1) lv = Math.max(lv, 1);
   }
   if (!S.cur || !S.decks.some(d => d.id === S.cur)) S.cur = S.decks[0]?.id || null;
-  render();
+  render(); if (notes.length) say(notes.join(' · '), ['ok', 'warn', 'err'][lv]);
  }
 
  // ---------- the model ----------
+ // a deck's plan moved by its X·Y (decks that came out of one drawing are put over each other)
+ const moved = (pts, d) => (+d.dx || +d.dy) ? pts.map(p => ({ x: p.x + (+d.dx || 0), y: p.y + (+d.dy || 0) })) : pts;
  const contract = () => ({ decks: S.decks.map(d => ({ id: d.id, name: d.name, elevationMm: +d.z || 0 })),
-  rooms: S.decks.flatMap(d => d.rooms.map(r => ({ ...r, deckId: d.id, holes: r.holes || [], systems: {} }))),
+  rooms: S.decks.flatMap(d => d.rooms.map(r => ({ ...r, polygon: moved(r.polygon, d), deckId: d.id, holes: (r.holes || []).map(h => moved(h, d)), systems: {} }))),
   solas: { ship: S.ship, method: S.method, sprinkler: S.sprinkler, lowestBelow: S.below || null,
    rooms: Object.fromEntries(Object.entries(S.user).map(([k, v]) => [k, { space: v }])), bounds: Object.fromEntries(Object.entries(S.bounds).map(([k, v]) => [k, { grade: v }])) } });
  let cache = null;
@@ -143,7 +202,10 @@
   $('ship').innerHTML = Object.entries(SO.DATA.ships).map(([k, v]) => `<option value="${k}" ${k === S.ship ? 'selected' : ''}>${esc(v.label)}</option>`).join('');
   $('method').value = S.method; $('sprinkler').checked = S.sprinkler; $('showC').checked = S.showC; $('showOuter').checked = S.showOuter; $('minLabel').value = S.minLabel;
   $('below').innerHTML = `<option value="">미지정 (최하층 바닥 등급 미정)</option>` + spaces().map(r => `<option value="${esc(r[0])}" ${r[0] === S.below ? 'selected' : ''}>(${r[catCol()]}) ${esc(r[0])}</option>`).join('');
-  $('decks').innerHTML = S.decks.length ? `<p class="muted" style="margin:8px 0 2px">Deck 이름 · 높이 Z (mm, 아래에서 위로 쌓을 순서)</p>` + S.decks.map(d => `<div class="deck"><input data-dname="${esc(d.id)}" value="${esc(d.name)}"><input data-dz="${esc(d.id)}" type="number" step="100" value="${esc(d.z)}"><button data-ddel="${esc(d.id)}" title="이 Deck 빼기">✕</button><small>${esc(d.file || '')} · 실 ${d.rooms.length}개</small></div>`).join('') : '';
+  const sameZ = d => S.decks.some(o => o !== d && (+o.z || 0) === (+d.z || 0));
+  $('decks').innerHTML = S.decks.length ? `<p class="muted" style="margin:8px 0 2px">Deck 이름 · 높이 Z (mm, 아래에서 위로 쌓을 순서) · 평면 이동 X·Y (mm)</p>` + S.decks.map(d => `<div class="deck"><input data-dname="${esc(d.id)}" value="${esc(d.name)}" aria-label="Deck 이름"><input data-dz="${esc(d.id)}" type="number" step="100" value="${esc(d.z)}" aria-label="높이 Z"><button data-ddel="${esc(d.id)}" title="이 Deck 빼기">✕</button>`
+   + `<span class="xy">X <input data-ddx="${esc(d.id)}" type="number" step="100" value="${esc(+d.dx || 0)}" aria-label="이동 X"> Y <input data-ddy="${esc(d.id)}" type="number" step="100" value="${esc(+d.dy || 0)}" aria-label="이동 Y"></span>`
+   + `<small>${esc(d.file || '')} · 실 ${d.rooms.length}개${sameZ(d) ? ' · <span class="warn">높이 Z가 다른 Deck과 같음</span>' : ''}${d.parts > 1 ? ` · <button data-dsplit="${esc(d.id)}">Deck ${d.parts}개로 나누기</button>` : ''}</small></div>`).join('') : '';
   for (const b of ['dxfBtn', 'svgBtn', 'printBtn', 'saveBtn']) $(b).disabled = !S.decks.length;
  }
  function render() {
@@ -177,8 +239,16 @@
  for (const [id, key] of [['sprinkler', 'sprinkler'], ['showC', 'showC'], ['showOuter', 'showOuter']]) $(id).onchange = e => { S[key] = e.target.checked; render(); };
  $('decks').addEventListener('change', e => { const t = e.target;
   if (t.dataset.dname) { S.decks.find(d => d.id === t.dataset.dname).name = t.value; render(); }
-  if (t.dataset.dz) { S.decks.find(d => d.id === t.dataset.dz).z = +t.value || 0; render(); } });
- $('decks').addEventListener('click', e => { const id = e.target.dataset.ddel; if (!id) return; S.decks = S.decks.filter(d => d.id !== id); if (S.cur === id) S.cur = null; render(); });
+  if (t.dataset.dz) { S.decks.find(d => d.id === t.dataset.dz).z = +t.value || 0; render(); }
+  for (const k of ['dx', 'dy']) if (t.dataset['d' + k]) { S.decks.find(d => d.id === t.dataset['d' + k])[k] = +t.value || 0; render(); } });
+ $('decks').addEventListener('click', e => {
+  if (e.target.dataset.dsplit) { splitDeck(e.target.dataset.dsplit); return; }
+  const id = e.target.dataset.ddel; if (!id) return; const d = S.decks.find(x => x.id === id);
+  if (!confirm(`${d.name}을(를) 뺍니다 (그 Deck의 분류·벽 등급 지정도 지워짐).`)) return;
+  // the deck's rooms' spaces and the ratings set on boundaries of its rooms go with it
+  const gone = new Set(d.rooms.map(r => r.id)); for (const k of Object.keys(S.user)) if (gone.has(k)) delete S.user[k];
+  for (const k of Object.keys(S.bounds)) if (k.slice(2).split('|').some(p => gone.has(p))) delete S.bounds[k];
+  S.decks = S.decks.filter(x => x.id !== id); if (S.cur === id) S.cur = null; render(); });
  $('tabs').onclick = e => { const b = e.target.closest('[data-deck]'); if (b) { S.cur = b.dataset.deck; render(); } };
  $('view').addEventListener('change', e => { const id = e.target.dataset.space; if (id === undefined) return; if (e.target.value) S.user[id] = e.target.value; else delete S.user[id]; S.room = id; render(); });
  // a wall: its rating chosen by hand (every boundary piece of the run), or back to the table's
@@ -209,7 +279,8 @@
    + `<p style="color:#666">SOLAS II-2/9 표 9.1~9.8에 따른 설계 보조 결과입니다. 최종 판단은 주관청·선급에 따릅니다.</p></body></html>`);
   w.document.close(); setTimeout(() => w.print(), 300);
  };
- addEventListener('resize', () => { if (S.decks.length) render(); });
+ // the drawing is built at the panel's width: drawn again when the width settles (a big deck takes a moment)
+ let rw = 0, rt = null; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { const w = $('view').clientWidth; if (S.decks.length && w !== rw) { rw = w; render(); } }, 200); });
  window.SOLAS_TOOL = { S, render, analysis, openFiles };   // for the tests
  render();
 })();

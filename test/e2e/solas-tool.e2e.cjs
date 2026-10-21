@@ -44,6 +44,35 @@ const FILE = path.join(OUT, 'SOLAS_방화등급표기.html');
   // a deck DXF opened from disk (the file input)
   await p.click('#clearBtn'); await p.setInputFiles('#fileIn', path.join(__dirname, '..', '..', 'samples', 't3', 'T3_D2.dxf'));
   await p.waitForFunction(() => SOLAS_TOOL.S.decks.length === 1); assert.equal(await H(() => SOLAS_TOOL.S.decks[0].rooms.length), 27);
+  // (review 2026-10-21) broken files beside a good one: each named in the status in Korean, no empty deck, the good one opens
+  const reset = () => H(() => { Object.assign(SOLAS_TOOL.S, { decks: [], user: {}, bounds: {}, cur: null }); SOLAS_TOOL.render(); });
+  await reset();
+  await p.setInputFiles('#fileIn', [{ name: 'empty.dxf', mimeType: 'application/dxf', buffer: Buffer.alloc(0) }, { name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{ not json') },
+   { name: 'box.dxf', mimeType: 'application/dxf', buffer: Buffer.from('0\nSECTION\n2\nENTITIES\n0\nENDSEC\n0\nEOF\n') },
+   { name: 'T3_D4.dxf', mimeType: 'application/dxf', buffer: fs.readFileSync(path.join(__dirname, '..', '..', 'samples', 't3', 'T3_D4.dxf')) }]);
+  await p.waitForFunction(() => SOLAS_TOOL.S.decks.length === 1);
+  const st = await H(() => ({ t: document.getElementById('status').textContent, c: document.getElementById('status').className, decks: SOLAS_TOOL.S.decks.map(d => d.rooms.length) })); log('broken files', JSON.stringify(st));
+  assert.deepEqual(st.decks, [10]); assert.equal(st.c, 'err');
+  for (const s of ['empty.dxf: DXF 파일이 아닙니다', 'bad.json: JSON 형식이 아닙니다', 'box.dxf: 실을 찾지 못했습니다', 'T3_D4.dxf: 실 10개']) assert.ok(st.t.includes(s), s);
+  // (review) every deck in one drawing (T3_ALL.dxf, decks 25 m apart, the bridge 8 m further): split into 4 decks put over
+  // each other by their stairs, trunks and casings -> the same boundaries and deck ratings as the four deck files
+  const kinds = () => H(() => { const a = SOLAS_TOOL.analysis(), k = {}; for (const x of a.b.boundaries) k[x.kind] = (k[x.kind] || 0) + 1;
+   return { k, deck: a.b.boundaries.filter(x => x.kind === 'deck').map(x => x.grade).sort().join(' '), labels: a.m.decks.map(d => d.walls.filter(w => w.label).length).join() }; });
+  await reset(); await p.setInputFiles('#fileIn', ['T3_D1.dxf', 'T3_D2.dxf', 'T3_D3.dxf', 'T3_D4.dxf'].map(f => path.join(__dirname, '..', '..', 'samples', 't3', f)));
+  await p.waitForFunction(() => SOLAS_TOOL.S.decks.length === 4); const four = await kinds();
+  await reset(); await p.setInputFiles('#fileIn', path.join(__dirname, '..', '..', 'samples', 't3', 'T3_ALL.dxf')); await p.waitForFunction(() => SOLAS_TOOL.S.decks.length === 1);
+  assert.equal(await H(() => document.getElementById('status').className), 'warn'); assert.equal((await kinds()).k.deck, undefined, 'one deck: no deck boundary yet');
+  await p.click('button[data-dsplit]'); await p.waitForFunction(() => SOLAS_TOOL.S.decks.length === 4);
+  const split = await kinds(); log('T3_ALL split', JSON.stringify(split.k), await H(() => SOLAS_TOOL.S.decks.map(d => d.dx).join()));
+  assert.deepEqual(split, four);
+  // (review) a deck taken out takes its rooms' spaces and its walls' ratings with it
+  await p.click('#sampleBtn');
+  await H(() => { const S = SOLAS_TOOL.S, a = SOLAS_TOOL.analysis(); S.user[S.decks[1].rooms[0].id] = S.user[S.decks[0].rooms[0].id] = '로커·창고 — 4㎡ 초과';
+   for (const id of a.m.decks[1].walls.find(x => x.label).ids) S.bounds[id] = 'A-60'; SOLAS_TOOL.render(); });
+  await p.click(`button[data-ddel="${await H(() => SOLAS_TOOL.S.decks[1].id)}"]`);
+  assert.deepEqual(await H(() => [SOLAS_TOOL.S.decks.length, Object.keys(SOLAS_TOOL.S.user).length, Object.keys(SOLAS_TOOL.S.bounds).length]), [3, 1, 0]);
+  // (review) the legend shows no penetration symbols: the tool has no penetrations
+  assert.ok(!(await H(() => document.querySelector('.fp-legend').textContent)).includes('방화댐퍼'));
   log('requests out of the file', requests.length, requests.slice(0, 3)); assert.equal(requests.length, 0);
   log('page errors', errors.length, errors.slice(0, 3)); assert.equal(errors.length, 0);
   log('E2E SOLAS-TOOL PASS');
