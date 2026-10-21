@@ -175,7 +175,7 @@
   const n = name === 't3' ? 79 : 94;
   await B.until(() => { try { return box.hasDrawing() && box.win.CAD_APP.rooms().length >= n; } catch { return false; } }, 180000, '예제 도면');
   // a new ship: nothing of the previous design data or its networks carries over
-  Object.assign(S, { contract: null, projects: {}, results: {}, geometry: {}, active: null, file: null, duct: null, phgEditor: false });
+  Object.assign(S, { contract: null, projects: {}, results: {}, geometry: {}, active: null, file: null, duct: null, phgEditor: false, boxFile: null });
   if (phg.loading) phg.open(phg.blank, 'HVAC Grid');
   await extractContract();
   // T3's SOLAS settings (ship, the space below the lowest deck, room spaces): the zone balance uses the spaces, so the
@@ -201,7 +201,7 @@
    const w = box.win, c = w.confirm; w.confirm = () => true; try { box.click('newBtn'); } finally { w.confirm = c; }
   }
   if (phg.loading) phg.open(phg.blank, 'HVAC Grid');
-  Object.assign(S, { contract: null, projects: {}, results: {}, geometry: {}, active: null, undo: [], redo: [], dirty: false, file: null, deck: null, sys: null, room: null, duct: null, phgEditor: false, pickRoot: false, fieldErr: {} });
+  Object.assign(S, { contract: null, boxFile: null, projects: {}, results: {}, geometry: {}, active: null, undo: [], redo: [], dirty: false, file: null, deck: null, sys: null, room: null, duct: null, phgEditor: false, pickRoot: false, fieldErr: {} });
   invalidate(); await go('room'); say('새로 시작: 빈 도면입니다. ① 도면을 열거나 예제를 불러오세요.');
  }
  function applyDeltaT() {
@@ -392,7 +392,16 @@
  function readBackIfEdited() { if (S.active && phg.loading && S.projects[S.active] && phg.changedSince(S.projects[S.active])) { readBack(); say(`${S.active.replace('__', ' · ')}: PHG D에서 고친 내용을 읽었습니다`); } }
 
  // ---------- project file and outputs ----------
- function projectJson() { keepActive(); return JSON.stringify(project()); }
+ // the project file: the design data, PHG D work and BOX's own project (① ②) - taken from BOX when it holds a drawing,
+ // else the one the opened file carried (F05)
+ async function projectJson() {
+  keepActive(); let carried = S.boxFile || null;
+  if (box.loading && box.hasDrawing()) { const json = await box.projectJson().catch(() => null); if (json) carried = { format: 'BOX JSON', json, roomIds: box.roomIds() }; }
+  S.boxFile = carried;
+  return JSON.stringify(PJ.make({ contract: S.contract, projects: S.projects, results: S.results, geometry: S.geometry, box: carried }));
+ }
+ // does BOX show the drawing this design data was made from? (its room ids)
+ const boxMatches = () => { const ids = new Set(box.roomIds()); return ids.size === S.contract.rooms.length && S.contract.rooms.every(r => ids.has(r.id)); };
  async function openProject(handle = null) {
   if (!(await keepsWork('프로젝트 열기'))) return;
   let f, h = handle;
@@ -401,9 +410,24 @@
    if ((await h.queryPermission({ mode: 'readwrite' })) !== 'granted' && (await h.requestPermission({ mode: 'readwrite' })) !== 'granted') throw new Error(`${h.name}: 파일 권한이 없습니다`);
    f = await h.getFile();
   } else f = await pickFile('.json');
-  const data = JSON.parse(await f.text()), { project: pr, notes } = PJ.read(data), bare = data?.schema === K.SCHEMA;
-  setContract(pr.contract); Object.assign(S, { projects: pr.projects, results: pr.results, geometry: pr.geometry, active: null, dirty: false, file: bare ? null : { name: f.name, handle: h || null } });   // a contract file is not a save target for the project
+  await loadProject(JSON.parse(await f.text()), f.name, h);
+ }
+ // a project (or design data) read from a file: the design data, the PHG D work and the BOX drawing it carries
+ async function loadProject(data, name, h = null) {
+  const { project: pr, notes } = PJ.read(data), bare = data?.schema === K.SCHEMA, f = { name };
+  setContract(pr.contract); Object.assign(S, { projects: pr.projects, results: pr.results, geometry: pr.geometry, active: null, dirty: false, file: bare ? null : { name: f.name, handle: h || null }, boxFile: pr.box || null });   // a contract file is not a save target for the project
   if (h && !bare) remember(h);
+  // the BOX drawing saved with the project opens in BOX (① ②); without one, say when BOX shows another drawing (F05)
+  if (pr.box) {
+   await box.load(); box.closeCal(); box.calSig = null;
+   const w = box.win, ask0 = w.confirm; w.confirm = () => true;
+   try { box.setFile('jsonFile', new File([pr.box.json], 'project.box.json', { type: 'application/json' })); } finally { w.confirm = ask0; }
+   // loaded when BOX shows the saved drawing's rooms (the drawing before it may have as many)
+   const want = pr.box.roomIds, same = () => { const ids = box.roomIds(); return want.length ? ids.length === want.length && want.every(id => ids.includes(id)) : box.hasDrawing(); };
+   await B.until(() => { try { return box.hasDrawing() && same(); } catch { return false; } }, 60000, 'BOX 도면').catch(() => notes.push('BOX 도면이 저장한 격실과 다르게 열림'));
+   if (box.hasDrawing() && !boxMatches()) notes.push('BOX 도면의 격실이 설계 데이터와 다름');
+   else if (box.hasDrawing()) notes.push('BOX 도면(①②)도 열림');
+  } else if (box.loading && box.hasDrawing() && !boxMatches()) notes.push('파일에 BOX 도면 없음 — BOX 화면의 도면은 이 설계 데이터의 도면이 아님');
   if (S.step === 'room' || S.step === 'load') S.step = 'air';
   say(f.name + ' 열기' + (notes.length ? ' · ' + notes.join(' · ') : ''));
  }
@@ -418,7 +442,7 @@
  // the project: to its file (Ctrl+S), or a new one (first time, Ctrl+Shift+S); true when saved
  async function saveProject(as = false) {
   if (!S.contract) throw new Error('저장할 설계 데이터가 없습니다');
-  const f = await saveFile(!as && S.file?.name ? S.file.name : outName('json'), projectJson(), { handle: as ? null : S.file?.handle, id: 'project' });
+  const f = await saveFile(!as && S.file?.name ? S.file.name : outName('json'), await projectJson(), { handle: as ? null : S.file?.handle, id: 'project' });
   if (!f) return false;
   S.file = f; S.dirty = false; if (f.handle) remember(f.handle);
   say(`프로젝트 저장: ${f.name}`); toast(`저장했습니다: ${f.name}`); status(); return true;
@@ -463,7 +487,7 @@
    ['내보내기', [c('xlsxIso', 'ISO 시트', boxCal('I↑'), { code: 'I↑' }), c('xlsx', '미적용 시트', boxCal('N↑'), { code: 'N↑' }), c('sum', 'SUP 요약', boxCal('Σ↑'), { code: 'Σ↑' }), c('xlsxAll', '전체 XLSX', boxCal('LX'), { code: 'LX' }), c('sheet', '격실 시트', boxCal('R↑'), { code: 'R↑' }), c('face', '면적 시트', boxCal('A↑'), { code: 'A↑' })]],
    ['HVAC Grid', [c('contract', '설계 데이터 만들기', () => act('BOX 격실·부하 읽는 중', extractContract), { primary: true, title: 'BOX 격실·부하 → 격실 풍량·계통 (③ 풍량·계통으로 이동)' })]]] },
   { id: 'air', name: '풍량·계통', view: 'plan', groups: () => [
-   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="15" step="1" value="${fv('dT', S.contract?.rules.supplyDeltaTK ?? 10)}" ${fe('dT')}></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${fv('pPct', S.contract?.rules.pressurizationPct ?? 5)}" ${fe('pPct')} style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), field(`<label class="field" title="재순환 공조 구역의 신기 하한(선주 사양). 사양이 없으면 0">최소 신기 (%)<input id="minOa" type="number" min="0" max="100" step="1" value="${fv('minOa', S.contract?.rules.minOaPct ?? 25)}" ${fe('minOa')} style="width:4em"></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(냉방 현열 W × 안전율(BOX 설계 조건) × 3 ÷ ΔT)' })]],
+   ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="15" step="1" value="${fv('dT', S.contract?.rules.supplyDeltaTK ?? 10)}" ${fe('dT')}></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${fv('pPct', S.contract?.rules.pressurizationPct ?? 5)}" ${fe('pPct')} style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), field(`<label class="field" title="재순환 공조 구역의 신기 하한(선주 사양). 사양이 없으면 0">최소 신기 (%)<input id="minOa" type="number" min="0" max="100" step="1" value="${fv('minOa', S.contract?.rules.minOaPct ?? 25)}" ${fe('minOa')} style="width:4em"></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량 = 올림(max(냉방 현열 W × 안전율 × 3 ÷ ΔT, 난방 W × 3 ÷ 22 K, 최소 신기)) — ISO 7547 6.2.1·6.3' })]],
    ['계통', [kindSeg(), sysField(false)]],
    ['공조기 · 수직 덕트', [c('pin', '위치 지정', () => { S.pickRoot = !S.pickRoot; say(S.pickRoot ? `평면에서 ${curPlan()?.isUnitDeck === false ? '수직 덕트(샤프트)' : '공조기'} 위치를 클릭하세요 (Esc 취소)` : ''); render(); }, { disabled: () => !curKey(), pressed: () => S.pickRoot, title: '공조기 Deck: 공조기·팬 위치 · 다른 Deck: 수직 덕트(샤프트) 위치' }), c('unpin', '지정 해제', () => act(null, clearRoot), { disabled: () => !S.contract?.roots?.[curKey()] }), unitDeckField()]],
    ['보기', [seg('평면 보기', S.overlay, [['air', '풍량'], ['fire', '방화']], v => { S.overlay = v; })]],
@@ -832,7 +856,7 @@
    $('inspTitle').textContent = 'Deck ' + deckName(S.deck);
    $('insp').innerHTML = `<div class="card"><h4>Deck 요약</h4><div class="kv"><span>격실</span><span>${rooms.length}</span><span>냉방 현열</span><span>${fmt(rooms.reduce((t, x) => t + C.loads[x.id].coolingSensibleW, 0))} W</span><span>급기(SA) 합계</span><span>${fmt(sum('supplyCmh'))} CMH</span><span>배기(EA) 합계</span><span>${fmt(sum('exhaustCmh'))} CMH</span><span>환기(RA) 합계</span><span>${fmt(sum('returnCmh'))} CMH</span></div></div>`
     + deckPlans().map(p => { const res = result(p.key), sys = a.systems.find(s => s.systemKey === p.systemKey), sd = sys?.decks.find(d => d.key === p.key);
-     return `<div class="card${p.key === S.active ? ' active' : ''}${p.key === curKey() ? ' now' : ''}"><h4><span><span class="dot" style="background:${sysColor(p.systemId)}"></span>${KL[p.kind]} ${esc(p.systemId)}</span>${p.key === S.active ? '<span class="from">PHG D에 열림</span>' : ''}</h4><div class="kv"><span>설계 풍량</span><span>${fmt(p.designCmh)} CMH${p.decks > 1 ? ` <span class="muted">/ 팬 ${fmt(sys?.fanCmh)}</span>` : ''}</span><span>RU</span><span>${p.rus.length}개</span><span>${p.isUnitDeck ? (p.kind === 'supply' ? '공조기' : '팬') : '수직 덕트'}</span><span class="${p.isUnitDeck && p.rootSource.startsWith('assumed') ? 'warn' : ''}">${esc(rootText(p.rootSource))}</span>${p.decks > 1 ? `<span>공조기 Deck</span><span>${esc(deckName(p.unitDeckId))}</span>` : ''}${res?.at ? `<span>덕트</span><span>${res.ducts}개 · ${res.lengthM} m</span><span>Deck 최대 손실</span><span>${res.indexPa ?? '—'} Pa${sd && sd.riserPa ? ` + 수직 ${sd.riserPa}` : ''}</span><span>상태</span><span class="${res.stale ? 'warn' : 'ok'}">${res.stale ? '다시 보내기 필요' : res.auto ? 'AUTO 완료' : 'RU 배치'}</span>` : ''}</div></div>`; }).join('');
+     return `<div class="card${p.key === S.active ? ' active' : ''}${p.key === curKey() ? ' now' : ''}"><h4><span><span class="dot" style="background:${sysColor(p.systemId)}"></span>${KL[p.kind]} ${esc(p.systemId)}</span>${p.key === S.active ? '<span class="from">PHG D에 열림</span>' : ''}</h4><div class="kv"><span>설계 풍량</span><span>${fmt(p.designCmh)} CMH${p.decks > 1 ? ` <span class="muted">/ 팬 ${fmt(sys?.fanCmh)}</span>` : ''}</span><span>RU</span><span>${p.rus.length}개</span><span>${p.isUnitDeck ? (p.kind === 'supply' ? '공조기' : '팬') : '수직 덕트'}</span><span class="${p.isUnitDeck && p.rootSource.startsWith('assumed') ? 'warn' : ''}">${esc(rootText(p.rootSource))}</span>${p.decks > 1 ? `<span>공조기 Deck</span><span>${esc(deckName(p.unitDeckId))}</span>` : ''}${res?.at ? `<span>덕트</span><span>${res.ducts}개 · ${res.lengthM} m</span><span>Deck 최대 손실</span><span>${res.indexPa ?? '—'} Pa${sd?.damperPa ? ` + 방화댐퍼 ${sd.damperPa}` : ''}${sd && sd.riserPa ? ` + 수직 ${sd.riserPa}` : ''}</span><span>상태</span><span class="${res.stale ? 'warn' : 'ok'}">${res.stale ? '다시 보내기 필요' : res.auto ? 'AUTO 완료' : 'RU 배치'}</span>` : ''}</div></div>`; }).join('');
    return;
   }
   // fixed card order: 형상 → 부하 → 풍량 → 계통 → RU·덕트 → 방화; the card of the current step is marked
@@ -843,7 +867,7 @@
   $('inspTitle').innerHTML = `${esc(r.no)} ${esc(r.name)}`;
   $('insp').innerHTML = card('geo', '형상', 'BOX', `<div class="kv"><span>면적</span><span>${r.areaM2.toFixed(1)} m²</span><span>체적</span><span>${r.volumeM3.toFixed(1)} m³</span><span>ISO 분류</span><span>${esc(isoName(r.isoClass))}</span></div>`)
    + card('load', '부하', 'BOX CAL', `<div class="big">${fmt(L.coolingSensibleW)} W</div><div class="muted">냉방 현열</div><div class="kv" style="margin-top:6px"><span>냉방 잠열</span><span>${fmt(L.coolingLatentW)} W</span><span>냉방 합계</span><span>${fmt(L.coolingW)} W</span><span>난방</span><span>${fmt(L.heatingW)} W</span><span>최소 신기(OA)</span><span>${fmt(L.minFreshAirCmh)} CMH</span><span>상태</span><span class="${L.complete ? 'ok' : 'warn'}">${esc(L.status || (L.complete ? '완료' : '미완료'))}</span></div>`)
-   + card('air', '풍량', 'HVAC Grid', `<div class="kv"><span>급기(SA)</span><span><b>${fmt(A.supplyCmh)}</b> CMH</span><span>배기(EA)</span><span>${fmt(A.exhaustCmh)} CMH</span><span>환기(RA)</span><span>${fmt(A.returnCmh)} CMH</span>${A.transferInCmh ? `<span>전달 공기 받음</span><span>${fmt(A.transferInCmh)} CMH · ${A.transferFrom === 'own-inlet' ? '자체 흡입구' : A.transferFrom === 'outside' ? '이웃 급기 실 없음' : esc(roomName(A.transferFrom))}</span>` : ''}${A.transferOutCmh ? `<span>전달 공기 보냄</span><span>${fmt(A.transferOutCmh)} CMH</span>` : ''}${A.makeupCmh ? `<span>보충 급기</span><span>+${fmt(A.makeupCmh)} CMH</span>` : ''}</div>${A.transferInCmh && !/CO2|CO₂|소화제|배터리|축전지|BATTERY|페인트|PAINT/i.test(r.name || '') ? `<label class="field" style="margin-top:6px">전달 공기 출처<select id="xferSel"><option value="">자동 (${A.transferSet ? '—' : A.transferFrom === 'outside' ? '이웃 없음' : esc(roomName(A.transferFrom))})</option><option value="own-inlet" ${C.transfers?.[r.id] === 'own-inlet' ? 'selected' : ''}>자체 흡입구 (외기 그릴)</option>${C.rooms.filter(n => n !== r && n.deckId === r.deckId && GE.sharedLength(r, n) >= 300 && (a.solas.classes[n.id]?.space !== '계단격실' || C.transfers?.[r.id] === n.id)).map(n => `<option value="${esc(n.id)}" ${C.transfers?.[r.id] === n.id ? 'selected' : ''}>${esc(n.no)} ${esc(n.name)}</option>`).join('')}</select></label>` : ''}<div class="muted" style="margin-top:6px">급기 = 올림(max(냉방 현열 W × 안전율 ${K.marginOf(C).toFixed(2)} × 3 ÷ ΔT ${C.rules.supplyDeltaTK} K${C.rules.heatingSupplyDeltaTK > 0 && !K.SEPARATE_HEATING.has(r.isoClass) ? `, 난방 W × 3 ÷ ${C.rules.heatingSupplyDeltaTK} K` : ''}, 최소 신기))${A.basis ? ` — ${{ cooling: '냉방', heating: '난방', freshAir: '최소 신기' }[A.basis]} 기준` : ''}<br>배기 = 올림(환기 횟수 × 체적) · 환기 = 공조 구역 수지</div>${a.air.filter(x => x.roomId === r.id && x.level !== 'info').map(x => `<div class="${x.level === 'fail' ? 'err' : 'warn'}" style="margin-top:4px">${x.level === 'fail' ? '✕' : '●'} ${esc(x.text.split(': ').slice(1).join(': '))}</div>`).join('')}`)
+   + card('air', '풍량', 'HVAC Grid', `<div class="kv"><span>급기(SA)</span><span><b>${fmt(A.supplyCmh)}</b> CMH</span><span>배기(EA)</span><span>${fmt(A.exhaustCmh)} CMH</span><span>환기(RA)</span><span>${fmt(A.returnCmh)} CMH</span>${A.transferInCmh ? `<span>전달 공기 받음</span><span>${fmt(A.transferInCmh)} CMH · ${A.transferFrom === 'own-inlet' ? '자체 흡입구' : A.transferFrom === 'outside' ? '이웃 급기 실 없음' : esc(roomName(A.transferFrom))}</span>` : ''}${A.transferOutCmh ? `<span>전달 공기 보냄</span><span>${fmt(A.transferOutCmh)} CMH</span>` : ''}${A.makeupCmh ? `<span>보충 급기</span><span>+${fmt(A.makeupCmh)} CMH</span>` : ''}</div>${A.transferInCmh && !/CO2|CO₂|소화제|배터리|축전지|BATTERY|페인트|PAINT/i.test(r.name || '') ? `<label class="field" style="margin-top:6px">전달 공기 출처<select id="xferSel"><option value="">자동 (${A.transferSet ? '—' : A.transferFrom === 'outside' ? '이웃 없음' : esc(roomName(A.transferFrom))})</option><option value="own-inlet" ${C.transfers?.[r.id] === 'own-inlet' ? 'selected' : ''}>자체 흡입구 (외기 그릴)</option>${C.rooms.filter(n => n !== r && n.deckId === r.deckId && GE.sharedLength(r, n) >= 300 && (a.solas.classes[n.id]?.space !== '계단격실' || C.transfers?.[r.id] === n.id)).map(n => `<option value="${esc(n.id)}" ${C.transfers?.[r.id] === n.id ? 'selected' : ''}>${esc(n.no)} ${esc(n.name)}</option>`).join('')}</select></label>` : ''}<div class="muted" style="margin-top:6px">급기 = 올림(max(냉방 현열 W × 안전율 ${K.marginOf(C).toFixed(2)} × 3 ÷ ΔT ${C.rules.supplyDeltaTK} K${C.rules.heatingSupplyDeltaTK > 0 && !K.SEPARATE_HEATING.has(r.isoClass) ? `, 난방 W × 3 ÷ ${C.rules.heatingSupplyDeltaTK} K` : ''}, 최소 신기))${A.basis ? ` — ${{ cooling: '냉방', heating: '난방', freshAir: '최소 신기', makeup: '보충 급기' }[A.basis]} 기준` : ''}<br>배기 = 올림(환기 횟수 × 체적) · 환기 = 공조 구역 수지</div>${a.air.filter(x => x.roomId === r.id && x.level !== 'info').map(x => `<div class="${x.level === 'fail' ? 'err' : 'warn'}" style="margin-top:4px">${x.level === 'fail' ? '✕' : '●'} ${esc(x.text.split(': ').slice(1).join(': '))}</div>`).join('')}`)
    + card('sys', '계통', '', `<div class="kv">${PL.KINDS.map(k => `<span>${KL[k]}</span><span>${r.systems[k] ? `<span class="dot" style="background:${sysColor(r.systems[k])}"></span>${esc(r.systems[k])}` : '—'}</span>`).join('')}</div>`)
    + (rp.length ? card('duct', 'RU·덕트', 'PHG D', `<div class="kv">${rp.map(p => { const rus = p.rus.filter(u => u.roomId === r.id), res = result(p.key); return `<span>${KL[p.kind]} RU</span><span>${rus.length}개 · ${fmt(rus.reduce((t, u) => t + u.flowCmh, 0))} CMH${res?.at ? ` <span class="muted">· 계통 ${res.indexPa ?? '—'} Pa</span>` : ''}</span>`; }).join('')}</div>`) : '')
    + card('fire', '방화 (SOLAS)', shp.tB + '/' + shp.tD, `<div class="kv"><span>공간</span><span class="${cl?.cat ? '' : 'warn'}">${esc(cl?.space || '미분류')}</span><span>범주</span><span>${cl?.cat ? `(${cl.cat}) ${esc(SO.catName(ship, cl.cat))}` : '—'}</span><span>근거</span><span>${esc({ name: '실 이름', 'iso-class': 'BOX ISO 분류', user: '사용자 지정', unclassified: '—', 'no-category': '이 표에 범주 없음' }[cl?.source] || '')}</span><span>경계</span><span>${bnd.length}개${worst ? ` · 최대 ${esc(worst.grade)}` : ''}</span></div>${cl?.check ? `<div class="warn" style="margin-top:4px">● ${esc(cl.check)}</div>` : ''}
@@ -962,7 +986,7 @@
  };
  document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) || ((e.ctrlKey || e.metaKey) && /^[so]$/i.test(e.key)) || ((e.ctrlKey || e.metaKey) && /^[zy]$/i.test(e.key) && !frameOnScreen()) || e.key === 'F1' ? onKey(e) : false;
  window.addEventListener('resize', () => { if (S.step === 'air' && S.contract) plan(); });
- window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, newStart: () => act(null, newStart), undo: () => act(null, undoShell), redo: () => act(null, redoShell), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act('RU 옮기고 다시 AUTO', () => moveRu(k, id, p)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
+ window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, newStart: () => act(null, newStart), undo: () => act(null, undoShell), redo: () => act(null, redoShell), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act('RU 옮기고 다시 AUTO', () => moveRu(k, id, p)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, loadProject, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
   runAll: (keys, opt) => act('AUTO 계산 중', () => runAll(keys, opt)) };   // with the busy overlay and error message, as from the ribbon
  render(); go('room');
 })();

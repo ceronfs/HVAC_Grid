@@ -161,6 +161,18 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
   // BOX's own table windows (격실 목록, 접한 면적) open through the shell too, dressed like the app
   async load() { await super.load(); this.theme(); if (!this.win.__hvacGridOpen) { this.win.__hvacGridOpen = true; this.win.open = (...a) => openPopup(...a); } return this; }
   hasDrawing() { const s = this.win.CAD_APP?.st; return !!(s && s.entities.length && s.decks.length); }
+  // BOX's own project JSON (drawing, decks, room data, CAL settings, backgrounds), made by BOX's "Save JSON" with the
+  // file picker answered in the frame - the HVAC Grid project carries it so ① ② open again with the project
+  // (review 2026-10-21 F05). null without a drawing
+  async projectJson() {
+   await this.load(); if (!this.hasDrawing()) return null;
+   const w = this.win, pick = w.showSaveFilePicker, button = this.doc.getElementById('saveBtn'); let text = null, closed = false;
+   w.showSaveFilePicker = async () => ({ createWritable: async () => ({ write: async s => { text = (text || '') + (typeof s === 'string' ? s : await new w.Blob([s]).text()); }, close: async () => { closed = true; }, abort: async () => {} }) });
+   try { button.click(); await until(() => closed && !button.disabled, 60000, 'BOX JSON'); } finally { w.showSaveFilePicker = pick; }
+   return text;
+  }
+  // the room ids of the BOX drawing (to tell whether it is the drawing a contract was made from)
+  roomIds() { try { return this.win.CAD_APP.rooms().map(r => String(r.id)); } catch { return []; } }
   // BOX's own light / dark follows the shell
   theme() { try { this.doc.documentElement.dataset.theme = document.documentElement.dataset.theme || ''; } catch {} }
   // BOX's canvas as the background of ③ ④ (BOX_CSS hg-bg); BOX itself is not changed

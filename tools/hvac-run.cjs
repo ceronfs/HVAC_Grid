@@ -1,11 +1,12 @@
 // Whole pipeline without a person: the HVAC Grid shell runs headless over the real vendor apps (the same code path as
 // the ribbon), opens a contract or a project, sends every deck and system (supply, exhaust, return) to PHG D with AUTO,
 // and writes the project file and the outputs.
-//   node tools/hvac-run.cjs <contract.json | project.json> <outDir> [--shots] [--solas=<settings.json>]
+//   node tools/hvac-run.cjs <contract.json | project.json> <outDir> [--shots] [--solas=<settings.json>] [--strict]
 // outDir: project.json, report.xlsx, report.html, integrated.dxf, summary.json, phg/<deck__system>.phg.json, shots/*.png
 // --solas: { "lowestBelow": "<space>", "ship": "CARG", "method": "IC", "sprinkler": false, "rooms": { "<room no>": "<space>" } }
 //          (a flat { "<room no>": "<space>" } map works too). Exit code 1 when a plan did not finish AUTO or the page
-//          reported an error.
+//          reported an error. --strict: also when the review has a fail (summary.count.fail) - for automation that
+//          needs a passing review, not only a finished run (review 2026-10-21 F11). A pass is not an approval.
 'use strict';
 const fs = require('fs'), path = require('path');
 const { launch } = require('./browser.cjs'), { start } = require('./serve.cjs');
@@ -65,13 +66,14 @@ function writeOutputs(project, outDir) {
 
 if (require.main === module) (async () => {
  const args = process.argv.slice(2), [input, outDir = 'out/run'] = args.filter(a => !a.startsWith('--'));
- if (!input) { console.error('사용법: node tools/hvac-run.cjs <contract.json|project.json> <outDir> [--shots] [--solas=<settings.json>]'); process.exit(2); }
+ if (!input) { console.error('사용법: node tools/hvac-run.cjs <contract.json|project.json> <outDir> [--shots] [--solas=<settings.json>] [--strict]'); process.exit(2); }
  const solasArg = args.find(a => a.startsWith('--solas=')), solas = solasArg ? JSON.parse(fs.readFileSync(solasArg.slice(8), 'utf8')) : null;
  const { project, errors, seconds } = await run(input, outDir, { shots: args.includes('--shots'), solas });
  const { summary } = writeOutputs(project, outDir);
  console.log(JSON.stringify({ out: outDir, seconds, autoDone: `${summary.autoDone}/${summary.plans}`, count: summary.count, notOk: summary.checks.filter(c => c.level !== 'ok').map(c => `${c.level}: ${c.text}`), penetrations: summary.solas.penetrations, fireDampers: summary.solas.fireDampers, pageErrors: errors.length }));
  if (errors.length) console.error(errors.slice(0, 10).join('\n'));
  if (errors.length || summary.autoDone < summary.plans) process.exit(1);
+ if (args.includes('--strict') && summary.count.fail > 0) { console.error(`--strict: 검토 실패 ${summary.count.fail}건`); process.exit(3); }
 })().catch(e => { console.error(e); process.exit(1); });
 
 module.exports = { run, writeOutputs, applySolas };
