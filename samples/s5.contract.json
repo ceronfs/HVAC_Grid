@@ -5,7 +5,7 @@
  "source": {
   "app": "BOX CAL Enhance",
   "file": "vendor/BOX_CAL_Enhance.html",
-  "sha256": "a8421581c1fe4f42",
+  "sha256": "991d51c92372261d",
   "project": "built-in S5 example",
   "path": null
  },
@@ -31,8 +31,8 @@
   "externalCoolTemp": 35,
   "externalHeatTemp": -20,
   "externalRh": 70,
-  "indoorCoolTemp": 27,
-  "indoorCoolRh": 50,
+  "indoorCoolTemp": 25,
+  "indoorCoolRh": 55,
   "indoorHeatTemp": 22,
   "externalK": 0.7,
   "internalK": 0.9,

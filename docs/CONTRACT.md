@@ -17,7 +17,7 @@ BOX CAL이 계산한 격실·부하를 PHG D가 쓸 수 있는 형태로 옮기�
   rooms:   [{ id, no, name, deckId, isoClass, polygon:[{x,y}], holes:[[{x,y}]], areaM2, volumeM3, ceilingHeightMm,
               systems:{ supply, exhaust, return } }],
   loads:   { [roomId]: { coolingSensibleW, coolingLatentW, coolingW, heatingW, minFreshAirCmh, minAch, achAirCmh, complete, status } },
-  airflow: { [roomId]: { supplyCmh, exhaustCmh, returnCmh, freshAirCmh, source } },
+  airflow: { [roomId]: { supplyCmh, exhaustCmh, returnCmh, freshAirCmh, source, basis, transferInCmh, transferFrom, transferOutCmh, makeupCmh, transferEnsuite? } },
   systems: [{ id, kind:'supply'|'exhaust'|'return', deckIds, roomIds, designCmh }],
   rus:     [],   // (예약) PHG D RU는 프로젝트 파일의 PHG D 프로젝트에 있음
   ducts:   {},   // (예약)
@@ -87,7 +87,7 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 |---|---|---|
 | 급기 | 급기 계통이 있는 격실: ⌈max(냉방 현열 W × 안전율(1 + `conditions.safetyFactorPct`/100, BOX 기본 1.10) × 3 ÷ ΔT, 난방 W × 3 ÷ `heatingSupplyDeltaTK`, 최소 신기)⌉₁₀ (2026-10-20부터 안전율 포함 — 이전에는 안전율 전 현열이라 BOX AHU 풍량보다 약 9 % 적었음; 2026-10-21부터 난방 풍량 포함 — ISO 7547 6.2.1 b·6.3), ΔT 기본 10 K(6.3: 15 K 이하), 난방 ΔT 기본 22 K(6.3 상한, `null`이면 끔). 난방 풍량은 거주구역만 — isoClass CONTROL·WHEELHOUSE(별도 난방, C.3.1·D.3.1)와 ENGINE·BOILER·NON_AC는 제외. `airflow[id].basis`: 급기를 정한 기준(cooling·heating·freshAir). 전달 공기를 보내는 실은 ⌈자기 배기 + 보내는 전달 공기 × (1 + 가압 %)⌉₁₀ 이상(보충 급기) | 이전 통합(Box_PHG_Integrated, HVAC Studio)과 같은 근사(1/(ρ·cp) ≈ 2.99) |
 | 배기 | 배기 계통이 있는 격실: ⌈ACH × 체적⌉₁₀ | BOX `ventilationAirCmh` |
-| 전달 공기 | 배기 > 급기이고 환기가 없는 실(화장실·탈의실·배식실): 부족분을 같은 Deck의 급기 실에서. 순서: 사용자 지정(`contract.transfers`) → 딸린 실(이름이 그 실 이름으로 시작하거나 둘레 40 % 이상을 그 실이 감쌈) → 복도(가장 긴 이웃 벽의 절반 이상 공유) → 벽을 가장 길게 공유하는 실. 출처는 급기 > 배기인 실만, 계단·개방갑판·창고·트렁크·팬룸·조리실·기관구역·밀폐 실은 제외(이름 또는 SOLAS 공간). CO₂·축전지·페인트 실은 자체 흡입구 | 문 그릴·언더컷 |
+| 전달 공기 | 배기 > 급기이고 환기가 없는 실(화장실·탈의실·배식실): 부족분을 같은 Deck의 급기 실에서. 순서: 사용자 지정(`contract.transfers`) → 딸린 실(이름이 그 실 이름으로 시작하거나 둘레 40 % 이상을 그 실이 감쌈) → 복도(가장 긴 이웃 벽의 절반 이상 공유) → 벽을 가장 길게 공유하는 실. 출처는 급기 > 배기인 실만, 계단·개방갑판·창고·트렁크·팬룸·조리실·기관구역·밀폐 실은 제외(이름 또는 SOLAS 공간). CO₂·축전지·페인트 실은 자체 흡입구. 출처가 복도가 아닌 딸린 실이면 `transferEnsuite: true` — 개인 위생실(ISO 7547 6.4.1) 판정에 씀 | 문 그릴·언더컷 |
 | 환기 | **공조 구역**(급기 계통 하나)마다: 신기 = max(최소 신기 합, 구역 배기 + 가압(기본 배기의 5 %, `pressurizationBasis: 'supply'`면 급기의 %), 급기 × `minOaPct`(기본 25 %, 선주 사양, ③ 리본에서 0~100 %)), 가압이 급기의 10 %를 넘으면 릴리프 확인(`RELIEF`), 환기 = 급기 − 신기를 환기 실에 "급기 − 자기 배기 − 보낸 전달 공기" 비율로 배분(10 CMH 단위). 환기 실이 없는 구역(조리실 급기팬)은 전외기 | 거주구 약가압 유지 (리뷰 1차 R1-ENG-01) |
 | 신기 | 정보값: 최소 신기량 | 계통 OA 배분은 BOX AHU 계산 결과로 대체 예정 |
 
@@ -95,7 +95,7 @@ BOX의 AHU 계산(`CAL_ENHANCE.ahu`)이 유효하면(AHU 조건 입력 완료) �
 
 `rules.airBalance: 'room'`이면 v0(실별 환기 = 급기 − 배기), `transferMakeup: false`면 보충 급기 없이 계산합니다.
 
-풍량 검토(`lib/project.cjs airChecks`): 구역 수지 부족(실패), 배기가 있고 환기가 없는 실의 급기 > 배기(부압 미확보, 실패), 난방 급기 온도차 > 18 K, 기관구역을 냉방 규칙으로 계산, 이웃 급기 실이 없는 배기 실, 복도 문 통기구 > 0.05 m²(화물선 II-2/9.4.2), 부하 미완료(확인).
+풍량 검토(`lib/project.cjs airChecks`): 구역 수지 부족(실패), 배기가 있고 환기가 없는 실의 급기 > 배기(부압 미확보 — ISO 7547 6.5의 조리실·식품 준비·병원·흡연실과 위생실은 실패, 그 밖의 실은 확인, 전달 공기를 주는 실은 제외), 난방 급기 온도차 > 22 K(6.3, 난방 풍량 규칙을 끈 경우), 냉방 ΔT > 15 K(SUPPLY_DT), 6.4.1 배기(EXHAUST_ISO — 개인 위생실은 딸린 실만, 체적은 배기 계산과 같은 것), 6.4.2 배기 계통 분리(EXHAUST_GROUPS), 실별 신기(ROOM_OA — 급기 10 CMH 한 단계 안의 부족은 반올림으로 봄, 제안 급기는 구역 수지를 다시 계산해 찾음), 기관구역을 냉방 규칙으로 계산, 이웃 급기 실이 없는 배기 실, 복도 문 통기구 > 0.05 m²(화물선 II-2/9.4.2), 부하 미완료(확인).
 
 ## 5. 검증
 
