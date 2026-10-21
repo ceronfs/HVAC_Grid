@@ -45,7 +45,28 @@
 - **F05의 "도면 정보 없음"**: 과장이다. 격실 형상(polygon·holes)과 조건 일부는 저장된다.
 - **F09의 과소율·kW**: 외부 검토가 다시 계산한 값이 아니다. 저장소의 ISO 7547 대조 값(T3 −2.4 kW, 조타실 −0.8 kW)이 근거다.
 
-## 4. 고칠 순서 (권고)
+## 4. 조치 내역 (2026-10-21)
+
+고칠 결함 7건과 쉽게 고칠 수 있는 낮은 항목 3건(A01·A03·A07)을 고쳤다. 시험 `test/review-external.test.cjs` 8건 추가 — 단위 89/89, E2E 3/3(셸·T3·vendor) 통과. S5·T3 예제 결과는 바이트 단위로 그대로(급기 11,680 · 25,600 CMH).
+
+| # | 고친 곳 | 내용 | 시험 |
+|---|---|---|---|
+| F01 | `tools/make-offline.cjs` | 복사 목록에 `samples/t3/T3.solas.json`·`vendor/VERSIONS.json` 추가. 셸 라이브러리 목록뿐 아니라 셸·브리지가 부르는 `../lib|samples|vendor/…` 경로를 모두 목록과 대조(`missingFiles`) — 빠지면 빌드 실패 | F01 |
+| F01 | `app/shell.js` openSample | T3 SOLAS 설정을 못 읽으면 예제는 열린 채 "기본값" 안내(전에는 예외로 중단). 읽으면 SOLAS 공간을 반영해 풍량을 다시 계산 | E2E |
+| F02 | `dist/HVAC_Grid_offline` | 새 도구로 다시 빌드(커밋·Node·파일별 SHA-256이 든 `MANIFEST.json`) | 빌드·독립망 T3 확인 |
+| F03 | `lib/contract.cjs` validate, `lib/project.cjs` read | 부하 7개 값: 숫자·유한·범위(W는 ±1e7, 풍량·환기 횟수는 0~1e7 — 제품 한도이며 규정 값 아님). `PJ.read`가 파일과 **다시 계산한 결과** 둘 다 검사 | F03 (`'bad'`, 1e308, Infinity, −1, 2e7 거부; 음의 냉방 부하는 허용) |
+| F04 | `lib/contract.cjs` `systemsOf` | 계통 목록(실·Deck·합계)을 매번 실의 계통 배정으로 다시 만듦 — 파일의 목록은 믿지 않음. 다르면 읽을 때 알림 | F04 (빈 roomIds·가짜 계통 → 원래 합계·계획 수) |
+| F06 | `lib/contract.cjs` `carrySettings`, `app/shell.js` | BOX에서 다시 만들 때 Riser·공조기 Deck·SOLAS 분류에 더해 **전달 공기 지정**(남은 실끼리만)과 **RU 이동**(남은 RU만)도 넘기고 풍량을 다시 계산. 전에는 SOLAS 분류를 계산 뒤에 붙여 구역 수지에 반영되지 않았음. `tools/hvac-run.cjs --solas`도 같은 이유로 다시 계산 | F06 |
+| F07 | `lib/project.cjs` cleanResult | 결과 서명을 4,000자에서 자르지 않음(별도 한도 200만 자) — 약 200 RU 넘는 계획이 늘 "오래됨"이던 문제 | F07 |
+| F08 | `lib/phg-plan.cjs` | 배 안에서 번호가 겹치는 실의 RU ID는 실 ID로(번호가 유일한 실은 그대로 — 저장된 RU 이동 유지) | F08 |
+| F10 | `tools/make-offline.cjs` `guardOut` | 지우기 전에 실제 경로로 확인: 원본 폴더·그 상위·`.git`·`package.json` 있는 폴더 거부, 내용이 있으면 이 도구가 쓴 `MANIFEST.json`이 있어야 교체(예전 기본 폴더 한 번만 예외). 빈 폴더·새 폴더는 그대로 | F10 (임시 폴더만 사용) |
+| A01 | `lib/project.cjs` read | 덕트 형상이 잘린 결과는 서명을 지워 다시 저장해도 "다시 보내기 필요" | A01 |
+| A03 | `tools/serve.cjs`, `tools/launch.cjs` | `/__alive`·`/__bye`는 앱 자신의 출처만(다른 사이트 Origin·cross-site 403). 모든 응답에 `X-HVAC-Grid`, 런처는 이 표시로 "이미 실행 중" 판단(다른 프로그램이 포트를 쓰면 착각하지 않음) | A03 |
+| A07 | `tools/make-offline.cjs` | `MANIFEST.json`(배포 식별, F10 표지 겸) | F10·빌드 |
+
+고치지 않고 결정으로 남긴 것: F05(통합 파일에 BOX 원본 포함 여부 — 지금은 설계 데이터·PHG 결과·형상만 저장하는 설계), F09(BOX 일사 규칙, VENDOR_PATCHES J), F11(hvac-run 종료 코드 — 필요하면 `--strict`), A05(수평 방화댐퍼 손실 여유), A06(BOX 권고 O~U), A04·A08(성능 측정·독립망 현장 시험 계획). `package-lock.json`(A07 일부)은 런타임 의존성이 없고 개발용 playwright-core 하나라 이번에 넣지 않음.
+
+## 5. 고칠 순서 (권고, 조치 전 작성)
 
 1. `tools/make-offline.cjs`: F01(파일·fetch 자체 검사) + F10(삭제 보호) + A07(MANIFEST) → 배포본 다시 빌드(F02), 독립망 T3 예제 한 번 확인(A08)
 2. `lib/contract.cjs`·`lib/project.cjs`: F04(계통 목록 재생성), F03(부하 수치 검사) — S5·T3 합계는 그대로여야 함

@@ -11,25 +11,28 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
  '.json': 'application/json; charset=utf-8', '.dxf': 'application/dxf', '.png': 'image/png', '.svg': 'image/svg+xml', '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
 
 // onAlive: the open app says it is still there (POST /__alive, every few seconds); onBye: a window of it closed or
-// reloads (POST /__bye) - the launcher stops the server when no window is left
+// reloads (POST /__bye) - the launcher stops the server when no window is left. Only the app's own pages may post them:
+// a page of another site (another browser window on this PC) sends its Origin and is refused (review 2026-10-21 A03).
+// Every answer carries X-HVAC-Grid, so the launcher knows the port is HVAC Grid's and not another program's
 function start(port = 0, { onAlive = null, onBye = null } = {}) {
  let actual = port;
  const server = http.createServer((req, res) => {
-  const end = (code, headers = {}) => { try { res.writeHead(code, headers).end(); } catch {} };
+  const end = (code, headers = {}) => { try { res.writeHead(code, { ...headers, 'X-HVAC-Grid': '1' }).end(); } catch {} };
+  const own = () => { const o = req.headers.origin, site = req.headers['sec-fetch-site'];
+   return (!o || new RegExp(`^http://(127\\.0\\.0\\.1|localhost):${actual}$`, 'i').test(o)) && (!site || site === 'same-origin'); };
   try {
    const host = String(req.headers.host || '');
    if (!new RegExp(`^(127\\.0\\.0\\.1|localhost)(:${actual})?$`, 'i').test(host)) return end(421);
    let rel; try { rel = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { return end(400); }
    if (/[\0\r\n]/.test(rel)) return end(400);
    if (rel === '/') return end(302, { Location: '/app/' });
-   if (rel === '/__alive') { if (req.method === 'POST') onAlive?.(); return end(204); }
-   if (rel === '/__bye') { if (req.method === 'POST') onBye?.(); return end(204); }
+   if (rel === '/__alive' || rel === '/__bye') { if (!own()) return end(403); if (req.method === 'POST') (rel === '/__alive' ? onAlive : onBye)?.(); return end(204); }
    let file = path.resolve(ROOT, '.' + rel);
    if (!PUBLIC.some(d => file === path.join(ROOT, d) || file.startsWith(path.join(ROOT, d) + path.sep))) return end(404);
    if (rel.endsWith('/')) file = path.join(file, 'index.html');
    fs.stat(file, (error, stat) => {
     if (error || !stat.isFile()) return end(404);
-    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Content-Length': stat.size, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Content-Length': stat.size, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'X-HVAC-Grid': '1' });
     fs.createReadStream(file).on('error', () => res.destroy()).pipe(res);
    });
   } catch { end(500); }

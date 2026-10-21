@@ -43,9 +43,9 @@ function openWindow() {
  return { child, done: new Promise(done => { child.on('exit', () => done(Date.now() - t)); child.on('error', e => { log('browser error', e.message); done(-1); }); }) };
 }
 
-// is HVAC Grid already served on the port?
+// is HVAC Grid already served on the port? (its server says so in X-HVAC-Grid - another program on the port is not)
 const running = () => new Promise(done => {
- const req = http.get(url, res => { res.resume(); done(res.statusCode === 200); });
+ const req = http.get(url, res => { res.resume(); done(res.statusCode === 200 && res.headers['x-hvac-grid'] === '1'); });
  req.on('error', () => done(false)); req.setTimeout(1500, () => { req.destroy(); done(false); });
 });
 

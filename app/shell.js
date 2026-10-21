@@ -148,10 +148,12 @@
  async function extractContract() {
   await box.load();
   const raw = await box.extract(); raw.source = { app: 'BOX CAL Enhance', file: 'vendor/BOX_CAL_Enhance.html', project: 'BOX 화면' };
-  // made again after a change in BOX: the user's settings stay, and so do the PHG D results - only the plans that changed
-  // become "다시 보내기 필요" (their signatures no longer match), results of plans that are gone are dropped
-  const old = S.contract, next = K.buildContract(raw, old?.rules || {});
-  for (const k of ['roots', 'unitDecks', 'solas']) if (old?.[k]) next[k] = old[k];
+  // made again after a change in BOX: the user's settings stay (risers, unit decks, SOLAS classes, transfer-air sources,
+  // RU moves - those of rooms still there; the airflow worked out again with them), and so do the PHG D results - only
+  // the plans that changed become "다시 보내기 필요" (their signatures no longer match), results of plans that are gone
+  // are dropped
+  const old = S.contract, next = K.carrySettings(old, K.buildContract(raw, old?.rules || {}));
+  if (next.ruMoves) { const ids = new Set(PL.plan(next).flatMap(p => p.rus.map(u => u.id))); next.ruMoves = Object.fromEntries(Object.entries(next.ruMoves).filter(([k]) => ids.has(k))); }
   setContract(next, { keepWork: true });
   const keys = new Set(plans().map(p => p.key)), gone = Object.keys(S.results).filter(k => !keys.has(k));
   for (const k of gone) { delete S.results[k]; delete S.projects[k]; delete S.geometry[k]; } if (gone.includes(S.active)) S.active = null;
@@ -176,7 +178,13 @@
   Object.assign(S, { contract: null, projects: {}, results: {}, geometry: {}, active: null, file: null, duct: null, phgEditor: false });
   if (phg.loading) phg.open(phg.blank, 'HVAC Grid');
   await extractContract();
-  if (name === 't3') { S.contract.solas = { ...(S.contract.solas || {}), ...(await (await fetch('../samples/t3/T3.solas.json', { cache: 'no-store' })).json()) }; invalidate(); }
+  // T3's SOLAS settings (ship, the space below the lowest deck, room spaces): the zone balance uses the spaces, so the
+  // airflow is worked out again; without the file (an old offline copy) the example stays open on the defaults
+  if (name === 't3') {
+   let solas = null; try { const res = await fetch('../samples/t3/T3.solas.json', { cache: 'no-store' }); if (res.ok) solas = await res.json(); } catch { /* below */ }
+   if (solas) { S.contract = K.applyRules({ ...S.contract, solas: { ...(S.contract.solas || {}), ...solas } }); invalidate(); }
+   else toast('T3 SOLAS 설정 파일(samples/t3/T3.solas.json)을 읽지 못했습니다 — 선종·최하층 아래 공간은 기본값입니다', true);
+  }
   S.undo = []; S.redo = []; S.dirty = false;
   say(name === 't3' ? `T3 시험선: 도면(①)과 설계 데이터를 열었습니다 — 4 Deck · ${S.contract.rooms.length}실 · 다층 계통` : `S5 예제: 도면(①)과 설계 데이터를 열었습니다 — 5 Deck · ${S.contract.rooms.length}실`);
  }

@@ -9,7 +9,7 @@
 'use strict';
 const fs = require('fs'), path = require('path');
 const { launch } = require('./browser.cjs'), { start } = require('./serve.cjs');
-const PJ = require('../lib/project.cjs'), RP = require('../lib/report.cjs'), XL = require('../lib/xlsx.cjs'), DX = require('../lib/dxf-out.cjs'), U = require('../lib/util.cjs');
+const K = require('../lib/contract.cjs'), PJ = require('../lib/project.cjs'), RP = require('../lib/report.cjs'), XL = require('../lib/xlsx.cjs'), DX = require('../lib/dxf-out.cjs'), U = require('../lib/util.cjs');
 
 // SOLAS settings and room spaces (by room number) into the contract
 function applySolas(contract, solas) {
@@ -18,7 +18,8 @@ function applySolas(contract, solas) {
  const byNo = Object.fromEntries(contract.rooms.map(r => [r.no, r.id])), rooms = { ...(contract.solas?.rooms || {}) };
  for (const [no, space] of Object.entries(flat ? solas : solas.rooms || {})) if (byNo[no]) rooms[byNo[no]] = { space };
  const settings = flat ? {} : Object.fromEntries(Object.entries(solas).filter(([k]) => k !== 'rooms'));
- return { ...contract, solas: { ...(contract.solas || {}), ...settings, rooms } };
+ // the zone balance uses the SOLAS spaces (transfer-air sources): the airflow is worked out again with them
+ return K.applyRules({ ...contract, solas: { ...(contract.solas || {}), ...settings, rooms } });
 }
 
 async function run(input, outDir, { shots = false, solas = null, log = console.log } = {}) {
