@@ -71,6 +71,22 @@ const FILE = path.join(OUT, 'SOLAS_방화등급표기.html');
    for (const id of a.m.decks[1].walls.find(x => x.label).ids) S.bounds[id] = 'A-60'; SOLAS_TOOL.render(); });
   await p.click(`button[data-ddel="${await H(() => SOLAS_TOOL.S.decks[1].id)}"]`);
   assert.deepEqual(await H(() => [SOLAS_TOOL.S.decks.length, Object.keys(SOLAS_TOOL.S.user).length, Object.keys(SOLAS_TOOL.S.bounds).length]), [3, 1, 0]);
+  // (2026-10-21) the T3 example classified as HVAC Grid classifies T3: every room's SOLAS space and category the same (the
+  // stores and the drying room by their floor area - the tool had passed none, so all were "under 4 m²")
+  const SO = require('../../lib/solas.cjs'), c3 = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'samples', 't3.contract.json'), 'utf8')), g3 = SO.boundaries(c3).classes;
+  const grid = Object.fromEntries(c3.rooms.map(r => [r.no, `${g3[r.id].space}|${g3[r.id].cat}`]));
+  await reset(); await p.click('#sampleBtn');
+  const tool = await H(() => { const a = SOLAS_TOOL.analysis(); return Object.fromEntries(a.c.rooms.map(r => [r.no, `${a.b.classes[r.id].space}|${a.b.classes[r.id].cat}`])); });
+  const differ = Object.keys(grid).filter(no => grid[no] !== tool[no]).map(no => `${no}: ${tool[no]} ≠ ${grid[no]}`); log('T3 spaces vs HVAC Grid', differ.length, differ.slice(0, 3));
+  assert.deepEqual(differ, []);
+  // (2026-10-21) an architectural drawing (double-line walls, door gaps, door swings, furniture): the rooms from their names
+  const { drawing } = require('../fixtures/arch-dxf.cjs');
+  await reset(); await p.setInputFiles('#fileIn', { name: 'arch.dxf', mimeType: 'application/dxf', buffer: Buffer.from(drawing()) }); await p.waitForFunction(() => SOLAS_TOOL.S.decks.length === 1);
+  const arch = await H(() => { const a = SOLAS_TOOL.analysis(); return { status: document.getElementById('status').textContent, rooms: a.c.rooms.map(r => `${r.name}|${a.b.classes[r.id].space}`).sort(), bulkheads: a.b.boundaries.filter(x => x.kind === 'bulkhead').length, labels: a.m.decks[0].walls.filter(w => w.label).length }; });
+  log('architectural drawing', JSON.stringify(arch));
+  assert.match(arch.status, /arch\.dxf: 실 6개 \(건축식 도면/); assert.equal(arch.rooms.length, 6);
+  assert.ok(arch.rooms.includes('GALLEY|조리실') && arch.rooms.includes('CORRIDOR|통로') && arch.rooms.includes('WC|화장실·샤워실·욕실'), arch.rooms.join(', '));
+  assert.ok(arch.bulkheads >= 7 && arch.labels >= 4, 'walls between the rooms found across the wall thickness');
   // (review) the legend shows no penetration symbols: the tool has no penetrations
   assert.ok(!(await H(() => document.querySelector('.fp-legend').textContent)).includes('방화댐퍼'));
   log('requests out of the file', requests.length, requests.slice(0, 3)); assert.equal(requests.length, 0);

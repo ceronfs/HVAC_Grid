@@ -58,7 +58,7 @@
   <section class="card"><h2>1. 도면</h2>
    <div class="row"><button class="primary" id="openBtn">도면 열기 (DXF · JSON)</button><button id="sampleBtn">T3 예제</button></div>
    <input type="file" id="fileIn" accept=".dxf,.json" multiple hidden>
-   <p class="muted" style="margin:6px 0 0">DXF 한 파일이 Deck 하나(벽 LINE 또는 닫힌 폴리라인 + 실 번호·이름 글자). 여러 Deck을 나란히 그린 한 파일은 열고 "Deck N개로 나누기". HVAC Grid 프로젝트·설계 데이터 JSON, 이 도구의 작업 파일도 열립니다.</p>
+   <p class="muted" style="margin:6px 0 0">DXF 한 파일이 Deck 하나(벽 LINE·닫힌 폴리라인, 또는 건축식 두 줄 벽·문 틈 + 실 번호·이름 글자). 여러 Deck을 나란히 그린 한 파일은 열고 "Deck N개로 나누기". HVAC Grid 프로젝트·설계 데이터 JSON, 이 도구의 작업 파일도 열립니다.</p>
    <div id="decks"></div>
   </section>
   <section class="card"><h2>2. SOLAS 설정</h2>
@@ -89,7 +89,7 @@
 /*@@SAMPLES@@*/
 (() => {
  'use strict';
- const SO = require('solas.cjs'), FP = require('fire-plan.cjs'), X = require('dxf-in.cjs'), U = require('util.cjs'), esc = U.esc;
+ const SO = require('solas.cjs'), FP = require('fire-plan.cjs'), X = require('dxf-in.cjs'), U = require('util.cjs'), GE = require('geom.cjs'), esc = U.esc;
  const $ = id => document.getElementById(id);
  // the work: decks (each a drawing), settings, the user's space per room, the user's rating per boundary
  const S = { decks: [], ship: 'CARG', method: 'IC', sprinkler: false, below: '', user: {}, bounds: {}, showC: false, showOuter: false, minLabel: 1, cur: null, room: null, file: '' };
@@ -98,13 +98,14 @@
  // ---------- reading ----------
  // DXF text: UTF-8 (DXF 2007 and later), else the Korean code page of older drawings
  const decodeBytes = buf => { try { return new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch { return new TextDecoder('euc-kr').decode(buf); } };
+ // the rooms read the way that names the most (lib/dxf-in.cjs bestRooms): room outlines, the faces of the wall lines (any
+ // layer when the wall layers have other names), or - an architectural drawing with double-line walls and door gaps -
+ // the areas round the room texts
  function deckFromDxf(text, name, z) {
-  let rooms = X.rooms(text);
-  if (!rooms.length) rooms = X.rooms(text, { wallLayers: /./ });   // a drawing whose wall layers have other names: every LINE is a wall
-  rooms = rooms.filter(r => r.areaM2 >= 0.3);
+  const best = X.bestRooms(text), rooms = best.rooms.filter(r => r.areaM2 >= 0.3);
   const id = 'D' + (S.decks.length + 1) + '_' + Math.random().toString(36).slice(2, 6);
   const d = { id, name, z, dx: 0, dy: 0, file: name, rooms: rooms.map((r, i) => ({ id: `${id}_${i + 1}`, no: r.no || '', name: r.name || '', polygon: r.polygon })) };
-  d.parts = groups(d.rooms).length; return d;
+  d.parts = groups(d.rooms).length; d.how = best.how; d.merged = best.how === 'text' ? rooms.filter(r => r.names > 1).length : 0; return d;
  }
  // rooms that lie apart in groups (a gap over 1.5 m): one drawing with every deck side by side. Groups of one or two rooms
  // (a deck house, a store) go to the nearest big group. Ordered lowest deck first: left to right, or bottom to top.
@@ -155,7 +156,7 @@
   const c = d && d.contract ? d.contract : d;
   if (!c || !Array.isArray(c.decks) || !Array.isArray(c.rooms)) throw new Error(file + ': HVAC Grid 프로젝트·설계 데이터나 이 도구의 작업 파일이 아닙니다');
   S.decks = c.decks.slice().sort((a, b) => a.elevationMm - b.elevationMm).map(k => ({ id: k.id, name: k.name || k.id, z: k.elevationMm || 0, file,
-   rooms: c.rooms.filter(r => r.deckId === k.id).map(r => ({ id: r.id, no: r.no || '', name: r.name || '', polygon: r.polygon, holes: r.holes || [] })) }));
+   rooms: c.rooms.filter(r => r.deckId === k.id).map(r => ({ id: r.id, no: r.no || '', name: r.name || '', polygon: r.polygon, holes: r.holes || [], ...(Number.isFinite(r.areaM2) && r.areaM2 > 0 ? { areaM2: r.areaM2 } : {}) })) }));
   const so = c.solas || {};
   if (so.ship) S.ship = so.ship; if (so.method) S.method = so.method; S.sprinkler = !!so.sprinkler; S.below = so.lowestBelow || '';
   S.user = Object.fromEntries(Object.entries(so.rooms || {}).filter(([, v]) => v && v.space).map(([k, v]) => [k, v.space]));
@@ -174,9 +175,9 @@
    const text = decodeBytes(await f.arrayBuffer());
    if (!/^\s*0\s*\r?\n\s*SECTION/m.test(text)) { notes.push(`${f.name}: DXF 파일이 아닙니다 (AutoCAD에서 DXF로 저장한 파일이 필요)`); lv = 2; continue; }
    const z = S.decks.length ? Math.max(...S.decks.map(d => +d.z || 0)) + 2800 : 0, d = deckFromDxf(text, f.name.replace(/\.dxf$/i, ''), z);
-   if (!d.rooms.length) { notes.push(`${f.name}: 실을 찾지 못했습니다 (벽 LINE이 닫힌 면이나 닫힌 폴리라인이 필요)`); lv = 2; continue; }
-   S.decks.push(d); notes.push(`${f.name}: 실 ${d.rooms.length}개` + (d.parts > 1 ? ` — 떨어진 도면 묶음 ${d.parts}개: Deck 여러 개를 한 파일에 그린 도면이면 "Deck ${d.parts}개로 나누기"` : ''));
-   if (d.parts > 1) lv = Math.max(lv, 1);
+   if (!d.rooms.length) { notes.push(`${f.name}: 실을 찾지 못했습니다 (벽 선과 실 이름 글자가 필요 — 블록(INSERT) 안의 선·글자는 읽지 않음)`); lv = 2; continue; }
+   S.decks.push(d); notes.push(`${f.name}: 실 ${d.rooms.length}개` + (d.how === 'text' ? ` (건축식 도면: 실 이름 글자 둘레로 찾음${d.merged ? ` · 한 영역에 이름 여럿 ${d.merged}곳 — 벽 틈 확인` : ''})` : '') + (d.parts > 1 ? ` — 떨어진 도면 묶음 ${d.parts}개: Deck 여러 개를 한 파일에 그린 도면이면 "Deck ${d.parts}개로 나누기"` : ''));
+   if (d.parts > 1 || d.merged) lv = Math.max(lv, 1);
   }
   if (!S.cur || !S.decks.some(d => d.id === S.cur)) S.cur = S.decks[0]?.id || null;
   render(); if (notes.length) say(notes.join(' · '), ['ok', 'warn', 'err'][lv]);
@@ -186,7 +187,8 @@
  // a deck's plan moved by its X·Y (decks that came out of one drawing are put over each other)
  const moved = (pts, d) => (+d.dx || +d.dy) ? pts.map(p => ({ x: p.x + (+d.dx || 0), y: p.y + (+d.dy || 0) })) : pts;
  const contract = () => ({ decks: S.decks.map(d => ({ id: d.id, name: d.name, elevationMm: +d.z || 0 })),
-  rooms: S.decks.flatMap(d => d.rooms.map(r => ({ ...r, polygon: moved(r.polygon, d), deckId: d.id, holes: (r.holes || []).map(h => moved(h, d)), systems: {} }))),
+  // the floor area from the outline: the SOLAS space of a store or drying room depends on it (4 m²)
+  rooms: S.decks.flatMap(d => d.rooms.map(r => ({ ...r, polygon: moved(r.polygon, d), deckId: d.id, holes: (r.holes || []).map(h => moved(h, d)), areaM2: r.areaM2 ?? GE.roomArea({ polygon: r.polygon, holes: r.holes || [] }) / 1e6, systems: {} }))),
   solas: { ship: S.ship, method: S.method, sprinkler: S.sprinkler, lowestBelow: S.below || null,
    rooms: Object.fromEntries(Object.entries(S.user).map(([k, v]) => [k, { space: v }])), bounds: Object.fromEntries(Object.entries(S.bounds).map(([k, v]) => [k, { grade: v }])) } });
  let cache = null;
