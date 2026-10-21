@@ -85,7 +85,9 @@ test('integrated DXF and HTML report', () => {
  const back = X.rooms(dxf, { roomLayers: /^ROOM$/ });
  assert.equal(back.length, pr.contract.rooms.length);
  const html = RP.html(pr, a);
- assert.match(html, /<svg/); assert.match(html, /주관청/); assert.equal((html.match(/<figure class="page">/g) || []).length, 4);
+ assert.match(html, /<svg/); assert.match(html, /주관청/);
+ // a page per deck: the deck plans and the fire-rating plans (방화 등급도)
+ assert.equal((html.match(/<figure class="page">/g) || []).length, 8); assert.equal((html.match(/<figcaption>방화 등급도 — /g) || []).length, 4);
  assert.match(html, /Content-Security-Policy/); assert.ok(!/<script/i.test(html)); assert.match(html, /미해결 확인 사항/); assert.match(html, /선수 FWD/);
 });
 

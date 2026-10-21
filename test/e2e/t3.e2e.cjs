@@ -34,7 +34,7 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   await H(() => { HVACGrid.S.deck = 'D2'; HVACGrid.render(); }); await p.waitForTimeout(200); await shot('3-air-D2');
   // ⑤ 방화: every room classified by name (duct trunks too); the space below the lowest deck is set in the ribbon
   await p.click('.step[data-step=review]'); await idle();
-  await p.locator('#report .tabs button', { hasText: '방화' }).click();
+  await p.locator('#report .tabs button', { hasText: '방화 (SOLAS)' }).click();
   assert.equal(await H(() => HVACGrid.analysis().solas.summary.unclassified.length), 0, 'all rooms classified');
   await p.selectOption('#belowSel', '기관실 — A류'); await idle();
   assert.ok(await H(() => HVACGrid.analysis().solas.boundaries.some(b => b.kind === 'floor' && b.grade === 'A-60')), 'floor over the engine room A-60');
@@ -45,7 +45,7 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   assert.equal(a.done, 18); assert.equal(a.out, 0, "no duct outside the rooms"); assert.deepEqual(a.fails, []); assert.equal(a.pass, 0, 'AUTO keeps out of the casing, galley, CO2 room, stairs'); assert.ok(a.pens > 20); assert.ok(a.fd > 0); assert.ok(a.acc.complete && a.acc.indexPa > 0 && a.acc.fanPa > a.acc.indexPa);
   await shot('5-review-nets');
   await p.locator('#report .tabs button', { hasText: '계통·수직' }).click(); await shot('5-review-systems');
-  await p.locator('#report .tabs button', { hasText: '방화' }).click(); await shot('5-review-fire');
+  await p.locator('#report .tabs button', { hasText: '방화 (SOLAS)' }).click(); await shot('5-review-fire');
   // run test P2-1: the first penetration row is not under the table header (sticky header in a scroll box)
   const firstRow = await H(() => { const tr = document.querySelector('#report .scrollx tbody tr'); tr.scrollIntoView({ block: 'center' }); const b = tr.getBoundingClientRect(), el = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2); return { tag: el?.tagName, inRow: tr.contains(el) }; });
   assert.ok(firstRow.inRow, 'first penetration row visible: ' + JSON.stringify(firstRow));

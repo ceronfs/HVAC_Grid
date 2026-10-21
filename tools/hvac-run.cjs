@@ -2,7 +2,7 @@
 // the ribbon), opens a contract or a project, sends every deck and system (supply, exhaust, return) to PHG D with AUTO,
 // and writes the project file and the outputs.
 //   node tools/hvac-run.cjs <contract.json | project.json> <outDir> [--shots] [--solas=<settings.json>] [--strict]
-// outDir: project.json, report.xlsx, report.html, integrated.dxf, summary.json, phg/<deck__system>.phg.json, shots/*.png
+// outDir: project.json, report.xlsx, report.html, integrated.dxf, fire-plan.dxf (방화 등급도), summary.json, phg/<deck__system>.phg.json, shots/*.png
 // --solas: { "lowestBelow": "<space>", "ship": "CARG", "method": "IC", "sprinkler": false, "rooms": { "<room no>": "<space>" } }
 //          (a flat { "<room no>": "<space>" } map works too). Exit code 1 when a plan did not finish AUTO or the page
 //          reported an error. --strict: also when the review has a fail (summary.count.fail) - for automation that
@@ -56,6 +56,7 @@ function writeOutputs(project, outDir) {
  for (const [k, text] of Object.entries(project.projects)) { const f = path.resolve(phgDir, U.safeName(k) + '.phg.json'); if (path.dirname(f) === phgDir) fs.writeFileSync(f, text); }
  fs.writeFileSync(path.join(outDir, 'report.xlsx'), XL.xlsx(RP.sheets(project, a)));
  fs.writeFileSync(path.join(outDir, 'report.html'), RP.html(project, a));
+ fs.writeFileSync(path.join(outDir, 'fire-plan.dxf'), require('../lib/fire-plan.cjs').toDxf(require('../lib/fire-plan.cjs').model(project.contract, a.solas)));
  fs.writeFileSync(path.join(outDir, 'integrated.dxf'), DX.integratedDxf(project.contract, { diagrams: require('../lib/diagram.cjs').systemDiagrams(project.contract, a), plans: a.plans, geometry: project.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers }));
  const summary = { plans: a.total, autoDone: a.done, stale: a.stale, count: a.count, checks: a.checks, zones: a.zones.map(z => ({ zone: z.supplySystemId, sa: z.saCmh, ea: z.eaCmh, oa: z.oaCmh, ra: z.raCmh, ok: z.ok })),
   systems: a.systems.map(s => ({ system: s.systemKey, kind: s.kind, unitDeck: s.unitDeckId, fanCmh: s.fanCmh, decks: s.decks.length, risers: s.risers.length, riserLengthM: s.riserLengthM, espPa: s.indexPa, fanPa: s.fanPa, indexDeck: s.indexDeckId })),

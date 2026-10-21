@@ -18,7 +18,7 @@ const MANIFEST = 'MANIFEST.json', KIND = 'HVAC Grid offline copy';
 const FILES = [
  'HVAC_Grid.bat', 'tools/start-hidden.vbs', 'tools/launch.cjs', 'tools/serve.cjs',
  'app/index.html', 'app/shell.js', 'app/bridge.js', 'app/shell.css', 'app/popup.css', 'app/logo-32.png', 'app/logo-64.png', 'app/logo-128.png',
- ...['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'diagram.cjs', 'dxf-out.cjs', 'report.cjs'].map(f => 'lib/' + f),
+ ...['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'diagram.cjs', 'dxf-out.cjs', 'fire-plan.cjs', 'report.cjs'].map(f => 'lib/' + f),
  'vendor/BOX_CAL_Enhance.html', 'vendor/DuctConcept_PHG_D.html', 'vendor/VERSIONS.json',
  'samples/s5.contract.json', 'samples/t3.contract.json', 'samples/t3/T3.box.json', 'samples/t3/T3.solas.json'];
 

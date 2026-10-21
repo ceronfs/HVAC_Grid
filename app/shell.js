@@ -6,8 +6,8 @@
 (async () => {
  const B = window.HVACGridBridge, $ = id => document.getElementById(id);
  const show = (el, on) => el.toggleAttribute('hidden', !on);   // works for the SVG plan too (no .hidden property on SVG elements)
- const LIB = await B.loadLibs('../lib/', ['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'diagram.cjs', 'dxf-out.cjs', 'report.cjs']);
- const K = LIB.contract, PL = LIB['phg-plan'], PJ = LIB.project, SO = LIB.solas, XL = LIB.xlsx, DX = LIB['dxf-out'], RP = LIB.report, SVG = LIB['plan-svg'], U = LIB.util, GE = LIB.geom, DG = LIB.diagram;
+ const LIB = await B.loadLibs('../lib/', ['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'diagram.cjs', 'dxf-out.cjs', 'fire-plan.cjs', 'report.cjs']);
+ const K = LIB.contract, PL = LIB['phg-plan'], PJ = LIB.project, SO = LIB.solas, XL = LIB.xlsx, DX = LIB['dxf-out'], RP = LIB.report, SVG = LIB['plan-svg'], U = LIB.util, GE = LIB.geom, DG = LIB.diagram, FP = LIB['fire-plan'];
  const esc = U.esc, fmt = v => v == null || v === '' || Number.isNaN(+v) ? '—' : Math.round(v).toLocaleString();
  const box = new B.Box($('boxFrame')), phg = new B.Phg($('phgFrame'));
  const S = { step: 'room', contract: null, deck: null, room: null, kind: 'supply', sys: null, filter: 'all', overlay: 'air', tab: 'nets', gradeFilter: null, focus: null, projects: {}, results: {}, geometry: {}, active: null,
@@ -440,7 +440,11 @@
   dxf: async () => { const a = analysis(), f = await saveFile(outName('dxf'), DX.integratedDxf(S.contract, { diagrams: DG.systemDiagrams(S.contract, a), plans: a.plans, geometry: S.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers })); if (f) say('통합 DXF (Deck별 격실·RU·덕트·공조기·수직 덕트·방화 경계·관통)'); },
   report: async () => { keepActive(); const f = await saveFile(outName('html'), RP.html(project(), analysis())); if (f) say(`보고서 (HTML, 인쇄용): ${f.name}`); },
   csv: async () => { const sh = RP.sheets(project(), analysis()).find(s => s.name === 'Deck 덕트망'); const f = await saveFile(outName('csv'), '﻿' + [sh.head, ...sh.rows].map(r => r.map(U.csvCell).join(',')).join('\r\n')); if (f) say(`요약 CSV (Deck·계통 덕트망 ${sh.rows.length}행): ${f.name}`); },
-  contract: () => saveFile(`hvac-grid-contract-${stamp()}.json`, JSON.stringify(S.contract, null, 1), { id: 'contract' }) };
+  contract: () => saveFile(`hvac-grid-contract-${stamp()}.json`, JSON.stringify(S.contract, null, 1), { id: 'contract' }),
+  // 방화 등급도: SOLAS ratings written on every deck (lib/fire-plan.cjs) - a DXF of its own
+  fireDxf: async () => { const f = await saveFile(outName('dxf').replace(/\.dxf$/, '-방화등급도.dxf'), FP.toDxf(fireModel())); if (f) say(`방화 등급도 DXF: ${f.name} — 등급별 레이어(FIRE_A60 …), 표기는 FIRE_TEXT_* 레이어`); } };
+ // the fire-rating plan's model with the screen's choices (C ratings, outer walls)
+ const fireModel = () => FP.model(S.contract, analysis().solas, { showC: !!S.fpShowC, showOuter: !!S.fpShowOuter });
  // the project: to its file (Ctrl+S), or a new one (first time, Ctrl+Shift+S); true when saved
  async function saveProject(as = false) {
   if (!S.contract) throw new Error('저장할 설계 데이터가 없습니다');
@@ -512,7 +516,7 @@
     field(`<label class="field">방화방식<select id="methodSel" ${S.contract && (S.contract.solas?.ship || 'CARG') === 'CARG' ? '' : 'disabled'}>${['IC', 'IIC', 'IIIC'].map(m => `<option ${m === (S.contract?.solas?.method || 'IC') ? 'selected' : ''}>${m}</option>`).join('')}</select></label>`),
     field(`<label class="field">최하층 아래<select id="belowSel" ${S.contract ? '' : 'disabled'}><option value="">미지정 (확인 필요)</option>${spaceOptions(S.contract?.solas?.lowestBelow || '', ['기관실 — A류', '보일러실', '화물창', '기타'])}</select></label>`),
     field(`<label class="field">스프링클러<select id="sprinklerSel" ${S.contract && S.contract.solas?.ship === 'P36M' ? '' : 'disabled'} title="여객선 36명 이하 Table 9.3/9.4: 양쪽 실 모두 스프링클러 설치이면 작은 값"><option value="">없음·한쪽</option><option value="1" ${S.contract?.solas?.sprinkler ? 'selected' : ''}>양쪽 설치</option></select></label>`)]],
-   ['출력', [c('save', '프로젝트 저장', () => act(null, () => saveProject()), { disabled: needContract, title: '한 파일: 설계 데이터 + 모든 PHG D 덕트망 + 결과 (Ctrl+S)' }), c('save', '다른 이름으로', () => act(null, () => saveProject(true)), { disabled: needContract, title: '다른 이름·위치로 저장 (Ctrl+Shift+S)' }), c('xlsx', '통합 XLSX', () => act(null, OUT.xlsx), { disabled: needContract }), c('dxfOut', '통합 DXF', () => act(null, OUT.dxf), { disabled: needContract }), c('report', '보고서', () => act(null, OUT.report), { disabled: needContract, title: 'HTML 보고서 (Deck 평면·계통·수직 덕트·방화·관통·물량)' }), c('csv', '요약 CSV', OUT.csv, { disabled: needContract }), c('contract', '설계 데이터 저장', OUT.contract, { disabled: needContract })]]] }];
+   ['출력', [c('save', '프로젝트 저장', () => act(null, () => saveProject()), { disabled: needContract, title: '한 파일: 설계 데이터 + 모든 PHG D 덕트망 + 결과 (Ctrl+S)' }), c('save', '다른 이름으로', () => act(null, () => saveProject(true)), { disabled: needContract, title: '다른 이름·위치로 저장 (Ctrl+Shift+S)' }), c('xlsx', '통합 XLSX', () => act(null, OUT.xlsx), { disabled: needContract }), c('dxfOut', '방화 등급도 DXF', () => act(null, OUT.fireDxf), { disabled: needContract, title: 'SOLAS 등급을 글자로 적은 Deck 평면 (실 범주·격벽 등급·바닥·천장·관통) — 별도 DXF' }), c('dxfOut', '통합 DXF', () => act(null, OUT.dxf), { disabled: needContract }), c('report', '보고서', () => act(null, OUT.report), { disabled: needContract, title: 'HTML 보고서 (Deck 평면·계통·수직 덕트·방화·관통·물량)' }), c('csv', '요약 CSV', OUT.csv, { disabled: needContract }), c('contract', '설계 데이터 저장', OUT.contract, { disabled: needContract })]]] }];
  // the system of the deck: of the chosen kind (③), or every system of the deck with its kind (④)
  function sysField(allKinds) {
   const ps = allKinds ? deckPlans() : deckPlans(S.kind);
@@ -776,7 +780,7 @@
   }
  }
  // ⑤ review: tabs over the analysis
- const TABS = [['nets', '덕트망'], ['systems', '계통·수직 덕트'], ['diagram', '계통도'], ['fire', '방화 (SOLAS)'], ['checks', '검토']];
+ const TABS = [['nets', '덕트망'], ['systems', '계통·수직 덕트'], ['diagram', '계통도'], ['fire', '방화 (SOLAS)'], ['fireplan', '방화 등급도'], ['checks', '검토']];
  const tableHtml = (sh, { keys, limit, cls, tip = '두 번 클릭: ④ RU·덕트에서 열기' } = {}) => `<div class="scrollx"><table><thead><tr>${sh.head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${sh.rows.slice(0, limit || sh.rows.length).map((r, i) => `<tr${keys ? ` data-key="${esc(keys[i])}" class="${keys[i] === S.active ? 'active' : ''}" title="${esc(tip)}"` : ''}>${r.map((v, j) => `<td class="${typeof v === 'number' ? 'n ' : ''}${cls ? cls(r, j, i) : ''}">${esc(typeof v === 'number' ? v.toLocaleString() : v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${limit && sh.rows.length > limit ? `<p class="muted">… ${sh.rows.length - limit}행 더 — 통합 XLSX 참조</p>` : ''}`;
  // a sheet with one column moved forward (the status of a row first on a narrow screen; the XLSX keeps its order)
  const front = (sh, name, at) => { const i = sh.head.indexOf(name); if (i < 0) return sh; const mv = r => { const c = r.slice(); const [v] = c.splice(i, 1); c.splice(at, 0, v); return c; }; return { ...sh, head: mv(sh.head), rows: sh.rows.map(mv) }; };
@@ -799,6 +803,16 @@
   } else if (S.tab === 'diagram') {
    // one schematic per AHU / fan system (lib/diagram.cjs): unit, vertical duct with sizes, every deck with its air and losses
    body = `<h3>계통도 <small class="muted">${a.systems.length}개 계통 · 공조기·팬 → 수직 덕트(크기·풍량·풍속·방화댐퍼) → Deck별 덕트망(풍량·RU·길이·손실) · 굵은 테두리 = 최대 손실 Deck(ESP) · Deck을 두 번 누르면 ④에서 엽니다</small></h3><div class="diagrams">${DG.systemDiagrams(C, a).map(d => `<figure class="dia">${DG.toSvg(d)}</figure>`).join('')}</div>`;
+  } else if (S.tab === 'fireplan') {
+   // SOLAS ratings written on the deck plan: a room's category and deck ratings, each wall run's rating, the penetrations
+   const m = fireModel(), dk = m.decks.find(d => d.id === S.deck) || m.decks[m.decks.length - 1];
+   const n = d => d.walls.filter(w => w.label).length;
+   body = `<h3>방화 등급도 <small class="muted">${esc(m.shipLabel)} · 방화방식 ${esc(m.method)}${m.lowestBelow ? ' · 최하층 아래 ' + esc(m.lowestBelow) : ' · 최하층 아래 미지정'} · 같은 등급이 한 줄로 이어진 벽은 한 번, ${(m.options.minLabelMm / 1000).toFixed(0)} m 미만은 표기 생략</small></h3>
+    <div class="fp-bar"><span class="seg">${m.decks.slice().reverse().map(d => `<button data-fpdeck="${esc(d.id)}" aria-pressed="${d === dk}">${esc(d.name)} <small>${n(d)}</small></button>`).join('')}</span>
+     <label><input type="checkbox" id="fpShowC" ${S.fpShowC ? 'checked' : ''}> C급 표기</label><label><input type="checkbox" id="fpShowOuter" ${S.fpShowOuter ? 'checked' : ''}> 외벽(*) 표기</label>
+     <button class="btn" id="fpDxf">DXF 저장</button></div>
+    ${FP.legendHtml(m)}<div class="fireplan-wrap">${dk ? FP.toSvg(m, dk.id, { width: Math.max(700, ($('report').clientWidth || 1100) - 40) }) : ''}</div>
+    <p class="muted">실 안: 번호 이름 / (SOLAS 범주) 공간 / 바닥·천장 등급(A·B급, 아래·위 실이 여럿이면 가장 엄한 등급 "등"). 노란 빗금 = 미분류 실, 주황 점선 = 등급 미정 경계 — ⑤ 방화 (SOLAS) 탭에서 분류. 보고서·DXF에 같은 그림.</p>`;
   } else if (S.tab === 'fire') {
    const sum = a.solas.summary, shp = SO.DATA.ships[a.solas.settings.ship], unc = sum.unclassified.map(id => C.rooms.find(r => r.id === id));
    const roomChecks = Object.entries(a.solas.classes).filter(([, k]) => k.check);
@@ -828,6 +842,8 @@
    else tr.ondblclick = () => { const p = plans().find(x => x.key === tr.dataset.key); S.deck = p.deckId; S.sys = p.systemKey; S.kind = p.kind; go('duct'); };
   });
   $('report').querySelectorAll('.deckbox[data-plan]').forEach(e => e.ondblclick = () => { const p = plans().find(x => x.key === e.dataset.plan); if (!p) return; S.deck = p.deckId; S.sys = p.systemKey; S.kind = p.kind; go('duct'); });
+  $('report').querySelectorAll('[data-fpdeck]').forEach(b => b.onclick = () => { S.deck = b.dataset.fpdeck; render(); });
+  if ($('fpShowC')) { $('fpShowC').onchange = e => { S.fpShowC = e.target.checked; render(); }; $('fpShowOuter').onchange = e => { S.fpShowOuter = e.target.checked; render(); }; $('fpDxf').onclick = () => act(null, OUT.fireDxf); }
   $('report').querySelectorAll('.gchip[data-grade]').forEach(b => b.onclick = () => { S.gradeFilter = S.gradeFilter === b.dataset.grade ? null : b.dataset.grade; render(); });
   $('report').querySelectorAll('select[data-solas]').forEach(s => s.onchange = () => act(null, () => setSolasRoom(s.dataset.solas, s.value)));
  }

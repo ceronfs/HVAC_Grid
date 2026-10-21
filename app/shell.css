@@ -268,3 +268,11 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .report .scrollx tbody td:first-child,.report .scrollx thead th:first-child{position:sticky;left:0;z-index:1;background:var(--panel)}
 .report .scrollx thead th:first-child{z-index:3}
 .plan .xfer text{paint-order:stroke;stroke:var(--canvas);stroke-linejoin:round}
+
+/* ⑤ 방화 등급도 (lib/fire-plan.cjs) */
+.fp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:6px 0}
+.fp-bar .seg button small{color:var(--muted)}
+.fp-legend,.fp-cats{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:12px;margin:4px 0}
+.fp-legend span,.fp-cats span{display:inline-flex;align-items:center;gap:4px}
+.fireplan-wrap{overflow:auto;border:1px solid var(--line);border-radius:4px;background:#fff;margin:6px 0}
+.fireplan-wrap svg{display:block;max-width:100%;height:auto}

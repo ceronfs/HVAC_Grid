@@ -166,7 +166,7 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   await p.locator('#report svg.sysdia[data-key="AHU-AC-01"] .deckbox').first().dblclick(); await idle();
   assert.deepEqual(await H(() => [HVACGrid.S.step, HVACGrid.S.sys]), ['duct', 'AHU-AC-01']); log('계통도', dia.n, 'systems; deck box -> ④');
   await p.click('.step[data-step=review]'); await idle();
-  await p.locator('#report .tabs button', { hasText: '방화' }).click();
+  await p.locator('#report .tabs button', { hasText: '방화 (SOLAS)' }).click();
   const unc = await H(() => HVACGrid.analysis().solas.summary.unclassified.length);
   const first = p.locator('#report select[data-solas]').first(); await first.selectOption('전기설비실'); await idle();
   assert.equal(await H(() => HVACGrid.analysis().solas.summary.unclassified.length), unc - 1, 'SOLAS space assigned');
