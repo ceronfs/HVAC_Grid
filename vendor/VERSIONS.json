@@ -8,7 +8,7 @@
  },
  "BOX_CAL_Enhance.html": {
   "from": "C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html",
-  "sha256_16": "b2add59e6d2fab13",
+  "sha256_16": "3f7229e4b88c5b50",
   "commit": "CAL_Enhance 32976f8",
   "copied": "2026-10-18",
   "sha256_16_original": "bd942611477ddfe5",
@@ -90,6 +90,12 @@
     "date": "2026-10-21",
     "what": "KU user K: added to ISO, to LY or a new K table - chosen in the KU window before applying (the boundaries with no user K take the ISO 7547 K, the KC structural K, or the project default K); kept as userKAssignments._base; projects without a choice keep the KC fallback",
     "test": "test/e2e/k-change.e2e.cjs"
+   },
+   {
+    "id": "W",
+    "date": "2026-10-22",
+    "what": "CAL LY 적용 (K mode calculated): each boundary kind its own insulation thickness and panel (K_STRUCTURE_DEFAULTS, the KD table's K by ISO 7547:2022 5.2.4 Formula (2)) instead of the KC cases 3/4/9/10 with a fixed 50 / 25 mm - wheelhouse roof 0.75 -> 0.455 (D.3.1 at most 0.5), weather deck 0.75 -> 0.567, internal boundaries 0.98 -> 0.69; K Types LY-<kind>-C / -W in the K Type list, the workbook lookup and the KC table; KU on LY follows",
+    "test": "test/e2e/vendor.e2e.cjs, test/e2e/k-change.e2e.cjs (test/e2e/ly-k.cjs works the K out on its own); BOX host self test 126/126, CAL unit self test 110/110; T3 LY load workbook 18,399 formulas recalculated in Excel, 0 differ"
    }
   ],
   "patchDoc": "docs/VENDOR_PATCHES.md"

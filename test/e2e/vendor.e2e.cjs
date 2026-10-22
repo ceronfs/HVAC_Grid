@@ -5,9 +5,10 @@
 //   M  CAL's indoor summer default is ISO 7547:2022 4.2 b) 25 °C / 55 %
 //   N  CAL's AHU heating supply limit is 22 K above the room (6.3)
 //   J O P Q R S T U  ISO 7547:2022 in CAL's load calculation (docs/VENDOR_PATCHES.md); BOX's own self tests pass
+//   W  LY 적용 takes each boundary kind's own insulation thickness (the KD table's K)
 'use strict';
 const path = require('path'), assert = require('node:assert/strict');
-const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs');
+const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs'), LY = require('./ly-k.cjs');
 
 // two rooms drawn with LINEs only, numbered by TEXT: 211T (a cabin toilet) and 212
 const dxf = () => {
@@ -69,6 +70,20 @@ const dxf = () => {
    ['U', 'lightingW = lightingDaylight ? 0 : r.floor * r.lighting'], ['U', "daylightLighting:Object.hasOwn(source,'daylightLighting')?source.daylightLighting:'include'"]])
    assert.ok(frame.includes(text.replace(/\\"/g, '"')), `patch ${id}: ${text.slice(0, 60)}`);
   log('J O P Q R S T U in the CAL frame');
+  // W: LY 적용 (calculated K mode) builds each boundary kind with its own insulation (K_STRUCTURE_DEFAULTS, the KD
+  // table) - test/e2e/ly-k.cjs works the K out on its own. Every face of the open drawing (H5) in that mode; T3's six
+  // kinds in test/e2e/k-change.e2e.cjs.
+  const kinds = LY.boundaryKinds(frame);
+  assert.equal(Object.keys(kinds).length, 10, 'patch W: the ten boundary kinds');
+  assert.ok(LY.lyK(kinds, 'WHEELHOUSE_ROOF', 'C') <= 0.5, 'patch W: LY wheelhouse roof within ISO 7547 D.3.1 (0.5)');
+  const ly = LY.checkLyFaces(kinds, await H(() => { const w = [...HVACGrid.box.doc.querySelectorAll('iframe')].map(f => f.contentWindow).find(x => x?.CAL_ENHANCE);
+   const rooms = w.CAL_ENHANCE.report().rooms, byId = new Map(rooms.map(r => [r.id, r]));
+   // H5's waterline has no height: its faces are incomplete, their K is still the mode's
+   return w.CAL_ENHANCE_INPUT.faces.summarized.map(f => w.CAD_APP.faceBoundaryCondition(f, id => byId.get(id) || null, 'calculated')).map(c => [String(c.kType), c.kValue]); }), assert);
+  assert.ok(ly.count > 20, 'patch W: LY K Types on the faces: ' + ly.count);
+  for (const text of ['function structureLayerK(structure, insulationMm, kind, surfaceCase = "BOTH") {', 'return structureLayerK(structure, insulationMm, kind);', '.filter((item) => item.mode === "LY" || item.mode === "KC" || item.mode === "KU")'])
+   assert.ok(frame.includes(text), `patch W: ${text.slice(0, 60)}`);
+  log('W LY K by boundary kind', ly.count, 'faces', ly.types.join(' '));
 
   // BOX's own self tests on the patched copy: the host's end-to-end (H5, S5, loads, CAL) and CAL's unit tests - every
   // patch must keep them passing (they are BOX's guard on its own calculation)

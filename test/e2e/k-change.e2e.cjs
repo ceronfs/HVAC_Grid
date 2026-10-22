@@ -1,10 +1,10 @@
 // End-to-end (2026-10-21): K changes in BOX CAL. ISO 적용 and LY 적용 from the ribbon open the change list (lib/k-change.cjs):
 // no room design condition moves, loads and airflows of most rooms do; ISO → LY under its own title. KU (patch V): the
 // user's K added to ISO, to LY or as a new K table - with no boundary assigned, the loads are those of ISO, LY and the
-// project K; KU is not applied before a choice.
+// project K; KU is not applied before a choice. LY gives each boundary kind its own insulation (vendor patch W).
 'use strict';
 const assert = require('node:assert/strict');
-const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs');
+const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs'), LY = require('./ly-k.cjs');
 
 (async () => {
  const s = await start(), b = await launch(), p = await b.newPage({ viewport: { width: 1600, height: 900 } }), errors = [], alerts = [], t0 = Date.now();
@@ -33,6 +33,13 @@ const { launch } = require('../../tools/browser.cjs'), { start } = require('../.
   const loads = () => H(() => { const r = HVACGrid.box.doc.querySelector('#calEnhancePanel iframe').contentWindow.CAL_ENHANCE.report(); return { mode: r.kMode, sum: Math.round(r.loads.reduce((t, x) => t + x.coolingW + x.heatingW, 0)) }; });
   const byMode = {};
   byMode.calculated = (await loads()).sum;   // now LY
+  // LY K by boundary kind (vendor patch W): the K of every T3 face in the LY mode, worked out on its own
+  const lyK = LY.checkLyFaces(LY.boundaryKinds(), await H(() => { const w = HVACGrid.box.doc.querySelector('#calEnhancePanel iframe').contentWindow,
+   rooms = w.CAL_ENHANCE.report().rooms, byId = new Map(rooms.map(r => [r.id, r]));
+   return w.CAL_ENHANCE_INPUT.faces.summarized.map(f => w.CAD_APP.faceBoundaryCondition(f, id => byId.get(id) || null)).map(c => [String(c.kType), c.kValue]); }), assert);
+  log('LY K', lyK.count, 'faces', lyK.types.join(' '));
+  for (const kind of ['WHEELHOUSE_ROOF-C', 'WEATHER_DECK_SUN-C', 'SHIP_SIDE_EXTERNAL_BULKHEAD-W', 'NON_AIR_CONDITIONED-W', 'ALLEY_SOUND-W', 'GENERAL_INTERNAL_BOUNDARY-C'])
+   assert.ok(lyK.types.includes('LY-' + kind), 'T3 has an LY ' + kind);
   await press('ISO 적용'); byMode['iso-standard'] = (await loads()).sum;
   await press('ISO 적용'); byMode.project = (await loads()).sum;   // ISO off: project K
   log('loads by K mode', JSON.stringify(byMode));
@@ -46,7 +53,7 @@ const { launch } = require('../../tools/browser.cjs'), { start } = require('../.
   // not applied before a choice
   alerts.length = 0; await pop.click('[data-ku-action="apply-user-mode"]'); await p.waitForTimeout(300);
   assert.ok(alerts.some(a => /먼저 고르세요/.test(a)), alerts.join(' | ')); assert.notEqual((await loads()).mode, 'user');
-  for (const [base, mode, fallback] of [['iso-standard', 'iso-standard', 'ISO 7547 기준 K'], ['calculated', 'calculated', 'KC 계산값'], ['table', 'project', '프로젝트 기본 K']]) {
+  for (const [base, mode, fallback] of [['iso-standard', 'iso-standard', 'ISO 7547 기준 K'], ['calculated', 'calculated', 'LY 구조 계산 K'], ['table', 'project', '프로젝트 기본 K']]) {
    await pop.check(`[data-ku-base="${base}"]`); await p.waitForTimeout(300);
    if ((await loads()).mode !== 'user') { await pop.click('[data-ku-action="apply-user-mode"]'); await p.waitForTimeout(500); }
    const l = await loads(), st = await kuState(); log('KU', base, JSON.stringify(l), st.first);
