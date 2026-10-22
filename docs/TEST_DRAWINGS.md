@@ -118,3 +118,7 @@ T3는 BOX 프로젝트(JSON)로 시작해 BOX의 DXF 경로·Deck 지정·외곽
 | 관통 목록·보고서·XLSX의 `RISER D1792…→D1792…`, 통합 DXF 수직 덕트 문자 | 수직 덕트 표기가 Deck id | Deck 이름으로(`lib/solas.cjs`, `lib/report.cjs`, `lib/dxf-out.cjs`) |
 | 배기팬 위치를 지정하면 "EF-HOS **공조기** 위치" | 계통 종류를 보지 않음 | 급기는 공조기, 배기·환기는 팬 |
 | (시험 데이터) 공용화장실·트렁크가 복도에 안 면함, 배식실을 위생 배기에, 청소도구실 배기 누락 | 생성기 배치·입력 | 규칙(TRANSFER_OUTSIDE, EXHAUST_GROUPS 6.4.2, EXHAUST_ISO 6.4.1)이 잡음 → 생성기 고침 |
+
+## 클라우드 정기 실행 (리눅스, Edge 없음)
+
+`bash tools/cloud-n3.sh` — 설치(`npm ci`), Playwright Chromium 내려받기, 오늘(한국 날짜) 시드로 N3 실행, 끝에 `summary.md`를 출력. 브라우저는 `tools/browser.cjs`가 Edge → (없으면) Playwright Chromium 순으로 찾음.
