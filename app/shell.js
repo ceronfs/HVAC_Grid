@@ -478,8 +478,11 @@
  // ISO 적용 and LY 적용 change K values only: CAL's rooms are compared before and after, and the list says whether any
  // room's design conditions moved (they should not) and which loads and airflows did - ISO → LY under a title of its own
  const boxCal = code => () => act(CAL_SAY[code] ? CAL_SAY[code] + ' 중' : box.loading && box.calCurrent() ? null : 'BOX CAL 계산 중', async () => {
-  await box.load(); const watch = !!CAL_SAY[code] && box.hasDrawing(), before = watch ? await box.calSnapshot() : null;
-  const said = await box.cal(code); if (said) say(`${CAL_SAY[code]}: ${said}`);
+  await box.load(); const drawing = box.hasDrawing(), watch = !!CAL_SAY[code] && drawing, before = watch ? await box.calSnapshot() : null;
+  const said = await box.cal(code);
+  // K values and design conditions with no drawing: they are kept for the drawing opened next
+  if (!drawing) say(`${CAL_SAY[code] ? CAL_SAY[code] + ': ' + (said ? said + ' · ' : '') : ''}도면 없음 — 이 K값·설계 조건은 다음에 여는 DXF에 적용 (예제·BOX 프로젝트는 자기 설정)`);
+  else if (said) say(`${CAL_SAY[code]}: ${said}`);
   if (!before) return;
   const d = KCH.diff(before, await box.calSnapshot(), S.contract?.rules || {});
   const title = d.from === 'iso-standard' && d.to === 'calculated' ? 'ISO → LY 변경 사항' : `${CAL_SAY[code]} 변경 사항 (${d.fromName} → ${d.toName})`;

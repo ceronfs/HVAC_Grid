@@ -148,6 +148,10 @@ html.hg-bg .main>.side,html.hg-bg #canvas>.viewbar,html.hg-bg #canvas>.status{vi
 html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}
 html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
  const CAL_APPLY = new Set(['K7', 'C✓']);
+ // CAL commands on CAL's settings alone - the K values (ISO 기준, ISO 적용, LY, LY 적용, 사용자) and the design conditions
+ // (project K): they open with no drawing too. CAL then has no rooms; BOX keeps the settings for the drawing opened next
+ // (a DXF keeps them, an example or a BOX project brings its own)
+ const CAL_SETTINGS = new Set(['DC', 'KD', 'K7', 'KC', 'C✓', 'KU']);
  const CAL_IDS = { RL: 'roomBtn', A6: 'contactBtn', DC: 'designConditionsBtn', BC: 'faceBoundaryBtn', KD: 'kDataBtn', K7: 'iso7547KBtn', KC: 'calculatedKBtn', 'C✓': 'calculatedKApplyBtn', KU: 'userKBtn',
   LR: 'roomLoadResultBtn', OA: 'systemFreshAirBtn', RH: 'ahuHeatingBtn', 'R↑': 'exportRoomSheetBtn', 'A↑': 'exportFaceSheetBtn', 'I↑': 'exportRoomLoadSheetBtn', 'N↑': 'exportNonIsoRoomLoadSheetBtn', 'Σ↑': 'exportSystemSummaryBtn', LX: 'loadSheetBtn' };
  class Box extends VendorFrame {
@@ -234,8 +238,9 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
   }
   // a CAL command; the ones that apply values (K7, C✓) open no window and say how it went only on the hidden CAL
   // status line - that text is returned for the shell to show
+  calNeedsDrawing(code) { return !CAL_SETTINGS.has(code); }
   async cal(code) {
-   if (!this.hasDrawing()) throw new Error('BOX에 Deck·격실이 없습니다. 도면을 열거나 예제를 불러오세요.');
+   if (!this.hasDrawing() && this.calNeedsDrawing(code)) throw new Error('BOX에 Deck·격실이 없습니다. 도면을 열거나 예제를 불러오세요.');
    const id = CAL_IDS[code], d = await this.openCal(), e = d.getElementById(id);
    if (!e) throw new Error('BOX CAL: 명령 ' + code + ' 없음');
    if (!CAL_APPLY.has(code)) { e.click(); return null; }

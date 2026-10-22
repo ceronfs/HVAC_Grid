@@ -1,7 +1,8 @@
 // End-to-end (2026-10-21): K changes in BOX CAL. ISO 적용 and LY 적용 from the ribbon open the change list (lib/k-change.cjs):
 // no room design condition moves, loads and airflows of most rooms do; ISO → LY under its own title. KU (patch V): the
 // user's K added to ISO, to LY or as a new K table - with no boundary assigned, the loads are those of ISO, LY and the
-// project K; KU is not applied before a choice. LY gives each boundary kind its own insulation (vendor patch W).
+// project K; KU is not applied before a choice. LY gives each boundary kind its own insulation (vendor patch W). The K
+// value and design condition windows open with no drawing (2026-10-22).
 'use strict';
 const assert = require('node:assert/strict');
 const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs'), LY = require('./ly-k.cjs');
@@ -15,6 +16,22 @@ const { launch } = require('../../tools/browser.cjs'), { start } = require('../.
   await p.goto(s.url + '/app/');
   await p.waitForFunction(() => window.HVACGrid && HVACGrid.box.loading, null, { timeout: 30000 }); await idle();
   await p.waitForFunction(() => HVACGrid.box.readyTest(HVACGrid.box.win), null, { timeout: 180000 });
+  // with no drawing: the K value and design condition windows open (CAL with no rooms), ISO 적용 / LY 적용 set the
+  // K mode BOX keeps for the next DXF; the room commands still ask for a drawing
+  await H(() => HVACGrid.go('load')); await idle();
+  assert.equal(await H(() => HVACGrid.box.hasDrawing()), false);
+  const ribbon = label => p.locator('#ribbon button', { hasText: new RegExp(`^\\s*${label}\\s*$`) }).first();
+  const status0 = () => H(() => document.getElementById('status').textContent);
+  for (const [label, title] of [['ISO 기준', 'ISO 기준 K값'], ['LY', 'LY · 구조 레이어 K값'], ['사용자', '사용자 K값'], ['설계 조건', '설계 조건']]) {
+   const [win] = await Promise.all([p.context().waitForEvent('page', { timeout: 30000 }), ribbon(label).click()]);
+   await idle(); await win.waitForLoadState(); assert.match(await win.title(), new RegExp('^' + title), label); await win.close();
+   assert.match(await status0(), /도면 없음 — 이 K값·설계 조건은 다음에 여는 DXF에 적용/, label);
+  }
+  await ribbon('LY 적용').click(); await idle();
+  assert.equal(await H(() => HVACGrid.box.doc.querySelector('#calEnhancePanel iframe').contentWindow.CAL_ENHANCE.report().kMode), 'calculated', 'LY 적용 with no drawing');
+  assert.match(await status0(), /LY 적용: .*도면 없음/); assert.equal(await H(() => document.getElementById('kchg').open), false, 'no change list without rooms');
+  await ribbon('격실 입력').click(); await idle(); assert.match(await status0(), /BOX에 Deck·격실이 없습니다/);
+  log('no drawing: K windows and LY 적용 open, 격실 입력 asks for a drawing');
   await H(() => HVACGrid.openSample('t3')); await idle();
   await H(() => HVACGrid.go('load')); await idle();
   const list = () => H(() => ({ open: document.getElementById('kchg').open, title: document.getElementById('kchgTitle').textContent, body: document.getElementById('kchgBody').textContent, status: document.getElementById('status').textContent }));
