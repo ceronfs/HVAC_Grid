@@ -96,5 +96,5 @@ test('O2: ISO 7547 Table 1 temperatures only for rooms without supply (5.2.2: co
  assert.equal(rdc('보일러실', true).coolTemp, 53); assert.equal(rdc('주기관실', true).coolTemp, 43); assert.equal(rdc('창고', true).coolTemp, 27);
  assert.equal(frame.split('roomDesignConditions(').length - 1, 3, 'definition and two callers');
  assert.ok(frame.includes('design = roomDesignConditions(roomName, !!String(o.sup || "").trim()),'));
- assert.ok(frame.includes("design=roomDesignConditions(o.roomName||room.name||'',!!String(o.sup??room.sup??'').trim());"));
+ assert.ok(frame.includes("design={...roomDesignConditions(o.roomName||room.name||'',!!String(o.sup??room.sup??'').trim()),isoClass:inferIsoClass(o.roomName||room.name||'')};"));
 });

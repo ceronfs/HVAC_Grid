@@ -11,12 +11,13 @@ const path = require('path'), assert = require('node:assert/strict');
 const { launch } = require('../../tools/browser.cjs'), { start } = require('../../tools/serve.cjs'), LY = require('./ly-k.cjs');
 
 // two rooms drawn with LINEs only, numbered by TEXT: 211T (a cabin toilet) and 212
-const dxf = () => {
+// (version: R2007 UTF-8, or R12 in the Korean code page with its own header - BOX patch B7)
+const dxf = (version = 'AC1021', page = [], names = ['선원침실 화장실', '선원침실']) => {
  const L = (x1, y1, x2, y2) => ['0', 'LINE', '8', 'ROOM', '10', x1, '20', y1, '30', 0, '11', x2, '21', y2, '31', 0];
  const T = (x, y, s) => ['0', 'TEXT', '8', 'ROOM_NO', '10', x, '20', y, '30', 0, '40', 180, '1', s];
- return ['0', 'SECTION', '2', 'HEADER', '9', '$ACADVER', '1', 'AC1021', '9', '$INSUNITS', '70', 4, '0', 'ENDSEC', '0', 'SECTION', '2', 'ENTITIES',
+ return ['0', 'SECTION', '2', 'HEADER', '9', '$ACADVER', '1', version, ...page, '9', '$INSUNITS', '70', 4, '0', 'ENDSEC', '0', 'SECTION', '2', 'ENTITIES',
   ...L(0, 0, 6000, 0), ...L(6000, 0, 6000, 3000), ...L(6000, 3000, 0, 3000), ...L(0, 3000, 0, 0), ...L(2000, 0, 2000, 3000),
-  ...T(300, 2500, '211T'), ...T(300, 2100, '선원침실 화장실'), ...T(2300, 2500, '212'), ...T(2300, 2100, '선원침실'),
+  ...T(300, 2500, '211T'), ...T(300, 2100, names[0]), ...T(2300, 2500, '212'), ...T(2300, 2100, names[1]),
   '0', 'ENDSEC', '0', 'EOF'].join('\r\n') + '\r\n';
 };
 
@@ -36,6 +37,14 @@ const dxf = () => {
   const rooms = await H(() => HVACGrid.box.win.CAD_APP.rooms().map(r => [r.no, r.name]).sort());
   assert.deepEqual(rooms, [['211T', '선원침실 화장실'], ['212', '선원침실']], 'patch A: 211T is a room number');
   log('A rooms', JSON.stringify(rooms));
+  // B7: the same drawing as R12 in ANSI_949 (EUC-KR bytes; read as UTF-8 the names came out broken)
+  const KR = { '조리실': 'c1b6b8aebdc7', '사관식당': 'bbe7b0fcbdc4b4e7' };
+  const r12 = dxf('AC1009', ['9', '$DWGCODEPAGE', '3', 'ANSI_949'], ['조리실', '사관식당']).split(/(조리실|사관식당)/).flatMap(part => [...Buffer.from(KR[part] || part, KR[part] ? 'hex' : 'latin1')]);
+  await H(bytes => HVACGrid.box.setFile('dxfFile', new File([new Uint8Array(bytes)], 'patch-b7.dxf', { type: 'application/dxf' })), r12);
+  await p.waitForFunction(() => HVACGrid.box.win.CAD_APP.rooms().some(r => r.name === '사관식당'), null, { timeout: 60000 }).catch(() => {});
+  const krRooms = await H(() => HVACGrid.box.win.CAD_APP.rooms().map(r => [r.no, r.name]).filter(([no]) => no === '211T' || no === '212').sort());
+  assert.ok(krRooms.some(r => r[1] === '조리실') && krRooms.some(r => r[1] === '사관식당'), 'patch B7: R12 ANSI_949 room names ' + JSON.stringify(krRooms));
+  log('B7 R12 ANSI_949 rooms', JSON.stringify(krRooms));
 
   // B: BOX's own CAL button, its panel left open (the shell keeps it out of sight; BOX still has it open)
   const calButton = async () => { await H(() => HVACGrid.box.click('calEnhanceBtn')); await p.waitForTimeout(300); await p.waitForFunction(() => HVACGrid.box.calIdle(), null, { timeout: 180000 }); return H(() => HVACGrid.box.calStatus()); };

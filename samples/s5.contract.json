@@ -5,13 +5,12 @@
  "source": {
   "app": "BOX CAL Enhance",
   "file": "vendor/BOX_CAL_Enhance.html",
-  "sha256": "cec9d24dac0dc35f",
+  "sha256": "06d8c21c5d61ed04",
   "project": "built-in S5 example",
   "path": null
  },
  "rules": {
   "supplyDeltaTK": 10,
-  "heatingSupplyDeltaTK": 22,
   "roundCmh": 10,
   "exhaustFrom": "ach",
   "airBalance": "zone",
@@ -4744,7 +4743,7 @@
     "S5_E066",
     "S5_E009"
    ],
-   "designCmh": 5830
+   "designCmh": 5790
   },
   {
    "id": "AHU-AC-01",
@@ -4780,7 +4779,7 @@
     "S5_E057",
     "S5_E058"
    ],
-   "designCmh": 930
+   "designCmh": 900
   },
   {
    "id": "AHU-BRG-01",
@@ -4800,7 +4799,7 @@
     "S5_E113",
     "S5_E114"
    ],
-   "designCmh": 560
+   "designCmh": 500
   },
   {
    "id": "AHU-BRG-02",
@@ -4821,7 +4820,7 @@
     "S5_E103",
     "S5_E104"
    ],
-   "designCmh": 2290
+   "designCmh": 2250
   },
   {
    "id": "AHU-OFC-01",
@@ -4860,7 +4859,7 @@
     "S5_E079",
     "S5_E080"
    ],
-   "designCmh": 1280
+   "designCmh": 1260
   },
   {
    "id": "SUP-ER-01",
@@ -4897,7 +4896,7 @@
     "S5_E012",
     "S5_E013"
    ],
-   "designCmh": 3170
+   "designCmh": 3160
   },
   {
    "id": "SUP-SVC-01",
@@ -4938,7 +4937,7 @@
     "S5_E035",
     "S5_E036"
    ],
-   "designCmh": 600
+   "designCmh": 590
   }
  ],
  "rus": [],
@@ -4957,12 +4956,12 @@
    "makeupCmh": 0
   },
   "S5_E095": {
-   "supplyCmh": 130,
+   "supplyCmh": 110,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -4974,7 +4973,7 @@
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -4998,19 +4997,19 @@
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "S5_E099": {
-   "supplyCmh": 40,
+   "supplyCmh": 30,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5022,20 +5021,20 @@
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "S5_E101": {
-   "supplyCmh": 40,
+   "supplyCmh": 30,
    "exhaustCmh": 120,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
-   "transferInCmh": 80,
+   "basis": "cooling",
+   "transferInCmh": 90,
    "transferFrom": "S5_E104",
    "transferOutCmh": 0,
    "makeupCmh": 0
@@ -5046,26 +5045,26 @@
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "S5_E103": {
-   "supplyCmh": 40,
+   "supplyCmh": 30,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "S5_E104": {
-   "supplyCmh": 90,
+   "supplyCmh": 100,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
@@ -5073,8 +5072,8 @@
    "basis": "makeup",
    "transferInCmh": 0,
    "transferFrom": null,
-   "transferOutCmh": 80,
-   "makeupCmh": 10
+   "transferOutCmh": 90,
+   "makeupCmh": 20
   },
   "S5_E105": {
    "supplyCmh": 40,
@@ -5082,19 +5081,19 @@
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "S5_E106": {
-   "supplyCmh": 40,
+   "supplyCmh": 30,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5113,12 +5112,12 @@
    "makeupCmh": 0
   },
   "S5_E108": {
-   "supplyCmh": 40,
+   "supplyCmh": 30,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5130,19 +5129,19 @@
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "S5_E110": {
-   "supplyCmh": 40,
+   "supplyCmh": 30,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5154,43 +5153,43 @@
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "S5_E112": {
-   "supplyCmh": 40,
+   "supplyCmh": 30,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "S5_E113": {
-   "supplyCmh": 100,
+   "supplyCmh": 90,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
    "makeupCmh": 0
   },
   "S5_E114": {
-   "supplyCmh": 100,
+   "supplyCmh": 90,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5209,12 +5208,12 @@
    "makeupCmh": 0
   },
   "S5_E072": {
-   "supplyCmh": 110,
+   "supplyCmh": 90,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5223,7 +5222,7 @@
   "S5_E073": {
    "supplyCmh": 200,
    "exhaustCmh": 0,
-   "returnCmh": 160,
+   "returnCmh": 150,
    "freshAirCmh": 115.2,
    "source": "load",
    "basis": "cooling",
@@ -5271,7 +5270,7 @@
   "S5_E077": {
    "supplyCmh": 110,
    "exhaustCmh": 0,
-   "returnCmh": 90,
+   "returnCmh": 80,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -5302,7 +5301,7 @@
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 50,
-   "makeupCmh": 20
+   "makeupCmh": 30
   },
   "S5_E080": {
    "supplyCmh": 110,
@@ -5406,7 +5405,7 @@
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 50,
    "transferFrom": "S5_E079",
    "transferOutCmh": 0,
@@ -5418,7 +5417,7 @@
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5437,12 +5436,12 @@
    "makeupCmh": 0
   },
   "S5_E052": {
-   "supplyCmh": 120,
+   "supplyCmh": 100,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5475,7 +5474,7 @@
   "S5_E055": {
    "supplyCmh": 120,
    "exhaustCmh": 0,
-   "returnCmh": 110,
+   "returnCmh": 100,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -5487,7 +5486,7 @@
   "S5_E056": {
    "supplyCmh": 120,
    "exhaustCmh": 0,
-   "returnCmh": 110,
+   "returnCmh": 100,
    "freshAirCmh": 28.8,
    "source": "load",
    "basis": "cooling",
@@ -5509,12 +5508,12 @@
    "makeupCmh": 0
   },
   "S5_E058": {
-   "supplyCmh": 40,
+   "supplyCmh": 30,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5629,12 +5628,12 @@
    "makeupCmh": 0
   },
   "S5_E027": {
-   "supplyCmh": 100,
+   "supplyCmh": 90,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -5881,12 +5880,12 @@
    "makeupCmh": 0
   },
   "S5_E006": {
-   "supplyCmh": 180,
+   "supplyCmh": 170,
    "exhaustCmh": 0,
    "returnCmh": 0,
    "freshAirCmh": 0,
    "source": "load",
-   "basis": "heating",
+   "basis": "cooling",
    "transferInCmh": 0,
    "transferFrom": null,
    "transferOutCmh": 0,
@@ -6111,15 +6110,15 @@
     "S5_E058"
    ],
    "transferRoomIds": [],
-   "saCmh": 930,
+   "saCmh": 900,
    "eaCmh": 0,
    "minOaCmh": 173,
-   "oaCmh": 240,
-   "raCmh": 690,
+   "oaCmh": 230,
+   "raCmh": 670,
    "recirculating": true,
-   "oaNeedCmh": 233,
-   "oaPct": 25.8,
-   "pressurizationCmh": 240,
+   "oaNeedCmh": 225,
+   "oaPct": 25.6,
+   "pressurizationCmh": 230,
    "ok": true
   },
   {
@@ -6137,15 +6136,15 @@
     "S5_E114"
    ],
    "transferRoomIds": [],
-   "saCmh": 560,
+   "saCmh": 500,
    "eaCmh": 0,
    "minOaCmh": 58,
-   "oaCmh": 480,
+   "oaCmh": 420,
    "raCmh": 80,
    "recirculating": true,
-   "oaNeedCmh": 140,
-   "oaPct": 85.7,
-   "pressurizationCmh": 480,
+   "oaNeedCmh": 125,
+   "oaPct": 84,
+   "pressurizationCmh": 420,
    "ok": true
   },
   {
@@ -6164,15 +6163,15 @@
     "S5_E104"
    ],
    "transferRoomIds": [],
-   "saCmh": 2290,
+   "saCmh": 2250,
    "eaCmh": 120,
    "minOaCmh": 144,
-   "oaCmh": 1360,
+   "oaCmh": 1320,
    "raCmh": 930,
    "recirculating": true,
-   "oaNeedCmh": 573,
-   "oaPct": 59.4,
-   "pressurizationCmh": 1240,
+   "oaNeedCmh": 563,
+   "oaPct": 58.7,
+   "pressurizationCmh": 1200,
    "ok": true
   },
   {
@@ -6217,14 +6216,14 @@
    "transferRoomIds": [
     "S5_E088"
    ],
-   "saCmh": 1280,
+   "saCmh": 1260,
    "eaCmh": 50,
    "minOaCmh": 403,
    "oaCmh": 410,
-   "raCmh": 870,
+   "raCmh": 850,
    "recirculating": true,
    "oaNeedCmh": 404,
-   "oaPct": 32,
+   "oaPct": 32.5,
    "pressurizationCmh": 360,
    "ok": true
   },
@@ -6266,15 +6265,15 @@
     "S5_E013"
    ],
    "transferRoomIds": [],
-   "saCmh": 3170,
+   "saCmh": 3160,
    "eaCmh": 0,
    "minOaCmh": 86,
-   "oaCmh": 800,
+   "oaCmh": 790,
    "raCmh": 2370,
    "recirculating": true,
-   "oaNeedCmh": 793,
-   "oaPct": 25.2,
-   "pressurizationCmh": 800,
+   "oaNeedCmh": 790,
+   "oaPct": 25,
+   "pressurizationCmh": 790,
    "ok": true
   },
   {
@@ -6319,15 +6318,15 @@
     "S5_E036"
    ],
    "transferRoomIds": [],
-   "saCmh": 600,
+   "saCmh": 590,
    "eaCmh": 0,
    "minOaCmh": 0,
-   "oaCmh": 600,
+   "oaCmh": 590,
    "raCmh": 0,
    "recirculating": false,
    "oaNeedCmh": 0,
    "oaPct": 100,
-   "pressurizationCmh": 600,
+   "pressurizationCmh": 590,
    "ok": true
   }
  ]

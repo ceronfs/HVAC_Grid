@@ -9,14 +9,17 @@ const R = (id, name, x0, y0, x1, y1, sys, l = {}) => ({ id, no: id, name, deckId
 const make = (rooms, rules = {}) => K.buildContract({ source: {}, decks: [{ id: 'D', z: 0 }], rooms }, rules);
 const codes = c => PJ.airChecks(c).map(x => x.code);
 
-test('6.2.1 b: supply covers the winter load at 22 K, accommodation only', () => {
+test('one airflow all year, the summer one; winter is the heating capacity on it (AGENTS.md)', () => {
  const c = make([R('cab', 'CABIN', 0, 0, 4000, 4000, { s: 'AHU', r: 'RA' }, { w: 600, h: 2200, oa: 28.8 }), R('wh', '조타실', 4000, 0, 8000, 4000, { s: 'AHU', r: 'RA' }, { w: 600, h: 2200, iso: 'WHEELHOUSE' })]);
- assert.equal(c.airflow.cab.supplyCmh, 300); assert.equal(c.airflow.cab.basis, 'heating');   // 2200 x 3 / 22 = 300 (cooling: 180)
- assert.equal(c.airflow.wh.supplyCmh, 180); assert.equal(c.airflow.wh.basis, 'cooling');     // separate heating (D.3.1)
- assert.ok(!codes(c).includes('HEATING_DT'));
- // with the rule off the cabin heats at 37 K - flagged against 6.3
- assert.ok(codes(make([R('cab', 'CABIN', 0, 0, 4000, 4000, { s: 'AHU', r: 'RA' }, { w: 600, h: 2200 })], { heatingSupplyDeltaTK: null })).includes('HEATING_DT'));
- assert.deepEqual(K.validate({ ...c, rules: { ...c.rules, heatingSupplyDeltaTK: -1 } }), ['rules.heatingSupplyDeltaTK']);
+ assert.equal(c.airflow.cab.supplyCmh, 180); assert.equal(c.airflow.cab.basis, 'cooling');   // 600 x 3 / 10; never 2200 x 3 / 22 = 300
+ assert.equal(c.airflow.wh.supplyCmh, 180);
+ // heating 2200 W on 180 CMH = 37 K above the room (> 22 K, 6.3): a check for supplementary heating, not more air
+ const dt = PJ.airChecks(c).filter(x => x.code === 'HEATING_DT');
+ assert.deepEqual(dt.map(x => x.roomId), ['cab']); assert.match(dt[0].text, /풍량은 그대로, 보조 난방/);   // the wheelhouse is heated separately (D.3.1)
+ // a winter airflow rule in a file is not applied
+ const old = make([R('cab', 'CABIN', 0, 0, 4000, 4000, { s: 'AHU', r: 'RA' }, { w: 600, h: 2200 })], { heatingSupplyDeltaTK: 22 });
+ assert.equal(old.airflow.cab.supplyCmh, 180); assert.equal('heatingSupplyDeltaTK' in old.rules, false);
+ assert.match(PJ.read({ ...c, rules: { ...c.rules, heatingSupplyDeltaTK: 22 } }).notes.join(' '), /겨울 풍량 규칙.*쓰지 않음/);
 });
 
 test('6.3: cooling supply dT over 15 K is flagged', () => {

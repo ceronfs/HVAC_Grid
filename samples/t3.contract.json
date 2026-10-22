@@ -5,13 +5,12 @@
  "source": {
   "app": "BOX CAL Enhance",
   "file": "vendor/BOX_CAL_Enhance.html",
-  "sha256": "cec9d24dac0dc35f",
+  "sha256": "06d8c21c5d61ed04",
   "project": "T3.box.json",
   "path": "samples/t3/T3.box.json"
  },
  "rules": {
   "supplyDeltaTK": 10,
-  "heatingSupplyDeltaTK": 22,
   "roundCmh": 10,
   "exhaustFrom": "ach",
   "airBalance": "zone",

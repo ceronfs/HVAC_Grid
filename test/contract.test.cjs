@@ -21,12 +21,11 @@ test('room airflow rules', () => {
  assert.equal(roomAirflow(room({ supply: 'AHU' }), ld(), { ...DEFAULT_RULES, supplyDeltaTK: 12 }).supplyCmh, 710);
  // the safety factor (BOX coolingSensibleW is before it): ceil10(2804 x 1.1 x 3 / 10) = 930
  assert.equal(roomAirflow(room({ supply: 'AHU' }), ld(), DEFAULT_RULES, 1.1).supplyCmh, 930);
- // ISO 7547 6.2.1 b / 6.3: the heating load at most 22 K above the room - 7400 W x 3 / 22 = 1009.1 -> 1010
+ // the airflow is the summer one all year: a heating load of 7400 W (7400 x 3 / 22 = 1010) does not raise it - winter is
+ // the heating capacity on the same airflow (AGENTS.md)
  const h = roomAirflow(room({ supply: 'AHU' }), ld({ heatingW: 7400 }), DEFAULT_RULES);
- assert.equal(h.supplyCmh, 1010); assert.equal(h.basis, 'heating');
- // ... not for a control room or the wheelhouse (separate heating, C.3.1 / D.3.1), nor with the rule off
- assert.equal(roomAirflow({ ...room({ supply: 'AHU' }), isoClass: 'WHEELHOUSE' }, ld({ heatingW: 7400 }), DEFAULT_RULES).supplyCmh, 850);
- assert.equal(roomAirflow(room({ supply: 'AHU' }), ld({ heatingW: 7400 }), { ...DEFAULT_RULES, heatingSupplyDeltaTK: null }).supplyCmh, 850);
+ assert.equal(h.supplyCmh, 850); assert.equal(h.basis, 'cooling');
+ assert.equal(roomAirflow(room({ supply: 'AHU' }), ld({ heatingW: 7400 }), { ...DEFAULT_RULES, heatingSupplyDeltaTK: 22 }).supplyCmh, 850);
  assert.equal(roomAirflow(room({ supply: 'AHU' }), ld({ coolingSensibleW: 89 }), DEFAULT_RULES).basis, 'freshAir');
 });
 
@@ -47,14 +46,13 @@ test('S5 sample contract (BOX CAL Enhance built-in example)', () => {
  const supply = s5.systems.filter(s => s.kind === 'supply');
  assert.equal(supply.length, 10);
  assert.ok(supply.every(s => s.deckIds.length === 1), 'each S5 supply system serves one deck');
- // 11,610 CMH from the loads with BOX's 10 % safety factor (10,420 before it, as in H1; 11,350 before the winter airflow of
- // ISO 7547 6.2.1 b - 25 small bridge / stair / store rooms heat more than they cool; 11,540 before the window conduction
- // on glazing + 200 mm, BOX patch P) + make-up supply for the transfer air
- assert.equal(s5.rooms.reduce((t, r) => t + s5.airflow[r.id].supplyCmh - (s5.airflow[r.id].makeupCmh || 0), 0), 11610);
- // 24 by heating, 5 by make-up air (one of them was a heating room before the make-up raised it - L-15)
- assert.equal(s5.rooms.filter(r => s5.airflow[r.id].basis === 'heating').length, 24);
+ // 11,420 CMH from the loads with BOX's 10 % safety factor (10,420 before it, as in H1; window conduction on glazing +
+ // 200 mm, BOX patch P) + make-up supply for the transfer air. The airflow is the summer one (AGENTS.md F-1): the
+ // winter airflow of 2026-10-21 (11,610) is gone - the 24 small rooms that heat more than they cool keep their summer airflow
+ assert.equal(s5.rooms.reduce((t, r) => t + s5.airflow[r.id].supplyCmh - (s5.airflow[r.id].makeupCmh || 0), 0), 11420);
+ assert.equal(s5.rooms.filter(r => s5.airflow[r.id].basis === 'heating').length, 0);
  assert.equal(s5.rooms.filter(r => s5.airflow[r.id].basis === 'makeup').length, 5);
- assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 11750);   // round 2: no transfer air from the bridge wing, archive, refrigerator; round 3: make-up covers the 5 % pressurization
+ assert.equal(supply.reduce((t, s) => t + s.designCmh, 0), 11580);   // round 2: no transfer air from the bridge wing, archive, refrigerator; round 3: make-up covers the 5 % pressurization
  const wheelhouse = s5.rooms.find(r => r.no === '501');
  assert.equal(wheelhouse.isoClass, 'WHEELHOUSE'); assert.equal(s5.airflow[wheelhouse.id].supplyCmh, 930);
  // deck ids of a system in elevation order

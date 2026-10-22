@@ -1,17 +1,19 @@
 {
- "note": "Frozen copies used by HVAC Grid. The originals are read only; update a copy here only on purpose and record it (patches: what was changed in the copy, to carry to the original).",
+ "note": "Frozen copies used by HVAC Grid. Update a copy here only on purpose and record it. Since 2026-10-22 both copies are the originals' own builds (the patches below were carried to the BOX original and are kept as the record).",
  "DuctConcept_PHG_D.html": {
   "from": "C:/Users/HK/Desktop/PHG/DuctConcept_PHG_D.html",
-  "sha256_16": "643f328a1f50244a",
-  "commit": "ceronfs/PHG 57ef186 (build of 5587bab)",
-  "copied": "2026-10-18"
+  "sha256_16": "c3f7fa67380d1a2e",
+  "commit": "ceronfs/PHG be5ffb0 (D1 friction cap, D2 sub-branch velocity, D3 DXF code page, D8 stable duct names)",
+  "copied": "2026-10-22",
+  "previous": "57ef186 643f328a1f50244a (2026-10-18)"
  },
  "BOX_CAL_Enhance.html": {
   "from": "C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html",
-  "sha256_16": "cec9d24dac0dc35f",
-  "commit": "CAL_Enhance 32976f8",
-  "copied": "2026-10-18",
-  "sha256_16_original": "bd942611477ddfe5",
+  "sha256_16": "06d8c21c5d61ed04",
+  "commit": "CAL_Enhance 6bf2604 (the patches below ported in 0a37ff7; then F-1 / B5 / B6, B2-B4, K, B7)",
+  "copied": "2026-10-22",
+  "sha256_16_original": "06d8c21c5d61ed04",
+  "previous": "32976f8 bd942611477ddfe5 + patches = cec9d24dac0dc35f",
   "patches": [
    {
     "id": "A",

@@ -55,7 +55,7 @@
 | 1 | `tools/make-test-ship.cjs` BASE·설계 조건 | 실내 여름 27/50 → **25 °C / 55 %**, 프로젝트 설계 조건도 25/55 | 4.2 b) |
 | 2 | `vendor/BOX_CAL_Enhance.html` 패치 M | CAL 실내 여름 기본값 25 °C / 55 % | 4.2 b) |
 | 3 | `vendor/BOX_CAL_Enhance.html` 패치 N | AHU 난방 급기 한계 23 → 22 K, 표시 문구 3곳 | 6.3 |
-| 4 | `lib/contract.cjs` `roomAirflow` | 급기 = max(냉방 현열 × 안전율 × 3 ÷ ΔT, **난방 W × 3 ÷ 22 K**, 최소 신기). `rules.heatingSupplyDeltaTK`(기본 22, null이면 끔), `airflow.basis`(cooling·heating·freshAir) | 6.2.1 b), 6.3 |
+| 4 | `lib/contract.cjs` `roomAirflow` | 급기 = max(냉방 현열 × 안전율 × 3 ÷ ΔT, 최소 신기). **2026-10-22 사용자 지정(AGENTS.md F-1): 풍량은 여름 기준 하나, 6.2.1 b)의 겨울 조건은 같은 풍량에 난방 용량(히터·재열기·보조 난방)으로** — 난방 풍량 규칙(`heatingSupplyDeltaTK`)은 없앰. 22 K(6.3) 초과는 HEATING_DT 확인 | 6.2.1 b), 6.3 |
 | 5 | `lib/project.cjs` | 난방 급기 온도차 검사 18 → 22 K, 냉방 ΔT 15 K 초과 검사 `SUPPLY_DT`, 배기 검사 `EXHAUST_ISO`, 배기 계통 분리 검사 `EXHAUST_GROUPS` | 6.3, 6.4.1, 6.4.2 |
 | 6 | `app/shell.js`·`app/index.html`·`lib/report.cjs`·`docs/CONTRACT.md` | 급기 ΔT 입력 3~15 K, 풍량 규칙 문구에 난방 풍량·기준(냉방/난방/신기) 표시 | 6.2.1, 6.3, A.11 |
 | 7 | `tools/t3-box-lines.cjs` | 최하층 바닥(기관실 위) K 0.9 → 0.8(`K7-NON_AIR_CONDITIONED`) | 표 2 #2 |

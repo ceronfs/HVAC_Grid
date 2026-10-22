@@ -44,10 +44,9 @@ test('L-13: a sanitary room is named so at the end; L-15: a supply set by make-u
  const giver = c.airflow[c.airflow.wc.transferFrom]; assert.equal(giver.basis, 'makeup'); assert.ok(giver.makeupCmh > 0);
 });
 
-test('L-17: a supplied dry provision store gets the Annex E note; L-18: heating dT above 22 K is refused', () => {
+test('L-17: a supplied dry provision store gets the Annex E note', () => {
  const c = make([cab(), R('st', '건식식품창고', 6000, 0, 8000, 3000, { s: 'AHU' }, { w: 90 })]);
  assert.equal(codes(c, 'ANNEX_E')[0].level, 'info');
- assert.deepEqual(K.validate({ ...c, rules: { ...c.rules, heatingSupplyDeltaTK: 25 } }), ['rules.heatingSupplyDeltaTK']);
 });
 
 test('L-19: a galley supplied as much as it exhausts is not below its neighbours', () => {
