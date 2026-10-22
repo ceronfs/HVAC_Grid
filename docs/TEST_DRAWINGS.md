@@ -121,4 +121,6 @@ T3는 BOX 프로젝트(JSON)로 시작해 BOX의 DXF 경로·Deck 지정·외곽
 
 ## 클라우드 정기 실행 (리눅스, Edge 없음)
 
-`bash tools/cloud-n3.sh` — 설치(`npm ci`), Playwright Chromium 내려받기, 오늘(한국 날짜) 시드로 N3 실행, 끝에 `summary.md`를 출력. 브라우저는 `tools/browser.cjs`가 Edge → (없으면) Playwright Chromium 순으로 찾음.
+`bash tools/cloud-n3.sh` — 설치(`npm ci`), Playwright Chromium 내려받기, 오늘(한국 날짜) 시드로 N3 실행, 끝에 `summary.md`를 출력. 브라우저: Edge가 없으면 실행기에 미리 설치된 Chromium(`PLAYWRIGHT_BROWSERS_PATH`·`/opt/pw-browsers`)을 쓰고, 없을 때만 내려받음 — 클라우드 실행기는 Playwright 내려받기 주소(cdn.playwright.dev)를 막음(2026-10-22 첫 실행).
+
+예약 작업: claude.ai 루틴 "HVAC Grid N3 일일 시험 (보고만)" — 매일 09:00 KST(00:00 UTC), 이 스크립트를 실행하고 보고만 함(코드 수정 없음).
