@@ -55,7 +55,9 @@ const dxf = () => {
   assert.match(frame, /key: "indoorCoolTemp", label: "[^"]+", unit: "℃", value: 25,/, 'patch M: 25 °C');
   assert.match(frame, /key: "indoorCoolRh", label: "[^"]+", unit: "%", value: 55,/, 'patch M: 55 %');
   assert.match(frame, /const limitRise = 22;/, 'patch N: 22 K'); assert.ok(!frame.includes('실온 +23°C') && !frame.includes('실온+23°C'), 'patch N: no 23 K label left');
-  log('M N frame defaults 25 °C / 55 %, heating limit 22 K');
+  assert.ok(!frame.includes('0.000335*23'), 'patch N2: XLSX winter minimum at 22 K');
+  assert.ok(frame.includes('function roomDesignConditions(roomName, supplied = false)'), 'patch O2: Table 1 only without supply');
+  log('M N frame defaults 25 °C / 55 %, heating limit 22 K (screen and XLSX)');
   // J O P Q R S T U (ISO 7547:2022 in the load calculation; their effect on T3 is checked by the T3 run against
   // samples/t3.contract.json)
   for (const [id, text] of [

@@ -9,7 +9,7 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 ```
 
 상태: **H2 · H3 · H4 완료, H5 S1, 리뷰 1차 반영 (2026-10-19)** — 급기·배기·환기 계통 모두 Deck별 PHG D 덕트망, 여러 Deck 계통의 공조기 Deck·샤프트·수직 덕트, 공조 구역 풍량 수지(전달 공기), 제한 구역을 피하는 AUTO, 한 프로젝트 파일, 통합 XLSX·DXF·HTML 보고서, SOLAS 방화 경계·덕트 관통·제한 구역 통과·점검표, T3 시험선(4 Deck 합성 선박)과 도면 대조. 결과 [docs/H2_H4_RESULT.md](docs/H2_H4_RESULT.md), 리뷰 [docs/REVIEW.md](docs/REVIEW.md).
-테스트: 단위 60개 + E2E 2개(S5, T3 — 실제 BOX·PHG D).
+테스트: 단위 테스트(`npm test`)와 E2E 7개(`npm run test:e2e` — S5·T3 셸 흐름, vendor 패치, 프로젝트·BOX, 방화 등급도, SOLAS 도구, K 변경; 실제 BOX·PHG D). 개수는 각 명령의 출력이 기준입니다.
 
 ## 문서
 
@@ -27,7 +27,7 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 
 ## 준비
 
-- Node.js 20 이상, Microsoft Edge(헤드리스 실행·E2E용 — 다른 브라우저는 `HVAC_GRID_BROWSER=chrome`)
+- Node.js 20 이상, Microsoft Edge(헤드리스 실행·E2E용 — 다른 브라우저는 `HVAC_GRID_BROWSER=chrome`, 설치된 Chromium 실행 파일은 `HVAC_GRID_BROWSER_PATH=<경로>`)
 - `npm install` — devDependency `playwright-core`(브라우저 내려받기 없음, 설치된 Edge를 씀). 이미 설치된 Playwright를 쓰려면 `PLAYWRIGHT_MODULE=<경로>`
 - 셸만 쓸 때는 **`HVAC_Grid.bat`을 더블클릭**하면 됩니다. 독립 프로그램처럼 **자기 창**(탭·주소창 없는 Edge 앱 창, 최대화, 작업 표시줄에 HVAC Grid 아이콘)으로 열리고, 콘솔 창은 남지 않습니다. 창을 닫으면 로컬 서버와 그 창의 Edge도 몇 초 안에 함께 끝납니다. 저장하지 않은 작업이 있으면 닫기 전에 묻습니다. 다시 실행하면 창이 하나 더 열립니다. Edge가 없으면 Chrome 앱 창, 둘 다 없으면 기본 브라우저 탭으로 엽니다.
   - 문제 확인용: `HVAC_Grid.bat console`(콘솔에 진행 표시), 기록은 `%LOCALAPPDATA%\HVAC_Grid\launch.log`. 포트를 바꾸려면 `HVAC_Grid.bat 8793`.
@@ -41,8 +41,8 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 ```
 HVAC_Grid.bat               # 더블클릭: 독립 창(Edge 앱 모드) + 로컬 서버, 창을 닫으면 종료
 npm start                   # 통합 셸 → 브라우저에서 http://127.0.0.1:8792/app/
-npm test                    # 단위 테스트 60개
-npm run test:e2e            # E2E: S5 셸 흐름 + T3 시험선 전체 (실제 BOX·PHG D, 캡처 out/e2e*/)
+npm test                    # 단위 테스트 (개수는 출력 참조)
+npm run test:e2e            # E2E 7개: S5 셸 흐름, T3 시험선 전체, vendor 패치, 프로젝트·BOX, 방화 등급도, SOLAS 도구, K 변경 (캡처 out/e2e*/)
 npm run run:t3              # T3 설계 데이터 → 17개 Deck·계통 AUTO → out/t3/ (project.json, report.xlsx, report.html, integrated.dxf, shots/)
 npm run run:s5              # S5 설계 데이터 → 18개 Deck·계통 AUTO → out/s5/
 npm run make:t3             # 시험선 다시 만들기 (BOX 프로젝트·DXF) + BOX로 설계 데이터 추출

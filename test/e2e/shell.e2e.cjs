@@ -15,7 +15,8 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
  const ribbon = label => p.locator('#ribbon .cmd', { hasText: label }).first();
  const idle = () => p.waitForFunction(() => document.getElementById('busy').hasAttribute('hidden'), null, { timeout: 300000 });
  const H = f => p.evaluate(f);
- const download = async label => { const [d] = await Promise.all([p.waitForEvent('download'), ribbon(label).click()]); const f = path.join(OUT, d.suggestedFilename()); await d.saveAs(f); return f; };
+ // saved under a name of the test's own: some Chromium builds give every download the name 'download' (review 2026-10-22 #8)
+ const download = async (label, name) => { const [d] = await Promise.all([p.waitForEvent('download'), ribbon(label).click()]); const f = path.join(OUT, name); await d.saveAs(f); return f; };
  try {
   await p.goto(s.url + '/app/');
   await p.waitForFunction(() => window.HVACGrid && window.HVACGrid.box.loading, null, { timeout: 30000 }); await idle();
@@ -172,7 +173,7 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   assert.equal(await H(() => HVACGrid.analysis().solas.summary.unclassified.length), unc - 1, 'SOLAS space assigned');
   await shot('5-review-fire'); log('SOLAS unclassified', unc, '->', unc - 1);
   // outputs as real downloads
-  const fProject = await download('프로젝트 저장'), fXlsx = await download('통합 XLSX'), fDxf = await download('통합 DXF'), fHtml = await download('보고서');
+  const fProject = await download('프로젝트 저장', 'shell.project.json'), fXlsx = await download('통합 XLSX', 'shell.xlsx'), fDxf = await download('통합 DXF', 'shell.dxf'), fHtml = await download('보고서', 'shell.report.html');
   const saved = JSON.parse(fs.readFileSync(fProject, 'utf8'));
   assert.equal(saved.schema, 'hvac-grid-project/1'); assert.equal(Object.keys(saved.projects).length, 3);
   assert.equal(Object.keys(saved.contract.solas.rooms).length, 1);

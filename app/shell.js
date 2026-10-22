@@ -197,7 +197,8 @@
   const work = Object.keys(S.results).length, drawing = box.loading && box.hasDrawing();
   if (!S.contract && !drawing) { say('이미 빈 상태입니다'); return; }
   const text = `BOX 도면${S.contract ? ', 설계 데이터' : ''}${work ? `, PHG D 덕트망 ${work}개` : ''}와 실행 취소 기록을 모두 비우고 처음부터 시작합니다.`;
-  const v = await ask(S.dirty && work ? text + ' 저장할까요?' : text, S.dirty && work ? [['save', '저장하고 새로 시작', true], ['discard', '저장하지 않고 새로 시작'], ['cancel', '취소']] : [['ok', '새로 시작', true], ['cancel', '취소']]);
+  // edits not saved (ΔT, unit locations, SOLAS choices) are offered a save also without a duct network - as keepsWork does (#7)
+  const v = await ask(S.dirty ? text + ' 저장하지 않은 편집이 있습니다. 저장할까요?' : text, S.dirty ? [['save', '저장하고 새로 시작', true], ['discard', '저장하지 않고 새로 시작'], ['cancel', '취소']] : [['ok', '새로 시작', true], ['cancel', '취소']]);
   if (v === 'cancel' || (v === 'save' && !(await saveProject()))) return;
   if (box.loading) {
    box.closeCal(); box.calSig = null;
@@ -444,7 +445,7 @@
  const OUT = {
   project: (as = false) => saveProject(as),
   xlsx: async () => { keepActive(); const f = await saveFile(outName('xlsx'), XL.xlsx(RP.sheets(project(), analysis()))); if (f) say('통합 XLSX (격실·계통·덕트망·수직 덕트·방화·관통·물량·검토)'); },
-  dxf: async () => { const a = analysis(), f = await saveFile(outName('dxf'), DX.integratedDxf(S.contract, { diagrams: DG.systemDiagrams(S.contract, a), plans: a.plans, geometry: S.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers })); if (f) say('통합 DXF (Deck별 격실·RU·덕트·공조기·수직 덕트·방화 경계·관통)'); },
+  dxf: async () => { const a = analysis(), f = await saveFile(outName('dxf'), DX.integratedDxf(S.contract, { diagrams: DG.systemDiagrams(S.contract, a), plans: a.plans, geometry: a.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers })); if (f) say('통합 DXF (Deck별 격실·RU·덕트·공조기·수직 덕트·방화 경계·관통)'); },
   report: async () => { keepActive(); const f = await saveFile(outName('html'), RP.html(project(), analysis())); if (f) say(`보고서 (HTML, 인쇄용): ${f.name}`); },
   csv: async () => { const sh = RP.sheets(project(), analysis()).find(s => s.name === 'Deck 덕트망'); const f = await saveFile(outName('csv'), '﻿' + [sh.head, ...sh.rows].map(r => r.map(U.csvCell).join(',')).join('\r\n')); if (f) say(`요약 CSV (Deck·계통 덕트망 ${sh.rows.length}행): ${f.name}`); },
   contract: () => saveFile(`hvac-grid-contract-${stamp()}.json`, JSON.stringify(S.contract, null, 1), { id: 'contract' }),

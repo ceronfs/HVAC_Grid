@@ -2,7 +2,7 @@
 
 작성 2026-10-20 · 대상 `vendor/BOX_CAL_Enhance.html` (원본 `C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html`, CAL_Enhance 32976f8) · 기록 `vendor/VERSIONS.json` · 시험 `test/e2e/vendor.e2e.cjs`
 
-원본은 읽기 전용이다. HVAC Grid를 쓰면서 찾은 BOX 결함 가운데 고치는 범위가 좁고 확실한 것(A·B, ISO 7547:2022 대조의 M·N)과, 사용자 지시(2026-10-21 "모두 수정")로 ISO 7547:2022 계산 방식(J·O~U)을, 사용자 지시(2026-10-22)로 LY 적용의 구조 K(W)를 **사본**에 고쳤다. 원본에는 아래 바뀐 줄을 그대로 옮기면 된다(재현 스크립트는 이 문서의 설명대로 문자열 치환 — 앵커가 정확히 한 번 맞을 때만 씀). 사본을 원본의 새 판으로 바꿀 때는 원본에 A·B·M·N·J·O~U·V·W가 들어갔는지 먼저 확인한다(`npm run test:e2e`의 vendor 시험이 확인).
+원본은 읽기 전용이다. HVAC Grid를 쓰면서 찾은 BOX 결함 가운데 고치는 범위가 좁고 확실한 것(A·B, ISO 7547:2022 대조의 M·N)과, 사용자 지시(2026-10-21 "모두 수정")로 ISO 7547:2022 계산 방식(J·O~U)을, 사용자 지시(2026-10-22)로 LY 적용의 구조 K(W)를 **사본**에 고쳤다. 원본에는 아래 바뀐 줄을 그대로 옮기면 된다(재현 스크립트는 이 문서의 설명대로 문자열 치환 — 앵커가 정확히 한 번 맞을 때만 씀). 사본을 원본의 새 판으로 바꿀 때는 원본에 A·B·M·N·J·O~U·V·W·N2·O2가 들어갔는지 먼저 확인한다(`npm run test:e2e`의 vendor 시험이 확인).
 
 PHG D(`vendor/DuctConcept_PHG_D.html`)는 고칠 결함이 없었다. HVAC Grid가 PHG D에 하는 일(자동 복구 막대 숨김, 패널 닫기, 한국어 툴팁)은 화면 정리일 뿐이다.
 
@@ -137,6 +137,27 @@ PHG D(`vendor/DuctConcept_PHG_D.html`)는 고칠 결함이 없었다. HVAC Grid�
   - BOX 자체 시험 126/126, CAL 단위 시험 110/110.
   - T3 LY 통합 계산서 수식 18,399개를 Microsoft Excel에서 다시 계산해 앱 값과 차이 0개. 면 K Type 1,346칸이 모두 KC DATA 시트의 행을 찾음.
 - 원본에 옮길 것: 위 함수 두 개(`structureLayerK`·`lyKTypeCode`)와 `calculatedStructureK`·`kTypeCode`·`kTypeDefinitions`·`kcCalculationDataRows`·KD `correctionBreakdown`, 문구 9곳. `simpleKCaseFor`는 이제 쓰이지 않는다(원본에서 지워도 됨).
+
+### N2. 통합 계산서 겨울 최소 풍량 수식 — 22 K (2026-10-22, 검토 B8)
+
+- 증상: N이 화면 계산(`limitRise = 22`)과 문구는 고쳤지만, CAL 통합 XLSX '격실 리히터' 시트의 겨울 최소 풍량 수식은 `D/(0.000335*23)`로 남아 있었다. 화면은 22 K, XLSX는 23 K로 겨울 최소 풍량이 약 4.5 % 작게 나왔다.
+- 고침 (CAL 프레임, 한 곳):
+
+```diff
+-      r.summerMin??'',r.valid?f(`D${row}/(0.000335*23)`,r.winterMin):'',r.minimumOaCmh,...
++      r.summerMin??'',r.valid?f(`D${row}/(0.000335*22)`,r.winterMin):'',r.minimumOaCmh,...
+```
+
+- 시험: `test/review-2026-10-22.test.cjs`(프레임에 `*23`이 남지 않음), vendor E2E. 수식이 화면 계산(`netKw / (coefficient * limitRise)`)과 같은 식이 되었으므로 저장값과 재계산값이 같다. **Excel 재계산은 하지 않았다**(다음 Excel 검증 때 '격실 리히터' K열 확인).
+
+### O2. 표 1 온도는 급기 없는 실에만 — ISO 7547:2022 5.2.2 (2026-10-22, 검토 O)
+
+- 증상: O가 실 이름만 보고 세탁실·위생실·탈의실·복도·계단실의 **그 실 자체 설계온도**를 프로젝트 실내 조건 + 표 1 ΔT로 바꿨다. 원문 5.2.2는 표 1을 "공조 실과 비공조 실 사이" 온도차로 정한다(원문 확인, p. 5). 급기(SUP)가 있는 복도·세탁실은 공조 실이므로 실내 조건(25 °C/55 %)을 받아야 하는데 27 °C·36 °C 등으로 계산되어 그 실 자체 냉방 부하가 줄었다.
+- 고침 (CAL 프레임): `roomDesignConditions(roomName, supplied = false)` — 급기가 있으면 세탁실·샤워실·화장실·욕실·공중·탈의실·복도·계단실은 프로젝트 실내 조건. 호출 두 곳(격실 목록 생성, `calEnhanceRooms`)이 실의 SUP로 `supplied`를 넘긴다. 실별 입력 온도가 있으면 여전히 그 값이 우선한다.
+- 그대로 둔 것: 보일러실·기관실류·창고·로커·트렁크·팬룸·기계실은 급기가 있어도 표 1 그대로 — 그 급기는 환기이지 공조가 아니다.
+- 영향: 실별 온도를 저장하지 않은 프로젝트에서 급기 있는 위 실들의 냉방·난방 부하가 커진다(실내 조건 기준). T3·S5 예제는 실별 온도를 갖고 있어(T3: 급기 있는 복도·계단실·세탁실 25 °C, 급기 없는 화장실 26·31 °C) 수치가 바뀌지 않았다. 이전 방식을 남기는 설정은 두지 않았다(N·W와 같은 처리 — 원문과 어긋난 결함).
+- 시험: `test/review-2026-10-22.test.cjs`가 프레임의 함수를 꺼내 실행(급기 있는 복도·세탁실·탈의실·화장실·계단실 = 25 °C, 급기 없는 복도 27/16 °C, 보일러실은 급기가 있어도 53 °C), vendor E2E.
+- 스크립트: 세션 작업 폴더의 `boxpatch-x-n2-o2.cjs`(앵커가 정확히 한 번 맞을 때만 치환).
 
 ## 원본에 권고만 하는 것 (사본은 그대로)
 

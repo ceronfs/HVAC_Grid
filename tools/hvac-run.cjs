@@ -57,7 +57,7 @@ function writeOutputs(project, outDir) {
  fs.writeFileSync(path.join(outDir, 'report.xlsx'), XL.xlsx(RP.sheets(project, a)));
  fs.writeFileSync(path.join(outDir, 'report.html'), RP.html(project, a));
  fs.writeFileSync(path.join(outDir, 'fire-plan.dxf'), require('../lib/fire-plan.cjs').toDxf(require('../lib/fire-plan.cjs').model(project.contract, a.solas)));
- fs.writeFileSync(path.join(outDir, 'integrated.dxf'), DX.integratedDxf(project.contract, { diagrams: require('../lib/diagram.cjs').systemDiagrams(project.contract, a), plans: a.plans, geometry: project.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers }));
+ fs.writeFileSync(path.join(outDir, 'integrated.dxf'), DX.integratedDxf(project.contract, { diagrams: require('../lib/diagram.cjs').systemDiagrams(project.contract, a), plans: a.plans, geometry: a.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers }));
  const summary = { plans: a.total, autoDone: a.done, stale: a.stale, count: a.count, checks: a.checks, zones: a.zones.map(z => ({ zone: z.supplySystemId, sa: z.saCmh, ea: z.eaCmh, oa: z.oaCmh, ra: z.raCmh, ok: z.ok })),
   systems: a.systems.map(s => ({ system: s.systemKey, kind: s.kind, unitDeck: s.unitDeckId, fanCmh: s.fanCmh, decks: s.decks.length, risers: s.risers.length, riserLengthM: s.riserLengthM, espPa: s.indexPa, fanPa: s.fanPa, indexDeck: s.indexDeckId })),
   solas: { ...a.solas.summary, warnings: a.solas.warnings.length }, open: RP.openItems(project, a).map(([lv, area, text]) => `${lv} · ${area} · ${text}`) };
