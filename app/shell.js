@@ -20,6 +20,8 @@
  // a result is current only while its plan is what it was made from (no signature = an old file = stale)
  const result = key => { const r = S.results[key]; if (!r) return null; const p = plans().find(x => x.key === key); return { ...r, stale: !p || !r.sig || r.sig !== PJ.planSig(p) }; };
  const keyOf = (deck, sys) => `${deck}__${sys}`;
+ // a plan key as the user reads it: deck name · system (BOX makes the deck id up for a drawing opened as DXF)
+ const keyText = k => S.contract ? PJ.planLabel(S.contract, k, plans()) : String(k).replace('__', ' · ');
  const curKey = () => S.deck && S.sys ? keyOf(S.deck, S.sys) : null;
  const curPlan = () => plans().find(p => p.key === curKey()) || null;
  const deckPlans = kind => plans().filter(p => p.deckId === S.deck && (!kind || p.kind === kind));
@@ -223,9 +225,11 @@
   // a unit or a shaft stands in a room of its deck
   const q = { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 }, room = S.contract.rooms.find(r => r.deckId === S.deck && GE.inRoom(q, r));
   if (!room) { say('실 밖입니다 — 공조기·수직 덕트 위치는 실 안을 클릭하세요', true); return false; }
-  edit(`${S.sys} ${pl?.isUnitDeck ? '공조기' : '수직 덕트'} 위치`, () => { S.contract.roots = { ...(S.contract.roots || {}), [key]: { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 } }; }, [key]);
+  // the unit of a supply system is an air handling unit; of an exhaust or return system a fan
+  const what = pl?.isUnitDeck ? (pl.kind === 'supply' ? '공조기' : '팬') : '수직 덕트';
+  edit(`${S.sys} ${what} 위치`, () => { S.contract.roots = { ...(S.contract.roots || {}), [key]: { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 } }; }, [key]);
   // the room named; a space that cannot take a unit or a shaft (stair, CO2, galley, machinery …) is said at once (and stays in ⑤ 검토)
-  const space = analysis().solas.classes[room.id]?.space || '', bad = PJ.UNIT_BAD.test(space), what = pl?.isUnitDeck ? '공조기' : '수직 덕트';
+  const space = analysis().solas.classes[room.id]?.space || '', bad = PJ.UNIT_BAD.test(space);
   S.pickRoot = false; say(`${S.sys} ${what} 위치: ${room.no} ${room.name} (${deckName(S.deck)})${bad ? ` — ${space}에는 ${what}를 둘 수 없습니다(피난로·화재 위험 구역). 다른 실을 고르세요` : ''}`, bad); return true;
  }
  function clearRoot() { const key = curKey(); if (!S.contract.roots?.[key]) return; edit('위치 지정 해제', () => { const { [key]: _, ...rest } = S.contract.roots; S.contract.roots = rest; }); say('지정 해제 — 팬룸·샤프트 또는 복도 끝을 씁니다'); }
@@ -301,8 +305,8 @@
   }
   store(key, { auto: true, seconds: r.seconds, candidate: r.candidate, candidates: r.candidates, pick: r.pick, unconnected: r.unconnected, zonesRelaxed: r.zonesRelaxed, edited: kept.length > 0 });
   const note = (kept.length ? ` · 수동 크기 ${kept.length}개 유지` : '') + (lost.length ? ` · 수동 크기 ${lost.length}개는 새 경로에 같은 덕트가 없어 다시 지정 필요(${lost.join(', ')})` : '') + (wasEdited ? ' · PHG D 편집기 수정은 AUTO로 다시 만들어짐(Ctrl+Z로 되돌리기)' : '');
-  if (note) toast(`${key.replace('__', ' · ')}${note}`);
-  say(`${key.replace('__', ' · ')}: 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa · ${r.seconds} s${note}${r.zonesRelaxed ? ({ all: ' · 금지 영역과 선체 밖 영역을 모두 해제해야 경로가 나옴 — 경로 검토', rooms: ' · 제한 구역을 지키는 경로가 없어 해제(선체 밖은 유지) — 경로 검토', outside: ' · 선체 밖 금지 영역을 풀어야 모든 RU에 닿음(제한 구역은 유지) — 실 밖 덕트 검토' }[r.zonesRelaxed] || '') : ''}`, !!r.zonesRelaxed);
+  if (note) toast(`${keyText(key)}${note}`);
+  say(`${keyText(key)}: 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa · ${r.seconds} s${note}${r.zonesRelaxed ? ({ all: ' · 금지 영역과 선체 밖 영역을 모두 해제해야 경로가 나옴 — 경로 검토', rooms: ' · 제한 구역을 지키는 경로가 없어 해제(선체 밖은 유지) — 경로 검토', outside: ' · 선체 밖 금지 영역을 풀어야 모든 RU에 닿음(제한 구역은 유지) — 실 밖 덕트 검토' }[r.zonesRelaxed] || '') : ''}`, !!r.zonesRelaxed);
  }
  // the plans one after another; 멈춤 stops after the plan running now (the done ones keep their results)
  async function runAll(keys = plans().map(p => p.key), { onlyNeeded = false } = {}) {
@@ -317,7 +321,7 @@
    if (stopped) break;
    // after a few plans (or a tenth of the RUs): seconds per RU so far x RUs left
    const perRu = i >= 2 || doneRu >= allRu / 10 ? (performance.now() - t0) / 1000 / doneRu : null;
-   busy(`${i + 1}/${todo.length} · ${key.replace('__', ' · ')} AUTO`, { done: i, total: todo.length, eta: perRu != null ? perRu * (allRu - doneRu) : null, stop: todo.length > 1 ? stop : null });
+   busy(`${i + 1}/${todo.length} · ${keyText(key)} AUTO`, { done: i, total: todo.length, eta: perRu != null ? perRu * (allRu - doneRu) : null, stop: todo.length > 1 ? stop : null });
    await autoKey(key); ran++; doneRu += rus(key);
   }
   const done = keys.filter(k => result(k)?.auto && !result(k).stale).length;
@@ -329,9 +333,9 @@
  async function reroute(key = curKey()) {
   const r0 = result(key); if (!r0?.auto) throw new Error('먼저 AUTO로 덕트망을 만드세요');
   if (r0.candidates === 1) throw new Error('PHG D가 찾은 경로가 하나뿐입니다 — RU나 공조기를 끌어서 옮기면 다른 경로가 나옵니다');
-  record(`${key.replace('__', ' · ')} 다른 경로`, [key]);
+  record(`${keyText(key)} 다른 경로`, [key]);
   try { await autoKey(key, { pick: (r0.pick ?? 0) + 1 }); } catch (e) { S.undo.pop(); throw e; } const r = result(key); S.duct = null;
-  say(`${key.replace('__', ' · ')}: 경로 후보 ${(r.pick ?? 0) + 1}/${r.candidates ?? '?'} · 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa`);
+  say(`${keyText(key)}: 경로 후보 ${(r.pick ?? 0) + 1}/${r.candidates ?? '?'} · 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa`);
  }
  // a duct's section by hand (null: PHG D sizes it again); the network is calculated again in PHG D
  async function resizeDuct(key, i, size) {
@@ -394,7 +398,7 @@
  function closeEditor() { if (S.active && phg.loading) readBackIfEdited(); S.phgEditor = false; S.duct = null; }
  function readBack() { if (!S.active) throw new Error('PHG D에 열린 계통이 없습니다'); store(S.active, { edited: true }, { keepSig: true }); say('PHG D 결과를 읽었습니다'); }
  // leaving ④ with edits made in PHG D: read them back so ⑤ and the outputs show what is on screen
- function readBackIfEdited() { if (S.active && phg.loading && S.projects[S.active] && phg.changedSince(S.projects[S.active])) { readBack(); say(`${S.active.replace('__', ' · ')}: PHG D에서 고친 내용을 읽었습니다`); } }
+ function readBackIfEdited() { if (S.active && phg.loading && S.projects[S.active] && phg.changedSince(S.projects[S.active])) { readBack(); say(`${keyText(S.active)}: PHG D에서 고친 내용을 읽었습니다`); } }
 
  // ---------- project file and outputs ----------
  // the project file: the design data, PHG D work and BOX's own project (① ②) - taken from BOX when it holds a drawing,
@@ -952,7 +956,7 @@
   // ②: what CAL holds - its panel is out of sight
   const calLine = S.step === 'load' && box.loading && box.hasDrawing() ? (!box.calSig ? '<span>CAL: 아직 계산 전 — ② 명령을 누르면 계산</span>' : box.calCurrent() ? `<span>CAL: 격실 <b>${box.calRooms || '—'}</b>개 계산됨</span>` : '<span class="warn">CAL: 도면이 바뀜 — 다음 CAL 명령 때 다시 계산</span>') : '';
   $('status').innerHTML = `<button class="next" id="nextBtn" title="다음에 할 일">다음: ${esc(nextText)}</button>` + calLine + (C && viewOf(S.step) === 'box' ? `<span>설계 데이터: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> — ③부터 사용</span>` : C ? `<span>선박 전체: Deck <b>${C.decks.length}</b> · 격실 <b>${C.rooms.length}</b> · 계통 급기 <b>${n('supply')}</b> 배기 <b>${n('exhaust')}</b> 환기 <b>${n('return')}</b> · 급기 <b>${fmt(C.systems.filter(s => s.kind === 'supply').reduce((t, s) => t + s.designCmh, 0))}</b> CMH · 덕트망 <b>${done}</b>/${ps.length}</span><span>선택: <b>${esc(deckName(S.deck))}</b>${r ? ` · ${esc(r.no)} ${esc(r.name)}` : ''}</span>` : '<span>설계 데이터 없음 — ① 도면 → ② 부하 → 설계 데이터 만들기</span>')
-   + (S.active ? `<span>PHG D: <b>${esc(S.active.replace('__', ' · '))}</b></span>` : '') + `<span class="msg${S.msgErr ? ' err' : ''}" role="status">${esc(S.msg)}</span>`;
+   + (S.active ? `<span>PHG D: <b>${esc(keyText(S.active))}</b></span>` : '') + `<span class="msg${S.msgErr ? ' err' : ''}" role="status">${esc(S.msg)}</span>`;
   $('proj').textContent = C ? `${RP.PROJECT_NAME(C) || '설계 데이터'} · ${C.rooms.length}실` : '설계 데이터 없음';
   $('proj').title = S.file?.name ? `파일: ${S.file.name}${S.dirty ? ' (저장 안 한 변경 있음)' : ''}` : '아직 저장하지 않음';
   $('nextBtn').onclick = () => nextTo ? (nextTo === S.step && nextTo === 'review' ? (S.tab = 'checks', render()) : go(nextTo)) : act(null, () => saveProject());

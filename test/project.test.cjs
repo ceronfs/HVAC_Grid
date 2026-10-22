@@ -24,7 +24,7 @@ test('project file: round trip, legacy schema, bare contract, broken input', () 
  assert.equal(PJ.read(load('s5.contract.json')).project.contract.rooms.length, 94);
  // results of plans that no longer exist are dropped, not trusted
  const odd = JSON.parse(JSON.stringify(pr)); odd.projects['X__NOPE'] = '{}'; odd.results['X__NOPE'] = { auto: true };
- const r = PJ.read(odd); assert.ok(!('X__NOPE' in r.project.results)); assert.ok(r.notes.some(n => n.startsWith('X__NOPE')));
+ const r = PJ.read(odd); assert.ok(!('X__NOPE' in r.project.results)); assert.ok(r.notes.some(n => n.startsWith('X · NOPE')));
  assert.throws(() => PJ.read({ schema: 'something' }), /HVAC Grid/); assert.throws(() => PJ.read(null));
  const bad = JSON.parse(JSON.stringify(pr)); bad.contract.rooms[0].deckId = 'NOPE'; assert.throws(() => PJ.read(bad), /설계 데이터 검사/);
 });

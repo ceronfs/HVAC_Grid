@@ -1,0 +1,2873 @@
+{
+ "ship": "N3",
+ "seed": 20261023,
+ "lengthMm": 26000,
+ "breadthMm": 14000,
+ "note": "HVAC Grid synthetic test ship (3 decks). Not a real design.",
+ "decks": [
+  {
+   "id": "D1",
+   "name": "MAIN DK",
+   "z": 0,
+   "height": 2900
+  },
+  {
+   "id": "D2",
+   "name": "CREW DK",
+   "z": 2900,
+   "height": 2900
+  },
+  {
+   "id": "D3",
+   "name": "BRIDGE DK",
+   "z": 5800,
+   "height": 2900
+  }
+ ],
+ "rooms": [
+  {
+   "deck": "D1",
+   "no": "101",
+   "name": "기관실 케이싱",
+   "use": "casing",
+   "points": [
+    [
+     0,
+     0
+    ],
+    [
+     3500,
+     0
+    ],
+    [
+     3500,
+     6000
+    ],
+    [
+     0,
+     6000
+    ]
+   ],
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 0,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D1",
+   "no": "102",
+   "name": "복도",
+   "use": "corridor",
+   "points": [
+    [
+     0,
+     6000
+    ],
+    [
+     26000,
+     6000
+    ],
+    [
+     26000,
+     8000
+    ],
+    [
+     0,
+     8000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D1",
+   "no": "103",
+   "name": "계단실",
+   "use": "stair",
+   "points": [
+    [
+     3500,
+     8000
+    ],
+    [
+     6000,
+     8000
+    ],
+    [
+     6000,
+     11000
+    ],
+    [
+     3500,
+     11000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D1",
+   "no": "105",
+   "name": "공용화장실",
+   "use": "wc",
+   "points": [
+    [
+     0,
+     8000
+    ],
+    [
+     1500,
+     8000
+    ],
+    [
+     1500,
+     10000
+    ],
+    [
+     0,
+     10000
+    ]
+   ],
+   "coolTemp": 31,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D1",
+   "no": "104",
+   "name": "덕트 트렁크",
+   "use": "store",
+   "points": [
+    [
+     1500,
+     8000
+    ],
+    [
+     3500,
+     8000
+    ],
+    [
+     3500,
+     9500
+    ],
+    [
+     1500,
+     9500
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D1",
+   "no": "108",
+   "name": "청소도구실",
+   "use": "locker",
+   "points": [
+    [
+     0,
+     10000
+    ],
+    [
+     1500,
+     10000
+    ],
+    [
+     1500,
+     14000
+    ],
+    [
+     0,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 10,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D1",
+   "no": "106",
+   "name": "공조기실",
+   "use": "store",
+   "points": [
+    [
+     1500,
+     9500
+    ],
+    [
+     3500,
+     9500
+    ],
+    [
+     3500,
+     14000
+    ],
+    [
+     1500,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D1",
+   "no": "107",
+   "name": "창고",
+   "use": "store",
+   "points": [
+    [
+     3500,
+     11000
+    ],
+    [
+     6000,
+     11000
+    ],
+    [
+     6000,
+     14000
+    ],
+    [
+     3500,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D1",
+   "no": "111",
+   "name": "CO2실",
+   "use": "co2",
+   "points": [
+    [
+     3500,
+     0
+    ],
+    [
+     6000,
+     0
+    ],
+    [
+     6000,
+     2500
+    ],
+    [
+     3500,
+     2500
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-CO2",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 6,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D1",
+   "no": "112",
+   "name": "탈의실",
+   "use": "changing",
+   "points": [
+    [
+     3500,
+     2500
+    ],
+    [
+     6000,
+     2500
+    ],
+    [
+     6000,
+     6000
+    ],
+    [
+     3500,
+     6000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D1",
+   "no": "113",
+   "name": "세탁실",
+   "use": "laundry",
+   "points": [
+    [
+     6000,
+     0
+    ],
+    [
+     9000,
+     0
+    ],
+    [
+     9000,
+     6000
+    ],
+    [
+     6000,
+     6000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "EF-LAU",
+   "ret": "",
+   "lighting": 10,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 2000,
+   "minimumAch": 25,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D1",
+   "no": "124",
+   "name": "조리실 팬룸",
+   "use": "store",
+   "points": [
+    [
+     6000,
+     8000
+    ],
+    [
+     9000,
+     8000
+    ],
+    [
+     9000,
+     14000
+    ],
+    [
+     6000,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D1",
+   "no": "114",
+   "name": "조리실",
+   "use": "galley",
+   "points": [
+    [
+     9000,
+     8000
+    ],
+    [
+     13500,
+     8000
+    ],
+    [
+     13500,
+     14000
+    ],
+    [
+     9000,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "SF-GAL",
+   "exh": "EF-GAL",
+   "ret": "",
+   "lighting": 10,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 3,
+   "minimumFreshAir": 86.4,
+   "equipW": 8000,
+   "minimumAch": 50,
+   "ceilingHeight": 2400,
+   "activity": "light",
+   "equipLatentW": 1500
+  },
+  {
+   "deck": "D1",
+   "no": "115",
+   "name": "배식실",
+   "use": "pantry",
+   "points": [
+    [
+     13500,
+     8000
+    ],
+    [
+     15500,
+     8000
+    ],
+    [
+     15500,
+     14000
+    ],
+    [
+     13500,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "EF-PAN",
+   "ret": "",
+   "lighting": 10,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 1200,
+   "minimumAch": 25,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D1",
+   "no": "116",
+   "name": "식료품창고",
+   "use": "store",
+   "points": [
+    [
+     15500,
+     8000
+    ],
+    [
+     23000,
+     8000
+    ],
+    [
+     23000,
+     14000
+    ],
+    [
+     15500,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D1",
+   "no": "117",
+   "name": "냉장고",
+   "use": "store",
+   "points": [
+    [
+     23000,
+     8000
+    ],
+    [
+     26000,
+     8000
+    ],
+    [
+     26000,
+     14000
+    ],
+    [
+     23000,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D1",
+   "no": "121",
+   "name": "선원식당",
+   "use": "mess",
+   "points": [
+    [
+     9000,
+     0
+    ],
+    [
+     14500,
+     0
+    ],
+    [
+     14500,
+     6000
+    ],
+    [
+     9000,
+     6000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 2.4,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 22,
+   "minimumFreshAir": 633.6,
+   "equipW": 800,
+   "minimumAch": 0,
+   "ceilingHeight": 2300
+  },
+  {
+   "deck": "D1",
+   "no": "122",
+   "name": "사관식당",
+   "use": "mess",
+   "points": [
+    [
+     14500,
+     0
+    ],
+    [
+     19000,
+     0
+    ],
+    [
+     19000,
+     6000
+    ],
+    [
+     14500,
+     6000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 2.4,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 18,
+   "minimumFreshAir": 518.4,
+   "equipW": 800,
+   "minimumAch": 0,
+   "ceilingHeight": 2300
+  },
+  {
+   "deck": "D1",
+   "no": "123",
+   "name": "휴게실",
+   "use": "day",
+   "points": [
+    [
+     19000,
+     0
+    ],
+    [
+     26000,
+     0
+    ],
+    [
+     26000,
+     6000
+    ],
+    [
+     19000,
+     6000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 2.4,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 9,
+   "minimumFreshAir": 259.2,
+   "equipW": 600,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "201",
+   "name": "기관실 케이싱",
+   "use": "casing",
+   "points": [
+    [
+     0,
+     0
+    ],
+    [
+     3500,
+     0
+    ],
+    [
+     3500,
+     6000
+    ],
+    [
+     0,
+     6000
+    ]
+   ],
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 0,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D2",
+   "no": "202",
+   "name": "복도",
+   "use": "corridor",
+   "points": [
+    [
+     0,
+     6000
+    ],
+    [
+     26000,
+     6000
+    ],
+    [
+     26000,
+     8000
+    ],
+    [
+     0,
+     8000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "203",
+   "name": "계단실",
+   "use": "stair",
+   "points": [
+    [
+     3500,
+     8000
+    ],
+    [
+     6000,
+     8000
+    ],
+    [
+     6000,
+     11000
+    ],
+    [
+     3500,
+     11000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "205",
+   "name": "공용화장실",
+   "use": "wc",
+   "points": [
+    [
+     0,
+     8000
+    ],
+    [
+     1500,
+     8000
+    ],
+    [
+     1500,
+     10000
+    ],
+    [
+     0,
+     10000
+    ]
+   ],
+   "coolTemp": 31,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "204",
+   "name": "덕트 트렁크",
+   "use": "store",
+   "points": [
+    [
+     1500,
+     8000
+    ],
+    [
+     3500,
+     8000
+    ],
+    [
+     3500,
+     9500
+    ],
+    [
+     1500,
+     9500
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D2",
+   "no": "208",
+   "name": "청소도구실",
+   "use": "locker",
+   "points": [
+    [
+     0,
+     10000
+    ],
+    [
+     1500,
+     10000
+    ],
+    [
+     1500,
+     14000
+    ],
+    [
+     0,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 10,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "206",
+   "name": "린넨로커",
+   "use": "store",
+   "points": [
+    [
+     1500,
+     9500
+    ],
+    [
+     3500,
+     9500
+    ],
+    [
+     3500,
+     14000
+    ],
+    [
+     1500,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D2",
+   "no": "207",
+   "name": "창고",
+   "use": "store",
+   "points": [
+    [
+     3500,
+     11000
+    ],
+    [
+     6000,
+     11000
+    ],
+    [
+     6000,
+     14000
+    ],
+    [
+     3500,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D2",
+   "no": "210",
+   "name": "체육실",
+   "use": "gym",
+   "points": [
+    [
+     3500,
+     0
+    ],
+    [
+     7000,
+     0
+    ],
+    [
+     7000,
+     6000
+    ],
+    [
+     3500,
+     6000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 10,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 4,
+   "minimumFreshAir": 115.2,
+   "equipW": 1200,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "230",
+   "name": "의무실",
+   "use": "hospital",
+   "points": [
+    [
+     7000,
+     0
+    ],
+    [
+     10500,
+     0
+    ],
+    [
+     10500,
+     6000
+    ],
+    [
+     7000,
+     6000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "EF-HOS",
+   "ret": "",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 2,
+   "minimumFreshAir": 57.6,
+   "equipW": 300,
+   "minimumAch": 12,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "231",
+   "name": "의무실 화장실",
+   "use": "hospWc",
+   "points": [
+    [
+     10500,
+     4000
+    ],
+    [
+     12000,
+     4000
+    ],
+    [
+     12000,
+     6000
+    ],
+    [
+     10500,
+     6000
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-HOS",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "232",
+   "name": "린넨창고",
+   "use": "store",
+   "points": [
+    [
+     10500,
+     0
+    ],
+    [
+     12000,
+     0
+    ],
+    [
+     12000,
+     4000
+    ],
+    [
+     10500,
+     4000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D2",
+   "no": "240",
+   "name": "취미실",
+   "use": "day",
+   "points": [
+    [
+     6000,
+     8000
+    ],
+    [
+     12000,
+     8000
+    ],
+    [
+     12000,
+     14000
+    ],
+    [
+     6000,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 2.4,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 8,
+   "minimumFreshAir": 230.4,
+   "equipW": 600,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "211",
+   "name": "선원침실 01",
+   "use": "cabin",
+   "points": [
+    [
+     12000,
+     0
+    ],
+    [
+     15200,
+     0
+    ],
+    [
+     15200,
+     6000
+    ],
+    [
+     13500,
+     6000
+    ],
+    [
+     13500,
+     4200
+    ],
+    [
+     12000,
+     4200
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 1,
+   "minimumFreshAir": 28.8,
+   "equipW": 200,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "261",
+   "name": "선원침실 01 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     12000,
+     4200
+    ],
+    [
+     13500,
+     4200
+    ],
+    [
+     13500,
+     6000
+    ],
+    [
+     12000,
+     6000
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "212",
+   "name": "선원침실 02",
+   "use": "cabin",
+   "points": [
+    [
+     15200,
+     0
+    ],
+    [
+     18400,
+     0
+    ],
+    [
+     18400,
+     6000
+    ],
+    [
+     16700,
+     6000
+    ],
+    [
+     16700,
+     4200
+    ],
+    [
+     15200,
+     4200
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 1,
+   "minimumFreshAir": 28.8,
+   "equipW": 200,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "262",
+   "name": "선원침실 02 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     15200,
+     4200
+    ],
+    [
+     16700,
+     4200
+    ],
+    [
+     16700,
+     6000
+    ],
+    [
+     15200,
+     6000
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "213",
+   "name": "선원침실 03",
+   "use": "cabin",
+   "points": [
+    [
+     18400,
+     0
+    ],
+    [
+     21600,
+     0
+    ],
+    [
+     21600,
+     6000
+    ],
+    [
+     19900,
+     6000
+    ],
+    [
+     19900,
+     4200
+    ],
+    [
+     18400,
+     4200
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 1,
+   "minimumFreshAir": 28.8,
+   "equipW": 200,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "263",
+   "name": "선원침실 03 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     18400,
+     4200
+    ],
+    [
+     19900,
+     4200
+    ],
+    [
+     19900,
+     6000
+    ],
+    [
+     18400,
+     6000
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "214",
+   "name": "선원침실 04",
+   "use": "cabin",
+   "points": [
+    [
+     21600,
+     0
+    ],
+    [
+     26000,
+     0
+    ],
+    [
+     26000,
+     6000
+    ],
+    [
+     23100,
+     6000
+    ],
+    [
+     23100,
+     4200
+    ],
+    [
+     21600,
+     4200
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 1,
+   "minimumFreshAir": 28.8,
+   "equipW": 200,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "264",
+   "name": "선원침실 04 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     21600,
+     4200
+    ],
+    [
+     23100,
+     4200
+    ],
+    [
+     23100,
+     6000
+    ],
+    [
+     21600,
+     6000
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "241",
+   "name": "선원침실 21",
+   "use": "cabin",
+   "points": [
+    [
+     12000,
+     9800
+    ],
+    [
+     13500,
+     9800
+    ],
+    [
+     13500,
+     8000
+    ],
+    [
+     15200,
+     8000
+    ],
+    [
+     15200,
+     14000
+    ],
+    [
+     12000,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 1,
+   "minimumFreshAir": 28.8,
+   "equipW": 200,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "291",
+   "name": "선원침실 21 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     12000,
+     8000
+    ],
+    [
+     13500,
+     8000
+    ],
+    [
+     13500,
+     9800
+    ],
+    [
+     12000,
+     9800
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "242",
+   "name": "선원침실 22",
+   "use": "cabin",
+   "points": [
+    [
+     15200,
+     9800
+    ],
+    [
+     16700,
+     9800
+    ],
+    [
+     16700,
+     8000
+    ],
+    [
+     18400,
+     8000
+    ],
+    [
+     18400,
+     14000
+    ],
+    [
+     15200,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 1,
+   "minimumFreshAir": 28.8,
+   "equipW": 200,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "292",
+   "name": "선원침실 22 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     15200,
+     8000
+    ],
+    [
+     16700,
+     8000
+    ],
+    [
+     16700,
+     9800
+    ],
+    [
+     15200,
+     9800
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "243",
+   "name": "선원침실 23",
+   "use": "cabin",
+   "points": [
+    [
+     18400,
+     9800
+    ],
+    [
+     19900,
+     9800
+    ],
+    [
+     19900,
+     8000
+    ],
+    [
+     21600,
+     8000
+    ],
+    [
+     21600,
+     14000
+    ],
+    [
+     18400,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 1,
+   "minimumFreshAir": 28.8,
+   "equipW": 200,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "293",
+   "name": "선원침실 23 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     18400,
+     8000
+    ],
+    [
+     19900,
+     8000
+    ],
+    [
+     19900,
+     9800
+    ],
+    [
+     18400,
+     9800
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "244",
+   "name": "선원침실 24",
+   "use": "cabin",
+   "points": [
+    [
+     21600,
+     9800
+    ],
+    [
+     23100,
+     9800
+    ],
+    [
+     23100,
+     8000
+    ],
+    [
+     26000,
+     8000
+    ],
+    [
+     26000,
+     14000
+    ],
+    [
+     21600,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 1,
+   "minimumFreshAir": 28.8,
+   "equipW": 200,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D2",
+   "no": "294",
+   "name": "선원침실 24 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     21600,
+     8000
+    ],
+    [
+     23100,
+     8000
+    ],
+    [
+     23100,
+     9800
+    ],
+    [
+     21600,
+     9800
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "301",
+   "name": "기관실 케이싱",
+   "use": "casing",
+   "points": [
+    [
+     0,
+     0
+    ],
+    [
+     3500,
+     0
+    ],
+    [
+     3500,
+     6000
+    ],
+    [
+     0,
+     6000
+    ]
+   ],
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 0,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D3",
+   "no": "302",
+   "name": "복도",
+   "use": "corridor",
+   "points": [
+    [
+     0,
+     6000
+    ],
+    [
+     19000,
+     6000
+    ],
+    [
+     19000,
+     8000
+    ],
+    [
+     0,
+     8000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "303",
+   "name": "계단실",
+   "use": "stair",
+   "points": [
+    [
+     3500,
+     8000
+    ],
+    [
+     6000,
+     8000
+    ],
+    [
+     6000,
+     11000
+    ],
+    [
+     3500,
+     11000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "305",
+   "name": "선교화장실",
+   "use": "wc",
+   "points": [
+    [
+     0,
+     8000
+    ],
+    [
+     1500,
+     8000
+    ],
+    [
+     1500,
+     10000
+    ],
+    [
+     0,
+     10000
+    ]
+   ],
+   "coolTemp": 31,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "304",
+   "name": "덕트 트렁크",
+   "use": "store",
+   "points": [
+    [
+     1500,
+     8000
+    ],
+    [
+     3500,
+     8000
+    ],
+    [
+     3500,
+     9500
+    ],
+    [
+     1500,
+     9500
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D3",
+   "no": "308",
+   "name": "청소도구실",
+   "use": "locker",
+   "points": [
+    [
+     0,
+     10000
+    ],
+    [
+     1500,
+     10000
+    ],
+    [
+     1500,
+     14000
+    ],
+    [
+     0,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 10,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "306",
+   "name": "배터리실",
+   "use": "battery",
+   "points": [
+    [
+     1500,
+     9500
+    ],
+    [
+     3500,
+     9500
+    ],
+    [
+     3500,
+     14000
+    ],
+    [
+     1500,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-BAT",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 12,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "307",
+   "name": "창고",
+   "use": "store",
+   "points": [
+    [
+     3500,
+     11000
+    ],
+    [
+     6000,
+     11000
+    ],
+    [
+     6000,
+     14000
+    ],
+    [
+     3500,
+     14000
+    ]
+   ],
+   "coolTemp": 27,
+   "coolingRh": 55,
+   "heatTemp": 17,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "",
+   "ret": "",
+   "lighting": 5,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 0,
+   "ceilingHeight": 0
+  },
+  {
+   "deck": "D3",
+   "no": "310",
+   "name": "무선실",
+   "use": "radio",
+   "points": [
+    [
+     3500,
+     0
+    ],
+    [
+     6500,
+     0
+    ],
+    [
+     6500,
+     6000
+    ],
+    [
+     3500,
+     6000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 0.8,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 1,
+   "minimumFreshAir": 28.8,
+   "equipW": 2500,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "311",
+   "name": "선장실",
+   "use": "officer",
+   "points": [
+    [
+     6500,
+     0
+    ],
+    [
+     10500,
+     0
+    ],
+    [
+     10500,
+     6000
+    ],
+    [
+     8000,
+     6000
+    ],
+    [
+     8000,
+     4200
+    ],
+    [
+     6500,
+     4200
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 1.2,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 2,
+   "minimumFreshAir": 57.6,
+   "equipW": 300,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "361",
+   "name": "선장실 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     6500,
+     4200
+    ],
+    [
+     8000,
+     4200
+    ],
+    [
+     8000,
+     6000
+    ],
+    [
+     6500,
+     6000
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "312",
+   "name": "기관장실",
+   "use": "officer",
+   "points": [
+    [
+     10500,
+     0
+    ],
+    [
+     14500,
+     0
+    ],
+    [
+     14500,
+     6000
+    ],
+    [
+     12000,
+     6000
+    ],
+    [
+     12000,
+     4200
+    ],
+    [
+     10500,
+     4200
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 1.2,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 2,
+   "minimumFreshAir": 57.6,
+   "equipW": 300,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "362",
+   "name": "기관장실 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     10500,
+     4200
+    ],
+    [
+     12000,
+     4200
+    ],
+    [
+     12000,
+     6000
+    ],
+    [
+     10500,
+     6000
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "313",
+   "name": "일등항해사실",
+   "use": "officer",
+   "points": [
+    [
+     14500,
+     0
+    ],
+    [
+     19000,
+     0
+    ],
+    [
+     19000,
+     6000
+    ],
+    [
+     16000,
+     6000
+    ],
+    [
+     16000,
+     4200
+    ],
+    [
+     14500,
+     4200
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 1.2,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 2,
+   "minimumFreshAir": 57.6,
+   "equipW": 300,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "363",
+   "name": "일등항해사실 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     14500,
+     4200
+    ],
+    [
+     16000,
+     4200
+    ],
+    [
+     16000,
+     6000
+    ],
+    [
+     14500,
+     6000
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "321",
+   "name": "이등항해사실",
+   "use": "officer",
+   "points": [
+    [
+     6000,
+     9800
+    ],
+    [
+     7500,
+     9800
+    ],
+    [
+     7500,
+     8000
+    ],
+    [
+     10000,
+     8000
+    ],
+    [
+     10000,
+     14000
+    ],
+    [
+     6000,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 1.2,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 2,
+   "minimumFreshAir": 57.6,
+   "equipW": 300,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "371",
+   "name": "이등항해사실 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     6000,
+     8000
+    ],
+    [
+     7500,
+     8000
+    ],
+    [
+     7500,
+     9800
+    ],
+    [
+     6000,
+     9800
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "322",
+   "name": "이등기관사실",
+   "use": "officer",
+   "points": [
+    [
+     10000,
+     9800
+    ],
+    [
+     11500,
+     9800
+    ],
+    [
+     11500,
+     8000
+    ],
+    [
+     14000,
+     8000
+    ],
+    [
+     14000,
+     14000
+    ],
+    [
+     10000,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 1.2,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 2,
+   "minimumFreshAir": 57.6,
+   "equipW": 300,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "372",
+   "name": "이등기관사실 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     10000,
+     8000
+    ],
+    [
+     11500,
+     8000
+    ],
+    [
+     11500,
+     9800
+    ],
+    [
+     10000,
+     9800
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "323",
+   "name": "삼등항해사실",
+   "use": "officer",
+   "points": [
+    [
+     14000,
+     9800
+    ],
+    [
+     15500,
+     9800
+    ],
+    [
+     15500,
+     8000
+    ],
+    [
+     19000,
+     8000
+    ],
+    [
+     19000,
+     14000
+    ],
+    [
+     14000,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 1.2,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 2,
+   "minimumFreshAir": 57.6,
+   "equipW": 300,
+   "minimumAch": 0,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "373",
+   "name": "삼등항해사실 화장실",
+   "use": "cabinWc",
+   "points": [
+    [
+     14000,
+     8000
+    ],
+    [
+     15500,
+     8000
+    ],
+    [
+     15500,
+     9800
+    ],
+    [
+     14000,
+     9800
+    ]
+   ],
+   "coolTemp": 26,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "",
+   "exh": "EF-SAN",
+   "ret": "",
+   "lighting": 8,
+   "windowArea": 0,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 0,
+   "minimumFreshAir": 0,
+   "equipW": 0,
+   "minimumAch": 15,
+   "ceilingHeight": 2200
+  },
+  {
+   "deck": "D3",
+   "no": "330",
+   "name": "조타실",
+   "use": "wheel",
+   "points": [
+    [
+     19000,
+     0
+    ],
+    [
+     26000,
+     0
+    ],
+    [
+     26000,
+     14000
+    ],
+    [
+     19000,
+     14000
+    ]
+   ],
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "sup": "AHU-1",
+   "exh": "",
+   "ret": "RA-1",
+   "lighting": 0,
+   "windowArea": 16,
+   "windowSolarMode": "auto-double-interior-shade",
+   "people": 4,
+   "minimumFreshAir": 115.2,
+   "equipW": 2000,
+   "minimumAch": 0,
+   "ceilingHeight": 2600
+  }
+ ]
+}
