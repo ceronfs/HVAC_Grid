@@ -9,10 +9,10 @@
  },
  "BOX_CAL_Enhance.html": {
   "from": "C:/Users/HK/OneDrive/CAL_Enhance/04_CAL_Enhance_fixed.html",
-  "sha256_16": "06d8c21c5d61ed04",
-  "commit": "CAL_Enhance 6bf2604 (the patches below ported in 0a37ff7; then F-1 / B5 / B6, B2-B4, K, B7)",
+  "sha256_16": "8892c20e503108f2",
+  "commit": "CAL_Enhance dd3809b (the patches below ported in 0a37ff7; then F-1 / B5 / B6, B2-B4, K, B7; 6f33259 and dd3809b from the N3 runs)",
   "copied": "2026-10-22",
-  "sha256_16_original": "06d8c21c5d61ed04",
+  "sha256_16_original": "8892c20e503108f2",
   "previous": "32976f8 bd942611477ddfe5 + patches = cec9d24dac0dc35f",
   "patches": [
    {

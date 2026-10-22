@@ -10388,7 +10388,25 @@ return module.exports;})();
         }
         return area;
     }
+    // a wall piece of no length: two walls meeting a slanted hull line at points a rounding apart (4e-13 mm in a
+    // drawing's floating coordinates) leave a sliver BOX made into a wall face of ~1e-15 m², which blocked the room's
+    // load as ZERO_AREA. Below the same 1 mm² it is a residue like the horizontal slivers (HVAC Grid N3 run 2026-10-22).
+    function wallSliver(face) {
+        const amount = face[4], shapes = face[10];
+        if (typeof amount !== 'number' || !Number.isFinite(amount) || amount < 0 || amount > toleranceM2 || ['상', '하'].includes(String(face[2])) ||
+            !Array.isArray(shapes) || !shapes.length)
+            return false;
+        let area = 0;
+        for (const shape of shapes) {
+            if (!shape || shape.kind !== 'wall' || ![shape.a?.x, shape.a?.y, shape.b?.x, shape.b?.y, shape.height].every(Number.isFinite))
+                return false;
+            area += Math.hypot(shape.b.x - shape.a.x, shape.b.y - shape.a.y) * Math.max(0, shape.height);
+        }
+        return area / 1e6 <= toleranceM2;
+    }
     function qualifies(face) {
+        if (wallSliver(face))
+            return true;
         const amount = face[4], trace = face[13];
         if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0 || amount > toleranceM2 ||
             !['상', '하'].includes(String(face[2])))
@@ -18163,6 +18181,11 @@ var s5FixtureBindingInProgress = false;
           polygonArea(polygon) -
             holes.reduce((sum, hole) => sum + polygonArea(hole), 0),
         );
+      // Without a HULL_TOP on the room's deck the global fallback takes every deck's outline as the hull at that height.
+      // Where the deck above is shorter (a stepped superstructure) a room under its edge is pulled into a crossed ring,
+      // and one such room stopped every face calculation (HORIZONTAL_SECTION_INVALID). That room keeps vertical walls -
+      // the stated rule without a top outline; the "상부 외곽선 미지정" check still asks for the top outline.
+      if(hullContext.trace?.fallback){try{NODE_BOX_BOOLEAN.union({points:polygon,holes});}catch{return null;}}
       if(!Number.isFinite(areaMm2)||areaMm2<=Number.EPSILON){if(hullContext.trace?.approximation)throw Object.assign(new Error('OL 보간 단면 면적이 유효하지 않습니다.'),{code:'OL_SECTION_INVALID'});return null;}
       return {
         polygon,

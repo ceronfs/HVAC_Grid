@@ -757,8 +757,10 @@
     else { const p = PL.interiorPoint(src.polygon, 100, src.holes), q = PL.interiorPoint(r.polygon, 100, r.holes), L = Math.hypot(q.x - p.x, q.y - p.y) || 1; ux = (q.x - p.x) / L; uy = (q.y - p.y) / L; m = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 }; }
     const len = px(16), h = px(6), fx = m.x - ux * len, fy = m.y - uy * len, tx = m.x + ux * len, ty = m.y + uy * len;
     const bd = a.solas.boundaries.find(b => b.kind === 'bulkhead' && ((b.roomA === r.id && b.roomB === src.id) || (b.roomB === r.id && b.roomA === src.id))), aClass = /^A/.test(bd?.grade || '');
+    // the label's halo is the CSS one, 3 screen px (non-scaling): a plan-unit stroke-width here, scaled as screen px,
+    // drew white discs over the rooms' names (N3 captures 2026-10-22)
     html += `<g class="xfer${A.transferSet ? ' set' : ''}${aClass ? ' acls' : ''}"><line x1="${fx}" y1="${Y(fy)}" x2="${tx}" y2="${Y(ty)}"/><polygon points="${tx + ux * h},${Y(ty + uy * h)} ${tx - uy * h * .6},${Y(ty + ux * h * .6)} ${tx + uy * h * .6},${Y(ty - ux * h * .6)}"/>`
-     + `<text x="${m.x - uy * px(9)}" y="${Y(m.y + ux * px(9)) + px(3)}" text-anchor="middle" style="font-size:${px(10)}px;stroke-width:${px(3)}px">${fmt(A.transferInCmh)}</text>`
+     + `<text x="${m.x - uy * px(9)}" y="${Y(m.y + ux * px(9)) + px(3)}" text-anchor="middle" style="font-size:${px(10)}px">${fmt(A.transferInCmh)}</text>`
      + `<title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${bd?.grade ? ' · 경계 ' + esc(bd.grade) : ''}${A.transferSet ? ' (지정)' : ' (자동)'}</title></g>`; }
    // ducts of the chosen kind that PHG D made, thin, under the markers
    // in ④ (the shared canvas): the chosen system's network strong and pickable, others of the deck faint as asked
