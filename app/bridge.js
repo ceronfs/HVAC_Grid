@@ -317,25 +317,92 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
    L.renderEverything(); this.fit();
    return this.result();
   }
+  // how this plan is routed with the others of its deck (lib/duct-layer.cjs, PHG D D9): the height caps of AUTO's
+  // sizing, the ducts of the other systems already routed on the deck (app coordinates, from geometry()) with the duct
+  // layer they may cross in, and for a supply main in the rooms the band it should follow (preferred zones + the main's
+  // corridors) with the corridor restricted. A plan without route keeps PHG D's own settings.
+  routeSettings(pl, foreign = []) {
+   const st = this.win.LineDesignLegacy.getState(), set = st.settings, r = pl.route; if (!r) return { foreign: 0, band: false };
+   const sz = set.sizing = set.sizing || {};
+   // PHG D's own defaults for a type the project lacks (its settings table: main 10 m/s from 200 mm high, branches 8 m/s from 100 mm)
+   const base = { main: { shape: 'rect', velocityMps: 10, minHeightMm: 200, maxHeightMm: 0 }, branch: { shape: 'rect', velocityMps: 8, minHeightMm: 100, maxHeightMm: 0 }, sub_branch: { shape: 'rect', velocityMps: 8, minHeightMm: 100, maxHeightMm: 0 } };
+   for (const [t, cap] of [['main', r.mainMaxHeightMm], ['branch', r.branchMaxHeightMm], ['sub_branch', r.branchMaxHeightMm]]) { sz[t] = { ...base[t], ...(sz[t] || {}) }; sz[t].maxHeightMm = cap > 0 ? cap : 0; }
+   const ducts = r.foreignMode === 'off' ? [] : foreign.flatMap(g => (g.ducts || []).map(d => ({ id: `${g.systemId}/${d.displayName || d.id}`, systemId: g.systemId, points: d.points, widthMm: d.widthMm, heightMm: d.heightMm, diameterMm: d.diameterMm })));
+   if (ducts.length) { set.phgdForeignDucts = ducts; set.phgdForeignCrossing = { layerMm: r.layerMm, gapMm: r.gapMm, parallelGapMm: 0, insulationMm: 0, mode: r.foreignMode === 'soft' ? 'soft' : 'hard' }; }
+   else { delete set.phgdForeignDucts; delete set.phgdForeignCrossing; }
+   // a supply main in the rooms: drawn as main ducts from the Root (lib/duct-layer.cjs bandMain), AUTO then routes the
+   // branches from it (PHG D USER_MAIN). PHG D's own band preference (phgdRouteZones PREFERRED / phgdMainCorridors) is
+   // not used for N3-size decks: one main spine cannot serve both sides, and the engine's corridor weights slow its
+   // search past the time limit.
+   delete set.phgdMainCorridors; delete set.phgdRouteZones; this.userMain = null;
+   const sm = r.supplyMain;
+   if (sm?.mode === 'band' && sm.main?.segments?.length) this.userMain = this.drawMain(sm.main.segments);
+   return { foreign: ducts.length, band: !!this.userMain };
+  }
+  // main ducts along the given segments (contract coordinates, y up): a node at every end point (the Root where a
+  // segment starts on it), the ducts typed main. Returns their ids.
+  drawMain(segments) {
+   const st = this.win.LineDesignLegacy.getState(), root = st.nodes.find(n => n.type === 'root'); if (!root) return null;
+   const nodes = new Map([[`${root.x},${root.y}`, root]]); let k = 0;
+   const node = p => { const key = `${p.x},${p.y}`; if (!nodes.has(key)) { const n = { id: `HG-MJ-${++k}`, type: 'junction', kind: 'junction', name: '', group: '', x: p.x, y: p.y, connectedDuctIds: [], sourceEntityId: '', memo: 'HVAC Grid 실 안 급기 주관' }; st.nodes.push(n); nodes.set(key, n); } return nodes.get(key); };
+   const ids = segments.map(([a, b], i) => { const p = { x: a.x, y: -a.y }, q = { x: b.x, y: -b.y }, f = node(p), t = node(q), id = `HG-MAIN-${i + 1}`;
+    st.ducts.push({ id, displayName: '', type: 'main', manualType: 'main', group: '', fromNodeId: f.id, toNodeId: t.id, points: [p, q], sourceEntityId: '', flowCmh: 0, shape: 'rect', diameterMm: 0, widthMm: 0, heightMm: 0, manualSize: false, layer: 'DUCT', memo: 'HVAC Grid 실 안 급기 주관' });
+    f.connectedDuctIds = [...(f.connectedDuctIds || []), id]; t.connectedDuctIds = [...(t.connectedDuctIds || []), id]; return id; });
+   this.win.LineDesignLegacy.renderEverything();
+   return ids;
+  }
+  // main ducts that end in a node with nothing else on it (no RU, not the Root), again until none
+  pruneMain() {
+   const st = this.win.LineDesignLegacy.getState();
+   for (let changed = true; changed;) { changed = false;
+    const deg = new Map(); for (const d of st.ducts) for (const n of [d.fromNodeId, d.toNodeId]) deg.set(n, (deg.get(n) || 0) + 1);
+    const byId = new Map(st.nodes.map(n => [n.id, n])), ruNodes = new Set(st.diffusers.map(d => d.connectedNodeId));
+    const dead = st.ducts.find(d => d.type === 'main' && [d.fromNodeId, d.toNodeId].some(id => deg.get(id) === 1 && byId.get(id)?.type !== 'root' && !ruNodes.has(id)));
+    if (dead) { const end = [dead.fromNodeId, dead.toNodeId].find(id => deg.get(id) === 1 && byId.get(id)?.type !== 'root' && !ruNodes.has(id));
+     st.ducts = st.ducts.filter(d => d !== dead); st.nodes = st.nodes.filter(n => n.id !== end); for (const n of st.nodes) if (n.connectedDuctIds) n.connectedDuctIds = n.connectedDuctIds.filter(id => id !== dead.id); changed = true; } }
+   this.win.LineDesignLegacy.renderEverything();
+  }
+  // the drawn main out again (AUTO without it after all)
+  dropMain() {
+   const st = this.win.LineDesignLegacy.getState(), ids = new Set(this.userMain || []); if (!ids.size) return;
+   st.ducts = st.ducts.filter(d => !ids.has(d.id)); st.nodes = st.nodes.filter(n => !String(n.id).startsWith('HG-MJ-'));
+   for (const n of st.nodes) n.connectedDuctIds = (n.connectedDuctIds || []).filter(id => !ids.has(id));
+   this.userMain = null; this.win.LineDesignLegacy.renderEverything();
+  }
   // AUTO -> first candidate -> duct assignment -> sizing -> pressure (the same chain as tools/hvac-run.cjs). When no
   // route reaches every RU inside the forbidden zones, AUTO runs again without the outside of the deck (restricted rooms
   // kept; a duct that then strays outside fails the passage check), then with only the outside, then without any, and the
-  // result says so (zonesRelaxed: 'outside' | 'rooms' | 'all').
+  // result says so (zonesRelaxed: 'outside' | 'rooms' | 'all'). With the ducts of other systems (routeSettings): first
+  // under the hard rules (no plan overlap, crossings within the duct layer), then as costs ('soft'), then without them,
+  // before any forbidden zone is dropped (foreignRelaxed: 'soft' | 'off'). A PHG D time-out is run once more as it was
+  // (a slow moment of the machine must not change the result - review 2026-10-23 A-3) and said in the result.
   // pick: which of the good candidates (0 = PHG D's first) - "다른 경로" on the plan steps through them
   async auto({ pick = 0 } = {}) {
    const w = this.win, R = w.DuctConceptRouting, L = w.LineDesignLegacy, t = performance.now(), st = L.getState();
    // a candidate is good when it reaches every RU; the first good one of the three tries wins, else the first one at all
    const zones = st.settings.routingForbiddenZones || [], outer = zones.filter(z => z.id.startsWith('HG-OUT-')), rooms = zones.filter(z => !outer.includes(z));
-   const tries = [[zones, false], [rooms, 'outside'], [outer, 'rooms'], [[], 'all']].filter(([z], i) => i === 0 || z.length < zones.length).filter(([z, r], i, all) => i === 0 || r === 'all' || z.length > 0);
+   const fx = st.settings.phgdForeignCrossing, fd = st.settings.phgdForeignDucts, foreignTries = fx && fd?.length ? (fx.mode === 'soft' ? [['soft', 'soft']] : [['hard', false], ['soft', 'soft']]) : [[null, false]];
+   const zoneTries = [[zones, false], [rooms, 'outside'], [outer, 'rooms'], [[], 'all']].filter(([z], i) => i === 0 || z.length < zones.length).filter(([z, r], i, all) => i === 0 || r === 'all' || z.length > 0);
+   // the foreign rules are relaxed before the zones (a restricted space is a SOLAS matter, a crossing a drawing matter);
+   // the last try drops the foreign ducts too
+   const tries = [...foreignTries.map(([m, fr]) => [zones, false, m, fr]), ...zoneTries.slice(1).map(([z, r]) => [z, r, foreignTries.at(-1)[0], foreignTries.at(-1)[1]]), ...(fx && fd?.length ? [[[], 'all', 'off', 'off']] : [])];
    const good = pv => pv?.candidates?.[0] && !pv.candidates[0].unconnectedRuIds?.length;
-   let zonesRelaxed = false, pv = null, first = null;
-   for (const [z, relaxed] of tries) {
-    st.settings.routingForbiddenZones = z;
-    try { pv = await R.preview({ timeoutMs: 120000 }); } catch (e) { pv = { reason: e.message }; }
-    if (!first && pv.candidates?.[0]) first = { pv, z, relaxed };
-    if (good(pv)) { zonesRelaxed = relaxed; break; }
+   const setTry = (z, mode) => { st.settings.routingForbiddenZones = z; if (mode === 'off') { delete st.settings.phgdForeignDucts; delete st.settings.phgdForeignCrossing; } else if (mode) { st.settings.phgdForeignDucts = fd; st.settings.phgdForeignCrossing = { ...fx, mode }; } };
+   let zonesRelaxed = false, foreignRelaxed = false, pv = null, first = null, timedOut = 0;
+   const opts = () => this.userMain ? { routingMode: 'USER_MAIN', mainDuctIds: this.userMain, mainSizing: 'existing' } : {};
+   const run = async () => { for (let k = 0; k < 2; k++) { try { return await R.preview({ timeoutMs: 120000, ...opts() }); } catch (e) { if (e?.code !== 'TIMEOUT' || k) return { reason: e.message, code: e?.code }; timedOut++; } } };
+   // with a drawn main: the same tries with it first; no good route from it -> the main out and the tries again
+   let mainDropped = false;
+   for (const withMain of this.userMain ? [true, false] : [false]) {
+    if (!withMain && this.userMain) { this.dropMain(); mainDropped = true; first = null; }
+    for (const [z, relaxed, mode, fr] of tries) {
+     setTry(z, mode); pv = await run(); if (pv?.code === 'TIMEOUT') timedOut++;
+     if (!first && pv.candidates?.[0]) first = { pv, z, relaxed, mode, fr };
+     if (good(pv)) { zonesRelaxed = relaxed; foreignRelaxed = fr; break; }
+    }
+    if (good(pv)) break;
    }
-   if (!good(pv) && first) { st.settings.routingForbiddenZones = first.z; zonesRelaxed = first.relaxed; pv = await R.preview({ timeoutMs: 120000 }); }
+   if (!good(pv) && first) { setTry(first.z, first.mode); zonesRelaxed = first.relaxed; foreignRelaxed = first.fr; pv = await run(); }
    const all = pv.candidates || [], goodOnes = all.filter(x => !x.unconnectedRuIds?.length), pool = goodOnes.length ? goodOnes : all, c = pool[pick % Math.max(1, pool.length)];
    if (!c) throw new Error('AUTO 후보 없음: ' + (pv.reason || pv.message || ''));
    await R.applyPreview(c.id);
@@ -344,10 +411,13 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
    this.click('makeDuctBtn');
    await until(() => st.ducts.length > 0 || this.doc.getElementById('phgb-conversion')?.open, 30000, '덕트 지정');
    const conv = this.doc.getElementById('phgb-conversion'); if (conv?.open) { this.doc.getElementById('phgb-conversion-apply').click(); await until(() => st.ducts.length > 0 && !conv.open, 30000, '덕트 변환'); }
+   // a drawn main past its last branch carries no air: its dead ends go (PHG D would leave them unsized)
+   if (this.userMain) this.pruneMain();
    // sizing: every duct gets a section
    this.click('calculateBtn'); await until(() => st.ducts.every(d => +d.widthMm > 0 || +d.diameterMm > 0), 30000, '덕트 계산');
    st.selectedEntityIds.clear(); L.renderEverything(); this.fit();
-   return { ...this.result(), seconds: Math.round((performance.now() - t) / 100) / 10, candidate: c.label, candidates: pool.length, pick: pick % Math.max(1, pool.length), unconnected: c.unconnectedRuIds?.length || 0, zonesRelaxed };
+   return { ...this.result(), seconds: Math.round((performance.now() - t) / 100) / 10, candidate: c.label, candidates: pool.length, pick: pick % Math.max(1, pool.length), unconnected: c.unconnectedRuIds?.length || 0, zonesRelaxed, foreignRelaxed, ...(timedOut ? { timedOut } : {}),
+    userMain: mainDropped ? 'dropped' : this.userMain ? 'band' : false };
   }
   // a duct's section set by hand (PHG D keeps a manualSize duct as it is when it sizes the rest); null = sized again by
   // PHG D. The network is calculated again (flows, the other sizes, pressure).

@@ -33,7 +33,8 @@ async function run(input, outDir, { shots = false, solas = null, log = console.l
  try {
   await p.goto(s.url + '/app/'); await p.waitForFunction(() => window.HVACGrid, null, { timeout: 60000 }); await idle();
   await p.evaluate(pr => { const H = HVACGrid; H.setContract(pr.contract); Object.assign(H.S, { projects: pr.projects, results: pr.results, geometry: pr.geometry }); H.render(); }, given);
-  const keys = await p.evaluate(() => HVACGrid.plans().map(x => x.key));
+  // deck by deck in routing order (lib/duct-layer.cjs): each AUTO knows the networks of its deck made before it
+  const keys = await p.evaluate(() => { const ps = HVACGrid.plans(), DL = HVACGrid.LIB['duct-layer']; return [...new Set(ps.map(x => x.deckId))].flatMap(d => DL.routeOrder(ps.filter(x => x.deckId === d)).map(x => x.key)); });
   log(`${keys.length} plans`);
   await p.evaluate(() => HVACGrid.go('duct')); await idle();
   for (const [i, key] of keys.entries()) {
