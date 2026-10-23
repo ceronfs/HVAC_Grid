@@ -4,7 +4,7 @@
 
 원본은 읽기 전용이다. HVAC Grid를 쓰면서 찾은 BOX 결함 가운데 고치는 범위가 좁고 확실한 것(A·B, ISO 7547:2022 대조의 M·N)과, 사용자 지시(2026-10-21 "모두 수정")로 ISO 7547:2022 계산 방식(J·O~U)을, 사용자 지시(2026-10-22)로 LY 적용의 구조 K(W)를 **사본**에 고쳤다. 원본에는 아래 바뀐 줄을 그대로 옮기면 된다(재현 스크립트는 이 문서의 설명대로 문자열 치환 — 앵커가 정확히 한 번 맞을 때만 씀). 사본을 원본의 새 판으로 바꿀 때는 원본에 A·B·M·N·J·O~U·V·W·N2·O2가 들어갔는지 먼저 확인한다(`npm run test:e2e`의 vendor 시험이 확인).
 
-PHG D(`vendor/DuctConcept_PHG_D.html`)는 2026-10-22까지 고칠 결함이 없었다(HVAC Grid가 하는 일은 자동 복구 막대 숨김, 패널 닫기, 한국어 툴팁 — 화면 정리). 2026-10-23 사용자 지시("GRID, PHG 모두 수정")로 **D9 다계통 AUTO**를 넣었다 — 아래 D9. D9는 사본만이 아니라 **원본(ceronfs/PHG)에도 같은 모듈**(`PHG_D_Build/foreign-ducts.cjs`)로 들어가며, 원본 빌드가 사본과 바이트까지 같다(sha256 앞 16자리 a4737b1aaf9dde47).
+PHG D(`vendor/DuctConcept_PHG_D.html`)는 2026-10-22까지 고칠 결함이 없었다(HVAC Grid가 하는 일은 자동 복구 막대 숨김, 패널 닫기, 한국어 툴팁 — 화면 정리). 2026-10-23 사용자 지시("GRID, PHG 모두 수정")로 **D9 다계통 AUTO**를 넣었다 — 아래 D9. D9는 사본만이 아니라 **원본(ceronfs/PHG)에도 같은 모듈**(`PHG_D_Build/foreign-ducts.cjs`)로 들어가며, 원본 빌드가 사본과 바이트까지 같다(sha256 앞 16자리 e15973b1105e6474).
 
 ## 사본에 고친 것
 
@@ -165,8 +165,9 @@ PHG D(`vendor/DuctConcept_PHG_D.html`)는 2026-10-22까지 고칠 결함이 없�
 - 고침(설정이 없으면 지금과 같다):
   - `settings.phgdForeignDucts` [{ id, systemId, points, widthMm, heightMm, diameterMm }](앱 좌표) + `settings.phgdForeignCrossing` { layerMm, gapMm(50), parallelGapMm, insulationMm, ownHeightMm, mode 'hard'|'soft', crossingCost }. 경로 탐색의 한 걸음마다: 직각 교차는 두 높이 + 이격 ≤ 덕트 층이면 허용(교차 비용 2,500 mm 상당), 넘으면 막음; 나란히 달려 두 덕트 외곽(폭의 반 + 보온·설치 여유)이 겹치면 막음(평면 겹침). `soft`는 둘 다 큰 비용. 경로의 높이는 그 경로가 맡는 RU 풍량으로 AUTO 크기 계산(`phgdPlanSection`, 높이 상한 `sizing[type].maxHeightMm` 반영)에서 얻는다.
   - 후보 점수(`weightedRouteCost`)에 다른 계통 교차·충돌을 더하고, hard에서 규칙을 어긴 주관 스파인 후보는 버린다.
+  - 높이 상한을 부드럽게(`sizing[type].softMaxHeight`): 상한 아래에서 단면(가로세로비 ≤ 3, 풍속, 마찰)을 못 찾으면 다음 높이를 먼저 찾고 `heightCapExceeded`로 표시한다(PHG D의 크기 계산·크기 Worker·AUTO 외곽 셋 다). 없으면 예전처럼 최대 폭·풍속 초과 대체 단면(N3에서 1500×200 같은 납작 덕트)이 나왔다.
   - `settings.phgdRouteZones` [{ id, zoneType 'PREFERRED'|'RESTRICTED', polygon }]: 이번 계산의 경로 구역(PREFERRED가 있으면 엔진의 복도 선호를 켬 — 띠 안 0.75, 밖 1 + 이탈 0.8). `settings.phgdMainCorridors` [{ name, polygon }]: 주관이 따를 복도를 실 이름으로 찾는 대신 호스트가 줌(주관 스파인 후보가 그 안에 생김).
-- 적용: `node tools/patch-phgd-d9.cjs`(모듈 `tools/phgd-d9.cjs`, 원본의 `PHG_D_Build/foreign-ducts.cjs`와 같은 파일; 앵커 13곳이 정확히 한 번씩 맞아야 씀).
+- 적용: `node tools/patch-phgd-d9.cjs`(모듈 `tools/phgd-d9.cjs`, 원본의 `PHG_D_Build/foreign-ducts.cjs`와 같은 파일; 앵커가 차례대로 정확히 한 번씩 맞아야 씀; 크기 Worker 반복문은 파일에 두 번 있어 둘 다).
 - 시험: `test/e2e/phgd-d9.e2e.cjs`(직선·옆으로 비킴·층 안 교차·층 초과 막힘·soft·띠), N3 E2E, PHG 원본 `node tests/run.cjs --quick`.
 - HVAC Grid 쪽: `lib/duct-layer.cjs`(덕트 층·띠·순서), `app/bridge.js` `routeSettings`·`auto`(hard → soft → 다른 계통 빼기 순으로 완화, 금지 영역보다 먼저), `app/shell.js` `runAll`(Deck별 순서 · 앞서 만든 덕트망 전달), `lib/clash.cjs`(전 계통 간섭 검사).
 - 실 안 급기 주관은 HVAC Grid가 그린다(`lib/duct-layer.cjs` `bandMain`: 띠마다 첫 RU~마지막 RU 선, 두 띠를 잇는 가로지름 덕트 하나 — 제한 구역·계단을 피한 Root에 가장 가까운 자리, Root는 바로 또는 복도 중심선으로). PHG D에는 주관 덕트로 넣고 `routingMode:'USER_MAIN'`으로 가지만 맡긴다(기존 기능). D9의 `phgdRouteZones`·`phgdMainCorridors`는 N3에서 쓰지 않는다: PHG D 주관 스파인은 한 줄뿐이라 양쪽 띠를 못 맡고(반대쪽 가지가 1.6배를 넘어 후보 탈락), PREFERRED 구역은 엔진의 복도 가중치를 켜 A* 탐색이 제한시간(120 s)을 넘었다. 다른 호스트용으로 남겨 두고 e2e로 시험한다.

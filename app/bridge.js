@@ -326,9 +326,9 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
    const sz = set.sizing = set.sizing || {};
    // PHG D's own defaults for a type the project lacks (its settings table: main 10 m/s from 200 mm high, branches 8 m/s from 100 mm)
    const base = { main: { shape: 'rect', velocityMps: 10, minHeightMm: 200, maxHeightMm: 0 }, branch: { shape: 'rect', velocityMps: 8, minHeightMm: 100, maxHeightMm: 0 }, sub_branch: { shape: 'rect', velocityMps: 8, minHeightMm: 100, maxHeightMm: 0 } };
-   for (const [t, cap] of [['main', r.mainMaxHeightMm], ['branch', r.branchMaxHeightMm], ['sub_branch', r.branchMaxHeightMm]]) { sz[t] = { ...base[t], ...(sz[t] || {}) }; sz[t].maxHeightMm = cap > 0 ? cap : 0; }
+   for (const [t, cap] of [['main', r.mainMaxHeightMm], ['branch', r.branchMaxHeightMm], ['sub_branch', r.branchMaxHeightMm]]) { sz[t] = { ...base[t], ...(sz[t] || {}) }; sz[t].maxHeightMm = cap > 0 ? cap : 0; if (cap > 0 && +sz[t].minHeightMm > cap) sz[t].minHeightMm = cap; sz[t].softMaxHeight = cap > 0; }   // soft (PHG D D9): a flow that does not fit under the cap gets a taller duct, not an undersized flat one   // a minimum above the cap would win (PHG D takes the larger)
    const ducts = r.foreignMode === 'off' ? [] : foreign.flatMap(g => (g.ducts || []).map(d => ({ id: `${g.systemId}/${d.displayName || d.id}`, systemId: g.systemId, points: d.points, widthMm: d.widthMm, heightMm: d.heightMm, diameterMm: d.diameterMm })));
-   if (ducts.length) { set.phgdForeignDucts = ducts; set.phgdForeignCrossing = { layerMm: r.layerMm, gapMm: r.gapMm, parallelGapMm: 0, insulationMm: 0, mode: r.foreignMode === 'soft' ? 'soft' : 'hard' }; }
+   if (ducts.length) { set.phgdForeignDucts = ducts; set.phgdForeignCrossing = { layerMm: r.layerMm, gapMm: r.gapMm, parallelGapMm: 0, insulationMm: 0, mode: r.foreignMode === 'hard' || r.foreignMode === 'auto' ? 'hard' : 'soft' }; }
    else { delete set.phgdForeignDucts; delete set.phgdForeignCrossing; }
    // a supply main in the rooms: drawn as main ducts from the Root (lib/duct-layer.cjs bandMain), AUTO then routes the
    // branches from it (PHG D USER_MAIN). PHG D's own band preference (phgdRouteZones PREFERRED / phgdMainCorridors) is
@@ -381,7 +381,7 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
    const w = this.win, R = w.DuctConceptRouting, L = w.LineDesignLegacy, t = performance.now(), st = L.getState();
    // a candidate is good when it reaches every RU; the first good one of the three tries wins, else the first one at all
    const zones = st.settings.routingForbiddenZones || [], outer = zones.filter(z => z.id.startsWith('HG-OUT-')), rooms = zones.filter(z => !outer.includes(z));
-   const fx = st.settings.phgdForeignCrossing, fd = st.settings.phgdForeignDucts, foreignTries = fx && fd?.length ? (fx.mode === 'soft' ? [['soft', 'soft']] : [['hard', false], ['soft', 'soft']]) : [[null, false]];
+   const fx = st.settings.phgdForeignCrossing, fd = st.settings.phgdForeignDucts, foreignTries = fx && fd?.length ? (fx.mode === 'soft' ? [['soft', false]] : [['hard', false], ['soft', 'soft']]) : [[null, false]];   // soft as set is not a relaxation
    const zoneTries = [[zones, false], [rooms, 'outside'], [outer, 'rooms'], [[], 'all']].filter(([z], i) => i === 0 || z.length < zones.length).filter(([z, r], i, all) => i === 0 || r === 'all' || z.length > 0);
    // the foreign rules are relaxed before the zones (a restricted space is a SOLAS matter, a crossing a drawing matter);
    // the last try drops the foreign ducts too

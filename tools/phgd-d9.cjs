@@ -92,7 +92,31 @@ const edits = [
   "        useCorridors: (Array.isArray(s.settings?.phgdRouteZones) ? s.settings.phgdRouteZones : []).some(z => z?.zoneType === 'PREFERRED'),   // PHG D D9: on with a host band\n        useCongestion: false,"]
 ];
 
- for (const [a] of edits) { const n = html.split(a).length - 1; if (n !== 1) throw Error('foreign-ducts anchor x' + n + ': ' + a.slice(0, 90)); }
- for (const [a, b] of edits) html = html.replace(a, () => b);
+ // 6. a soft height cap (sizing[type].softMaxHeight, set by a host): when no section fits under maxHeightMm (aspect <= 3,
+ // velocity, friction), the next heights are tried before the oversize fallback - a taller duct, flagged, instead of an
+ // undersized flat one; the same in the app's sizing, the sizing worker and AUTO's envelope
+ // the sizing worker's loop is in the file twice (the app bundle and the worker source): both, each with its own body
+ {
+  const A = 'let h=null;for(let N=m;N<=u;N+=a)for(let o=c;o<=i;o+=a){', B = '}return h??{shape:"rect",diameterMm:0,widthMm:u,heightMm:i,targetVelocityMps:D(r,i,n),velocityExceeded:!0}}';
+  let at = 0, done = 0;
+  for (let i; (i = html.indexOf(A, at)) >= 0;) { const j = html.indexOf(B, i); if (j < 0) throw Error('foreign-ducts anchor: sizing worker loop end');
+   const body = html.slice(i + A.length, j), next = A + body + '}if(!h&&d.softMaxHeight&&i<u){for(let N=m;N<=u;N+=a)for(let o=i+a;o<=u;o+=a){' + body + '}if(h)h.heightCapExceeded=!0}return h??{shape:"rect",diameterMm:0,widthMm:u,heightMm:i,targetVelocityMps:D(r,i,n),velocityExceeded:!0}}';
+   html = html.slice(0, i) + next + html.slice(j + B.length); at = i + next.length; done++; }
+  if (done !== 2) throw Error('foreign-ducts anchor: sizing worker loop x' + done);
+ }
+ {
+  const A = 'let best=null;for(let w=100;w<=max;w+=50)for(let h=minH;h<=maxH;h+=50){', B = 'if(!best||score<best.s)best={s:score,w};}';
+  const i = html.indexOf(A), j = html.indexOf(B, i);
+  if (i < 0 || j < 0 || html.indexOf(A, i + 1) >= 0) throw Error('foreign-ducts anchor: envelope sizing loop');
+  const body = html.slice(i + A.length, j);
+  edits.unshift(['return best?best.w:Math.max(100,Math.ceil(Math.sqrt(base)/50)*50);}',
+   "if(!best&&set.softMaxHeight&&maxH<max){for(let w=100;w<=max;w+=50)for(let h=maxH+50;h<=max;h+=50){" + body + "if(!best||score<best.s)best={s:score,w,h};}}   // PHG D D9 soft height cap\n    return best?best.w:Math.max(100,Math.ceil(Math.sqrt(base)/50)*50);}"]);
+ }
+ edits.push(['      if (best) return best;\n      // No width/height combination',
+  '      if (best) return best;\n      // PHG D D9: a soft height cap (a host sets sizing[type].softMaxHeight): a taller duct, flagged, before the oversize fallback\n      if (setting.softMaxHeight && maxHeight < max) { for (let width = minWidth; width <= max; width += step) for (let height = maxHeight + step; height <= max; height += step) consider(width, height); if (best) return { ...best, heightCapExceeded: true }; }\n      // No width/height combination']);
+ edits.push(["minHeightMm: Number(sz[t]?.minHeightMm) || 0, maxHeightMm: Number(sz[t]?.maxHeightMm) || 0 });",
+  "minHeightMm: Number(sz[t]?.minHeightMm) || 0, maxHeightMm: Number(sz[t]?.maxHeightMm) || 0, softMaxHeight: sz[t]?.softMaxHeight === true });"]);
+ // in order: each anchor must match exactly once in the text as the edits before it left it
+ for (const [a, b] of edits) { const n = html.split(a).length - 1; if (n !== 1) throw Error('foreign-ducts anchor x' + n + ': ' + a.slice(0, 90)); html = html.replace(a, () => b); }
  return html;
 };

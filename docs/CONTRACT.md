@@ -26,8 +26,8 @@ BOX CAL이 계산한 격실·부하를 PHG D가 쓸 수 있는 형태로 옮기�
   unitDecks: { ['<systemKey>']: deckId },               // 여러 Deck 계통의 공조기 Deck
   solas:     { ship:'CARG'|'TANK'|'P36P'|'P36M', method:'IC'|'IIC'|'IIIC', sprinkler, rooms:{ [roomId]: { space } }, bounds:{ [boundaryId]: { grade } } },
   // 2026-10-23: 덕트 층과 전 계통 AUTO (lib/duct-layer.cjs DEFAULTS, 없는 항목은 기본값)
-  ductLayer: { bottomMm:2200, reserveMm:300, gapMm:50, mainMaxHeightMm:200, branchMaxHeightMm:150, supplyMain:'auto'|'corridor'|'band', corridorFill:0.7,
-               bandFromSideMm:2400, bandWidthMm:1200, ruFromSideMm:1000, foreignMode:'auto'|'hard'|'soft'|'off' }
+  ductLayer: { bottomMm:2200, reserveMm:300, gapMm:50, mainMaxHeightMm:null, branchMaxHeightMm:null /* null = 자동 (덕트 층 − 이격) ÷ 2 → 150 */, supplyMain:'auto'|'corridor'|'band', corridorFill:0.7,
+               bandFromSideMm:2400, bandWidthMm:1200, ruFromSideMm:1000, foreignMode:'soft'|'hard'|'auto'|'off' }
 }
 ```
 
@@ -80,8 +80,8 @@ BOX CAL Enhance에서 격실 계산 결과는 계산 프레임의 `CAL_ENHANCE.r
 | 같은 팬룸·트렁크의 여러 계통 | 서로 600 mm 이상 떨어진 점(실 안, 벽에서 200 mm 이상) |
 | RU 배치 | 500 CMH마다 1개, 실 안 중심(또는 가장 안쪽 점, 구멍 제외), Root·다른 RU와 400 mm 이상, 풍량 합계 보존 |
 | 선실 급기 RU | 선측 실의 급기 RU는 선측에서 `ductLayer.ruFromSideMm`(1,000 mm) 선 위에 나란히 (실 밖·벽 300 mm 안이면 위의 규칙) |
-| 덕트 층 | Deck 높이(`decks[].heightMm`) − 덕트 하단 − 예약 = 덕트 층(기본 2,900 − 2,200 − 300 = 400 mm). Deck 높이가 없으면 400 |
-| 다른 계통 덕트 (PHG D D9) | Deck마다 순서(고정 계통 → 급기 → 환기 → 배기, 풍량 큰 것 먼저)로 AUTO, 앞서 만든 덕트망을 `phgdForeignDucts`로: 직각 교차는 두 높이 + 이격 ≤ 덕트 층이면 가능, 평면 겹침은 막음 → 없으면 비용(soft) → 빼고 |
+| 덕트 층 | Deck 높이(`decks[].heightMm`) − 덕트 하단 − 예약 = 덕트 층(기본 2,900 − 2,200 − 300 = 400 mm). Deck 높이가 없으면 400. AUTO 덕트 높이 상한은 비워 두면 (덕트 층 − 이격) ÷ 2를 50 mm 내림(400 → 150): 어느 두 덕트도 층 안에서 교차 |
+| 다른 계통 덕트 (PHG D D9) | Deck마다 순서(고정 계통 → 급기 → 환기 → 배기, 풍량 큰 것 먼저)로 AUTO, 앞서 만든 덕트망을 `phgdForeignDucts`로: 직각 교차는 두 높이 + 이격 ≤ 덕트 층이면 가능, 평면 겹침과 층 초과 교차는 큰 비용(기본 soft — 한 번의 탐색; hard는 막고 경로가 없으면 soft) → 그래도 없으면 빼고 |
 | 급기 주관 위치 | 자동: 복도를 지나야 하는 주관(환기·배기 RU 3개 이상)과 급기 주관의 폭 + 보온 + 이격 합이 복도 폭의 70 %를 넘으면 **실 안 띠**(선측에서 2,400 mm, 폭 1,200 mm). 실 안 주관은 HVAC Grid가 그려(띠마다 첫~마지막 RU 선 + 제한 구역·계단을 피한 가로지름 덕트 하나 + Root 연결) PHG D USER_MAIN으로 넘기고 가지만 AUTO; 그릴 자리가 없거나 그 주관으로 모든 RU에 닿지 않으면 복도·PHG D 자동 주관. 3실 이상 급기망만(조리실 급기 등은 그대로) |
 
 ### 수직 덕트 (`lib/risers.cjs`, `lib/ducts.cjs`)

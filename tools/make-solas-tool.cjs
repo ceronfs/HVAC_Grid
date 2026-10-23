@@ -8,7 +8,7 @@ const fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..');
 const DEFAULT_OUT = path.join(ROOT, 'dist', 'SOLAS_방화등급표기.html');
 // in load order of their own requires (any order works - require() runs them on first use)
-const MODULES = ['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'plan-svg.cjs', 'fire-plan.cjs', 'dxf-in.cjs'];
+const MODULES = ['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'duct-layer.cjs', 'phg-plan.cjs', 'plan-svg.cjs', 'fire-plan.cjs', 'dxf-in.cjs'];
 const SAMPLE = { decks: [['UPPER DK', 0, 'T3_D1.dxf'], ['A DK', 2800, 'T3_D2.dxf'], ['B DK', 5600, 'T3_D3.dxf'], ['NAV BRG DK', 8400, 'T3_D4.dxf']], solas: 'T3.solas.json' };
 
 // a script may not contain "</script" anywhere (it would end the element); "<\/" is the same text in JS strings and

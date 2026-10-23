@@ -33,7 +33,9 @@ test('cabin supply RU 1,000 mm from the ship side; the band in the rooms; the co
  assert.equal(DL.sideRus(north, [{ x: 0, y: 0 }], rooms, { corridor: cor, layer: { ...DL.DEFAULTS, ruFromSideMm: 0 } }), null, 'off');
  const b = DL.bands(rooms, DL.DEFAULTS, cor);
  assert.deepEqual(b.map(x => [x.side, x.centre, x.from, x.to]), [[1, -2400, 0, 3000], [1, -2400, 12000, 24000], [-1, -11600, 12000, 24000]], 'only where rooms reach the side (none over the open part)');
- assert.equal(DL.mainWidth(3360, DL.DEFAULTS), 500);
+ assert.equal(DL.mainWidth(3360, DL.DEFAULTS, 200), 500);
+ // height caps: auto = (layer − gap) / 2 down to 50 mm, so any two ducts cross within the layer
+ assert.deepEqual([DL.capsOf({ decks: [{ id: 'D', heightMm: 2900 }] }, 'D').main, DL.capsOf({ decks: [{ id: 'D', heightMm: 2900 }], ductLayer: { bottomMm: 2150 } }, 'D').main, DL.capsOf({ decks: [{ id: 'D', heightMm: 2900 }], ductLayer: { branchMaxHeightMm: 100 } }, 'D').branch], [150, 200, 100]);
 });
 
 test('plans: cabin supply RUs at the side, the supply main into the rooms when the corridor is full, the routing order', () => {

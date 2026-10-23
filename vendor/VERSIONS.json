@@ -2,7 +2,7 @@
  "note": "Frozen copies used by HVAC Grid. Update a copy here only on purpose and record it. Since 2026-10-22 both copies are the originals' own builds (the patches below were carried to the BOX original and are kept as the record).",
  "DuctConcept_PHG_D.html": {
   "from": "C:/Users/HK/Desktop/PHG/DuctConcept_PHG_D.html",
-  "sha256_16": "a4737b1aaf9dde47",
+  "sha256_16": "e15973b1105e6474",
   "commit": "ceronfs/PHG ace4787 (branch feat/d9-foreign-ducts: D9 PHG_D_Build/foreign-ducts.cjs; the build is byte-for-byte this copy)",
   "copied": "2026-10-23",
   "previous": "be5ffb0 c3f7fa67380d1a2e (2026-10-22)",
@@ -10,7 +10,7 @@
    {
     "id": "D9",
     "date": "2026-10-23",
-    "what": "AUTO knows the ducts of the other systems of the deck (settings.phgdForeignDucts / phgdForeignCrossing: a right-angle crossing allowed when both heights + gap fit the duct layer, a parallel plan overlap blocked, soft mode as costs; candidate scores count foreign crossings) and a host band for the main (settings.phgdRouteZones PREFERRED/RESTRICTED, settings.phgdMainCorridors); without these settings PHG D routes as before",
+    "what": "AUTO knows the ducts of the other systems of the deck (settings.phgdForeignDucts / phgdForeignCrossing: a right-angle crossing allowed when both heights + gap fit the duct layer, a parallel plan overlap blocked, soft mode as costs; candidate scores count foreign crossings) and a host band for the main (settings.phgdRouteZones PREFERRED/RESTRICTED, settings.phgdMainCorridors); without these settings PHG D routes as before; soft height cap (sizing[type].softMaxHeight: a flow that fits no section under maxHeightMm gets the next heights, flagged heightCapExceeded, before the undersized oversize fallback - app sizing, sizing worker and the AUTO envelope)",
     "test": "test/e2e/phgd-d9.e2e.cjs, test/e2e/n3.e2e.cjs; PHG tests/run.cjs --quick",
     "apply": "node tools/patch-phgd-d9.cjs (module tools/phgd-d9.cjs = PHG_D_Build/foreign-ducts.cjs)"
    }
