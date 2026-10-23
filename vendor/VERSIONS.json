@@ -3,7 +3,7 @@
  "DuctConcept_PHG_D.html": {
   "from": "C:/Users/HK/Desktop/PHG/DuctConcept_PHG_D.html",
   "sha256_16": "e15973b1105e6474",
-  "commit": "ceronfs/PHG ace4787 (branch feat/d9-foreign-ducts: D9 PHG_D_Build/foreign-ducts.cjs; the build is byte-for-byte this copy)",
+  "commit": "ceronfs/PHG 33baa2f (branch feat/d9-foreign-ducts: D9 PHG_D_Build/foreign-ducts.cjs; the build is byte-for-byte this copy)",
   "copied": "2026-10-23",
   "previous": "be5ffb0 c3f7fa67380d1a2e (2026-10-22)",
   "patches": [
