@@ -1,0 +1,5907 @@
+{
+ "kMode": "iso-standard",
+ "conditions": {
+  "waterlineEnabled": "off",
+  "waterlineZMm": null,
+  "waterlineSeaKType": "",
+  "waterlineSeaDirectK": null,
+  "solarFaceMode": "max-wall-or-roof",
+  "externalCoolTemp": 35,
+  "externalHeatTemp": -20,
+  "externalRh": 70,
+  "indoorCoolTemp": 25,
+  "indoorCoolRh": 55,
+  "indoorHeatTemp": 22,
+  "externalK": 0.7,
+  "internalK": 0.9,
+  "peopleSensibleW": 70,
+  "peopleLatentW": 50,
+  "daylightLighting": "include",
+  "latentModel": "fixed",
+  "ventLatentWPerCmh": 7.5,
+  "freshAirCmhPerPerson": 28.8,
+  "safetyFactorPct": 10,
+  "solarUpliftTopK": 16,
+  "solarUpliftSideK": 12,
+  "solarUpliftEndK": 12,
+  "solarPolicySource": "explicit",
+  "boundaryPresets": {
+   "OUTDOOR": {
+    "coolingTemp": 35,
+    "heatingTemp": -20
+   },
+   "SEA": {
+    "coolingTemp": 32,
+    "heatingTemp": 5
+   },
+   "TANK": {
+    "coolingTemp": 35,
+    "heatingTemp": -20
+   },
+   "GROUND": {
+    "coolingTemp": 20,
+    "heatingTemp": 5
+   },
+   "NON_AC": {
+    "coolingTemp": 32,
+    "heatingTemp": 10
+   }
+  }
+ },
+ "decks": [
+  {
+   "id": "S1",
+   "name": "1DK",
+   "z": 0,
+   "height": 3000,
+   "offsetX": 0,
+   "offsetY": 0,
+   "rotation": 0,
+   "visible": true,
+   "locked": false,
+   "scale": 1,
+   "unitsCode": 4,
+   "sourceUnits": "mm",
+   "unitScaleToMm": 1,
+   "unitConfirmed": true
+  },
+  {
+   "id": "S2",
+   "name": "2DK",
+   "z": 3000,
+   "height": 3000,
+   "offsetX": 0,
+   "offsetY": 0,
+   "rotation": 0,
+   "visible": true,
+   "locked": false,
+   "scale": 1,
+   "unitsCode": 4,
+   "sourceUnits": "mm",
+   "unitScaleToMm": 1,
+   "unitConfirmed": true
+  },
+  {
+   "id": "S3",
+   "name": "3DK",
+   "z": 6000,
+   "height": 3000,
+   "offsetX": 0,
+   "offsetY": 0,
+   "rotation": 0,
+   "visible": true,
+   "locked": false,
+   "scale": 1,
+   "unitsCode": 4,
+   "sourceUnits": "mm",
+   "unitScaleToMm": 1,
+   "unitConfirmed": true
+  },
+  {
+   "id": "S4",
+   "name": "4DK",
+   "z": 9000,
+   "height": 3000,
+   "offsetX": 0,
+   "offsetY": 0,
+   "rotation": 0,
+   "visible": true,
+   "locked": false,
+   "scale": 1,
+   "unitsCode": 4,
+   "sourceUnits": "mm",
+   "unitScaleToMm": 1,
+   "unitConfirmed": true
+  },
+  {
+   "id": "S5",
+   "name": "5DK",
+   "z": 12000,
+   "height": 3000,
+   "offsetX": 0,
+   "offsetY": 0,
+   "rotation": 0,
+   "visible": true,
+   "locked": false,
+   "scale": 1,
+   "unitsCode": 4,
+   "sourceUnits": "mm",
+   "unitScaleToMm": 1,
+   "unitConfirmed": true
+  }
+ ],
+ "rooms": [
+  {
+   "id": "S5_E094",
+   "no": "501",
+   "name": "조타실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "WHEELHOUSE",
+   "polygon": [
+    {
+     "x": 10800,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 10800,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 5,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 2000,
+   "minimumFreshAir": 144,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.756,
+   "windowK": 3.5,
+   "coolingTransmissionW": 137.57520000000002,
+   "heatingTransmissionW": 577.8158400000001,
+   "solarTransmissionW": 101.01024,
+   "coolingSensibleW": 2810.17744,
+   "coolingLatentW": 250,
+   "coolingW": 3366.195184,
+   "heatingW": 821.0996640000001,
+   "minimumFreshAirCmh": 144,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E095",
+   "no": "502",
+   "name": "계단실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9818.18181818182,
+     "y": 4500
+    },
+    {
+     "x": 12000,
+     "y": 4500
+    },
+    {
+     "x": 12000,
+     "y": 8000
+    },
+    {
+     "x": 9818.18181818182,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 7.6363636363636305,
+   "volume": 22.90909090909089,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 199.22727272727266,
+   "heatingTransmissionW": 836.7545454545452,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 312.62727272727267,
+   "coolingLatentW": 0,
+   "coolingW": 343.89,
+   "heatingW": 920.4299999999998,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E096",
+   "no": "503",
+   "name": "해도실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9600,
+     "y": 0
+    },
+    {
+     "x": 10800,
+     "y": 0
+    },
+    {
+     "x": 10800,
+     "y": 3500
+    },
+    {
+     "x": 9600,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 57.60000000000001,
+   "heatingTransmissionW": 241.92000000000002,
+   "solarTransmissionW": 40.32,
+   "coolingSensibleW": 97.92000000000002,
+   "coolingLatentW": 0,
+   "coolingW": 107.71200000000003,
+   "heatingW": 266.112,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E097",
+   "no": "504",
+   "name": "무선실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8727.272727272728,
+     "y": 4500
+    },
+    {
+     "x": 9818.18181818182,
+     "y": 4500
+    },
+    {
+     "x": 9818.18181818182,
+     "y": 8000
+    },
+    {
+     "x": 8727.272727272728,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818215,
+   "volume": 11.454545454545466,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 2500,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 52.36363636363641,
+   "heatingTransmissionW": 219.9272727272729,
+   "solarTransmissionW": 36.654545454545485,
+   "coolingSensibleW": 2589.018181818182,
+   "coolingLatentW": 0,
+   "coolingW": 2847.92,
+   "heatingW": 241.92000000000021,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E098",
+   "no": "505",
+   "name": "항해장비실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8400,
+     "y": 0
+    },
+    {
+     "x": 9600,
+     "y": 0
+    },
+    {
+     "x": 9600,
+     "y": 3500
+    },
+    {
+     "x": 8400,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 57.60000000000001,
+   "heatingTransmissionW": 241.92000000000002,
+   "solarTransmissionW": 40.32,
+   "coolingSensibleW": 97.92000000000002,
+   "coolingLatentW": 0,
+   "coolingW": 107.71200000000003,
+   "heatingW": 266.112,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E099",
+   "no": "506",
+   "name": "좌현선교윙",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7636.363636363637,
+     "y": 4500
+    },
+    {
+     "x": 8727.272727272728,
+     "y": 4500
+    },
+    {
+     "x": 8727.272727272728,
+     "y": 8000
+    },
+    {
+     "x": 7636.363636363637,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 52.36363636363637,
+   "heatingTransmissionW": 219.92727272727274,
+   "solarTransmissionW": 36.654545454545456,
+   "coolingSensibleW": 89.01818181818183,
+   "coolingLatentW": 0,
+   "coolingW": 97.92000000000002,
+   "heatingW": 241.92000000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E100",
+   "no": "507",
+   "name": "우현선교윙",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7200,
+     "y": 0
+    },
+    {
+     "x": 8400,
+     "y": 0
+    },
+    {
+     "x": 8400,
+     "y": 3500
+    },
+    {
+     "x": 7200,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 57.60000000000001,
+   "heatingTransmissionW": 241.92000000000002,
+   "solarTransmissionW": 40.32,
+   "coolingSensibleW": 97.92000000000002,
+   "coolingLatentW": 0,
+   "coolingW": 107.71200000000003,
+   "heatingW": 266.112,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E101",
+   "no": "508",
+   "name": "선교화장실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 6545.454545454546,
+     "y": 4500
+    },
+    {
+     "x": 7636.363636363637,
+     "y": 4500
+    },
+    {
+     "x": 7636.363636363637,
+     "y": 8000
+    },
+    {
+     "x": 6545.454545454546,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "EXH-ROOM",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 52.36363636363637,
+   "heatingTransmissionW": 219.92727272727274,
+   "solarTransmissionW": 36.654545454545456,
+   "coolingSensibleW": 89.01818181818183,
+   "coolingLatentW": 0,
+   "coolingW": 97.92000000000002,
+   "heatingW": 241.92000000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 10,
+   "ventilationAirCmh": 114.54545454545455,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E102",
+   "no": "509",
+   "name": "선교창고",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 6000,
+     "y": 0
+    },
+    {
+     "x": 7200,
+     "y": 0
+    },
+    {
+     "x": 7200,
+     "y": 3500
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 57.60000000000001,
+   "heatingTransmissionW": 241.92000000000002,
+   "solarTransmissionW": 40.32,
+   "coolingSensibleW": 97.92000000000002,
+   "coolingLatentW": 0,
+   "coolingW": 107.71200000000003,
+   "heatingW": 266.112,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E103",
+   "no": "510",
+   "name": "선교팬룸",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 5454.545454545455,
+     "y": 4500
+    },
+    {
+     "x": 6545.454545454546,
+     "y": 4500
+    },
+    {
+     "x": 6545.454545454546,
+     "y": 8000
+    },
+    {
+     "x": 5454.545454545455,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 52.36363636363637,
+   "heatingTransmissionW": 219.92727272727274,
+   "solarTransmissionW": 36.654545454545456,
+   "coolingSensibleW": 89.01818181818183,
+   "coolingLatentW": 0,
+   "coolingW": 97.92000000000002,
+   "heatingW": 241.92000000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E104",
+   "no": "511",
+   "name": "복도",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "ALLEY_SOUND",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 3500
+    },
+    {
+     "x": 1200,
+     "y": 3500
+    },
+    {
+     "x": 2400,
+     "y": 3500
+    },
+    {
+     "x": 3600,
+     "y": 3500
+    },
+    {
+     "x": 4800,
+     "y": 3500
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    },
+    {
+     "x": 7200,
+     "y": 3500
+    },
+    {
+     "x": 8400,
+     "y": 3500
+    },
+    {
+     "x": 9600,
+     "y": 3500
+    },
+    {
+     "x": 10800,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 4500
+    },
+    {
+     "x": 9818.18181818182,
+     "y": 4500
+    },
+    {
+     "x": 8727.272727272728,
+     "y": 4500
+    },
+    {
+     "x": 7636.363636363637,
+     "y": 4500
+    },
+    {
+     "x": 6545.454545454546,
+     "y": 4500
+    },
+    {
+     "x": 5454.545454545455,
+     "y": 4500
+    },
+    {
+     "x": 4363.636363636364,
+     "y": 4500
+    },
+    {
+     "x": 3272.727272727273,
+     "y": 4500
+    },
+    {
+     "x": 2181.818181818182,
+     "y": 4500
+    },
+    {
+     "x": 1090.909090909091,
+     "y": 4500
+    },
+    {
+     "x": 0,
+     "y": 4500
+    }
+   ],
+   "holes": [],
+   "floor": 12,
+   "volume": 36,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 126,
+   "heatingTransmissionW": 529.1999999999999,
+   "solarTransmissionW": 115.19999999999999,
+   "coolingSensibleW": 241.2,
+   "coolingLatentW": 0,
+   "coolingW": 265.32,
+   "heatingW": 582.12,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E105",
+   "no": "512",
+   "name": "비상전원실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4800,
+     "y": 0
+    },
+    {
+     "x": 6000,
+     "y": 0
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    },
+    {
+     "x": 4800,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 57.60000000000001,
+   "heatingTransmissionW": 241.92000000000002,
+   "solarTransmissionW": 40.32,
+   "coolingSensibleW": 97.92000000000002,
+   "coolingLatentW": 0,
+   "coolingW": 107.71200000000003,
+   "heatingW": 266.112,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E106",
+   "no": "513",
+   "name": "GMDSS배터리실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4363.636363636364,
+     "y": 4500
+    },
+    {
+     "x": 5454.545454545455,
+     "y": 4500
+    },
+    {
+     "x": 5454.545454545455,
+     "y": 8000
+    },
+    {
+     "x": 4363.636363636364,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 52.36363636363637,
+   "heatingTransmissionW": 219.92727272727274,
+   "solarTransmissionW": 36.654545454545456,
+   "coolingSensibleW": 89.01818181818183,
+   "coolingLatentW": 0,
+   "coolingW": 97.92000000000002,
+   "heatingW": 241.92000000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E107",
+   "no": "514",
+   "name": "갑판사무실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 3600,
+     "y": 0
+    },
+    {
+     "x": 4800,
+     "y": 0
+    },
+    {
+     "x": 4800,
+     "y": 3500
+    },
+    {
+     "x": 3600,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 2,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 57.6,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 57.60000000000001,
+   "heatingTransmissionW": 241.92000000000002,
+   "solarTransmissionW": 40.32,
+   "coolingSensibleW": 237.92000000000002,
+   "coolingLatentW": 100,
+   "coolingW": 371.71200000000005,
+   "heatingW": 266.112,
+   "minimumFreshAirCmh": 57.6,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E108",
+   "no": "515",
+   "name": "안전장비창고",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 3272.727272727273,
+     "y": 4500
+    },
+    {
+     "x": 4363.636363636364,
+     "y": 4500
+    },
+    {
+     "x": 4363.636363636364,
+     "y": 8000
+    },
+    {
+     "x": 3272.727272727273,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 52.36363636363637,
+   "heatingTransmissionW": 219.92727272727274,
+   "solarTransmissionW": 36.654545454545456,
+   "coolingSensibleW": 89.01818181818183,
+   "coolingLatentW": 0,
+   "coolingW": 97.92000000000002,
+   "heatingW": 241.92000000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E109",
+   "no": "516",
+   "name": "소화장비실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 2400,
+     "y": 0
+    },
+    {
+     "x": 3600,
+     "y": 0
+    },
+    {
+     "x": 3600,
+     "y": 3500
+    },
+    {
+     "x": 2400,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 57.60000000000001,
+   "heatingTransmissionW": 241.92000000000002,
+   "solarTransmissionW": 40.32,
+   "coolingSensibleW": 97.92000000000002,
+   "coolingLatentW": 0,
+   "coolingW": 107.71200000000003,
+   "heatingW": 266.112,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E110",
+   "no": "517",
+   "name": "신호기창고",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 2181.818181818182,
+     "y": 4500
+    },
+    {
+     "x": 3272.727272727273,
+     "y": 4500
+    },
+    {
+     "x": 3272.727272727273,
+     "y": 8000
+    },
+    {
+     "x": 2181.818181818182,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 52.36363636363637,
+   "heatingTransmissionW": 219.92727272727274,
+   "solarTransmissionW": 36.654545454545456,
+   "coolingSensibleW": 89.01818181818183,
+   "coolingLatentW": 0,
+   "coolingW": 97.92000000000002,
+   "heatingW": 241.92000000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E111",
+   "no": "518",
+   "name": "관측실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 1200,
+     "y": 0
+    },
+    {
+     "x": 2400,
+     "y": 0
+    },
+    {
+     "x": 2400,
+     "y": 3500
+    },
+    {
+     "x": 1200,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 57.60000000000001,
+   "heatingTransmissionW": 241.92000000000002,
+   "solarTransmissionW": 40.32,
+   "coolingSensibleW": 97.92000000000002,
+   "coolingLatentW": 0,
+   "coolingW": 107.71200000000003,
+   "heatingW": 266.112,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E112",
+   "no": "519",
+   "name": "통신장비실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 1090.909090909091,
+     "y": 4500
+    },
+    {
+     "x": 2181.818181818182,
+     "y": 4500
+    },
+    {
+     "x": 2181.818181818182,
+     "y": 8000
+    },
+    {
+     "x": 1090.909090909091,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 52.36363636363637,
+   "heatingTransmissionW": 219.92727272727274,
+   "solarTransmissionW": 36.654545454545456,
+   "coolingSensibleW": 89.01818181818183,
+   "coolingLatentW": 0,
+   "coolingW": 97.92000000000002,
+   "heatingW": 241.92000000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E113",
+   "no": "520",
+   "name": "전자장비실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 1200,
+     "y": 0
+    },
+    {
+     "x": 1200,
+     "y": 3500
+    },
+    {
+     "x": 0,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 152.10000000000002,
+   "heatingTransmissionW": 638.82,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 265.5,
+   "coolingLatentW": 0,
+   "coolingW": 292.05,
+   "heatingW": 702.7020000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E114",
+   "no": "521",
+   "name": "예비실",
+   "deck": "5DK",
+   "deckId": "S5",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 4500
+    },
+    {
+     "x": 1090.909090909091,
+     "y": 4500
+    },
+    {
+     "x": 1090.909090909091,
+     "y": 8000
+    },
+    {
+     "x": 0,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "AHU-BRG-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 146.86363636363637,
+   "heatingTransmissionW": 616.8272727272728,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 260.26363636363635,
+   "coolingLatentW": 0,
+   "coolingW": 286.29,
+   "heatingW": 678.5100000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E071",
+   "no": "401",
+   "name": "선장실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10666.666666666666,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 10666.666666666666,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666669,
+   "volume": 14.000000000000005,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 4,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 115.2,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.8,
+   "windowK": 3.5,
+   "coolingTransmissionW": 119.70000000000003,
+   "heatingTransmissionW": 502.7400000000001,
+   "solarTransmissionW": 100.44000000000001,
+   "coolingSensibleW": 752.8066666666667,
+   "coolingLatentW": 200,
+   "coolingW": 1048.0873333333334,
+   "heatingW": 747.0540000000002,
+   "minimumFreshAirCmh": 115.2,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E072",
+   "no": "402",
+   "name": "계단실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9600,
+     "y": 4500
+    },
+    {
+     "x": 12000,
+     "y": 4500
+    },
+    {
+     "x": 12000,
+     "y": 8000
+    },
+    {
+     "x": 9600,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 8.4,
+   "volume": 25.2,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 159.3,
+   "heatingTransmissionW": 669.0600000000001,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 272.70000000000005,
+   "coolingLatentW": 0,
+   "coolingW": 299.9700000000001,
+   "heatingW": 735.9660000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E073",
+   "no": "403",
+   "name": "기관장실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9333.333333333332,
+     "y": 0
+    },
+    {
+     "x": 10666.666666666666,
+     "y": 0
+    },
+    {
+     "x": 10666.666666666666,
+     "y": 3500
+    },
+    {
+     "x": 9333.333333333332,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666669,
+   "volume": 14.000000000000005,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 4,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 115.2,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.8,
+   "windowK": 3.5,
+   "coolingTransmissionW": 25.20000000000002,
+   "heatingTransmissionW": 105.84000000000007,
+   "solarTransmissionW": 30.240000000000016,
+   "coolingSensibleW": 588.1066666666667,
+   "coolingLatentW": 200,
+   "coolingW": 866.9173333333334,
+   "heatingW": 310.4640000000001,
+   "minimumFreshAirCmh": 115.2,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E074",
+   "no": "404",
+   "name": "일등항해사실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8400,
+     "y": 4500
+    },
+    {
+     "x": 9600,
+     "y": 4500
+    },
+    {
+     "x": 9600,
+     "y": 8000
+    },
+    {
+     "x": 8400,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 23.760000000000005,
+   "heatingTransmissionW": 99.79200000000002,
+   "solarTransmissionW": 28.512000000000004,
+   "coolingSensibleW": 316.672,
+   "coolingLatentW": 50,
+   "coolingW": 403.33920000000006,
+   "heatingW": 265.00320000000005,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E075",
+   "no": "405",
+   "name": "일등기관사실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7999.999999999999,
+     "y": 0
+    },
+    {
+     "x": 9333.333333333332,
+     "y": 0
+    },
+    {
+     "x": 9333.333333333332,
+     "y": 3500
+    },
+    {
+     "x": 7999.999999999999,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 27.359999999999992,
+   "heatingTransmissionW": 114.91199999999996,
+   "solarTransmissionW": 32.831999999999994,
+   "coolingSensibleW": 326.45866666666666,
+   "coolingLatentW": 50,
+   "coolingW": 414.10453333333334,
+   "heatingW": 281.6352,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E076",
+   "no": "406",
+   "name": "이등항해사실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7200,
+     "y": 4500
+    },
+    {
+     "x": 8400,
+     "y": 4500
+    },
+    {
+     "x": 8400,
+     "y": 8000
+    },
+    {
+     "x": 7200,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 23.760000000000005,
+   "heatingTransmissionW": 99.79200000000002,
+   "solarTransmissionW": 28.512000000000004,
+   "coolingSensibleW": 316.672,
+   "coolingLatentW": 50,
+   "coolingW": 403.33920000000006,
+   "heatingW": 265.00320000000005,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E077",
+   "no": "407",
+   "name": "이등기관사실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 6666.666666666666,
+     "y": 0
+    },
+    {
+     "x": 7999.999999999999,
+     "y": 0
+    },
+    {
+     "x": 7999.999999999999,
+     "y": 3500
+    },
+    {
+     "x": 6666.666666666666,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 27.359999999999992,
+   "heatingTransmissionW": 114.91199999999996,
+   "solarTransmissionW": 32.831999999999994,
+   "coolingSensibleW": 326.45866666666666,
+   "coolingLatentW": 50,
+   "coolingW": 414.10453333333334,
+   "heatingW": 281.6352,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E078",
+   "no": "408",
+   "name": "삼등항해사실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 6000,
+     "y": 4500
+    },
+    {
+     "x": 7200,
+     "y": 4500
+    },
+    {
+     "x": 7200,
+     "y": 8000
+    },
+    {
+     "x": 6000,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 23.760000000000005,
+   "heatingTransmissionW": 99.79200000000002,
+   "solarTransmissionW": 28.512000000000004,
+   "coolingSensibleW": 316.672,
+   "coolingLatentW": 50,
+   "coolingW": 403.33920000000006,
+   "heatingW": 265.00320000000005,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E079",
+   "no": "409",
+   "name": "복도",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "ALLEY_SOUND",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 3500
+    },
+    {
+     "x": 1333.3333333333333,
+     "y": 3500
+    },
+    {
+     "x": 2666.6666666666665,
+     "y": 3500
+    },
+    {
+     "x": 4000,
+     "y": 3500
+    },
+    {
+     "x": 5333.333333333333,
+     "y": 3500
+    },
+    {
+     "x": 6666.666666666666,
+     "y": 3500
+    },
+    {
+     "x": 7999.999999999999,
+     "y": 3500
+    },
+    {
+     "x": 9333.333333333332,
+     "y": 3500
+    },
+    {
+     "x": 10666.666666666666,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 4500
+    },
+    {
+     "x": 9600,
+     "y": 4500
+    },
+    {
+     "x": 8400,
+     "y": 4500
+    },
+    {
+     "x": 7200,
+     "y": 4500
+    },
+    {
+     "x": 6000,
+     "y": 4500
+    },
+    {
+     "x": 4800,
+     "y": 4500
+    },
+    {
+     "x": 3600,
+     "y": 4500
+    },
+    {
+     "x": 2400,
+     "y": 4500
+    },
+    {
+     "x": 1200,
+     "y": 4500
+    },
+    {
+     "x": 0,
+     "y": 4500
+    }
+   ],
+   "holes": [],
+   "floor": 12,
+   "volume": 36,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 54,
+   "heatingTransmissionW": 226.8,
+   "solarTransmissionW": 32.400000000000006,
+   "coolingSensibleW": 86.4,
+   "coolingLatentW": 0,
+   "coolingW": 95.04000000000002,
+   "heatingW": 249.48000000000005,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E080",
+   "no": "410",
+   "name": "삼등기관사실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 5333.333333333333,
+     "y": 0
+    },
+    {
+     "x": 6666.666666666666,
+     "y": 0
+    },
+    {
+     "x": 6666.666666666666,
+     "y": 3500
+    },
+    {
+     "x": 5333.333333333333,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 27.359999999999992,
+   "heatingTransmissionW": 114.91199999999996,
+   "solarTransmissionW": 32.831999999999994,
+   "coolingSensibleW": 326.45866666666666,
+   "coolingLatentW": 50,
+   "coolingW": 414.10453333333334,
+   "heatingW": 281.6352,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E081",
+   "no": "411",
+   "name": "통신장실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4800,
+     "y": 4500
+    },
+    {
+     "x": 6000,
+     "y": 4500
+    },
+    {
+     "x": 6000,
+     "y": 8000
+    },
+    {
+     "x": 4800,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 23.760000000000005,
+   "heatingTransmissionW": 99.79200000000002,
+   "solarTransmissionW": 28.512000000000004,
+   "coolingSensibleW": 316.672,
+   "coolingLatentW": 50,
+   "coolingW": 403.33920000000006,
+   "heatingW": 265.00320000000005,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E082",
+   "no": "412",
+   "name": "사관식당",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 5333.333333333333,
+     "y": 0
+    },
+    {
+     "x": 5333.333333333333,
+     "y": 3500
+    },
+    {
+     "x": 4000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 4,
+   "activity": "",
+   "lighting": 5,
+   "equipW": 0,
+   "minimumFreshAir": 115.2,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 35.99999999999999,
+   "heatingTransmissionW": 151.19999999999996,
+   "solarTransmissionW": 43.19999999999999,
+   "coolingSensibleW": 382.5333333333333,
+   "coolingLatentW": 200,
+   "coolingW": 640.7866666666669,
+   "heatingW": 166.31999999999996,
+   "minimumFreshAirCmh": 115.2,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E083",
+   "no": "413",
+   "name": "사관휴게실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 3600,
+     "y": 4500
+    },
+    {
+     "x": 4800,
+     "y": 4500
+    },
+    {
+     "x": 4800,
+     "y": 8000
+    },
+    {
+     "x": 3600,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 32.400000000000006,
+   "heatingTransmissionW": 136.08,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 141.28,
+   "coolingLatentW": 50,
+   "coolingW": 210.40800000000002,
+   "heatingW": 149.68800000000002,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E084",
+   "no": "414",
+   "name": "회의실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 2666.6666666666665,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 3500
+    },
+    {
+     "x": 2666.6666666666665,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666667,
+   "volume": 14,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 3,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 86.4,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 36.00000000000001,
+   "heatingTransmissionW": 151.20000000000005,
+   "solarTransmissionW": 43.20000000000001,
+   "coolingSensibleW": 289.20000000000005,
+   "coolingLatentW": 150,
+   "coolingW": 483.12000000000006,
+   "heatingW": 166.32000000000005,
+   "minimumFreshAirCmh": 86.4,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E085",
+   "no": "415",
+   "name": "선박사무실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 2400,
+     "y": 4500
+    },
+    {
+     "x": 3600,
+     "y": 4500
+    },
+    {
+     "x": 3600,
+     "y": 8000
+    },
+    {
+     "x": 2400,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 2,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 57.6,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 32.400000000000006,
+   "heatingTransmissionW": 136.08,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 211.28,
+   "coolingLatentW": 100,
+   "coolingW": 342.408,
+   "heatingW": 149.68800000000002,
+   "minimumFreshAirCmh": 57.6,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E086",
+   "no": "416",
+   "name": "문서보관실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 1333.3333333333333,
+     "y": 0
+    },
+    {
+     "x": 2666.6666666666665,
+     "y": 0
+    },
+    {
+     "x": 2666.6666666666665,
+     "y": 3500
+    },
+    {
+     "x": 1333.3333333333333,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 36,
+   "heatingTransmissionW": 151.20000000000002,
+   "solarTransmissionW": 43.2,
+   "coolingSensibleW": 79.2,
+   "coolingLatentW": 0,
+   "coolingW": 87.12,
+   "heatingW": 166.32000000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E087",
+   "no": "417",
+   "name": "의무실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 1200,
+     "y": 4500
+    },
+    {
+     "x": 2400,
+     "y": 4500
+    },
+    {
+     "x": 2400,
+     "y": 8000
+    },
+    {
+     "x": 1200,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 3,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 86.4,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 32.400000000000006,
+   "heatingTransmissionW": 136.08,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 281.28,
+   "coolingLatentW": 150,
+   "coolingW": 474.408,
+   "heatingW": 149.68800000000002,
+   "minimumFreshAirCmh": 86.4,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E088",
+   "no": "418",
+   "name": "공용화장실",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 1333.3333333333333,
+     "y": 0
+    },
+    {
+     "x": 1333.3333333333333,
+     "y": 3500
+    },
+    {
+     "x": 0,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-01",
+   "exh": "EXH-ROOM",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 130.5,
+   "heatingTransmissionW": 548.1,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 243.9,
+   "coolingLatentW": 0,
+   "coolingW": 268.29,
+   "heatingW": 602.9100000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 10,
+   "ventilationAirCmh": 139.99999999999997,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E089",
+   "no": "419",
+   "name": "팬룸",
+   "deck": "4DK",
+   "deckId": "S4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 4500
+    },
+    {
+     "x": 1200,
+     "y": 4500
+    },
+    {
+     "x": 1200,
+     "y": 8000
+    },
+    {
+     "x": 0,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "AHU-OFC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 126.90000000000002,
+   "heatingTransmissionW": 532.98,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 240.3,
+   "coolingLatentW": 0,
+   "coolingW": 264.33000000000004,
+   "heatingW": 586.278,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E051",
+   "no": "301",
+   "name": "선원침실 01",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10500,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 10500,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 126.36,
+   "heatingTransmissionW": 530.712,
+   "solarTransmissionW": 103.03200000000001,
+   "coolingSensibleW": 497.992,
+   "coolingLatentW": 50,
+   "coolingW": 602.7912,
+   "heatingW": 739.0152,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E052",
+   "no": "302",
+   "name": "계단실",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9000,
+     "y": 4500
+    },
+    {
+     "x": 12000,
+     "y": 4500
+    },
+    {
+     "x": 12000,
+     "y": 8000
+    },
+    {
+     "x": 9000,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 10.5,
+   "volume": 31.5,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 175.5,
+   "heatingTransmissionW": 737.1,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 288.9,
+   "coolingLatentW": 0,
+   "coolingW": 317.79,
+   "heatingW": 810.8100000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E053",
+   "no": "303",
+   "name": "선원침실 02",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9000,
+     "y": 0
+    },
+    {
+     "x": 10500,
+     "y": 0
+    },
+    {
+     "x": 10500,
+     "y": 3500
+    },
+    {
+     "x": 9000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 31.86,
+   "heatingTransmissionW": 133.81199999999998,
+   "solarTransmissionW": 38.232,
+   "coolingSensibleW": 338.692,
+   "coolingLatentW": 50,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E054",
+   "no": "304",
+   "name": "선원침실 03",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7500,
+     "y": 4500
+    },
+    {
+     "x": 9000,
+     "y": 4500
+    },
+    {
+     "x": 9000,
+     "y": 8000
+    },
+    {
+     "x": 7500,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 31.86,
+   "heatingTransmissionW": 133.81199999999998,
+   "solarTransmissionW": 38.232,
+   "coolingSensibleW": 338.692,
+   "coolingLatentW": 50,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E055",
+   "no": "305",
+   "name": "선원침실 04",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7500,
+     "y": 0
+    },
+    {
+     "x": 9000,
+     "y": 0
+    },
+    {
+     "x": 9000,
+     "y": 3500
+    },
+    {
+     "x": 7500,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 31.86,
+   "heatingTransmissionW": 133.81199999999998,
+   "solarTransmissionW": 38.232,
+   "coolingSensibleW": 338.692,
+   "coolingLatentW": 50,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E056",
+   "no": "306",
+   "name": "선원침실 05",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 6000,
+     "y": 4500
+    },
+    {
+     "x": 7500,
+     "y": 4500
+    },
+    {
+     "x": 7500,
+     "y": 8000
+    },
+    {
+     "x": 6000,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 31.86,
+   "heatingTransmissionW": 133.81199999999998,
+   "solarTransmissionW": 38.232,
+   "coolingSensibleW": 338.692,
+   "coolingLatentW": 50,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E057",
+   "no": "307",
+   "name": "선원침실 06",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 6000,
+     "y": 0
+    },
+    {
+     "x": 7500,
+     "y": 0
+    },
+    {
+     "x": 7500,
+     "y": 3500
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 31.86,
+   "heatingTransmissionW": 133.81199999999998,
+   "solarTransmissionW": 38.232,
+   "coolingSensibleW": 338.692,
+   "coolingLatentW": 50,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E058",
+   "no": "308",
+   "name": "복도",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "ALLEY_SOUND",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 3500
+    },
+    {
+     "x": 1500,
+     "y": 3500
+    },
+    {
+     "x": 3000,
+     "y": 3500
+    },
+    {
+     "x": 4500,
+     "y": 3500
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    },
+    {
+     "x": 7500,
+     "y": 3500
+    },
+    {
+     "x": 9000,
+     "y": 3500
+    },
+    {
+     "x": 10500,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 4500
+    },
+    {
+     "x": 9000,
+     "y": 4500
+    },
+    {
+     "x": 7500,
+     "y": 4500
+    },
+    {
+     "x": 6000,
+     "y": 4500
+    },
+    {
+     "x": 4500,
+     "y": 4500
+    },
+    {
+     "x": 3000,
+     "y": 4500
+    },
+    {
+     "x": 1500,
+     "y": 4500
+    },
+    {
+     "x": 0,
+     "y": 4500
+    }
+   ],
+   "holes": [],
+   "floor": 12,
+   "volume": 36,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 54,
+   "heatingTransmissionW": 226.8,
+   "solarTransmissionW": 32.400000000000006,
+   "coolingSensibleW": 86.4,
+   "coolingLatentW": 0,
+   "coolingW": 95.04000000000002,
+   "heatingW": 249.48000000000005,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E059",
+   "no": "309",
+   "name": "선원침실 07",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4500,
+     "y": 4500
+    },
+    {
+     "x": 6000,
+     "y": 4500
+    },
+    {
+     "x": 6000,
+     "y": 8000
+    },
+    {
+     "x": 4500,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 31.86,
+   "heatingTransmissionW": 133.81199999999998,
+   "solarTransmissionW": 38.232,
+   "coolingSensibleW": 338.692,
+   "coolingLatentW": 50,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E060",
+   "no": "310",
+   "name": "선원침실 08",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4500,
+     "y": 0
+    },
+    {
+     "x": 6000,
+     "y": 0
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    },
+    {
+     "x": 4500,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 1,
+   "activity": "",
+   "lighting": 4,
+   "equipW": 0,
+   "minimumFreshAir": 28.8,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0.6,
+   "windowK": 3.5,
+   "coolingTransmissionW": 31.86,
+   "heatingTransmissionW": 133.81199999999998,
+   "solarTransmissionW": 38.232,
+   "coolingSensibleW": 338.692,
+   "coolingLatentW": 50,
+   "coolingW": 427.56120000000004,
+   "heatingW": 302.4252,
+   "minimumFreshAirCmh": 28.8,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E061",
+   "no": "311",
+   "name": "선원식당",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 3000,
+     "y": 4500
+    },
+    {
+     "x": 4500,
+     "y": 4500
+    },
+    {
+     "x": 4500,
+     "y": 8000
+    },
+    {
+     "x": 3000,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 4,
+   "activity": "",
+   "lighting": 5,
+   "equipW": 0,
+   "minimumFreshAir": 115.2,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 40.5,
+   "heatingTransmissionW": 170.1,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 395.35,
+   "coolingLatentW": 200,
+   "coolingW": 654.8850000000001,
+   "heatingW": 187.11,
+   "minimumFreshAirCmh": 115.2,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E062",
+   "no": "312",
+   "name": "선원휴게실",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 3000,
+     "y": 0
+    },
+    {
+     "x": 4500,
+     "y": 0
+    },
+    {
+     "x": 4500,
+     "y": 3500
+    },
+    {
+     "x": 3000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 2,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 57.6,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 40.5,
+   "heatingTransmissionW": 170.1,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 229.1,
+   "coolingLatentW": 100,
+   "coolingW": 362.01000000000005,
+   "heatingW": 187.11,
+   "minimumFreshAirCmh": 57.6,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E063",
+   "no": "313",
+   "name": "탈의실",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 1500,
+     "y": 4500
+    },
+    {
+     "x": 3000,
+     "y": 4500
+    },
+    {
+     "x": 3000,
+     "y": 8000
+    },
+    {
+     "x": 1500,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 74.86363636363637,
+   "heatingTransmissionW": 202.55454545454546,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 123.46363636363637,
+   "coolingLatentW": 0,
+   "coolingW": 135.81,
+   "heatingW": 222.81000000000003,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E064",
+   "no": "314",
+   "name": "샤워실",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 1500,
+     "y": 0
+    },
+    {
+     "x": 3000,
+     "y": 0
+    },
+    {
+     "x": 3000,
+     "y": 3500
+    },
+    {
+     "x": 1500,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-01",
+   "exh": "EXH-ROOM",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 40.5,
+   "heatingTransmissionW": 170.1,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 89.1,
+   "coolingLatentW": 0,
+   "coolingW": 98.01,
+   "heatingW": 187.11,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 10,
+   "ventilationAirCmh": 157.5,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E065",
+   "no": "315",
+   "name": "화장실",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 4500
+    },
+    {
+     "x": 1500,
+     "y": 4500
+    },
+    {
+     "x": 1500,
+     "y": 8000
+    },
+    {
+     "x": 0,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-01",
+   "exh": "EXH-ROOM",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 155.61818181818182,
+   "heatingTransmissionW": 586.4727272727273,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 269.0181818181818,
+   "coolingLatentW": 0,
+   "coolingW": 295.92,
+   "heatingW": 645.1200000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 10,
+   "ventilationAirCmh": 157.5,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E066",
+   "no": "316",
+   "name": "의무실",
+   "deck": "3DK",
+   "deckId": "S3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 1500,
+     "y": 0
+    },
+    {
+     "x": 1500,
+     "y": 3500
+    },
+    {
+     "x": 0,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "AHU-AC-01",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 3,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 86.4,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 135,
+   "heatingTransmissionW": 567,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 458.4,
+   "coolingLatentW": 150,
+   "coolingW": 669.24,
+   "heatingW": 623.7,
+   "minimumFreshAirCmh": 86.4,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E026",
+   "no": "201",
+   "name": "기관작업실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10800,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 10800,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 187.38000000000002,
+   "heatingTransmissionW": 590.1,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 300.78000000000003,
+   "coolingLatentW": 0,
+   "coolingW": 330.85800000000006,
+   "heatingW": 649.1100000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E027",
+   "no": "202",
+   "name": "계단실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9818.18181818182,
+     "y": 4500
+    },
+    {
+     "x": 12000,
+     "y": 4500
+    },
+    {
+     "x": 12000,
+     "y": 8000
+    },
+    {
+     "x": 9818.18181818182,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 7.6363636363636305,
+   "volume": 22.90909090909089,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 153.40909090909088,
+   "heatingTransmissionW": 644.3181818181816,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 266.80909090909086,
+   "coolingLatentW": 0,
+   "coolingW": 293.48999999999995,
+   "heatingW": 708.7499999999999,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E028",
+   "no": "203",
+   "name": "갑판작업실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9600,
+     "y": 0
+    },
+    {
+     "x": 10800,
+     "y": 0
+    },
+    {
+     "x": 10800,
+     "y": 3500
+    },
+    {
+     "x": 9600,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 92.88000000000001,
+   "heatingTransmissionW": 193.20000000000002,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 131.76000000000002,
+   "coolingLatentW": 0,
+   "coolingW": 144.93600000000004,
+   "heatingW": 212.52000000000004,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E029",
+   "no": "204",
+   "name": "전기작업실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8727.272727272728,
+     "y": 4500
+    },
+    {
+     "x": 9818.18181818182,
+     "y": 4500
+    },
+    {
+     "x": 9818.18181818182,
+     "y": 8000
+    },
+    {
+     "x": 8727.272727272728,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818215,
+   "volume": 11.454545454545466,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 59.99999999999993,
+   "heatingTransmissionW": 152.55757575757576,
+   "solarTransmissionW": 35.34545454545457,
+   "coolingSensibleW": 95.3454545454545,
+   "coolingLatentW": 0,
+   "coolingW": 104.87999999999995,
+   "heatingW": 167.81333333333336,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E030",
+   "no": "205",
+   "name": "전기창고",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8400,
+     "y": 0
+    },
+    {
+     "x": 9600,
+     "y": 0
+    },
+    {
+     "x": 9600,
+     "y": 3500
+    },
+    {
+     "x": 8400,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 62.64000000000001,
+   "heatingTransmissionW": 164.64000000000001,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 101.52000000000001,
+   "coolingLatentW": 0,
+   "coolingW": 111.67200000000003,
+   "heatingW": 181.10400000000004,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E031",
+   "no": "206",
+   "name": "갑판창고",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7636.363636363637,
+     "y": 4500
+    },
+    {
+     "x": 8727.272727272728,
+     "y": 4500
+    },
+    {
+     "x": 8727.272727272728,
+     "y": 8000
+    },
+    {
+     "x": 7636.363636363637,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 84.43636363636365,
+   "heatingTransmissionW": 175.63636363636365,
+   "solarTransmissionW": 35.34545454545455,
+   "coolingSensibleW": 119.78181818181821,
+   "coolingLatentW": 0,
+   "coolingW": 131.76000000000005,
+   "heatingW": 193.20000000000005,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E032",
+   "no": "207",
+   "name": "페인트창고",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7200,
+     "y": 0
+    },
+    {
+     "x": 8400,
+     "y": 0
+    },
+    {
+     "x": 8400,
+     "y": 3500
+    },
+    {
+     "x": 7200,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 47.52000000000001,
+   "heatingTransmissionW": 150.36,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 86.4,
+   "coolingLatentW": 0,
+   "coolingW": 95.04000000000002,
+   "heatingW": 165.39600000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E033",
+   "no": "208",
+   "name": "로프창고",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 6545.454545454546,
+     "y": 4500
+    },
+    {
+     "x": 7636.363636363637,
+     "y": 4500
+    },
+    {
+     "x": 7636.363636363637,
+     "y": 8000
+    },
+    {
+     "x": 6545.454545454546,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 86.64242424242423,
+   "heatingTransmissionW": 174.91515151515154,
+   "solarTransmissionW": 35.34545454545455,
+   "coolingSensibleW": 121.98787878787877,
+   "coolingLatentW": 0,
+   "coolingW": 134.18666666666667,
+   "heatingW": 192.4066666666667,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E034",
+   "no": "209",
+   "name": "냉장고",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 6000,
+     "y": 0
+    },
+    {
+     "x": 7200,
+     "y": 0
+    },
+    {
+     "x": 7200,
+     "y": 3500
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 92.88000000000001,
+   "heatingTransmissionW": 193.20000000000002,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 131.76000000000002,
+   "coolingLatentW": 0,
+   "coolingW": 144.93600000000004,
+   "heatingW": 212.52000000000004,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E035",
+   "no": "210",
+   "name": "냉동고",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 5454.545454545455,
+     "y": 4500
+    },
+    {
+     "x": 6545.454545454546,
+     "y": 4500
+    },
+    {
+     "x": 6545.454545454546,
+     "y": 8000
+    },
+    {
+     "x": 5454.545454545455,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 104.2909090909091,
+   "heatingTransmissionW": 169.14545454545456,
+   "solarTransmissionW": 35.34545454545455,
+   "coolingSensibleW": 139.63636363636365,
+   "coolingLatentW": 0,
+   "coolingW": 153.60000000000002,
+   "heatingW": 186.06000000000003,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E036",
+   "no": "211",
+   "name": "복도",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "ALLEY_SOUND",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 3500
+    },
+    {
+     "x": 1200,
+     "y": 3500
+    },
+    {
+     "x": 2400,
+     "y": 3500
+    },
+    {
+     "x": 3600,
+     "y": 3500
+    },
+    {
+     "x": 4800,
+     "y": 3500
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    },
+    {
+     "x": 7200,
+     "y": 3500
+    },
+    {
+     "x": 8400,
+     "y": 3500
+    },
+    {
+     "x": 9600,
+     "y": 3500
+    },
+    {
+     "x": 10800,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 4500
+    },
+    {
+     "x": 9818.18181818182,
+     "y": 4500
+    },
+    {
+     "x": 8727.272727272728,
+     "y": 4500
+    },
+    {
+     "x": 7636.363636363637,
+     "y": 4500
+    },
+    {
+     "x": 6545.454545454546,
+     "y": 4500
+    },
+    {
+     "x": 5454.545454545455,
+     "y": 4500
+    },
+    {
+     "x": 4363.636363636364,
+     "y": 4500
+    },
+    {
+     "x": 3272.727272727273,
+     "y": 4500
+    },
+    {
+     "x": 2181.818181818182,
+     "y": 4500
+    },
+    {
+     "x": 1090.909090909091,
+     "y": 4500
+    },
+    {
+     "x": 0,
+     "y": 4500
+    }
+   ],
+   "holes": [],
+   "floor": 12,
+   "volume": 36,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 101.12727272727273,
+   "heatingTransmissionW": 271.30909090909097,
+   "solarTransmissionW": 32.400000000000006,
+   "coolingSensibleW": 133.52727272727273,
+   "coolingLatentW": 0,
+   "coolingW": 146.88000000000002,
+   "heatingW": 298.4400000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E037",
+   "no": "212",
+   "name": "건식식품창고",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4800,
+     "y": 0
+    },
+    {
+     "x": 6000,
+     "y": 0
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    },
+    {
+     "x": 4800,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "EXH-ROOM",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 32.400000000000006,
+   "heatingTransmissionW": 136.08,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 71.28,
+   "coolingLatentW": 0,
+   "coolingW": 78.408,
+   "heatingW": 149.68800000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 6,
+   "ventilationAirCmh": 75.6,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E038",
+   "no": "213",
+   "name": "주방",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4363.636363636364,
+     "y": 4500
+    },
+    {
+     "x": 5454.545454545455,
+     "y": 4500
+    },
+    {
+     "x": 5454.545454545455,
+     "y": 8000
+    },
+    {
+     "x": 4363.636363636364,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 37.76969696969702,
+   "heatingTransmissionW": 128.7575757575758,
+   "solarTransmissionW": 35.34545454545455,
+   "coolingSensibleW": 73.11515151515158,
+   "coolingLatentW": 0,
+   "coolingW": 80.42666666666675,
+   "heatingW": 141.6333333333334,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E039",
+   "no": "214",
+   "name": "배식실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 3600,
+     "y": 0
+    },
+    {
+     "x": 4800,
+     "y": 0
+    },
+    {
+     "x": 4800,
+     "y": 3500
+    },
+    {
+     "x": 3600,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 77.76,
+   "heatingTransmissionW": 178.92000000000002,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 116.64000000000001,
+   "coolingLatentW": 0,
+   "coolingW": 128.30400000000003,
+   "heatingW": 196.81200000000004,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E040",
+   "no": "215",
+   "name": "세탁실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 3272.727272727273,
+     "y": 4500
+    },
+    {
+     "x": 4363.636363636364,
+     "y": 4500
+    },
+    {
+     "x": 4363.636363636364,
+     "y": 8000
+    },
+    {
+     "x": 3272.727272727273,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 66.1090909090909,
+   "heatingTransmissionW": 158.3272727272727,
+   "solarTransmissionW": 35.34545454545455,
+   "coolingSensibleW": 101.45454545454544,
+   "coolingLatentW": 0,
+   "coolingW": 111.6,
+   "heatingW": 174.16,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E041",
+   "no": "216",
+   "name": "린넨실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 2400,
+     "y": 0
+    },
+    {
+     "x": 3600,
+     "y": 0
+    },
+    {
+     "x": 3600,
+     "y": 3500
+    },
+    {
+     "x": 2400,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 62.64000000000001,
+   "heatingTransmissionW": 164.64000000000001,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 101.52000000000001,
+   "coolingLatentW": 0,
+   "coolingW": 111.67200000000003,
+   "heatingW": 181.10400000000004,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E042",
+   "no": "217",
+   "name": "청소도구실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 2181.818181818182,
+     "y": 4500
+    },
+    {
+     "x": 3272.727272727273,
+     "y": 4500
+    },
+    {
+     "x": 3272.727272727273,
+     "y": 8000
+    },
+    {
+     "x": 2181.818181818182,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 235.63636363636368,
+   "heatingTransmissionW": 318.4363636363637,
+   "solarTransmissionW": 35.34545454545455,
+   "coolingSensibleW": 270.98181818181826,
+   "coolingLatentW": 0,
+   "coolingW": 298.0800000000001,
+   "heatingW": 350.2800000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E043",
+   "no": "218",
+   "name": "폐기물보관실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 1200,
+     "y": 0
+    },
+    {
+     "x": 2400,
+     "y": 0
+    },
+    {
+     "x": 2400,
+     "y": 3500
+    },
+    {
+     "x": 1200,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 47.52000000000001,
+   "heatingTransmissionW": 150.36,
+   "solarTransmissionW": 38.88,
+   "coolingSensibleW": 86.4,
+   "coolingLatentW": 0,
+   "coolingW": 95.04000000000002,
+   "heatingW": 165.39600000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E044",
+   "no": "219",
+   "name": "비상발전기실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 1090.909090909091,
+     "y": 4500
+    },
+    {
+     "x": 2181.818181818182,
+     "y": 4500
+    },
+    {
+     "x": 2181.818181818182,
+     "y": 8000
+    },
+    {
+     "x": 1090.909090909091,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 73.63636363636364,
+   "solarTransmissionW": 35.34545454545455,
+   "coolingSensibleW": 35.34545454545455,
+   "coolingLatentW": 0,
+   "coolingW": 38.88000000000001,
+   "heatingW": 81.00000000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E045",
+   "no": "220",
+   "name": "배터리실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 1200,
+     "y": 0
+    },
+    {
+     "x": 1200,
+     "y": 3500
+    },
+    {
+     "x": 0,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 4.2,
+   "volume": 12.6,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 187.38000000000002,
+   "heatingTransmissionW": 590.1,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 300.78000000000003,
+   "coolingLatentW": 0,
+   "coolingW": 330.85800000000006,
+   "heatingW": 649.1100000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E046",
+   "no": "221",
+   "name": "CO2실",
+   "deck": "2DK",
+   "deckId": "S2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 4500
+    },
+    {
+     "x": 1090.909090909091,
+     "y": 4500
+    },
+    {
+     "x": 1090.909090909091,
+     "y": 8000
+    },
+    {
+     "x": 0,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 3.8181818181818183,
+   "volume": 11.454545454545455,
+   "ceilingHeight": 0,
+   "sup": "SUP-SVC-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 275.1545454545455,
+   "heatingTransmissionW": 663.409090909091,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 388.5545454545455,
+   "coolingLatentW": 0,
+   "coolingW": 427.4100000000001,
+   "heatingW": 729.7500000000001,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E005",
+   "no": "101",
+   "name": "주기관실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 10500,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 10500,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 455.625,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 113.4,
+   "coolingLatentW": 0,
+   "coolingW": 124.74000000000002,
+   "heatingW": 501.18750000000006,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E006",
+   "no": "102",
+   "name": "계단실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9333.333333333332,
+     "y": 4500
+    },
+    {
+     "x": 11999.999999999998,
+     "y": 4500
+    },
+    {
+     "x": 11999.999999999998,
+     "y": 8000
+    },
+    {
+     "x": 9333.333333333332,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 9.333333333333332,
+   "volume": 27.999999999999996,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 401.70000000000005,
+   "heatingTransmissionW": 1194.8999999999999,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 515.1,
+   "coolingLatentW": 0,
+   "coolingW": 566.6100000000001,
+   "heatingW": 1314.3899999999999,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E007",
+   "no": "103",
+   "name": "보조기관실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 9000,
+     "y": 0
+    },
+    {
+     "x": 10500,
+     "y": 0
+    },
+    {
+     "x": 10500,
+     "y": 3500
+    },
+    {
+     "x": 9000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 219.375,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 48.599999999999994,
+   "coolingLatentW": 0,
+   "coolingW": 53.46,
+   "heatingW": 241.31250000000003,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E008",
+   "no": "104",
+   "name": "발전기실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 7999.999999999999,
+     "y": 4500
+    },
+    {
+     "x": 9333.333333333332,
+     "y": 4500
+    },
+    {
+     "x": 9333.333333333332,
+     "y": 8000
+    },
+    {
+     "x": 7999.999999999999,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 194.99999999999997,
+   "solarTransmissionW": 43.19999999999999,
+   "coolingSensibleW": 43.19999999999999,
+   "coolingLatentW": 0,
+   "coolingW": 47.51999999999999,
+   "heatingW": 214.5,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E009",
+   "no": "105",
+   "name": "기관제어실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "CONTROL",
+   "polygon": [
+    {
+     "x": 7500,
+     "y": 0
+    },
+    {
+     "x": 9000,
+     "y": 0
+    },
+    {
+     "x": 9000,
+     "y": 3500
+    },
+    {
+     "x": 7500,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-02",
+   "exh": "",
+   "ret": "RET-ROOM",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 3,
+   "activity": "",
+   "lighting": 10,
+   "equipW": 7000,
+   "minimumFreshAir": 86.4,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 390.15000000000003,
+   "heatingTransmissionW": 654.1500000000001,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 7701.25,
+   "coolingLatentW": 150,
+   "coolingW": 8636.375,
+   "heatingW": 719.5650000000002,
+   "minimumFreshAirCmh": 86.4,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E010",
+   "no": "106",
+   "name": "연료유정화기실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 6666.666666666666,
+     "y": 4500
+    },
+    {
+     "x": 7999.999999999999,
+     "y": 4500
+    },
+    {
+     "x": 7999.999999999999,
+     "y": 8000
+    },
+    {
+     "x": 6666.666666666666,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 73.5,
+   "heatingTransmissionW": 194.99999999999997,
+   "solarTransmissionW": 43.19999999999999,
+   "coolingSensibleW": 116.69999999999999,
+   "coolingLatentW": 0,
+   "coolingW": 128.37,
+   "heatingW": 214.5,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E011",
+   "no": "107",
+   "name": "윤활유정화기실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 6000,
+     "y": 0
+    },
+    {
+     "x": 7500,
+     "y": 0
+    },
+    {
+     "x": 7500,
+     "y": 3500
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 219.375,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 48.599999999999994,
+   "coolingLatentW": 0,
+   "coolingW": 53.46,
+   "heatingW": 241.31250000000003,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E012",
+   "no": "108",
+   "name": "보일러실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "BOILER",
+   "polygon": [
+    {
+     "x": 5333.333333333333,
+     "y": 4500
+    },
+    {
+     "x": 6666.666666666666,
+     "y": 4500
+    },
+    {
+     "x": 6666.666666666666,
+     "y": 8000
+    },
+    {
+     "x": 5333.333333333333,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 53,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 194.99999999999997,
+   "solarTransmissionW": 43.19999999999999,
+   "coolingSensibleW": 43.19999999999999,
+   "coolingLatentW": 0,
+   "coolingW": 47.51999999999999,
+   "heatingW": 214.5,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E013",
+   "no": "109",
+   "name": "복도",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ALLEY_SOUND",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 3500
+    },
+    {
+     "x": 1500,
+     "y": 3500
+    },
+    {
+     "x": 3000,
+     "y": 3500
+    },
+    {
+     "x": 4500,
+     "y": 3500
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    },
+    {
+     "x": 7500,
+     "y": 3500
+    },
+    {
+     "x": 9000,
+     "y": 3500
+    },
+    {
+     "x": 10500,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 3500
+    },
+    {
+     "x": 12000,
+     "y": 4000
+    },
+    {
+     "x": 11999.999999999998,
+     "y": 4500
+    },
+    {
+     "x": 9333.333333333332,
+     "y": 4500
+    },
+    {
+     "x": 7999.999999999999,
+     "y": 4500
+    },
+    {
+     "x": 6666.666666666666,
+     "y": 4500
+    },
+    {
+     "x": 5333.333333333333,
+     "y": 4500
+    },
+    {
+     "x": 4000,
+     "y": 4500
+    },
+    {
+     "x": 2666.6666666666665,
+     "y": 4500
+    },
+    {
+     "x": 1333.3333333333333,
+     "y": 4500
+    },
+    {
+     "x": 0,
+     "y": 4500
+    }
+   ],
+   "holes": [],
+   "floor": 12,
+   "volume": 36,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-02",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 794.8000000000001,
+   "heatingTransmissionW": 1251.6000000000004,
+   "solarTransmissionW": 32.400000000000006,
+   "coolingSensibleW": 827.2,
+   "coolingLatentW": 0,
+   "coolingW": 909.9200000000001,
+   "heatingW": 1376.7600000000004,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E014",
+   "no": "110",
+   "name": "냉동기계실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4500,
+     "y": 0
+    },
+    {
+     "x": 6000,
+     "y": 0
+    },
+    {
+     "x": 6000,
+     "y": 3500
+    },
+    {
+     "x": 4500,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 390.15000000000003,
+   "heatingTransmissionW": 654.1500000000001,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 438.75,
+   "coolingLatentW": 0,
+   "coolingW": 482.62500000000006,
+   "heatingW": 719.5650000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E015",
+   "no": "111",
+   "name": "공조기계실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 4500
+    },
+    {
+     "x": 5333.333333333333,
+     "y": 4500
+    },
+    {
+     "x": 5333.333333333333,
+     "y": 8000
+    },
+    {
+     "x": 4000,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 435,
+   "heatingTransmissionW": 595.3499999999999,
+   "solarTransmissionW": 43.19999999999999,
+   "coolingSensibleW": 478.2,
+   "coolingLatentW": 0,
+   "coolingW": 526.02,
+   "heatingW": 654.885,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E016",
+   "no": "112",
+   "name": "청수펌프실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 3000,
+     "y": 0
+    },
+    {
+     "x": 4500,
+     "y": 0
+    },
+    {
+     "x": 4500,
+     "y": 3500
+    },
+    {
+     "x": 3000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 219.375,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 48.599999999999994,
+   "coolingLatentW": 0,
+   "coolingW": 53.46,
+   "heatingW": 241.31250000000003,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E017",
+   "no": "113",
+   "name": "소화펌프실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 2666.6666666666665,
+     "y": 4500
+    },
+    {
+     "x": 4000,
+     "y": 4500
+    },
+    {
+     "x": 4000,
+     "y": 8000
+    },
+    {
+     "x": 2666.6666666666665,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666667,
+   "volume": 14,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 195.00000000000003,
+   "solarTransmissionW": 43.20000000000001,
+   "coolingSensibleW": 43.20000000000001,
+   "coolingLatentW": 0,
+   "coolingW": 47.52000000000002,
+   "heatingW": 214.50000000000006,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E018",
+   "no": "114",
+   "name": "오수처리실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 1500,
+     "y": 0
+    },
+    {
+     "x": 3000,
+     "y": 0
+    },
+    {
+     "x": 3000,
+     "y": 3500
+    },
+    {
+     "x": 1500,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 390.15000000000003,
+   "heatingTransmissionW": 654.1500000000001,
+   "solarTransmissionW": 48.599999999999994,
+   "coolingSensibleW": 438.75,
+   "coolingLatentW": 0,
+   "coolingW": 482.62500000000006,
+   "heatingW": 719.5650000000002,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E019",
+   "no": "115",
+   "name": "축계실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 1333.3333333333333,
+     "y": 4500
+    },
+    {
+     "x": 2666.6666666666665,
+     "y": 4500
+    },
+    {
+     "x": 2666.6666666666665,
+     "y": 8000
+    },
+    {
+     "x": 1333.3333333333333,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 195,
+   "solarTransmissionW": 43.2,
+   "coolingSensibleW": 43.2,
+   "coolingLatentW": 0,
+   "coolingW": 47.52000000000001,
+   "heatingW": 214.50000000000003,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E020",
+   "no": "116",
+   "name": "조타기실",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 1500,
+     "y": 0
+    },
+    {
+     "x": 1500,
+     "y": 3500
+    },
+    {
+     "x": 0,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "floor": 5.25,
+   "volume": 15.75,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 43,
+   "coolingRh": 55,
+   "heatTemp": 5,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 0,
+   "heatingTransmissionW": 455.625,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 113.4,
+   "coolingLatentW": 0,
+   "coolingW": 124.74000000000002,
+   "heatingW": 501.18750000000006,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  },
+  {
+   "id": "S5_E021",
+   "no": "117",
+   "name": "기관예비품창고",
+   "deck": "1DK",
+   "deckId": "S1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 4500
+    },
+    {
+     "x": 1333.3333333333333,
+     "y": 4500
+    },
+    {
+     "x": 1333.3333333333333,
+     "y": 8000
+    },
+    {
+     "x": 0,
+     "y": 8000
+    }
+   ],
+   "holes": [],
+   "floor": 4.666666666666666,
+   "volume": 13.999999999999998,
+   "ceilingHeight": 0,
+   "sup": "SUP-ER-01",
+   "exh": "",
+   "ret": "",
+   "coolTemp": 25,
+   "coolingRh": 55,
+   "heatTemp": 22,
+   "heatingRh": 40,
+   "people": 0,
+   "activity": "",
+   "lighting": 0,
+   "equipW": 0,
+   "minimumFreshAir": 0,
+   "loadIncluded": true,
+   "windowType": "복층",
+   "windowArea": 0,
+   "windowK": 3.5,
+   "coolingTransmissionW": 335.91818181818184,
+   "heatingTransmissionW": 878.839393939394,
+   "solarTransmissionW": 113.4,
+   "coolingSensibleW": 449.31818181818187,
+   "coolingLatentW": 0,
+   "coolingW": 494.2500000000001,
+   "heatingW": 966.7233333333335,
+   "minimumFreshAirCmh": 0,
+   "minimumAch": 0,
+   "ventilationAirCmh": 0,
+   "calculationComplete": true,
+   "calculationStatus": "완료 · 흘수선 미검증"
+  }
+ ]
+}

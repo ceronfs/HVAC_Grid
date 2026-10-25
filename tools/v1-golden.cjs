@@ -71,7 +71,7 @@ function derive(project) {
  const wb = readWorkbook(Buffer.from(XL.xlsx(RP.sheets(project, a)))), html = RP.html(project, a);
  const integrated = DX.integratedDxf(c, { diagrams: DG.systemDiagrams(c, a), plans: a.plans, geometry: a.geometry, boundaries: a.solas.boundaries, penetrations: a.solas.penetrations, risers: a.risers });
  const fire = FP.toDxf(FP.model(c, a.solas));
- const outputs = { xlsx: wb, dxf: { integrated: dxfCounts(integrated), firePlan: dxfCounts(fire) }, html: { bytes: Buffer.byteLength(html), sha256_16: sha(html) } };
+ const outputs = { xlsx: wb, dxf: { integrated: dxfCounts(integrated), firePlan: dxfCounts(fire) }, html: { bytes: Buffer.byteLength(html), sha256_16: sha(html.replace(/\d{4}-\d\d-\d\d \d\d:\d\d/g, 'YYYY-MM-DD hh:mm')) } };   // the report says when it was made (lib/util.cjs localTime)
  return clone({ rooms, loads, airflow, systems, rus, networks, solas, review, outputs });
 }
 
