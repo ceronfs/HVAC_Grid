@@ -509,6 +509,27 @@
   if (f) say(`K값 변경 목록 저장: ${f.name}`);
  }
  const boxFile = (id, accept) => () => act(null, async () => { const f = await pickFile(accept); await box.load(); box.setFile(id, f); say(f.name + ' → BOX'); });
+ // ① DXF 열기. BOX sends a DXF of 16 MiB or more to its large-file engine, which makes no deck, and well below that its
+ // room search stalls (wall panel pairs grow with the square of the lines: rooms fail from about 2 MB of drawing,
+ // docs/REVIEW_2026-10-25_BIG_DXF.md). A big drawing is cleaned in SketchCAD first (docs/WORKFLOW_SKETCHCAD.md): its
+ // "HVAC Grid용 DXF" holds the rooms, walls and room texts only. After the file goes in, BOX's own line says how it went.
+ const DXF_STOP = 16 * 1024 * 1024, DXF_WARN = 2e6;
+ const SKETCH_HINT = 'SketchCAD에서 열어 공조 탭 ① 계산용 정리 → ② 경계 지정 → ③ 실 자동 찾기 → 면적표의 "HVAC Grid용 DXF"로 저장한 뒤 그 파일을 여세요.';
+ const openBoxDxf = () => act(null, async () => {
+  const f = await pickFile('.dxf'), mb = (f.size / 1e6).toFixed(f.size < 1e7 ? 1 : 0);
+  if (f.size >= DXF_STOP) { await ask(`${f.name}은 ${mb} MB입니다. 16 MiB(약 16.8 MB)가 넘는 도면은 BOX가 Deck·격실을 만들지 않아 HVAC Grid에서 바로 열 수 없습니다. ${SKETCH_HINT}`, [['ok', '확인', true]]); say(`${f.name}: 너무 큰 도면 — SketchCAD에서 정리한 뒤 여세요`, true); return; }
+  if (f.size >= DXF_WARN && (await ask(`${f.name}은 ${mb} MB입니다. 가구·치수·해치가 든 큰 도면은 BOX가 격실을 찾지 못하거나 오래 멈출 수 있습니다. ${SKETCH_HINT}`, [['cancel', 'SketchCAD로 정리', true], ['open', '그래도 열기']])) !== 'open') { say(`${f.name}: 열지 않음 — SketchCAD에서 정리한 뒤 여세요`); return; }
+  await box.load();
+  const A = box.win.CAD_APP, decks = A.stack.decks.length, mode = box.doc.getElementById('modeText'), before = mode?.textContent;
+  busy(`${f.name} 여는 중 (BOX)`);
+  box.setFile('dxfFile', f);
+  // BOX opens the file in a worker: a new deck, or its status line saying it failed (an alert() also tells the user)
+  const done = await B.until(() => A.stack.decks.length > decks ? 'deck' : mode && mode.textContent !== before && /실패|중단|열 수 없|열지 못/.test(mode.textContent) ? 'fail' : null, 600000, 'DXF 열기').catch(() => 'time');
+  const line = (mode?.textContent || '').trim();
+  if (done === 'deck') say(`${f.name} → BOX${line ? ' · ' + line : ''}`, /실패/.test(line));
+  else if (done === 'fail') say(`${f.name}: BOX가 열지 못함 — ${line}`, true);
+  else say(`${f.name}: BOX가 10분 안에 Deck을 만들지 못함 — ${SKETCH_HINT}`, true);
+ });
  const phgCmd = id => () => act(null, async () => { await loadPhg(); phg.click(id); });
  const phgText = t => () => act(null, async () => { await loadPhg(); phg.clickMenu(t); });
  const needContract = () => !S.contract;
@@ -517,7 +538,7 @@
  const kindSeg = () => seg('계통 종류', S.kind, PL.KINDS.map(k => [k, KL[k], deckPlans(k).length]), v => { S.kind = v; S.sys = null; pickSystem(); S.pickRoot = false; });
  const STEPS = [
   { id: 'room', name: '도면·격실', view: 'box', groups: () => [
-   ['파일', [c('open', 'DXF 열기', boxFile('dxfFile', '.dxf'), { code: 'DXF' }), c('bg', '배경', boxFile('backgroundFile', ''), { code: 'BG' }), c('json', 'BOX 열기', boxFile('jsonFile', '.json'), { code: 'J↓', title: 'BOX 프로젝트 JSON 열기 (T3 시험선 같은 BOX 프로젝트 파일) — HVAC Grid 프로젝트는 머리줄 폴더 단추' }), c('save', 'BOX 저장', boxCmd('saveBtn'), { code: 'S' }), c('dxfOut', 'BOX DXF 출력', boxCmd('exportBtn'), { code: 'D↑' })]],
+   ['파일', [c('open', 'DXF 열기', openBoxDxf, { code: 'DXF' }), c('bg', '배경', boxFile('backgroundFile', ''), { code: 'BG' }), c('json', 'BOX 열기', boxFile('jsonFile', '.json'), { code: 'J↓', title: 'BOX 프로젝트 JSON 열기 (T3 시험선 같은 BOX 프로젝트 파일) — HVAC Grid 프로젝트는 머리줄 폴더 단추' }), c('save', 'BOX 저장', boxCmd('saveBtn'), { code: 'S' }), c('dxfOut', 'BOX DXF 출력', boxCmd('exportBtn'), { code: 'D↑' })]],
    ['보기', [c('fit', '전체 보기', boxCmd('fitBtn'), { code: '⌕' }), c('reset', '초기화', boxSample('newBtn', '초기화'), { code: '⟲' })]],
    ['격실', [c('ol', '하부 외곽선', boxCmd('outlineBtn'), { code: '하부 OL' }), c('olu', '상부 외곽선', boxCmd('outlineUpperBtn'), { code: '상부 OL' }), c('olv', '외곽선 검증', boxCmd('outlineVerifyBtn'), { code: 'OL 검증' }), c('vl', '가상선', boxCmd('hullLinkBtn'), { code: 'VL' }), c('area', '면적', boxCmd('measureBtn'), { code: 'AR' }), c('apoly', '면적 다각형', boxCmd('areaPolygonBtn'), { code: 'AP' }),
     c('roomNo', '실 번호', boxCmd('autoRoomNoBtn'), { code: 'RN' }), c('roomFix', '실 지정', boxCmd('manualRoomBtn'), { code: 'RM' }), c('list', '격실 목록', boxCmd('roomBtn'), { code: 'RL' }), c('face', '접한 면적', boxCmd('contactBtn'), { code: 'A6' })]],

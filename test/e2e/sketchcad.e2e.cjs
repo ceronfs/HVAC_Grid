@@ -47,6 +47,7 @@ const check = (where, got, deck) => {
   await g.waitForFunction(() => document.getElementById('busy').hasAttribute('hidden'), null, { timeout: 300000 });
   await g.waitForFunction(() => HVACGrid.box.readyTest(HVACGrid.box.win), null, { timeout: 180000 });
 
+  let last = null;
   for (const [i, c] of CASES.entries()) {
    const src = c.file(), tag = 'case' + (i + 1);
    // SketchCAD: no save picker, so "HVAC Grid용 DXF" is a download
@@ -87,7 +88,25 @@ const check = (where, got, deck) => {
    check(`${c.name} BOX`, box, c.deck);
    await g.screenshot({ path: path.join(OUT, tag + '-box.png') });
    log(c.name, { asIs, sketchcad: rooms.length, dxfIn: `${read.rooms.length} (${read.how})`, box: box.length });
+   last = dxf;
   }
+  // the ribbon's DXF 열기 (shell openBoxDxf): a file from 16 MiB is refused with the SketchCAD way, one from 2 MB asks
+  // first ("SketchCAD로 정리" keeps it out), a SketchCAD file goes in and BOX's line comes back on the status line
+  const openDxf = async file => { const [fc] = await Promise.all([g.waitForEvent('filechooser'), g.locator('#ribbon .cmd', { hasText: 'DXF 열기' }).first().click()]); await fc.setFiles(file); };
+  const decks = () => g.evaluate(() => HVACGrid.box.win.CAD_APP.stack.decks.length), msg = () => g.evaluate(() => HVACGrid.S.msg || '');
+  const n0 = await decks();
+  await openDxf({ name: 'big.dxf', mimeType: 'application/dxf', buffer: Buffer.alloc(17e6, 32) });
+  await g.locator('#dlg[open] [data-v=ok]').click();
+  await g.waitForFunction(() => /너무 큰 도면/.test(HVACGrid.S.msg || ''), null, { timeout: 10000 });
+  assert.equal(await decks(), n0, '16 MiB: not opened');
+  await openDxf({ name: 'mid.dxf', mimeType: 'application/dxf', buffer: Buffer.alloc(3e6, 32) });
+  assert.match(await g.locator('#dlgText').textContent(), /SketchCAD/);
+  await g.locator('#dlg[open] [data-v=cancel]').click();
+  await g.waitForFunction(() => /열지 않음/.test(HVACGrid.S.msg || ''), null, { timeout: 10000 });
+  assert.equal(await decks(), n0, '3 MB, SketchCAD로 정리: not opened');
+  await openDxf(last);
+  await g.waitForFunction(n => HVACGrid.box.win.CAD_APP.stack.decks.length === n + 1 && /→ BOX/.test(HVACGrid.S.msg || ''), n0, { timeout: 60000 });
+  log('DXF 열기 단추', { big: '거절', mid: '안내 후 열지 않음', sketchcad: await msg() });
   log('page errors', errors.length, errors.slice(0, 3)); assert.equal(errors.length, 0);
   log('E2E SKETCHCAD PASS');
  } catch (e) { console.error('E2E SKETCHCAD FAIL', e); process.exitCode = 1; }
