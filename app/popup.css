@@ -16,7 +16,7 @@ html body .detached-body *{border-radius:0!important;box-shadow:none!important}
 
 /* head: a ribbon-grey bar - logo, title, flat commands, the green XLSX button */
 html body .detached-head{height:38px;padding:0 8px!important;gap:2px!important;background:var(--bar)!important;border-bottom:1px solid var(--grid)!important;cursor:default!important;box-shadow:none!important}
-.detached-head .hg-logo{width:18px;height:18px;flex:none;margin-right:4px}
+.detached-head .hg-logo{width:5mm;height:5mm;flex:none;margin-right:4px}
 html body .detached-head #modalTitle{font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html body .detached-head #modalTitle[data-hg-label]::after{font-size:13px!important}
 html body .detached-head .btn{height:26px;min-width:26px;padding:0 8px;border:1px solid transparent!important;border-radius:2px!important;background:none!important;color:var(--text)!important;cursor:pointer;white-space:nowrap}
