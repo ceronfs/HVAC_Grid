@@ -1,0 +1,50 @@
+{
+ "ship": "t3",
+ "tool": "tools/v1-golden.cjs",
+ "made": "2026-10-25T22:21:12.407Z",
+ "commit": "94139a5",
+ "inputs": {
+  "samples/t3/T3.box.json": "4c696d256b151c50",
+  "samples/t3/T3.solas.json": "a8a919ffecae4e9e"
+ },
+ "vendor": {
+  "BOX_CAL_Enhance.html": "8892c20e503108f2",
+  "DuctConcept_PHG_D.html": "c3f7fa67380d1a2e"
+ },
+ "browser": "chromium 153.0.8010.12",
+ "node": "v22.22.0",
+ "deckMap": {},
+ "phgProjects": 18,
+ "boxFile": "BOX JSON",
+ "pageErrors": [],
+ "status": {
+  "msg": "AUTO 완료: 18/18 (이번에 18개)",
+  "err": false
+ },
+ "timing": {
+  "appS": 0.8,
+  "openS": 1.6,
+  "autoS": 172.6,
+  "plans": {
+   "D1__AHU-ACC": 25.9,
+   "D2__AHU-ACC": 21.9,
+   "D3__AHU-ACC": 19.2,
+   "D4__AHU-BRG": 11.6,
+   "D1__SF-GAL": 10.6,
+   "D4__EF-BAT": 0.3,
+   "D4__EF-BRG": 0.3,
+   "D1__EF-CO2": 0.3,
+   "D1__EF-GAL": 5.9,
+   "D1__EF-LAU": 0.5,
+   "D1__EF-PAN": 0.6,
+   "D1__EF-SAN": 6.8,
+   "D2__EF-SAN": 5.2,
+   "D3__EF-SAN": 4.3,
+   "D1__RA-ACC": 4,
+   "D2__RA-ACC": 7.9,
+   "D3__RA-ACC": 8.2,
+   "D4__RA-BRG": 32
+  },
+  "totalS": 176
+ }
+}

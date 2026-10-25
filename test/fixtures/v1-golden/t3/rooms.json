@@ -1,0 +1,3232 @@
+{
+ "decks": [
+  {
+   "id": "D1",
+   "name": "UPPER DK",
+   "elevationMm": 0,
+   "heightMm": 2800,
+   "offsetMm": {
+    "x": 0,
+    "y": 0
+   },
+   "rotationDeg": 0,
+   "scale": 1
+  },
+  {
+   "id": "D2",
+   "name": "A DK",
+   "elevationMm": 2800,
+   "heightMm": 2800,
+   "offsetMm": {
+    "x": 0,
+    "y": 0
+   },
+   "rotationDeg": 0,
+   "scale": 1
+  },
+  {
+   "id": "D3",
+   "name": "B DK",
+   "elevationMm": 5600,
+   "heightMm": 2800,
+   "offsetMm": {
+    "x": 0,
+    "y": 0
+   },
+   "rotationDeg": 0,
+   "scale": 1
+  },
+  {
+   "id": "D4",
+   "name": "NAV BRG DK",
+   "elevationMm": 8400,
+   "heightMm": 2800,
+   "offsetMm": {
+    "x": 0,
+    "y": 0
+   },
+   "rotationDeg": 0,
+   "scale": 1
+  }
+ ],
+ "rooms": [
+  {
+   "id": "T3_D4_401_N",
+   "no": "401",
+   "name": "조타실",
+   "deckId": "D4",
+   "isoClass": "WHEELHOUSE",
+   "polygon": [
+    {
+     "x": 14000,
+     "y": 0
+    },
+    {
+     "x": 20000,
+     "y": 0
+    },
+    {
+     "x": 20000,
+     "y": 16000
+    },
+    {
+     "x": 14000,
+     "y": 16000
+    },
+    {
+     "x": 14000,
+     "y": 13500
+    },
+    {
+     "x": 14000,
+     "y": 9000
+    },
+    {
+     "x": 14000,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 96,
+   "volumeM3": 249.6,
+   "ceilingHeightMm": 2600,
+   "systems": {
+    "supply": "AHU-BRG",
+    "exhaust": null,
+    "return": "RA-BRG"
+   }
+  },
+  {
+   "id": "T3_D4_402_N",
+   "no": "402",
+   "name": "복도",
+   "deckId": "D4",
+   "isoClass": "ALLEY_SOUND",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 7000
+    },
+    {
+     "x": 11000,
+     "y": 7000
+    },
+    {
+     "x": 14000,
+     "y": 7000
+    },
+    {
+     "x": 14000,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 9000
+    }
+   ],
+   "holes": [],
+   "areaM2": 12,
+   "volumeM3": 26.4,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-BRG",
+    "exhaust": null,
+    "return": "RA-BRG"
+   }
+  },
+  {
+   "id": "T3_D4_403_N",
+   "no": "403",
+   "name": "계단실",
+   "deckId": "D4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    },
+    {
+     "x": 8000,
+     "y": 11500
+    }
+   ],
+   "holes": [],
+   "areaM2": 6.25,
+   "volumeM3": 13.75,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-BRG",
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D4_404_N",
+   "no": "404",
+   "name": "선교화장실",
+   "deckId": "D4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 11500
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    },
+    {
+     "x": 10500,
+     "y": 13500
+    },
+    {
+     "x": 8000,
+     "y": 13500
+    }
+   ],
+   "holes": [],
+   "areaM2": 5,
+   "volumeM3": 11,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-BRG",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D4_405_N",
+   "no": "405",
+   "name": "선교팬룸",
+   "deckId": "D4",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 14000,
+     "y": 9000
+    },
+    {
+     "x": 14000,
+     "y": 13500
+    },
+    {
+     "x": 11000,
+     "y": 13500
+    },
+    {
+     "x": 10500,
+     "y": 13500
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    }
+   ],
+   "holes": [],
+   "areaM2": 15.75,
+   "volumeM3": 44.1,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D4_406_N",
+   "no": "406",
+   "name": "배터리실",
+   "deckId": "D4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 0
+    },
+    {
+     "x": 11000,
+     "y": 0
+    },
+    {
+     "x": 11000,
+     "y": 3000
+    },
+    {
+     "x": 8000,
+     "y": 3000
+    }
+   ],
+   "holes": [],
+   "areaM2": 9,
+   "volumeM3": 19.8,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-BAT",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D4_407_N",
+   "no": "407",
+   "name": "무선실",
+   "deckId": "D4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 3000
+    },
+    {
+     "x": 11000,
+     "y": 3000
+    },
+    {
+     "x": 11000,
+     "y": 7000
+    },
+    {
+     "x": 8000,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 12,
+   "volumeM3": 26.4,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-BRG",
+    "exhaust": null,
+    "return": "RA-BRG"
+   }
+  },
+  {
+   "id": "T3_D4_408_N",
+   "no": "408",
+   "name": "해도실",
+   "deckId": "D4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 11000,
+     "y": 0
+    },
+    {
+     "x": 14000,
+     "y": 0
+    },
+    {
+     "x": 14000,
+     "y": 7000
+    },
+    {
+     "x": 11000,
+     "y": 7000
+    },
+    {
+     "x": 11000,
+     "y": 3000
+    }
+   ],
+   "holes": [],
+   "areaM2": 21,
+   "volumeM3": 46.2,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-BRG",
+    "exhaust": null,
+    "return": "RA-BRG"
+   }
+  },
+  {
+   "id": "T3_D4_409_N",
+   "no": "409",
+   "name": "도선사실",
+   "deckId": "D4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 13500
+    },
+    {
+     "x": 10500,
+     "y": 13500
+    },
+    {
+     "x": 11000,
+     "y": 13500
+    },
+    {
+     "x": 11000,
+     "y": 16000
+    },
+    {
+     "x": 8000,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 7.5,
+   "volumeM3": 16.5,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-BRG",
+    "exhaust": null,
+    "return": "RA-BRG"
+   }
+  },
+  {
+   "id": "T3_D4_410_N",
+   "no": "410",
+   "name": "항해장비실",
+   "deckId": "D4",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 11000,
+     "y": 13500
+    },
+    {
+     "x": 14000,
+     "y": 13500
+    },
+    {
+     "x": 14000,
+     "y": 16000
+    },
+    {
+     "x": 11000,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 7.5,
+   "volumeM3": 16.5,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-BRG",
+    "exhaust": null,
+    "return": "RA-BRG"
+   }
+  },
+  {
+   "id": "T3_D3_301_N",
+   "no": "301",
+   "name": "기관실 케이싱",
+   "deckId": "D3",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 3000
+    },
+    {
+     "x": 4000,
+     "y": 3000
+    },
+    {
+     "x": 4000,
+     "y": 5000
+    },
+    {
+     "x": 4000,
+     "y": 7000
+    },
+    {
+     "x": 0,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 16,
+   "volumeM3": 44.8,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_302_N",
+   "no": "302",
+   "name": "복도",
+   "deckId": "D3",
+   "isoClass": "ALLEY_SOUND",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 7000
+    },
+    {
+     "x": 4000,
+     "y": 7000
+    },
+    {
+     "x": 5600,
+     "y": 7000
+    },
+    {
+     "x": 10000,
+     "y": 7000
+    },
+    {
+     "x": 11600,
+     "y": 7000
+    },
+    {
+     "x": 16000,
+     "y": 7000
+    },
+    {
+     "x": 17600,
+     "y": 7000
+    },
+    {
+     "x": 20000,
+     "y": 7000
+    },
+    {
+     "x": 20000,
+     "y": 9000
+    },
+    {
+     "x": 18500,
+     "y": 9000
+    },
+    {
+     "x": 16900,
+     "y": 9000
+    },
+    {
+     "x": 15300,
+     "y": 9000
+    },
+    {
+     "x": 13700,
+     "y": 9000
+    },
+    {
+     "x": 12100,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 5500,
+     "y": 9000
+    },
+    {
+     "x": 4000,
+     "y": 9000
+    },
+    {
+     "x": 0,
+     "y": 9000
+    }
+   ],
+   "holes": [],
+   "areaM2": 40,
+   "volumeM3": 88,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_303_N",
+   "no": "303",
+   "name": "계단실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 11000
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    },
+    {
+     "x": 8000,
+     "y": 11500
+    }
+   ],
+   "holes": [],
+   "areaM2": 6.25,
+   "volumeM3": 13.75,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_304_N",
+   "no": "304",
+   "name": "덕트 트렁크",
+   "deckId": "D3",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 9000
+    },
+    {
+     "x": 5500,
+     "y": 9000
+    },
+    {
+     "x": 5500,
+     "y": 10500
+    },
+    {
+     "x": 4000,
+     "y": 10500
+    }
+   ],
+   "holes": [],
+   "areaM2": 2.25,
+   "volumeM3": 6.3,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_305_N",
+   "no": "305",
+   "name": "린넨로커",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 10500
+    },
+    {
+     "x": 5500,
+     "y": 10500
+    },
+    {
+     "x": 5500,
+     "y": 12000
+    },
+    {
+     "x": 4000,
+     "y": 12000
+    }
+   ],
+   "holes": [],
+   "areaM2": 2.25,
+   "volumeM3": 4.95,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_306_N",
+   "no": "306",
+   "name": "공용화장실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 5500,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 11500
+    },
+    {
+     "x": 8000,
+     "y": 12000
+    },
+    {
+     "x": 5500,
+     "y": 12000
+    },
+    {
+     "x": 5500,
+     "y": 10500
+    }
+   ],
+   "holes": [],
+   "areaM2": 7.5,
+   "volumeM3": 16.5,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_307_N",
+   "no": "307",
+   "name": "문서보관실",
+   "deckId": "D3",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 12000
+    },
+    {
+     "x": 5500,
+     "y": 12000
+    },
+    {
+     "x": 8000,
+     "y": 12000
+    },
+    {
+     "x": 8000,
+     "y": 16000
+    },
+    {
+     "x": 4000,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 16,
+   "volumeM3": 44.8,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_308_N",
+   "no": "308",
+   "name": "선원사무실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 11500
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    },
+    {
+     "x": 10500,
+     "y": 16000
+    },
+    {
+     "x": 8000,
+     "y": 16000
+    },
+    {
+     "x": 8000,
+     "y": 12000
+    }
+   ],
+   "holes": [],
+   "areaM2": 11.25,
+   "volumeM3": 24.75,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_310_N",
+   "no": "310",
+   "name": "선박사무실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 3000
+    },
+    {
+     "x": 0,
+     "y": 3000
+    }
+   ],
+   "holes": [],
+   "areaM2": 12,
+   "volumeM3": 26.4,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_311_N",
+   "no": "311",
+   "name": "선장실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 10000,
+     "y": 0
+    },
+    {
+     "x": 10000,
+     "y": 5000
+    },
+    {
+     "x": 10000,
+     "y": 7000
+    },
+    {
+     "x": 5600,
+     "y": 7000
+    },
+    {
+     "x": 5600,
+     "y": 5000
+    },
+    {
+     "x": 4000,
+     "y": 5000
+    },
+    {
+     "x": 4000,
+     "y": 3000
+    }
+   ],
+   "holes": [],
+   "areaM2": 38.8,
+   "volumeM3": 85.36,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_312_N",
+   "no": "312",
+   "name": "기관장실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10000,
+     "y": 0
+    },
+    {
+     "x": 16000,
+     "y": 0
+    },
+    {
+     "x": 16000,
+     "y": 5000
+    },
+    {
+     "x": 16000,
+     "y": 7000
+    },
+    {
+     "x": 11600,
+     "y": 7000
+    },
+    {
+     "x": 11600,
+     "y": 5000
+    },
+    {
+     "x": 10000,
+     "y": 5000
+    }
+   ],
+   "holes": [],
+   "areaM2": 38.8,
+   "volumeM3": 85.36,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_313_N",
+   "no": "313",
+   "name": "일등항해사실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 16000,
+     "y": 0
+    },
+    {
+     "x": 20000,
+     "y": 0
+    },
+    {
+     "x": 20000,
+     "y": 7000
+    },
+    {
+     "x": 17600,
+     "y": 7000
+    },
+    {
+     "x": 17600,
+     "y": 5000
+    },
+    {
+     "x": 16000,
+     "y": 5000
+    }
+   ],
+   "holes": [],
+   "areaM2": 24.8,
+   "volumeM3": 54.56,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_320_N",
+   "no": "320",
+   "name": "회의실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 9000
+    },
+    {
+     "x": 4000,
+     "y": 9000
+    },
+    {
+     "x": 4000,
+     "y": 10500
+    },
+    {
+     "x": 4000,
+     "y": 12000
+    },
+    {
+     "x": 4000,
+     "y": 16000
+    },
+    {
+     "x": 0,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 28,
+   "volumeM3": 61.6,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_321_N",
+   "no": "321",
+   "name": "일등기관사실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10500,
+     "y": 11000
+    },
+    {
+     "x": 12100,
+     "y": 11000
+    },
+    {
+     "x": 12100,
+     "y": 9000
+    },
+    {
+     "x": 13700,
+     "y": 9000
+    },
+    {
+     "x": 13700,
+     "y": 11000
+    },
+    {
+     "x": 13700,
+     "y": 16000
+    },
+    {
+     "x": 10500,
+     "y": 16000
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    }
+   ],
+   "holes": [],
+   "areaM2": 19.2,
+   "volumeM3": 42.24,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_322_N",
+   "no": "322",
+   "name": "이등항해사실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 13700,
+     "y": 11000
+    },
+    {
+     "x": 15300,
+     "y": 11000
+    },
+    {
+     "x": 15300,
+     "y": 9000
+    },
+    {
+     "x": 16900,
+     "y": 9000
+    },
+    {
+     "x": 16900,
+     "y": 11000
+    },
+    {
+     "x": 16900,
+     "y": 16000
+    },
+    {
+     "x": 13700,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 19.2,
+   "volumeM3": 42.24,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_323_N",
+   "no": "323",
+   "name": "이등기관사실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 16900,
+     "y": 11000
+    },
+    {
+     "x": 18500,
+     "y": 11000
+    },
+    {
+     "x": 18500,
+     "y": 9000
+    },
+    {
+     "x": 20000,
+     "y": 9000
+    },
+    {
+     "x": 20000,
+     "y": 16000
+    },
+    {
+     "x": 16900,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 18.5,
+   "volumeM3": 40.7,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D3_361_N",
+   "no": "361",
+   "name": "선장실 화장실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 5000
+    },
+    {
+     "x": 5600,
+     "y": 5000
+    },
+    {
+     "x": 5600,
+     "y": 7000
+    },
+    {
+     "x": 4000,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_362_N",
+   "no": "362",
+   "name": "기관장실 화장실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10000,
+     "y": 5000
+    },
+    {
+     "x": 11600,
+     "y": 5000
+    },
+    {
+     "x": 11600,
+     "y": 7000
+    },
+    {
+     "x": 10000,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_363_N",
+   "no": "363",
+   "name": "일등항해사실 화장실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 16000,
+     "y": 5000
+    },
+    {
+     "x": 17600,
+     "y": 5000
+    },
+    {
+     "x": 17600,
+     "y": 7000
+    },
+    {
+     "x": 16000,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_371_N",
+   "no": "371",
+   "name": "일등기관사실 화장실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 12100,
+     "y": 9000
+    },
+    {
+     "x": 12100,
+     "y": 11000
+    },
+    {
+     "x": 10500,
+     "y": 11000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_372_N",
+   "no": "372",
+   "name": "이등항해사실 화장실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 13700,
+     "y": 9000
+    },
+    {
+     "x": 15300,
+     "y": 9000
+    },
+    {
+     "x": 15300,
+     "y": 11000
+    },
+    {
+     "x": 13700,
+     "y": 11000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D3_373_N",
+   "no": "373",
+   "name": "이등기관사실 화장실",
+   "deckId": "D3",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 16900,
+     "y": 9000
+    },
+    {
+     "x": 18500,
+     "y": 9000
+    },
+    {
+     "x": 18500,
+     "y": 11000
+    },
+    {
+     "x": 16900,
+     "y": 11000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_201_N",
+   "no": "201",
+   "name": "기관실 케이싱",
+   "deckId": "D2",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 3000
+    },
+    {
+     "x": 4000,
+     "y": 3000
+    },
+    {
+     "x": 4000,
+     "y": 5000
+    },
+    {
+     "x": 4000,
+     "y": 7000
+    },
+    {
+     "x": 0,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 16,
+   "volumeM3": 44.8,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_202_N",
+   "no": "202",
+   "name": "복도",
+   "deckId": "D2",
+   "isoClass": "ALLEY_SOUND",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 7000
+    },
+    {
+     "x": 4000,
+     "y": 7000
+    },
+    {
+     "x": 5600,
+     "y": 7000
+    },
+    {
+     "x": 7200,
+     "y": 7000
+    },
+    {
+     "x": 8800,
+     "y": 7000
+    },
+    {
+     "x": 10400,
+     "y": 7000
+    },
+    {
+     "x": 12000,
+     "y": 7000
+    },
+    {
+     "x": 13600,
+     "y": 7000
+    },
+    {
+     "x": 15200,
+     "y": 7000
+    },
+    {
+     "x": 16800,
+     "y": 7000
+    },
+    {
+     "x": 18400,
+     "y": 7000
+    },
+    {
+     "x": 20000,
+     "y": 7000
+    },
+    {
+     "x": 20000,
+     "y": 9000
+    },
+    {
+     "x": 18500,
+     "y": 9000
+    },
+    {
+     "x": 16900,
+     "y": 9000
+    },
+    {
+     "x": 15300,
+     "y": 9000
+    },
+    {
+     "x": 13700,
+     "y": 9000
+    },
+    {
+     "x": 12100,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 5500,
+     "y": 9000
+    },
+    {
+     "x": 4000,
+     "y": 9000
+    },
+    {
+     "x": 0,
+     "y": 9000
+    }
+   ],
+   "holes": [],
+   "areaM2": 40,
+   "volumeM3": 88,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_203_N",
+   "no": "203",
+   "name": "계단실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 11000
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    },
+    {
+     "x": 8000,
+     "y": 11500
+    }
+   ],
+   "holes": [],
+   "areaM2": 6.25,
+   "volumeM3": 13.75,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_204_N",
+   "no": "204",
+   "name": "덕트 트렁크",
+   "deckId": "D2",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 9000
+    },
+    {
+     "x": 5500,
+     "y": 9000
+    },
+    {
+     "x": 5500,
+     "y": 10500
+    },
+    {
+     "x": 4000,
+     "y": 10500
+    }
+   ],
+   "holes": [],
+   "areaM2": 2.25,
+   "volumeM3": 6.3,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_205_N",
+   "no": "205",
+   "name": "청소도구실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 10500
+    },
+    {
+     "x": 5500,
+     "y": 10500
+    },
+    {
+     "x": 5500,
+     "y": 12000
+    },
+    {
+     "x": 4000,
+     "y": 12000
+    }
+   ],
+   "holes": [],
+   "areaM2": 2.25,
+   "volumeM3": 4.95,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_206_N",
+   "no": "206",
+   "name": "공용화장실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 5500,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 11500
+    },
+    {
+     "x": 8000,
+     "y": 12000
+    },
+    {
+     "x": 5500,
+     "y": 12000
+    },
+    {
+     "x": 5500,
+     "y": 10500
+    }
+   ],
+   "holes": [],
+   "areaM2": 7.5,
+   "volumeM3": 16.5,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_207_N",
+   "no": "207",
+   "name": "취미실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 12000
+    },
+    {
+     "x": 5500,
+     "y": 12000
+    },
+    {
+     "x": 8000,
+     "y": 12000
+    },
+    {
+     "x": 8000,
+     "y": 16000
+    },
+    {
+     "x": 4000,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 16,
+   "volumeM3": 35.2,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_208_N",
+   "no": "208",
+   "name": "선원휴게실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 11500
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    },
+    {
+     "x": 10500,
+     "y": 16000
+    },
+    {
+     "x": 8000,
+     "y": 16000
+    },
+    {
+     "x": 8000,
+     "y": 12000
+    }
+   ],
+   "holes": [],
+   "areaM2": 11.25,
+   "volumeM3": 24.75,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_210_N",
+   "no": "210",
+   "name": "체육실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 3000
+    },
+    {
+     "x": 0,
+     "y": 3000
+    }
+   ],
+   "holes": [],
+   "areaM2": 12,
+   "volumeM3": 26.4,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_211_N",
+   "no": "211",
+   "name": "선원침실 01",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 7200,
+     "y": 0
+    },
+    {
+     "x": 7200,
+     "y": 5000
+    },
+    {
+     "x": 7200,
+     "y": 7000
+    },
+    {
+     "x": 5600,
+     "y": 7000
+    },
+    {
+     "x": 5600,
+     "y": 5000
+    },
+    {
+     "x": 4000,
+     "y": 5000
+    },
+    {
+     "x": 4000,
+     "y": 3000
+    }
+   ],
+   "holes": [],
+   "areaM2": 19.2,
+   "volumeM3": 42.24,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_212_N",
+   "no": "212",
+   "name": "선원침실 02",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7200,
+     "y": 0
+    },
+    {
+     "x": 10400,
+     "y": 0
+    },
+    {
+     "x": 10400,
+     "y": 5000
+    },
+    {
+     "x": 10400,
+     "y": 7000
+    },
+    {
+     "x": 8800,
+     "y": 7000
+    },
+    {
+     "x": 8800,
+     "y": 5000
+    },
+    {
+     "x": 7200,
+     "y": 5000
+    }
+   ],
+   "holes": [],
+   "areaM2": 19.2,
+   "volumeM3": 42.24,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_213_N",
+   "no": "213",
+   "name": "선원침실 03",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10400,
+     "y": 0
+    },
+    {
+     "x": 13600,
+     "y": 0
+    },
+    {
+     "x": 13600,
+     "y": 5000
+    },
+    {
+     "x": 13600,
+     "y": 7000
+    },
+    {
+     "x": 12000,
+     "y": 7000
+    },
+    {
+     "x": 12000,
+     "y": 5000
+    },
+    {
+     "x": 10400,
+     "y": 5000
+    }
+   ],
+   "holes": [],
+   "areaM2": 19.2,
+   "volumeM3": 42.24,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_214_N",
+   "no": "214",
+   "name": "선원침실 04",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 13600,
+     "y": 0
+    },
+    {
+     "x": 16800,
+     "y": 0
+    },
+    {
+     "x": 16800,
+     "y": 5000
+    },
+    {
+     "x": 16800,
+     "y": 7000
+    },
+    {
+     "x": 15200,
+     "y": 7000
+    },
+    {
+     "x": 15200,
+     "y": 5000
+    },
+    {
+     "x": 13600,
+     "y": 5000
+    }
+   ],
+   "holes": [],
+   "areaM2": 19.2,
+   "volumeM3": 42.24,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_215_N",
+   "no": "215",
+   "name": "선원침실 05",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 16800,
+     "y": 0
+    },
+    {
+     "x": 20000,
+     "y": 0
+    },
+    {
+     "x": 20000,
+     "y": 7000
+    },
+    {
+     "x": 18400,
+     "y": 7000
+    },
+    {
+     "x": 18400,
+     "y": 5000
+    },
+    {
+     "x": 16800,
+     "y": 5000
+    }
+   ],
+   "holes": [],
+   "areaM2": 19.2,
+   "volumeM3": 42.24,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_220_N",
+   "no": "220",
+   "name": "건조실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 9000
+    },
+    {
+     "x": 4000,
+     "y": 9000
+    },
+    {
+     "x": 4000,
+     "y": 10500
+    },
+    {
+     "x": 4000,
+     "y": 12000
+    },
+    {
+     "x": 0,
+     "y": 12000
+    }
+   ],
+   "holes": [],
+   "areaM2": 12,
+   "volumeM3": 26.4,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_221_N",
+   "no": "221",
+   "name": "선원침실 06",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10500,
+     "y": 11000
+    },
+    {
+     "x": 12100,
+     "y": 11000
+    },
+    {
+     "x": 12100,
+     "y": 9000
+    },
+    {
+     "x": 13700,
+     "y": 9000
+    },
+    {
+     "x": 13700,
+     "y": 11000
+    },
+    {
+     "x": 13700,
+     "y": 16000
+    },
+    {
+     "x": 10500,
+     "y": 16000
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    }
+   ],
+   "holes": [],
+   "areaM2": 19.2,
+   "volumeM3": 42.24,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_222_N",
+   "no": "222",
+   "name": "선원침실 07",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 13700,
+     "y": 11000
+    },
+    {
+     "x": 15300,
+     "y": 11000
+    },
+    {
+     "x": 15300,
+     "y": 9000
+    },
+    {
+     "x": 16900,
+     "y": 9000
+    },
+    {
+     "x": 16900,
+     "y": 11000
+    },
+    {
+     "x": 16900,
+     "y": 16000
+    },
+    {
+     "x": 13700,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 19.2,
+   "volumeM3": 42.24,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_223_N",
+   "no": "223",
+   "name": "선원침실 08",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 16900,
+     "y": 11000
+    },
+    {
+     "x": 18500,
+     "y": 11000
+    },
+    {
+     "x": 18500,
+     "y": 9000
+    },
+    {
+     "x": 20000,
+     "y": 9000
+    },
+    {
+     "x": 20000,
+     "y": 16000
+    },
+    {
+     "x": 16900,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 18.5,
+   "volumeM3": 40.7,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D2_226_N",
+   "no": "226",
+   "name": "린넨창고",
+   "deckId": "D2",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 12000
+    },
+    {
+     "x": 4000,
+     "y": 12000
+    },
+    {
+     "x": 4000,
+     "y": 16000
+    },
+    {
+     "x": 0,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 16,
+   "volumeM3": 44.8,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_261_N",
+   "no": "261",
+   "name": "선원침실 01 화장실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 5000
+    },
+    {
+     "x": 5600,
+     "y": 5000
+    },
+    {
+     "x": 5600,
+     "y": 7000
+    },
+    {
+     "x": 4000,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_262_N",
+   "no": "262",
+   "name": "선원침실 02 화장실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 7200,
+     "y": 5000
+    },
+    {
+     "x": 8800,
+     "y": 5000
+    },
+    {
+     "x": 8800,
+     "y": 7000
+    },
+    {
+     "x": 7200,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_263_N",
+   "no": "263",
+   "name": "선원침실 03 화장실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10400,
+     "y": 5000
+    },
+    {
+     "x": 12000,
+     "y": 5000
+    },
+    {
+     "x": 12000,
+     "y": 7000
+    },
+    {
+     "x": 10400,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_264_N",
+   "no": "264",
+   "name": "선원침실 04 화장실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 13600,
+     "y": 5000
+    },
+    {
+     "x": 15200,
+     "y": 5000
+    },
+    {
+     "x": 15200,
+     "y": 7000
+    },
+    {
+     "x": 13600,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_265_N",
+   "no": "265",
+   "name": "선원침실 05 화장실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 16800,
+     "y": 5000
+    },
+    {
+     "x": 18400,
+     "y": 5000
+    },
+    {
+     "x": 18400,
+     "y": 7000
+    },
+    {
+     "x": 16800,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_271_N",
+   "no": "271",
+   "name": "선원침실 06 화장실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 12100,
+     "y": 9000
+    },
+    {
+     "x": 12100,
+     "y": 11000
+    },
+    {
+     "x": 10500,
+     "y": 11000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_272_N",
+   "no": "272",
+   "name": "선원침실 07 화장실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 13700,
+     "y": 9000
+    },
+    {
+     "x": 15300,
+     "y": 9000
+    },
+    {
+     "x": 15300,
+     "y": 11000
+    },
+    {
+     "x": 13700,
+     "y": 11000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D2_273_N",
+   "no": "273",
+   "name": "선원침실 08 화장실",
+   "deckId": "D2",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 16900,
+     "y": 9000
+    },
+    {
+     "x": 18500,
+     "y": 9000
+    },
+    {
+     "x": 18500,
+     "y": 11000
+    },
+    {
+     "x": 16900,
+     "y": 11000
+    }
+   ],
+   "holes": [],
+   "areaM2": 3.2,
+   "volumeM3": 7.04,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_101_N",
+   "no": "101",
+   "name": "기관실 케이싱",
+   "deckId": "D1",
+   "isoClass": "ENGINE",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 3000
+    },
+    {
+     "x": 4000,
+     "y": 3000
+    },
+    {
+     "x": 4000,
+     "y": 3500
+    },
+    {
+     "x": 4000,
+     "y": 7000
+    },
+    {
+     "x": 0,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 16,
+   "volumeM3": 44.8,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_102_N",
+   "no": "102",
+   "name": "복도",
+   "deckId": "D1",
+   "isoClass": "ALLEY_SOUND",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 7000
+    },
+    {
+     "x": 4000,
+     "y": 7000
+    },
+    {
+     "x": 6500,
+     "y": 7000
+    },
+    {
+     "x": 9000,
+     "y": 7000
+    },
+    {
+     "x": 12000,
+     "y": 7000
+    },
+    {
+     "x": 16500,
+     "y": 7000
+    },
+    {
+     "x": 20000,
+     "y": 7000
+    },
+    {
+     "x": 20000,
+     "y": 9000
+    },
+    {
+     "x": 16000,
+     "y": 9000
+    },
+    {
+     "x": 14000,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 5500,
+     "y": 9000
+    },
+    {
+     "x": 4000,
+     "y": 9000
+    },
+    {
+     "x": 0,
+     "y": 9000
+    }
+   ],
+   "holes": [],
+   "areaM2": 40,
+   "volumeM3": 88,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D1_103_N",
+   "no": "103",
+   "name": "계단실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    },
+    {
+     "x": 8000,
+     "y": 11500
+    }
+   ],
+   "holes": [],
+   "areaM2": 6.25,
+   "volumeM3": 13.75,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_104_N",
+   "no": "104",
+   "name": "덕트 트렁크",
+   "deckId": "D1",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 9000
+    },
+    {
+     "x": 5500,
+     "y": 9000
+    },
+    {
+     "x": 5500,
+     "y": 10500
+    },
+    {
+     "x": 4000,
+     "y": 10500
+    }
+   ],
+   "holes": [],
+   "areaM2": 2.25,
+   "volumeM3": 6.3,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_105_N",
+   "no": "105",
+   "name": "청소도구실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 10500
+    },
+    {
+     "x": 5500,
+     "y": 10500
+    },
+    {
+     "x": 5500,
+     "y": 12000
+    },
+    {
+     "x": 4000,
+     "y": 12000
+    }
+   ],
+   "holes": [],
+   "areaM2": 2.25,
+   "volumeM3": 4.95,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_106_N",
+   "no": "106",
+   "name": "공용화장실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 5500,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 9000
+    },
+    {
+     "x": 8000,
+     "y": 11500
+    },
+    {
+     "x": 8000,
+     "y": 12000
+    },
+    {
+     "x": 5500,
+     "y": 12000
+    },
+    {
+     "x": 5500,
+     "y": 10500
+    }
+   ],
+   "holes": [],
+   "areaM2": 7.5,
+   "volumeM3": 16.5,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_107_N",
+   "no": "107",
+   "name": "사관휴게실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 12000
+    },
+    {
+     "x": 5500,
+     "y": 12000
+    },
+    {
+     "x": 8000,
+     "y": 12000
+    },
+    {
+     "x": 8000,
+     "y": 16000
+    },
+    {
+     "x": 4000,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 16,
+   "volumeM3": 35.2,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D1_108_N",
+   "no": "108",
+   "name": "갑판사무실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 8000,
+     "y": 11500
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    },
+    {
+     "x": 10500,
+     "y": 16000
+    },
+    {
+     "x": 8000,
+     "y": 16000
+    },
+    {
+     "x": 8000,
+     "y": 12000
+    }
+   ],
+   "holes": [],
+   "areaM2": 11.25,
+   "volumeM3": 24.75,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D1_109_N",
+   "no": "109",
+   "name": "세제·린넨 창고",
+   "deckId": "D1",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 9000,
+     "y": 0
+    },
+    {
+     "x": 9000,
+     "y": 3500
+    },
+    {
+     "x": 6500,
+     "y": 3500
+    },
+    {
+     "x": 4000,
+     "y": 3500
+    },
+    {
+     "x": 4000,
+     "y": 3000
+    }
+   ],
+   "holes": [],
+   "areaM2": 17.5,
+   "volumeM3": 49,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_110_N",
+   "no": "110",
+   "name": "세탁실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 4000,
+     "y": 3500
+    },
+    {
+     "x": 6500,
+     "y": 3500
+    },
+    {
+     "x": 6500,
+     "y": 7000
+    },
+    {
+     "x": 4000,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 8.75,
+   "volumeM3": 19.25,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": "EF-LAU",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_111_N",
+   "no": "111",
+   "name": "CO2실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 0
+    },
+    {
+     "x": 4000,
+     "y": 3000
+    },
+    {
+     "x": 0,
+     "y": 3000
+    }
+   ],
+   "holes": [],
+   "areaM2": 12,
+   "volumeM3": 26.4,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": null,
+    "exhaust": "EF-CO2",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_112_N",
+   "no": "112",
+   "name": "탈의실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 6500,
+     "y": 3500
+    },
+    {
+     "x": 9000,
+     "y": 3500
+    },
+    {
+     "x": 9000,
+     "y": 7000
+    },
+    {
+     "x": 6500,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 8.75,
+   "volumeM3": 19.25,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": "EF-SAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_113_N",
+   "no": "113",
+   "name": "선원식당",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 9000,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 0
+    },
+    {
+     "x": 12000,
+     "y": 7000
+    },
+    {
+     "x": 9000,
+     "y": 7000
+    },
+    {
+     "x": 9000,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "areaM2": 21,
+   "volumeM3": 48.3,
+   "ceilingHeightMm": 2300,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D1_114_N",
+   "no": "114",
+   "name": "조리실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 12000,
+     "y": 0
+    },
+    {
+     "x": 16500,
+     "y": 0
+    },
+    {
+     "x": 16500,
+     "y": 3500
+    },
+    {
+     "x": 16500,
+     "y": 7000
+    },
+    {
+     "x": 12000,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 31.5,
+   "volumeM3": 75.6,
+   "ceilingHeightMm": 2400,
+   "systems": {
+    "supply": "SF-GAL",
+    "exhaust": "EF-GAL",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_115_N",
+   "no": "115",
+   "name": "건식식품창고",
+   "deckId": "D1",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 16500,
+     "y": 0
+    },
+    {
+     "x": 20000,
+     "y": 0
+    },
+    {
+     "x": 20000,
+     "y": 3500
+    },
+    {
+     "x": 16500,
+     "y": 3500
+    }
+   ],
+   "holes": [],
+   "areaM2": 12.25,
+   "volumeM3": 34.3,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_116_N",
+   "no": "116",
+   "name": "조리실 팬룸",
+   "deckId": "D1",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 16500,
+     "y": 3500
+    },
+    {
+     "x": 20000,
+     "y": 3500
+    },
+    {
+     "x": 20000,
+     "y": 7000
+    },
+    {
+     "x": 16500,
+     "y": 7000
+    }
+   ],
+   "holes": [],
+   "areaM2": 12.25,
+   "volumeM3": 34.3,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_120_N",
+   "no": "120",
+   "name": "공조기실",
+   "deckId": "D1",
+   "isoClass": "NON_AC",
+   "polygon": [
+    {
+     "x": 0,
+     "y": 9000
+    },
+    {
+     "x": 4000,
+     "y": 9000
+    },
+    {
+     "x": 4000,
+     "y": 10500
+    },
+    {
+     "x": 4000,
+     "y": 12000
+    },
+    {
+     "x": 4000,
+     "y": 16000
+    },
+    {
+     "x": 0,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 28,
+   "volumeM3": 78.4,
+   "ceilingHeightMm": null,
+   "systems": {
+    "supply": null,
+    "exhaust": null,
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_121_N",
+   "no": "121",
+   "name": "사관식당",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 10500,
+     "y": 9000
+    },
+    {
+     "x": 14000,
+     "y": 9000
+    },
+    {
+     "x": 14000,
+     "y": 16000
+    },
+    {
+     "x": 10500,
+     "y": 16000
+    },
+    {
+     "x": 10500,
+     "y": 11500
+    }
+   ],
+   "holes": [],
+   "areaM2": 24.5,
+   "volumeM3": 56.35,
+   "ceilingHeightMm": 2300,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  },
+  {
+   "id": "T3_D1_122_N",
+   "no": "122",
+   "name": "배식실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 14000,
+     "y": 9000
+    },
+    {
+     "x": 16000,
+     "y": 9000
+    },
+    {
+     "x": 16000,
+     "y": 16000
+    },
+    {
+     "x": 14000,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 14,
+   "volumeM3": 30.8,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": "EF-PAN",
+    "return": null
+   }
+  },
+  {
+   "id": "T3_D1_123_N",
+   "no": "123",
+   "name": "선원휴게실",
+   "deckId": "D1",
+   "isoClass": "AC",
+   "polygon": [
+    {
+     "x": 16000,
+     "y": 9000
+    },
+    {
+     "x": 20000,
+     "y": 9000
+    },
+    {
+     "x": 20000,
+     "y": 16000
+    },
+    {
+     "x": 16000,
+     "y": 16000
+    }
+   ],
+   "holes": [],
+   "areaM2": 28,
+   "volumeM3": 61.6,
+   "ceilingHeightMm": 2200,
+   "systems": {
+    "supply": "AHU-ACC",
+    "exhaust": null,
+    "return": "RA-ACC"
+   }
+  }
+ ]
+}

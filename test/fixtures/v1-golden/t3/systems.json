@@ -1,0 +1,617 @@
+{
+ "systems": [
+  {
+   "id": "EF-BAT",
+   "kind": "exhaust",
+   "deckIds": [
+    "D4"
+   ],
+   "roomIds": [
+    "T3_D4_406_N"
+   ],
+   "designCmh": 240
+  },
+  {
+   "id": "EF-BRG",
+   "kind": "exhaust",
+   "deckIds": [
+    "D4"
+   ],
+   "roomIds": [
+    "T3_D4_404_N"
+   ],
+   "designCmh": 170
+  },
+  {
+   "id": "EF-CO2",
+   "kind": "exhaust",
+   "deckIds": [
+    "D1"
+   ],
+   "roomIds": [
+    "T3_D1_111_N"
+   ],
+   "designCmh": 160
+  },
+  {
+   "id": "EF-GAL",
+   "kind": "exhaust",
+   "deckIds": [
+    "D1"
+   ],
+   "roomIds": [
+    "T3_D1_114_N"
+   ],
+   "designCmh": 3630
+  },
+  {
+   "id": "EF-LAU",
+   "kind": "exhaust",
+   "deckIds": [
+    "D1"
+   ],
+   "roomIds": [
+    "T3_D1_110_N"
+   ],
+   "designCmh": 870
+  },
+  {
+   "id": "EF-PAN",
+   "kind": "exhaust",
+   "deckIds": [
+    "D1"
+   ],
+   "roomIds": [
+    "T3_D1_122_N"
+   ],
+   "designCmh": 870
+  },
+  {
+   "id": "EF-SAN",
+   "kind": "exhaust",
+   "deckIds": [
+    "D1",
+    "D2",
+    "D3"
+   ],
+   "roomIds": [
+    "T3_D3_305_N",
+    "T3_D3_306_N",
+    "T3_D3_361_N",
+    "T3_D3_362_N",
+    "T3_D3_363_N",
+    "T3_D3_371_N",
+    "T3_D3_372_N",
+    "T3_D3_373_N",
+    "T3_D2_205_N",
+    "T3_D2_206_N",
+    "T3_D2_220_N",
+    "T3_D2_261_N",
+    "T3_D2_262_N",
+    "T3_D2_263_N",
+    "T3_D2_264_N",
+    "T3_D2_265_N",
+    "T3_D2_271_N",
+    "T3_D2_272_N",
+    "T3_D2_273_N",
+    "T3_D1_105_N",
+    "T3_D1_106_N",
+    "T3_D1_112_N"
+   ],
+   "designCmh": 3300
+  },
+  {
+   "id": "RA-ACC",
+   "kind": "return",
+   "deckIds": [
+    "D1",
+    "D2",
+    "D3"
+   ],
+   "roomIds": [
+    "T3_D3_302_N",
+    "T3_D3_308_N",
+    "T3_D3_310_N",
+    "T3_D3_311_N",
+    "T3_D3_312_N",
+    "T3_D3_313_N",
+    "T3_D3_320_N",
+    "T3_D3_321_N",
+    "T3_D3_322_N",
+    "T3_D3_323_N",
+    "T3_D2_202_N",
+    "T3_D2_207_N",
+    "T3_D2_208_N",
+    "T3_D2_210_N",
+    "T3_D2_211_N",
+    "T3_D2_212_N",
+    "T3_D2_213_N",
+    "T3_D2_214_N",
+    "T3_D2_215_N",
+    "T3_D2_221_N",
+    "T3_D2_222_N",
+    "T3_D2_223_N",
+    "T3_D1_102_N",
+    "T3_D1_107_N",
+    "T3_D1_108_N",
+    "T3_D1_113_N",
+    "T3_D1_121_N",
+    "T3_D1_123_N"
+   ],
+   "designCmh": 10360
+  },
+  {
+   "id": "RA-BRG",
+   "kind": "return",
+   "deckIds": [
+    "D4"
+   ],
+   "roomIds": [
+    "T3_D4_401_N",
+    "T3_D4_402_N",
+    "T3_D4_407_N",
+    "T3_D4_408_N",
+    "T3_D4_409_N",
+    "T3_D4_410_N"
+   ],
+   "designCmh": 5280
+  },
+  {
+   "id": "AHU-ACC",
+   "kind": "supply",
+   "deckIds": [
+    "D1",
+    "D2",
+    "D3"
+   ],
+   "roomIds": [
+    "T3_D3_302_N",
+    "T3_D3_303_N",
+    "T3_D3_308_N",
+    "T3_D3_310_N",
+    "T3_D3_311_N",
+    "T3_D3_312_N",
+    "T3_D3_313_N",
+    "T3_D3_320_N",
+    "T3_D3_321_N",
+    "T3_D3_322_N",
+    "T3_D3_323_N",
+    "T3_D2_202_N",
+    "T3_D2_203_N",
+    "T3_D2_207_N",
+    "T3_D2_208_N",
+    "T3_D2_210_N",
+    "T3_D2_211_N",
+    "T3_D2_212_N",
+    "T3_D2_213_N",
+    "T3_D2_214_N",
+    "T3_D2_215_N",
+    "T3_D2_220_N",
+    "T3_D2_221_N",
+    "T3_D2_222_N",
+    "T3_D2_223_N",
+    "T3_D1_102_N",
+    "T3_D1_103_N",
+    "T3_D1_107_N",
+    "T3_D1_108_N",
+    "T3_D1_110_N",
+    "T3_D1_112_N",
+    "T3_D1_113_N",
+    "T3_D1_121_N",
+    "T3_D1_122_N",
+    "T3_D1_123_N"
+   ],
+   "designCmh": 15890
+  },
+  {
+   "id": "AHU-BRG",
+   "kind": "supply",
+   "deckIds": [
+    "D4"
+   ],
+   "roomIds": [
+    "T3_D4_401_N",
+    "T3_D4_402_N",
+    "T3_D4_403_N",
+    "T3_D4_407_N",
+    "T3_D4_408_N",
+    "T3_D4_409_N",
+    "T3_D4_410_N"
+   ],
+   "designCmh": 7050
+  },
+  {
+   "id": "SF-GAL",
+   "kind": "supply",
+   "deckIds": [
+    "D1"
+   ],
+   "roomIds": [
+    "T3_D1_114_N"
+   ],
+   "designCmh": 3410
+  }
+ ],
+ "analysis": [
+  {
+   "system": "AHU-ACC",
+   "systemId": "AHU-ACC",
+   "kind": "supply",
+   "unitDeck": "D1",
+   "fanCmh": 15890,
+   "decks": [
+    "D1",
+    "D2",
+    "D3"
+   ],
+   "complete": true,
+   "espPa": 338.2,
+   "fanPa": 988,
+   "indexDeck": "D2",
+   "riserLengthM": 11.1
+  },
+  {
+   "system": "AHU-BRG",
+   "systemId": "AHU-BRG",
+   "kind": "supply",
+   "unitDeck": "D4",
+   "fanCmh": 7050,
+   "decks": [
+    "D4"
+   ],
+   "complete": true,
+   "espPa": 189.4,
+   "fanPa": 839,
+   "indexDeck": "D4",
+   "riserLengthM": 0
+  },
+  {
+   "system": "SF-GAL",
+   "systemId": "SF-GAL",
+   "kind": "supply",
+   "unitDeck": "D1",
+   "fanCmh": 3410,
+   "decks": [
+    "D1"
+   ],
+   "complete": true,
+   "espPa": 104.4,
+   "fanPa": 754,
+   "indexDeck": "D1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-BAT",
+   "systemId": "EF-BAT",
+   "kind": "exhaust",
+   "unitDeck": "D4",
+   "fanCmh": 240,
+   "decks": [
+    "D4"
+   ],
+   "complete": true,
+   "espPa": 18,
+   "fanPa": 168,
+   "indexDeck": "D4",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-BRG",
+   "systemId": "EF-BRG",
+   "kind": "exhaust",
+   "unitDeck": "D4",
+   "fanCmh": 170,
+   "decks": [
+    "D4"
+   ],
+   "complete": true,
+   "espPa": 28,
+   "fanPa": 178,
+   "indexDeck": "D4",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-CO2",
+   "systemId": "EF-CO2",
+   "kind": "exhaust",
+   "unitDeck": "D1",
+   "fanCmh": 160,
+   "decks": [
+    "D1"
+   ],
+   "complete": true,
+   "espPa": 15,
+   "fanPa": 165,
+   "indexDeck": "D1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-GAL",
+   "systemId": "EF-GAL",
+   "kind": "exhaust",
+   "unitDeck": "D1",
+   "fanCmh": 3630,
+   "decks": [
+    "D1"
+   ],
+   "complete": true,
+   "espPa": 96.4,
+   "fanPa": 246,
+   "indexDeck": "D1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-LAU",
+   "systemId": "EF-LAU",
+   "kind": "exhaust",
+   "unitDeck": "D1",
+   "fanCmh": 870,
+   "decks": [
+    "D1"
+   ],
+   "complete": true,
+   "espPa": 95,
+   "fanPa": 245,
+   "indexDeck": "D1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-PAN",
+   "systemId": "EF-PAN",
+   "kind": "exhaust",
+   "unitDeck": "D1",
+   "fanCmh": 870,
+   "decks": [
+    "D1"
+   ],
+   "complete": true,
+   "espPa": 94,
+   "fanPa": 244,
+   "indexDeck": "D1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-SAN",
+   "systemId": "EF-SAN",
+   "kind": "exhaust",
+   "unitDeck": "D1",
+   "fanCmh": 3300,
+   "decks": [
+    "D1",
+    "D2",
+    "D3"
+   ],
+   "complete": true,
+   "espPa": 141.4,
+   "fanPa": 291,
+   "indexDeck": "D2",
+   "riserLengthM": 10.1
+  },
+  {
+   "system": "RA-ACC",
+   "systemId": "RA-ACC",
+   "kind": "return",
+   "unitDeck": "D1",
+   "fanCmh": 10360,
+   "decks": [
+    "D1",
+    "D2",
+    "D3"
+   ],
+   "complete": true,
+   "espPa": 259.2,
+   "fanPa": 409,
+   "indexDeck": "D2",
+   "riserLengthM": 10.1
+  },
+  {
+   "system": "RA-BRG",
+   "systemId": "RA-BRG",
+   "kind": "return",
+   "unitDeck": "D4",
+   "fanCmh": 5280,
+   "decks": [
+    "D4"
+   ],
+   "complete": true,
+   "espPa": 176.4,
+   "fanPa": 326,
+   "indexDeck": "D4",
+   "riserLengthM": 0
+  }
+ ],
+ "risers": [
+  {
+   "id": "AHU-ACC:D1-D2",
+   "systemKey": "AHU-ACC",
+   "systemId": "AHU-ACC",
+   "kind": "supply",
+   "fromDeckId": "D1",
+   "toDeckId": "D2",
+   "from": {
+    "x": 2000,
+    "y": 12500
+   },
+   "to": {
+    "x": 4800,
+    "y": 9800
+   },
+   "flowCmh": 9530,
+   "widthMm": 600,
+   "heightMm": 450,
+   "verticalM": 2.8,
+   "offsetM": 5.5,
+   "lengthM": 8.3,
+   "elbows": 4,
+   "velocityMps": 9.8,
+   "frictionPa": 14.8,
+   "elbowPa": 57.7,
+   "branchPa": 23.1,
+   "straightPa": 5.8,
+   "damperPa": 17.3,
+   "totalPa": 89.7,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "AHU-ACC:D2-D3",
+   "systemKey": "AHU-ACC",
+   "systemId": "AHU-ACC",
+   "kind": "supply",
+   "fromDeckId": "D2",
+   "toDeckId": "D3",
+   "from": {
+    "x": 4800,
+    "y": 9800
+   },
+   "to": {
+    "x": 4800,
+    "y": 9800
+   },
+   "flowCmh": 4680,
+   "widthMm": 450,
+   "heightMm": 350,
+   "verticalM": 2.8,
+   "offsetM": 0,
+   "lengthM": 2.8,
+   "elbows": 2,
+   "velocityMps": 8.25,
+   "frictionPa": 5,
+   "elbowPa": 20.4,
+   "branchPa": 0,
+   "straightPa": 0,
+   "damperPa": 0,
+   "totalPa": 25.4,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "EF-SAN:D1-D2",
+   "systemKey": "EF-SAN",
+   "systemId": "EF-SAN",
+   "kind": "exhaust",
+   "fromDeckId": "D1",
+   "toDeckId": "D2",
+   "from": {
+    "x": 2500,
+    "y": 12000
+   },
+   "to": {
+    "x": 5300,
+    "y": 10300
+   },
+   "flowCmh": 2800,
+   "widthMm": 350,
+   "heightMm": 300,
+   "verticalM": 2.8,
+   "offsetM": 4.5,
+   "lengthM": 7.3,
+   "elbows": 4,
+   "velocityMps": 7.41,
+   "frictionPa": 13.5,
+   "elbowPa": 32.9,
+   "branchPa": 13.2,
+   "straightPa": 3.3,
+   "damperPa": 9.9,
+   "totalPa": 56.3,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "EF-SAN:D2-D3",
+   "systemKey": "EF-SAN",
+   "systemId": "EF-SAN",
+   "kind": "exhaust",
+   "fromDeckId": "D2",
+   "toDeckId": "D3",
+   "from": {
+    "x": 5300,
+    "y": 10300
+   },
+   "to": {
+    "x": 5300,
+    "y": 10300
+   },
+   "flowCmh": 960,
+   "widthMm": 250,
+   "heightMm": 200,
+   "verticalM": 2.8,
+   "offsetM": 0,
+   "lengthM": 2.8,
+   "elbows": 2,
+   "velocityMps": 5.33,
+   "frictionPa": 4.4,
+   "elbowPa": 8.5,
+   "branchPa": 0,
+   "straightPa": 0,
+   "damperPa": 0,
+   "totalPa": 13,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "RA-ACC:D1-D2",
+   "systemKey": "RA-ACC",
+   "systemId": "RA-ACC",
+   "kind": "return",
+   "fromDeckId": "D1",
+   "toDeckId": "D2",
+   "from": {
+    "x": 1500,
+    "y": 12000
+   },
+   "to": {
+    "x": 4300,
+    "y": 10300
+   },
+   "flowCmh": 6570,
+   "widthMm": 500,
+   "heightMm": 400,
+   "verticalM": 2.8,
+   "offsetM": 4.5,
+   "lengthM": 7.3,
+   "elbows": 4,
+   "velocityMps": 9.13,
+   "frictionPa": 13.5,
+   "elbowPa": 50,
+   "branchPa": 20,
+   "straightPa": 5,
+   "damperPa": 15,
+   "totalPa": 78.5,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "RA-ACC:D2-D3",
+   "systemKey": "RA-ACC",
+   "systemId": "RA-ACC",
+   "kind": "return",
+   "fromDeckId": "D2",
+   "toDeckId": "D3",
+   "from": {
+    "x": 4300,
+    "y": 10300
+   },
+   "to": {
+    "x": 4300,
+    "y": 10300
+   },
+   "flowCmh": 3630,
+   "widthMm": 450,
+   "heightMm": 300,
+   "verticalM": 2.8,
+   "offsetM": 0,
+   "lengthM": 2.8,
+   "elbows": 2,
+   "velocityMps": 7.47,
+   "frictionPa": 4.6,
+   "elbowPa": 16.7,
+   "branchPa": 0,
+   "straightPa": 0,
+   "damperPa": 0,
+   "totalPa": 21.3,
+   "exceeded": false,
+   "through": []
+  }
+ ]
+}
