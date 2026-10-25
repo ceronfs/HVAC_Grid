@@ -18,6 +18,7 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 | [docs/PLAN.md](docs/PLAN.md) | 목표, 이전 시도에서 배운 점, 통합 방식, 단계 계획과 상태, **직접 정한 것(8장)** |
 | [docs/CONTRACT.md](docs/CONTRACT.md) | 설계 데이터·프로젝트 파일, BOX → 설계 데이터 · 설계 데이터 → PHG D 대응, 수직 덕트, 풍량 규칙, 검증 |
 | [docs/SOLAS.md](docs/SOLAS.md) | SOLAS II-2 판정: 데이터 대조, 실 분류, 경계, 관통, 한계 |
+| [docs/WORKFLOW_SKETCHCAD.md](docs/WORKFLOW_SKETCHCAD.md) | **처음 쓰는 사람용 따라 하기**: 받은 DXF → SketchCAD(계산 준비·경계 지정·실 만들기·HVAC Grid용 DXF) → HVAC Grid ①~⑤ |
 | [docs/TEST_DRAWINGS.md](docs/TEST_DRAWINGS.md) | T3 시험선(BOX 프로젝트로 시작)과 N3 시험선(DXF 도면 3장으로 시작, 날짜 시드로 매일 다른 배치): 도면·계통·파일·검토 |
 | [docs/H2_H4_RESULT.md](docs/H2_H4_RESULT.md) | H2~H4 결과(T3·S5 실행, 자동 시험) |
 | [docs/H1_S5_RESULT.md](docs/H1_S5_RESULT.md) | H1 결과(S5 급기 10계통) |
@@ -42,7 +43,8 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 HVAC_Grid.bat               # 더블클릭: 독립 창(Edge 앱 모드) + 로컬 서버, 창을 닫으면 종료
 npm start                   # 통합 셸 → 브라우저에서 http://127.0.0.1:8792/app/
 npm test                    # 단위 테스트 (개수는 출력 참조)
-npm run test:e2e            # E2E 8개: S5 셸 흐름, T3 시험선 전체, vendor 패치, 프로젝트·BOX, 방화 등급도, SOLAS 도구, K 변경, N3(고정 시드) (캡처 out/e2e*/, out/n3/)
+npm run test:e2e            # E2E 9개: S5 셸 흐름, T3 시험선 전체, vendor 패치, 프로젝트·BOX, 방화 등급도, SOLAS 도구, K 변경, SketchCAD → HVAC Grid, N3(고정 시드) (캡처 out/e2e*/, out/n3/)
+npm run test:sketchcad      # SketchCAD에서 만든 실(HVAC Grid용 DXF)이 HVAC Grid ①로 들어오는지 — N3 도면 3가지 (SketchCAD는 ../SketchCAD/SketchCAD.html 또는 SKETCHCAD_HTML, 없으면 건너뜀)
 npm run test:n3             # N3 시험선을 오늘 날짜 시드로 새로 그려 도면부터 끝까지 (결과 out/n3/<날짜>/summary.md)
 npm run run:t3              # T3 설계 데이터 → 17개 Deck·계통 AUTO → out/t3/ (project.json, report.xlsx, report.html, integrated.dxf, shots/)
 npm run run:s5              # S5 설계 데이터 → 18개 Deck·계통 AUTO → out/s5/
