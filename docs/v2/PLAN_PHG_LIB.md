@@ -64,7 +64,7 @@ app/phg-worker.js        브라우저에서 lib/phg-engine을 Web Worker로 돌�
 
 각 단계는 따로 커밋한다. P5 전까지 ④는 지금처럼 PHG D로 돌아가므로, 중간에 멈춰도 프로그램은 그대로 쓸 수 있다.
 
-## 4. 정해야 할 것
+## 4. 정해야 할 것 (1은 2026-10-25 D1로 결정: 편집기를 남긴다 — [DECISIONS.md](DECISIONS.md))
 
 1. **PHG D 편집기**(④ 리본 'PHG D 편집기', 손으로 경로·이음쇠 고치기)
    - (권장) P5 뒤에도 남긴다: 편집기를 열 때만 PHG D를 띄우고, lib 결과를 PHG D 프로젝트로 넣는다. 그러려면 `S.projects`(PHG D 프로젝트 JSON)를 lib 상태에서 만들어야 한다 — V2의 `serializeTypedProject` 형식. P4 뒤에 따로 판단.
