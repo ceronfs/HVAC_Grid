@@ -1,0 +1,34 @@
+{
+ "ship": "t3",
+ "tool": "tools/phg-golden.cjs",
+ "made": "2026-10-25T23:20:19.569Z",
+ "browser": "chromium 153.0.8010.12",
+ "node": "v22.22.0",
+ "pageErrors": [],
+ "timing": {
+  "appS": 0.6,
+  "openS": 1.3,
+  "autoS": 151.8,
+  "plans": {
+   "D1__AHU-ACC": 24.8,
+   "D2__AHU-ACC": 19.3,
+   "D3__AHU-ACC": 16.5,
+   "D4__AHU-BRG": 9.4,
+   "D1__SF-GAL": 9.1,
+   "D4__EF-BAT": 0.3,
+   "D4__EF-BRG": 0.3,
+   "D1__EF-CO2": 0.2,
+   "D1__EF-GAL": 4.9,
+   "D1__EF-LAU": 0.5,
+   "D1__EF-PAN": 0.6,
+   "D1__EF-SAN": 6.1,
+   "D2__EF-SAN": 3.9,
+   "D3__EF-SAN": 3.6,
+   "D1__RA-ACC": 3.7,
+   "D2__RA-ACC": 6.4,
+   "D3__RA-ACC": 8,
+   "D4__RA-BRG": 26.7
+  },
+  "totalS": 158.9
+ }
+}

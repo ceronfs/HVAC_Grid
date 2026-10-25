@@ -10,26 +10,35 @@
 //            (routing engine, sizing worker, V2 calculation), ducts / RUs / nodes after sizing, the pressure paths,
 //            the bridge's result and geometry()
 // index.json: per plan the counts and the result (RUs, ducts, length, index Pa, candidates, zones relaxed, worker
-// messages) - readable without unzipping. Ids PHG D makes up (time stamps, random) are numbered in order of first use.
+// messages) - readable without unzipping. Ids PHG D makes up (time stamps, random) are numbered in order of first use;
+// worker messages are sorted (parallel routing workers answer in any order).
 'use strict';
 const fs = require('fs'), path = require('path'), zlib = require('zlib');
 const { diff } = require('./v1-golden.cjs');
 const ROOT = path.join(__dirname, '..'), FIXTURES = path.join(ROOT, 'test', 'fixtures', 'phg-golden');
 const safe = k => k.replace(/[^A-Za-z0-9_.-]+/g, '_');
 
-// numbers in ids and stamps that differ from run to run: PHG D's ids ("n_lx3k9_…", "duct-1792…"), time fields
+// numbers in ids and stamps that differ from run to run: PHG D's ids ("n_lx3k9_…", "duct-1792…"), time fields (and every
+// number under a key ending in Ms: routingTimeMs, preparationMs, nativeWorkerMs …)
 const TIME_KEYS = new Set(['at', 'createdAt', 'updatedAt', 'modifiedAt', 'savedAt', 'timestamp', 'time', 't', 'elapsedMs', 'durationMs', 'ms', 'seconds', 'startedAt', 'finishedAt']);
+// what the machine decides: PHG D's parallel worker split (core count)
+const MACHINE_KEYS = new Set(['phgdParallel']);
 const RANDOM_ID = /^(?:[A-Za-z]+[-_])?(?:[0-9a-z]{6,}[-_])?(?:\d{10,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-z]{10,})(?:[-_][0-9a-z]+)*$/;
 function canonical(v, ids = new Map()) {
  const id = s => { if (!ids.has(s)) ids.set(s, `#${ids.size + 1}`); return ids.get(s); };
  const walk = (x, key) => {
   if (Array.isArray(x)) return x.map(y => walk(y, key));
-  if (x && typeof x === 'object') return Object.fromEntries(Object.keys(x).map(k => [k, TIME_KEYS.has(k) && typeof x[k] === 'number' ? 0 : walk(x[k], k)]));
+  if (x && typeof x === 'object') return Object.fromEntries(Object.keys(x).map(k => [k, MACHINE_KEYS.has(k) ? '-' : (TIME_KEYS.has(k) || /Ms$/.test(k)) && typeof x[k] === 'number' ? 0 : walk(x[k], k)]));
   if (typeof x === 'string' && /(^|[a-z])(id|Id|ids|Ids)$/.test(key || '') && RANDOM_ID.test(x) && /\d/.test(x)) return id(x);
   if (typeof x === 'string' && /^blob:/.test(x)) return 'blob:';
   return x;
  };
  return walk(v);
+}
+
+function sortMessages(list) {
+ const key = m => `${m.worker}\u0000${m.dir === 'in' ? 0 : 1}\u0000${JSON.stringify(canonical(m.data))}`;
+ return list.map(m => [key(m), m]).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([, m]) => m);
 }
 
 function deckFix(project) {
@@ -43,6 +52,10 @@ function planFiles(run) {
  const { fix, key } = deckFix(run.project), out = {}, index = { order: [], plans: {} };
  for (const k of run.phg.order) {
   const e = run.phg.plans[k], name = key(k); if (!e) continue;
+  // PHG D runs several routing workers at once and their answers come back in any order: each plan's messages are put
+  // in a fixed order (worker, in before out, the message's own canonical text) - which answer belongs to which request
+  // is not kept
+  for (const part of [e.loaded, e.auto]) if (part?.workers) part.workers = sortMessages(part.workers);
   const g = canonical(fix(e));
   out[name] = g; index.order.push(name);
   const w = dir => (e.auto?.workers || []).filter(m => m.dir === dir).reduce((o, m) => (o[m.worker] = (o[m.worker] || 0) + 1, o), {});
@@ -87,4 +100,4 @@ async function main() {
 
 if (require.main === module) main().catch(e => { console.error(e); process.exit(1); });
 
-module.exports = { FIXTURES, canonical, planFiles, ungz, safe };
+module.exports = { FIXTURES, canonical, sortMessages, planFiles, ungz, safe };
