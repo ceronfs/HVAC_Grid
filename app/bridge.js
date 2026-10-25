@@ -304,6 +304,8 @@ html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
 
  // ---- PHG D ----
  const PHG_CSS = `.app>header.topbar,.app>.summary{display:none!important}`;
+ // the Root memo of a project whose app y is BOX y (Phg.loadPlan with the drawing's way round)
+ const Y_BOX = '[y=BOX]';
  class Phg extends VendorFrame {
   constructor(frame) {
    super(frame, { url: '../vendor/DuctConcept_PHG_D.html', css: PHG_CSS, ready: w => w.DuctConceptRouting?.ready && w.LineDesignV2 });
@@ -331,32 +333,37 @@ html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
   open(text, name) { this.win.LineDesignV2.loadTypedProjectJson(text, name); this.win.LineDesignLegacy.renderEverything(); this.fit(); try { this.opened = { text, base: this.serialize() }; } catch { this.opened = null; } }
   fit() { try { this.click('zoomAllBtn'); } catch {} }
   // one deck + supply system from lib/phg-plan.cjs: empty project, room drawing as background, Root and RUs.
-  // PHG D shows DXF y upward as screen y downward: app y = -DXF y
-  async loadPlan(pl) {
-   const w = this.win, L = w.LineDesignLegacy, R = w.DuctConceptRouting;
+  // PHG D shows DXF y upward as screen y downward: app y = -DXF y. It gets the drawing the way round the drawing has it
+  // (dxf: PL.deckDxf(..., { cad: true }), DXF y = -BOX y), so its app y is BOX y and the deck shows in the PHG D editor as
+  // in ① - ④ (it showed upside down when the plan's dxf, BOX y as DXF y, went in - 2026-10-25). The Root's memo says so
+  // (Y_BOX): geometry() and zoomTo() turn y only for such projects, projects stored before keep their way round
+  async loadPlan(pl, dxf = pl.dxf) {
+   const w = this.win, L = w.LineDesignLegacy, R = w.DuctConceptRouting, cad = dxf !== pl.dxf, y = cad ? v => v : v => -v;
    this.open(this.blank, pl.key);
    L.setProjectIdentity?.(pl.key, pl.key + '.dxf');
-   this.setFile('fileInput', new File([pl.dxf], pl.key + '.dxf', { type: 'application/dxf' }));
+   this.setFile('fileInput', new File([dxf], pl.key + '.dxf', { type: 'application/dxf' }));
    const dialog = await until(() => { const d = this.doc.getElementById('dxfImportOptionsDialog'); return d?.open && d; }, 30000, 'DXF 가져오기 창');
    dialog.querySelector('button[type=submit]').click();
    await until(() => !dialog.open && L.getState().entities.length > 0, 120000, 'DXF 가져오기');
-   R.placeRoot({ x: pl.root.x, y: -pl.root.y });
+   R.placeRoot({ x: pl.root.x, y: y(pl.root.y) });
    // exhaust and return networks: PHG D's pressure calculation takes converging (exhaust) fittings from the Root
-   const root = L.getState().nodes.find(n => n.type === 'root'); if (root) { root.pressureFlowMode = pl.flowMode || 'supply'; root.memo = `HVAC Grid ${pl.systemId} ${pl.isUnitDeck === false ? '수직 덕트' : '공조기'}`; }
+   const root = L.getState().nodes.find(n => n.type === 'root'); if (root) { root.pressureFlowMode = pl.flowMode || 'supply'; root.memo = `HVAC Grid ${pl.systemId} ${pl.isUnitDeck === false ? '수직 덕트' : '공조기'}${cad ? ' ' + Y_BOX : ''}`; }
    for (const u of pl.rus) {
-    R.placeRu({ x: u.x, y: -u.y, flowCmh: u.flowCmh });
+    R.placeRu({ x: u.x, y: y(u.y), flowCmh: u.flowCmh });
     const s = L.getState(), node = s.nodes.at(-1), ru = s.diffusers.find(d => d.connectedNodeId === node.id);
     if (ru) ru.memo = 'HVAC Grid ' + u.id;
    }
    // restricted rooms the plan does not serve (machinery casing, galley, CO2 room, stair, ...) are PHG D forbidden zones
    // for AUTO (II-2/9.7.2): their outline pulled in 50 mm so a duct may still run along their walls
    L.getState().settings.routingForbiddenZones = (pl.avoid || []).filter(z => z.zone?.length > 2).map((z, i) => ({ id: `HG-${i + 1}`, name: `${z.no} ${z.name} (${z.space})`.slice(0, 80),
-    polygon: z.zone.map(p => ({ x: p.x, y: -p.y })), clearanceMm: 0, enabled: true, visible: true, source: 'DRAWN' }))
+    polygon: z.zone.map(p => ({ x: p.x, y: y(p.y) })), clearanceMm: 0, enabled: true, visible: true, source: 'DRAWN' }))
     // the outside of the deck (open deck, notches, a 10 m frame round the rooms): a duct never leaves the accommodation
-    .concat((pl.outside || []).map((z, i) => ({ id: `HG-OUT-${i + 1}`, name: '선체 밖', polygon: z.map(p => ({ x: p.x, y: -p.y })), clearanceMm: 0, enabled: true, visible: false, source: 'DRAWN' })));
+    .concat((pl.outside || []).map((z, i) => ({ id: `HG-OUT-${i + 1}`, name: '선체 밖', polygon: z.map(p => ({ x: p.x, y: y(p.y) })), clearanceMm: 0, enabled: true, visible: false, source: 'DRAWN' })));
    L.renderEverything(); this.fit();
    return this.result();
   }
+  // the project open in PHG D has BOX y as its app y (sent the drawing's way round, loadPlan)
+  yBox() { try { return !!this.win.LineDesignLegacy.getState().nodes.find(n => n.type === 'root')?.memo?.includes(Y_BOX); } catch { return false; } }
   // AUTO -> first candidate -> duct assignment -> sizing -> pressure (the same chain as tools/hvac-run.cjs). When no
   // route reaches every RU inside the forbidden zones, AUTO runs again without the outside of the deck (restricted rooms
   // kept; a duct that then strays outside fails the passage check), then with only the outside, then without any, and the
@@ -414,20 +421,21 @@ html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
     ductTypes: st.ducts.reduce((o, d) => (o[d.type] = (o[d.type] || 0) + 1, o), {}) };
   }
   dockShown(side) { const d = this.doc.getElementById(`phgb-${side}-dock`); return !!d && d.getBoundingClientRect().width > 20; }
-  // show an area (app coordinates) with a margin in mm
+  // show an area (BOX coordinates) with a margin in mm
   zoomTo(points, pad = 1000) {
+   if (!this.yBox()) points = points.map(p => ({ x: p.x, y: -p.y }));
    const w = this.win, v = w.LineDesignLegacy.getState().view, svg = this.doc.getElementById('svg'), rc = svg.getBoundingClientRect(), xs = points.map(p => p.x), ys = points.map(p => p.y);
    const minX = Math.min(...xs) - pad, maxX = Math.max(...xs) + pad, minY = Math.min(...ys) - pad, maxY = Math.max(...ys) + pad;
    const wd = Math.max(maxX - minX, (maxY - minY) * rc.width / rc.height), h = wd * rc.height / rc.width;
    Object.assign(v, { x: (minX + maxX) / 2 - wd / 2, y: (minY + maxY) / 2 - h / 2, w: wd, h }); svg.setAttribute('viewBox', `${v.x} ${v.y} ${wd} ${h}`); w.LineDesignLegacy.renderEverything();
   }
-  // ducts (with their size and airflow), RUs and Root in app coordinates (y down) for the shell's plan view, the SOLAS
-  // penetration check and the outputs
+  // ducts (with their size and airflow), RUs and Root for the shell's plan view, the SOLAS penetration check and the
+  // outputs, with y = -BOX y as the stored networks have it (the app y of a project sent before Y_BOX)
   geometry() {
-   const s = this.win.LineDesignLegacy.getState(), r = s.nodes.find(n => n.type === 'root'), num = v => Number.isFinite(+v) && +v > 0 ? Math.round(+v) : 0;
-   return { root: r ? { x: r.x, y: r.y } : null, rus: s.diffusers.map(d => ({ x: d.x, y: d.y, flowCmh: d.flowCmh })),
+   const s = this.win.LineDesignLegacy.getState(), r = s.nodes.find(n => n.type === 'root'), num = v => Number.isFinite(+v) && +v > 0 ? Math.round(+v) : 0, y = this.yBox() ? v => -v : v => v;
+   return { root: r ? { x: r.x, y: y(r.y) } : null, rus: s.diffusers.map(d => ({ x: d.x, y: y(d.y), flowCmh: d.flowCmh })),
     ducts: s.ducts.map(d => ({ id: d.id, displayName: d.displayName || d.id, type: d.type, shape: d.shape, widthMm: d.shape === 'round' ? 0 : num(d.widthMm), heightMm: d.shape === 'round' ? 0 : num(d.heightMm),
-     diameterMm: d.shape === 'round' ? num(d.diameterMm) : 0, flowCmh: Math.round(+d.flowCmh || 0), ...(d.manualSize ? { manualSize: true } : {}), points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(p.y) })) })) };
+     diameterMm: d.shape === 'round' ? num(d.diameterMm) : 0, flowCmh: Math.round(+d.flowCmh || 0), ...(d.manualSize ? { manualSize: true } : {}), points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(y(p.y)) || 0 })) })) };
   }
  }
 

@@ -284,7 +284,8 @@
  async function sendPlan(key = curKey()) {
   const pl = plans().find(p => p.key === key); if (!pl) throw new Error('보낼 계통이 없습니다 (Deck·계통을 고르세요)');
   await loadPhg(); keepActive(); S.active = key;
-  await phg.loadPlan(pl);
+  // the drawing the way round it was drawn: PHG D then shows the deck as ① - ④ do (bridge.js loadPlan)
+  await phg.loadPlan(pl, PL.deckDxf(S.contract, pl.deckId, { cad: true }));
   S.results[key] = {}; store(key);
   say(`${deckName(pl.deckId)} · ${KL[pl.kind]} ${pl.systemId}: RU ${pl.rus.length}개 · ${fmt(pl.designCmh)} CMH를 PHG D로 보냄`);
  }
@@ -719,7 +720,7 @@
   if (r.deckId !== S.deck) { S.deck = r.deckId; pickSystem(); }
   const sid = r.systems[S.kind];
   if (sid && deckPlans(S.kind).some(p => p.systemId === sid) && !(S.step === 'duct' && S.active)) S.sys = deckPlans(S.kind).find(p => p.systemId === sid).systemKey;
-  if (S.step === 'duct' && phg.loading && S.active?.startsWith(r.deckId + '__')) phg.zoomTo(r.polygon.map(p => ({ x: p.x, y: -p.y })), 1500);
+  if (S.step === 'duct' && phg.loading && S.active?.startsWith(r.deckId + '__')) phg.zoomTo(r.polygon, 1500);
   render();
  }
  // the ③ ④ plan shows a deck as the ① ② canvas (BOX) does: BOX y runs down the screen. Y() turns a BOX y into the plan's

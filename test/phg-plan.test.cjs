@@ -42,6 +42,18 @@ test('deck DXF: closed room outlines with number and name', () => {
  assert.match(dxf, /\r\n선원식당\r\n/);
 });
 
+// the drawing PHG D gets (cad): y the way round the drawing had it (DXF y = -BOX y), so PHG D, which draws DXF y up,
+// shows the deck as ① - ④ do (it showed upside down, 2026-10-25); the room labels stay inside their rooms
+test('deck DXF for PHG D: the drawing the way round it was drawn', () => {
+ const X = require('../lib/dxf-in.cjs'), box = X.rooms(deckDxf(s5, 'S3')), cad = X.rooms(deckDxf(s5, 'S3', { cad: true }));
+ assert.equal(cad.length, box.length);
+ for (const r of cad) {
+  const b = box.find(x => x.no === r.no), ys = q => q.polygon.map(p => p.y), neg = v => 0 - v;
+  assert.ok(b, r.no); assert.equal(Math.max(...ys(r)) + 0, neg(Math.min(...ys(b))) + 0, r.no + ' top'); assert.equal(Math.min(...ys(r)) + 0, neg(Math.max(...ys(b))) + 0, r.no + ' bottom');
+  assert.equal(r.name, b.name, r.no + ' label read inside its room');
+ }
+});
+
 test('a unit location set in HVAC Grid replaces the guessed Root', () => {
  const roots = { 'S3__AHU-AC-01': { x: 11600, y: 4000 } }, pl = plan({ ...s5, roots }).find(p => p.key === 'S3__AHU-AC-01');
  assert.equal(pl.rootSource, 'user');
