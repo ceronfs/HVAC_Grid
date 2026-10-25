@@ -173,7 +173,7 @@
   await box.load(); box.closeCal(); box.calSig = null;
   const w = box.win, ask = w.confirm; w.confirm = () => true;   // BOX asks before it replaces a drawing; the app has asked
   try {
-   if (name === 't3') { const t = await (await fetch('../samples/t3/T3.box.json', { cache: 'no-store' })).text(); box.setFile('jsonFile', new File([t], 'T3.box.json', { type: 'application/json' })); }
+   if (name === 't3') { const t = await (await B.get('../samples/t3/T3.box.json')).text(); box.setFile('jsonFile', new File([t], 'T3.box.json', { type: 'application/json' })); }
    else box.click('s5ExampleBtn');
   } finally { w.confirm = ask; }
   const n = name === 't3' ? 79 : 94;
@@ -187,7 +187,7 @@
   // T3's SOLAS settings (ship, the space below the lowest deck, room spaces): the zone balance uses the spaces, so the
   // airflow is worked out again; without the file (an old offline copy) the example stays open on the defaults
   if (name === 't3') {
-   let solas = null; try { const res = await fetch('../samples/t3/T3.solas.json', { cache: 'no-store' }); if (res.ok) solas = await res.json(); } catch { /* below */ }
+   let solas = null; try { const res = await B.get('../samples/t3/T3.solas.json'); if (res.ok) solas = await res.json(); } catch { /* below */ }
    if (solas) { S.contract = K.applyRules({ ...S.contract, solas: { ...(S.contract.solas || {}), ...solas } }); invalidate(); }
    else toast('T3 SOLAS 설정 파일(samples/t3/T3.solas.json)을 읽지 못했습니다 — 선종·최하층 아래 공간은 기본값입니다', true);
   }
@@ -269,10 +269,10 @@
  }
  // the window narrowed below 1440 px with PHG D open: its left dock closes (the shell's tree is already on the left)
  // a desktop program: closing the window with work not saved asks first; the launcher (tools/launch.cjs) keeps its local
- // server while the app says it is open
+ // server while the app says it is open (no server for the single file, dist/HVAC_Grid.html)
  addEventListener('beforeunload', e => { if (S.dirty && (Object.keys(S.results).length || S.undo.length)) { e.preventDefault(); e.returnValue = ''; } });
- const alive = () => fetch('../__alive', { method: 'POST', keepalive: true }).catch(() => {}); alive(); setInterval(alive, 5000);
- addEventListener('pagehide', () => navigator.sendBeacon('../__bye'));
+ if (!B.single) { const alive = () => fetch('../__alive', { method: 'POST', keepalive: true }).catch(() => {}); alive(); setInterval(alive, 5000);
+  addEventListener('pagehide', () => navigator.sendBeacon('../__bye')); }
  let wideWindow = innerWidth >= 1440;
  addEventListener('resize', () => ribbonMore()); document.getElementById('ribbon').addEventListener('scroll', () => ribbonMore(), { passive: true });
  addEventListener('resize', () => { const w = innerWidth >= 1440; if (wideWindow && !w && phg.loading && phg.dockShown('left')) phg.click('phgb-left-panel'); wideWindow = w; });
@@ -523,7 +523,7 @@
     c('roomNo', '실 번호', boxCmd('autoRoomNoBtn'), { code: 'RN' }), c('roomFix', '실 지정', boxCmd('manualRoomBtn'), { code: 'RM' }), c('list', '격실 목록', boxCmd('roomBtn'), { code: 'RL' }), c('face', '접한 면적', boxCmd('contactBtn'), { code: 'A6' })]],
    ['검사', [c('lines', '선 검사', boxCmd('lineCheckBtn'), { code: 'CK' }), c('geo', '도형 검사', boxCmd('l4GeometryCheckBtn'), { code: 'GX' }), c('cube', '3D 검사', boxCmd('l4MeshCheckBtn')), c('water', '흘수선', boxCmd('waterlineBtn'))]],
    ['예제', [c('sample', 'S5 예제', boxSample('s5ExampleBtn', 'S5 예제'), { code: 'S5', title: '5 Deck · 94 공간 · 12 × 8 m' }), c('sample', 'H5 예제', boxSample('h5ExampleBtn', 'H5 예제'), { code: 'H5', title: 'BOX 내장 H5 예제 — KCS 실선 치수' }),
-    c('deck', 'T3 시험선', () => act('T3 시험선 여는 중', async () => { const t = await (await fetch('../samples/t3/T3.box.json', { cache: 'no-store' })).text(); if (!(await boxReplace('T3 시험선', () => box.setFile('jsonFile', new File([t], 'T3.box.json', { type: 'application/json' }))))) return; say(`T3 시험선 → BOX (4 Deck · ${(t.match(/"roomNo"/g) || []).length}실)`); }), { title: 'HVAC Grid 시험선 BOX 프로젝트 (4 Deck · 79실 · 다층 계통)' })]]] },
+    c('deck', 'T3 시험선', () => act('T3 시험선 여는 중', async () => { const t = await (await B.get('../samples/t3/T3.box.json')).text(); if (!(await boxReplace('T3 시험선', () => box.setFile('jsonFile', new File([t], 'T3.box.json', { type: 'application/json' }))))) return; say(`T3 시험선 → BOX (4 Deck · ${(t.match(/"roomNo"/g) || []).length}실)`); }), { title: 'HVAC Grid 시험선 BOX 프로젝트 (4 Deck · 79실 · 다층 계통)' })]]] },
   { id: 'load', name: '부하', view: 'box', groups: () => [
    ['격실', [c('cal', '격실 입력', boxCal('RL'), { code: 'RL', title: '격실 입력 · 실마다 계통(SUP·EXH·RET)·재실인원·최소신기·장비 발열·환기 횟수·ISO 구분·냉난방 온습도 (CAL 격실 리스트)' })]],
    ['조건', [c('cond', '설계 조건', boxCal('DC'), { code: 'DC' }), c('bound', '경계 조건', boxCal('BC'), { code: 'BC' })]],

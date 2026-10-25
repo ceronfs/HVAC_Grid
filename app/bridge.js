@@ -1,8 +1,14 @@
 // HVAC Grid shell <-> vendor apps. Both apps run unmodified (vendor/ copies) in same-origin frames; this file hides their
-// own command bars, runs their native commands, moves data between them and reads results back. Needs the local server
-// (tools/serve.cjs): browsers do not let a page script into file:// frames.
+// own command bars, runs their native commands, moves data between them and reads results back. Served by the local
+// server (tools/serve.cjs) - browsers do not let a page script into file:// frames - or as one file (below).
 'use strict';
 (() => {
+ // the single-file build (tools/make-single.cjs, dist/HVAC_Grid.html, opened by double-click) carries every file the
+ // shell reads in window.HVACGridFiles, by the path the shell names: the vendor apps open from their text (srcdoc frames
+ // are the page's own origin, file:// frames are not), lib/ and samples/ are read from it. Served, files are fetched
+ const FILES = window.HVACGridFiles || null;
+ const get = url => FILES && url in FILES ? Promise.resolve(new Response(FILES[url])) : fetch(url, { cache: 'no-store' });
+ const asset = url => FILES?.[url] ?? new URL(url, location.href).href;
  const wait = ms => new Promise(r => setTimeout(r, ms));
  async function until(test, timeoutMs = 60000, what = '응답') {
   const t = performance.now();
@@ -13,7 +19,7 @@
  // fetched first, then require('./x.cjs' | './x.json') resolves among them (evaluated once, on first use).
  async function loadLibs(base, files) {
   const texts = Object.fromEntries(await Promise.all(files.map(async f => {
-   const r = await fetch(base + f, { cache: 'no-store' }); if (!r.ok) throw new Error(f + ' 읽기 실패 (' + r.status + ')'); return [f, await r.text()]; })));
+   const r = await get(base + f); if (!r.ok) throw new Error(f + ' 읽기 실패 (' + r.status + ')'); return [f, await r.text()]; })));
   const done = {};
   const require = name => {
    const f = name.replace(/^\.\//, ''); if (f in done) return done[f];
@@ -47,7 +53,7 @@
       resolve(this);
      } catch (e) { reject(e); }
     }, { once: true });
-    this.frame.src = this.url;
+    if (FILES?.[this.url] != null) this.frame.srcdoc = FILES[this.url]; else this.frame.src = this.url;
    });
    return this.loading;
   }
@@ -100,7 +106,7 @@
   if (!title || !head) return false;
   if (!d.getElementById('hvac-grid-popup')) { const s = d.createElement('style'); s.id = 'hvac-grid-popup'; s.textContent = popupCss || ''; d.head.appendChild(s); }
   d.documentElement.dataset.theme = document.documentElement.dataset.theme || '';
-  if (!head.querySelector('.hg-logo')) { const img = d.createElement('img'); img.className = 'hg-logo'; img.alt = ''; img.src = new URL('logo-64.png', location.href).href; title.before(img); }
+  if (!head.querySelector('.hg-logo')) { const img = d.createElement('img'); img.className = 'hg-logo'; img.alt = ''; img.src = asset('logo-64.png'); title.before(img); }
   const relabel = () => {
    const t = title.textContent.trim(), m = POPUP_TITLES.find(([re]) => re.test(t)), shown = m ? m[1](t) : t;
    if (shown !== t) title.dataset.hgLabel = shown; else delete title.dataset.hgLabel;
@@ -128,7 +134,7 @@
   popups.add(w);
   // BOX writes the window right after it opens; it is dressed once its head is there
   const t0 = performance.now(), dress = () => { if (w.closed || dressPopup(w) || performance.now() - t0 > 8000) return; setTimeout(dress, 40); };
-  (popupCss != null ? Promise.resolve() : fetch('popup.css', { cache: 'no-store' }).then(r => r.text()).then(t => { popupCss = t; }, () => { popupCss = ''; })).then(() => setTimeout(dress, 0));
+  (popupCss != null ? Promise.resolve() : get('popup.css').then(r => r.text()).then(t => { popupCss = t; }, () => { popupCss = ''; })).then(() => setTimeout(dress, 0));
   return w;
  }
  // the shell's theme changed: the open table windows follow
@@ -280,7 +286,18 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
    super(frame, { url: '../vendor/DuctConcept_PHG_D.html', css: PHG_CSS, ready: w => w.DuctConceptRouting?.ready && w.LineDesignV2 });
    this.blank = null;
   }
-  async load() { await super.load(); this.doc.getElementById('autosaveRecoveryBar')?.remove(); if (!this.blank) this.blank = this.serialize(); this.tips(this.doc); return this; }
+  async load() { await super.load(); this.doc.getElementById('autosaveRecoveryBar')?.remove(); if (!this.blank) this.blank = this.serialize(); this.tips(this.doc); this.compareFrame(); return this; }
+  // 설계 비교 (PHG D's compare) opens PHG D's own file again as a hidden work frame, URL#phgd-compare. Opened from its
+  // text (single file) PHG D's URL is about:srcdoc, which a frame cannot load: that frame gets the same text instead,
+  // its hash set before PHG D's scripts run, so it knows it is the work frame (it never autosaves)
+  compareFrame() {
+   const w = this.win, html = FILES?.[this.url]; if (html == null || w.__hvacGridCompare) return; w.__hvacGridCompare = true;
+   const P = w.HTMLIFrameElement.prototype, src = Object.getOwnPropertyDescriptor(P, 'src');
+   Object.defineProperty(P, 'src', { ...src, set(v) {
+    if (String(v) === 'about:srcdoc#phgd-compare') this.srcdoc = html.replace(/^\s*(<!doctype[^>]*>)?/i, m => m + '<script>location.hash = "phgd-compare";<\/script>');
+    else src.set.call(this, v);
+   } });
+  }
   tips(doc) {
    const t = { ORTHO: '직교 그리기 (가로·세로만)', GRID: '격자에 맞춤', GRIP: '끝점 잡기(그립)' };
    doc.querySelectorAll('button').forEach(b => { const k = b.textContent.trim(); if (t[k]) b.title = t[k]; });
@@ -391,5 +408,5 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
   }
  }
 
- window.HVACGridBridge = { wait, until, loadLibs, Box, Phg, themePopups };
+ window.HVACGridBridge = { wait, until, loadLibs, get, single: !!FILES, Box, Phg, themePopups };
 })();

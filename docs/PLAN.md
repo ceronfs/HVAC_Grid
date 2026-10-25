@@ -121,6 +121,7 @@ HVACGridProject {
 | 수평 덕트 방화댐퍼 손실은 그 Deck 계획의 모든 댐퍼 합을 여유로 (A05) | PHG D가 최대 손실 경로를 알려 주지 않음 — 보수적, 따로 표시 | `lib/project.cjs` deckDamperPa |
 | 방화 등급도는 별도 기능 (2026-10-21, 사용자 제안): 등급을 글자로 적은 평면을 화면·DXF(별도 파일)·보고서로. 같은 등급으로 한 줄에 이어진 벽은 한 번, 1 m 미만·C급·외벽(*)은 기본 생략 | 덕트 도면과 섞으면 읽기 어려움. 짧은 조각마다 적으면 글자가 겹침 | `lib/fire-plan.cjs` |
 | 실별 신기 부족(ROOM_OA)은 검사로 두고 구역 신기를 자동으로 올리지 않음 | 가장 불리한 실에 맞추면 T3 AHU-ACC 신기 47 % — 설계자 결정 | `lib/project.cjs` ROOM_OA |
+| 한 파일판 (2026-10-25, 요청 "HVAC Grid 전체를 HTML 파일 하나로"): vendor 앱은 srcdoc iframe(페이지와 같은 출처)으로, lib·samples·popup.css는 `window.HVACGridFiles`에서 읽음. vendor 사본은 고치지 않고 글자 그대로 넣음. PHG D 설계 비교의 작업 창은 bridge가 같은 글자로 열어 줌 | `file://` 문서끼리·`blob:` iframe은 같은 출처가 아님(Edge로 시험). srcdoc은 BOX가 CAL 패널에 이미 쓰는 방식. 서버판은 그대로(`HVACGridFiles`가 없으면 fetch·src) | `tools/make-single.cjs`, `app/bridge.js` `get`·`compareFrame`, `docs/SINGLE_FILE.md` |
 
 ### H5 남은 것
 1. BOX·PHG D 편집과 HVAC Grid 편집을 하나의 Undo 기록으로 (지금은 화면별: ①② BOX, ④ PHG D, ③⑤ HVAC Grid)

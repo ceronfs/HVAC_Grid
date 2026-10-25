@@ -19,6 +19,7 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 | [docs/CONTRACT.md](docs/CONTRACT.md) | 설계 데이터·프로젝트 파일, BOX → 설계 데이터 · 설계 데이터 → PHG D 대응, 수직 덕트, 풍량 규칙, 검증 |
 | [docs/SOLAS.md](docs/SOLAS.md) | SOLAS II-2 판정: 데이터 대조, 실 분류, 경계, 관통, 한계 |
 | [docs/WORKFLOW_SKETCHCAD.md](docs/WORKFLOW_SKETCHCAD.md) | **처음 쓰는 사람용 따라 하기**: 받은 DXF → SketchCAD(계산 준비·경계 지정·실 만들기·HVAC Grid용 DXF) → HVAC Grid ①~⑤ |
+| [docs/SINGLE_FILE.md](docs/SINGLE_FILE.md) | **한 파일판** `dist/HVAC_Grid.html`: 서버·Node·인터넷 없이 더블클릭(`file://`) — 묶는 방법, `file://` 제약과 해결, 한계 |
 | [docs/TEST_DRAWINGS.md](docs/TEST_DRAWINGS.md) | T3 시험선(BOX 프로젝트로 시작)과 N3 시험선(DXF 도면 3장으로 시작, 날짜 시드로 매일 다른 배치): 도면·계통·파일·검토 |
 | [docs/H2_H4_RESULT.md](docs/H2_H4_RESULT.md) | H2~H4 결과(T3·S5 실행, 자동 시험) |
 | [docs/H1_S5_RESULT.md](docs/H1_S5_RESULT.md) | H1 결과(S5 급기 10계통) |
@@ -30,21 +31,24 @@ Deck · 격실 ─▶ 부하 계산 ─▶ 격실별 풍량(급기·배기·환�
 
 - Node.js 20 이상, Microsoft Edge(헤드리스 실행·E2E용 — 다른 브라우저는 `HVAC_GRID_BROWSER=chrome`, 설치된 Chromium 실행 파일은 `HVAC_GRID_BROWSER_PATH=<경로>`)
 - `npm install` — devDependency `playwright-core`(브라우저 내려받기 없음, 설치된 Edge를 씀). 이미 설치된 Playwright를 쓰려면 `PLAYWRIGHT_MODULE=<경로>`
-- 셸만 쓸 때는 **`HVAC_Grid.bat`을 더블클릭**하면 됩니다. 독립 프로그램처럼 **자기 창**(탭·주소창 없는 Edge 앱 창, 최대화, 작업 표시줄에 HVAC Grid 아이콘)으로 열리고, 콘솔 창은 남지 않습니다. 창을 닫으면 로컬 서버와 그 창의 Edge도 몇 초 안에 함께 끝납니다. 저장하지 않은 작업이 있으면 닫기 전에 묻습니다. 다시 실행하면 창이 하나 더 열립니다. Edge가 없으면 Chrome 앱 창, 둘 다 없으면 기본 브라우저 탭으로 엽니다.
+- **설치 없이 쓰기: `dist/HVAC_Grid.html` 한 파일**(`npm run make:single`로 만듦, 약 9.5 MB)을 아무 폴더에 복사해 **더블클릭**하면 됩니다. 서버·Node.js·인터넷이 없어도 ①~⑤가 그대로 동작합니다(Edge에서 시험, [docs/SINGLE_FILE.md](docs/SINGLE_FILE.md)).
+- 저장소에서 셸만 쓸 때는 **`HVAC_Grid.bat`을 더블클릭**하면 됩니다. 독립 프로그램처럼 **자기 창**(탭·주소창 없는 Edge 앱 창, 최대화, 작업 표시줄에 HVAC Grid 아이콘)으로 열리고, 콘솔 창은 남지 않습니다. 창을 닫으면 로컬 서버와 그 창의 Edge도 몇 초 안에 함께 끝납니다. 저장하지 않은 작업이 있으면 닫기 전에 묻습니다. 다시 실행하면 창이 하나 더 열립니다. Edge가 없으면 Chrome 앱 창, 둘 다 없으면 기본 브라우저 탭으로 엽니다.
   - 문제 확인용: `HVAC_Grid.bat console`(콘솔에 진행 표시), 기록은 `%LOCALAPPDATA%\HVAC_Grid\launch.log`. 포트를 바꾸려면 `HVAC_Grid.bat 8793`.
   - 명령줄에서는 `npm start`(브라우저 탭).
 - 사용법은 앱 안 **? 도움말(F1)**에 있습니다. 저장 Ctrl+S, 다른 이름으로 저장 Ctrl+Shift+S, 열기 Ctrl+O, 단계 이동 Alt+1~5. 상태 줄의 **다음:** 단추가 지금 할 일을 알려 줍니다.
 
-처음 써 보기: `HVAC_Grid.bat` 더블클릭 → HVAC Grid 창 → ③에서 **T3 시험선** → ⑤ **모든 계통 AUTO**(약 50초) → ⑤ **보고서**.
+처음 써 보기: `dist/HVAC_Grid.html`(또는 `HVAC_Grid.bat`) 더블클릭 → HVAC Grid 창 → ③에서 **T3 시험선** → ⑤ **모든 계통 AUTO**(약 50초) → ⑤ **보고서**.
 
 ## 실행
 
 ```
 HVAC_Grid.bat               # 더블클릭: 독립 창(Edge 앱 모드) + 로컬 서버, 창을 닫으면 종료
 npm start                   # 통합 셸 → 브라우저에서 http://127.0.0.1:8792/app/
+npm run make:single         # 한 파일판 → dist/HVAC_Grid.html (서버 없이 더블클릭, file://; docs/SINGLE_FILE.md)
 npm test                    # 단위 테스트 (개수는 출력 참조)
-npm run test:e2e            # E2E 9개: S5 셸 흐름, T3 시험선 전체, vendor 패치, 프로젝트·BOX, 방화 등급도, SOLAS 도구, K 변경, SketchCAD → HVAC Grid, N3(고정 시드) (캡처 out/e2e*/, out/n3/)
+npm run test:e2e            # E2E 10개: S5 셸 흐름, T3 시험선 전체, vendor 패치, 프로젝트·BOX, 방화 등급도, SOLAS 도구, K 변경, SketchCAD → HVAC Grid, 한 파일판(file://), N3(고정 시드) (캡처 out/e2e*/, out/n3/)
 npm run test:sketchcad      # SketchCAD에서 만든 실(HVAC Grid용 DXF)이 HVAC Grid ①로 들어오는지 — N3 도면 3가지 (SketchCAD는 ../SketchCAD/SketchCAD.html 또는 SKETCHCAD_HTML, 없으면 건너뜀)
+npm run test:single         # 한 파일판을 빈 임시 폴더에 복사해 Edge로 file://에서: T3 → 모든 계통 AUTO → 보고서, 프로젝트 다시 열기, 설계 비교 (페이지 오류·외부 요청 0)
 npm run test:n3             # N3 시험선을 오늘 날짜 시드로 새로 그려 도면부터 끝까지 (결과 out/n3/<날짜>/summary.md)
 npm run run:t3              # T3 설계 데이터 → 17개 Deck·계통 AUTO → out/t3/ (project.json, report.xlsx, report.html, integrated.dxf, shots/)
 npm run run:s5              # S5 설계 데이터 → 18개 Deck·계통 AUTO → out/s5/
@@ -62,7 +66,7 @@ node tools/bench.cjs [Deck 수] [Deck당 실 수]                     # 대형�
 
 셸 작업 순서: ① 도면·격실(BOX — S5·H5·**T3 시험선**) → ② 부하(BOX CAL) → **설계 데이터 만들기** → ③ 풍량·계통(ΔT, 급기·배기·환기, 공조기 위치·공조기 Deck·샤프트, 풍량·방화 보기) → ④ RU·덕트(③과 **같은 평면**: PHG D가 뒤에서 AUTO·크기·압력을 계산하고 덕트망을 이 평면에 그림, 덕트를 누르면 크기·풍량·풍속, 평면에서 **RU·공조기 끌어 옮기기**(놓으면 다시 AUTO)·**덕트 크기 바꾸기**(PHG D 수동 크기로 다시 계산)·**다른 경로**(AUTO 다음 후보), 그 밖의 세부 편집은 **PHG D 편집기** → **평면으로**가 고친 내용을 읽어 옴) → ⑤ 검토·출력(모든 계통 AUTO, 덕트망·계통·수직 덕트·**계통도**·방화·검토 탭, 선종·방화방식·최하층 아래·스프링클러, 프로젝트·XLSX·DXF·보고서). 검토는 통과·확인 필요·실패 3단계입니다. ③⑤에서 Ctrl+Z / Ctrl+Y는 HVAC Grid 편집(ΔT, 위치, 공조기 Deck, SOLAS 지정)을 되돌립니다.
 
-셸은 두 앱을 같은 출처 iframe으로 띄우고 스크립트로 다루므로 `file://`이 아닌 로컬 서버(`npm start`, 127.0.0.1 전용, app·vendor·lib·samples만 제공)로 엽니다.
+저장소의 셸(`app/`)은 두 앱을 같은 출처 iframe으로 띄우고 스크립트로 다루므로 로컬 서버(`npm start`, 127.0.0.1 전용, app·vendor·lib·samples만 제공)로 엽니다. `file://`에서는 한 파일판(`dist/HVAC_Grid.html`)을 씁니다 — 두 앱을 srcdoc iframe(페이지와 같은 출처)으로 열고 lib·samples를 파일 안에서 읽습니다(vendor 사본은 고치지 않고 그대로 넣음).
 `vendor/`에는 원본의 **고정 사본**(PHG D, BOX CAL Enhance, SOLAS 도구·워크북)이 있고 도구는 이 사본만 씁니다. 원본 파일은 읽기 전용입니다(`vendor/VERSIONS.json`). 생성물은 `out/`(git 제외), `probe/`는 앱 구조 확인에 쓴 조사 스크립트입니다.
 
 ## 원칙
