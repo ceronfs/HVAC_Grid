@@ -146,13 +146,13 @@
  const BOX_CSS = `header.top,.app>.summary{display:none!important}
 .app{grid-template-rows:minmax(0,1fr)!important;border:0!important}
 #calEnhancePanel{visibility:hidden!important;pointer-events:none!important}
-/* ③ ④: BOX's canvas is the background of the HVAC Grid layer - the walls and BOX's room labels stay, BOX's room
-   fills, selection, tools and status step aside (the side columns keep their width so the canvas does not move) */
+/* ③ ④: BOX's canvas is the background of the HVAC Grid layer - the walls, BOX's room labels, grid and origin axes stay,
+   BOX's room fills (the system colours take their place), selection, tools and status step aside (the side columns keep
+   their width so the canvas does not move) */
 html.hg-bg #roomZoneLayer,html.hg-bg #roomHighlightLayer,html.hg-bg #gripLayer,html.hg-bg #previewLayer,html.hg-bg #osnapLayer,
 html.hg-bg #olWorkflowOverlay,html.hg-bg #l4DiagnosticsOverlay{display:none!important}
 html.hg-bg .main>.side,html.hg-bg #canvas>.viewbar,html.hg-bg #canvas>.status{visibility:hidden!important}
-html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}
-html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
+html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
  const CAL_APPLY = new Set(['K7', 'C✓']);
  // CAL commands on CAL's settings alone - the K values (ISO 기준, ISO 적용, LY, LY 적용, 사용자) and the design conditions
  // (project K): they open with no drawing too. CAL then has no rooms; BOX keeps the settings for the drawing opened next
@@ -186,7 +186,20 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
   // BOX's own light / dark follows the shell
   theme() { try { this.doc.documentElement.dataset.theme = document.documentElement.dataset.theme || ''; } catch {} }
   // BOX's canvas as the background of ③ ④ (BOX_CSS hg-bg); BOX itself is not changed
-  backdrop(on, duct = false) { try { const c = this.doc.documentElement.classList; c.toggle('hg-bg', !!on); c.toggle('hg-duct', !!on && duct); } catch {} }
+  backdrop(on, duct = false) { try { const c = this.doc.documentElement.classList; c.toggle('hg-bg', !!on); c.toggle('hg-duct', !!on && duct); this.solo(on); } catch {} }
+  // as the background BOX draws its active deck alone: BOX draws the lines of every shown deck, and decks stacked at one
+  // place (as BOX opens drawings) crossed the chosen deck's rooms. BOX's render filter hook (shownForRender) does it - the
+  // decks' own visibility, BOX's undo and the saved drawing stay as they are. st.stackView, a key of BOX's canvas cache,
+  // and a passing selection (the key of its SVG entity layer) make BOX draw again on the change
+  solo(on) {
+   const w = this.win, A = w?.CAD_APP; if (!A || !!w.shownForRender === !!on) return;
+   const st = A.st;
+   if (on) { w.shownForRender = o => o.deck === st.activeDeck && !st.hidden.has(o.id) && !st.hiddenDeckLayers.has(`${o.deck}::${o.layer || '0'}`) && st.layers.get(o.layer)?.visible !== false; st.stackView = 'hvac-grid-solo'; }
+   else { delete w.shownForRender; delete st.stackView; }
+   const e = st.entities.find(x => !st.selected.has(x.id));
+   if (e) { st.selected.add(e.id); A.render(); st.selected.delete(e.id); }
+   A.render();
+  }
   // BOX's 2D view moved so a deck (world box) sits inside a strip of the shell's screen (the canvas between the floating
   // panels); zoomed out only, never in. A view change, as a pan / zoom in BOX - the same view in ① ② afterwards
   fitDeck(b, strip, pad = 24) {
@@ -197,6 +210,16 @@ html.hg-bg #gridRect,html.hg-bg #gridMajorRect{display:none!important}`;
     if (!(k > 0)) return false;
     const cx = (strip.left + strip.right) / 2 - fr.left - r.left, cy = (strip.top + strip.bottom) / 2 - fr.top - r.top;
     Object.assign(A.st.view, { w: r.width / k, h: r.height / k, x: (b.minX + b.maxX) / 2 - cx / k, y: (b.minY + b.maxY) / 2 - cy / k });
+    A.render(); return true;
+   } catch { return false; }
+  }
+  // BOX's 2D view set to the ③ ④ plan's own view (wheel zoom, pan): each world point on the same screen pixel as on the
+  // plan (rc: the plan's screen box, minX / minY its top-left world point, k px per mm). False in 3D
+  viewTo(minX, minY, k, rc) {
+   try {
+    const A = this.win.CAD_APP, svg = this.doc.getElementById('svg'), r = svg.getBoundingClientRect(), fr = this.frame.getBoundingClientRect();
+    if (!A || !(r.width > 0) || !(k > 0) || this.doc.getElementById('canvas')?.classList.contains('iso')) return false;
+    Object.assign(A.st.view, { w: r.width / k, h: r.height / k, x: minX + (fr.left + r.left - rc.left) / k, y: minY + (fr.top + r.top - rc.top) / k });
     A.render(); return true;
    } catch { return false; }
   }

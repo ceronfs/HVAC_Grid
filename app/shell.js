@@ -378,6 +378,40 @@
    };
   });
  }
+ // ③ ④ plan view: the wheel zooms about the cursor; a drag pans - the middle button anywhere, the left one on a room or
+ // the empty plan (not on what ④ drags, not while a place is picked); a double click on the plan fits the deck again.
+ // The view is S.planView, drawn by plan() (BOX's canvas follows it when it is the background); bound once
+ function planNav(svg) {
+  if (svg.dataset.nav) return; svg.dataset.nav = '1';
+  let raf = 0, panned = false, last = null;
+  const redraw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (S.contract) plan(); }); };
+  const shown = () => S.planShown?.deck === S.deck ? S.planShown : null;
+  svg.addEventListener('wheel', ev => {
+   const v = S.planView || shown(); if (!v) return; ev.preventDefault();
+   const rc = svg.getBoundingClientRect(), sx = ev.clientX - rc.left, sy = ev.clientY - rc.top;
+   const k = Math.min(Math.max(v.k * Math.exp(-ev.deltaY * 0.0015), 0.002), 5), wx = v.minX + sx / v.k, wy = v.minY + sy / v.k;
+   S.planView = { deck: S.deck, k, minX: wx - sx / k, minY: wy - sy / k }; redraw();
+  }, { passive: false });
+  svg.addEventListener('pointerdown', ev => {
+   if (ev.button !== 1 && (ev.button !== 0 || S.pickRoot || ev.target.closest('.drag'))) return;
+   // a double click, counted here: the first click on a room selects it and draws the plan again, so the browser's
+   // dblclick (both clicks on one element) does not come
+   const now = performance.now(), twice = ev.button === 0 && last && now - last.t < 400 && Math.hypot(ev.clientX - last.x, ev.clientY - last.y) < 6;
+   last = twice ? null : { t: now, x: ev.clientX, y: ev.clientY };
+   if (twice && !ev.target.closest('.mk, .ru')) { S.planView = null; redraw(); return; }
+   const v0 = S.planView || shown(); if (!v0) return;
+   if (ev.button === 1) ev.preventDefault();
+   const x0 = ev.clientX, y0 = ev.clientY; let moved = false;
+   const move = e => { const dx = e.clientX - x0, dy = e.clientY - y0; if (!moved && Math.hypot(dx, dy) < 4) return;
+    if (!moved) { moved = true; svg.setPointerCapture(ev.pointerId); svg.classList.add('panning'); }
+    S.planView = { deck: S.deck, k: v0.k, minX: v0.minX - dx / v0.k, minY: v0.minY - dy / v0.k }; redraw(); };
+   const up = () => { svg.removeEventListener('pointermove', move); svg.removeEventListener('pointerup', up); svg.removeEventListener('pointercancel', up); svg.classList.remove('panning'); panned = moved; };
+   svg.addEventListener('pointermove', move); svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+  });
+  // the click that ends a pan selects nothing
+  svg.addEventListener('click', ev => { if (panned) { panned = false; ev.stopPropagation(); ev.preventDefault(); } }, true);
+  svg.addEventListener('auxclick', ev => { if (ev.button === 1) ev.preventDefault(); });
+ }
  // PHG D as the detail editor of the plan in ④: its own screen; closing reads back what was changed there
  async function openEditor() {
   await loadPhg(); const key = curKey();
@@ -709,11 +743,16 @@
  function plan() {
   const C = S.contract, svg = $('plan'), rooms = C.rooms.filter(r => r.deckId === S.deck); if (!rooms.length) { svg.innerHTML = ''; return; }
   const xs = rooms.flatMap(r => r.polygon.map(p => p.x)), ys = rooms.flatMap(r => r.polygon.map(p => Y(p.y)));
-  // BOX shows this deck; when its canvas frames it (boxView), that canvas is the background and the plan draws only what
-  // BOX has not got - system colours, flows, units, RUs, ducts, fire boundaries - not the walls or the room labels again
-  if (box.loading) try { if (box.hasDrawing()) box.showDeck(S.deck); } catch {}
+  // the ① ② canvas itself (BOX: its lines, room labels, grid and origin axes, at its resolution) is the background, the
+  // chosen deck alone on it (box.solo); the plan draws only what BOX has not got - system colours, flows, units, RUs,
+  // ducts, fire boundaries. Without BOX's drawing of this deck (or BOX in 3D) the plan draws the deck itself
+  let boxDeck = false;
+  if (box.loading) try { if (box.hasDrawing()) { box.showDeck(S.deck); boxDeck = box.win.CAD_APP.st.activeDeck === S.deck; } } catch {}
   const rc = svg.getBoundingClientRect();
-  let bv = boxView(xs, ys, rc);
+  // the user's own view of this deck (wheel zoom, pan - planNav); another deck drops it, a double click fits again
+  if (S.planView && S.planView.deck !== S.deck) S.planView = null;
+  const nav = S.planView;
+  let bv = nav || !boxDeck ? null : boxView(xs, ys, rc);
   // BOX's view with the deck under a floating panel (a narrow window): BOX's view moves so the deck sits between them
   if (bv && $('main').classList.contains('plan-view')) {
    const L = rc.left + $('left').offsetWidth, R = rc.right - $('right').offsetWidth, sx = x => rc.left + (x - bv.minX) * bv.k;
@@ -722,11 +761,12 @@
     if (box.fitDeck(deck, { left: L, right: R, top: rc.top, bottom: rc.bottom })) bv = boxView(xs, ys, rc);
    }
   }
-  const onBox = !!bv;
-  $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); box.backdrop(onBox, S.step === 'duct'); svg.classList.toggle('on-box', onBox);
   let minX, minY, maxX, maxY, k;
+  // the user's own view, BOX's view (② → ③ without a jump) or the deck fitted; BOX's canvas is moved to the plan's view
+  // when the plan chose it
+  if (nav) { ({ minX, minY, k } = nav); maxX = minX + rc.width / k; maxY = minY + rc.height / k; legendRoom = true; }
   // the legend opens by itself only where it does not cover the deck (on BOX's view it may not)
-  if (bv) { ({ minX, minY, maxX, maxY, k } = bv); const sideR = $('main').classList.contains('plan-view') ? $('right').offsetWidth : 0; legendRoom = rc.width - sideR - (Math.max(...xs) - minX) * k >= 320; }
+  else if (bv) { ({ minX, minY, maxX, maxY, k } = bv); const sideR = $('main').classList.contains('plan-view') ? $('right').offsetWidth : 0; legendRoom = rc.width - sideR - (Math.max(...xs) - minX) * k >= 320; }
   else { legendRoom = true;
    // the deck fits the free strip between the floating panels, and left of the legend (top right, ~300 px)
    const sideL = $('main').classList.contains('plan-view') ? $('left').offsetWidth : 0, sideR = $('main').classList.contains('plan-view') ? $('right').offsetWidth : 0;
@@ -736,7 +776,10 @@
    minX = (x0 + x1) / 2 - (sideL + free / 2) / k; maxX = minX + rc.width / k;
    minY = (y0 + y1) / 2 - rc.height / 2 / k; maxY = minY + rc.height / k;
   }
+  const onBox = boxDeck && (!!bv || (() => { try { return box.viewTo(minX, minY, k, rc); } catch { return false; } })());
+  $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); box.backdrop(onBox, S.step === 'duct'); svg.classList.toggle('on-box', onBox);
   svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'none');
+  S.planShown = { deck: S.deck, minX, minY, k }; planNav(svg);
   // sizes in screen px: k = px per mm of the plan
   const px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', fire = S.overlay === 'fire' && !ductMode, a = analysis();
   let html = '', sel = '';
@@ -750,9 +793,12 @@
    if (wPx >= 28 && hPx >= 18) {
     let lx = x0 + px(6), ly = y0 + px(17);
     if (!PL.inside({ x: lx, y: Y(ly + px(15)) }, r.polygon) || !PL.inside({ x: lx + px(40), y: Y(ly - px(10)) }, r.polygon)) { const ip = PL.interiorPoint(r.polygon, 100, r.holes); lx = ip.x - px(20); ly = Y(ip.y) - px(18); }
-    if (!onBox) html += `<text class="lbl no" x="${lx}" y="${ly}" style="font-size:${px(12)}px">${esc(r.no)}</text>`;   // on BOX's canvas BOX labels the room
+    // on BOX's canvas BOX labels the room; drawn alone, the plan writes the number, and the name where it fits
+    const named = !onBox && wPx >= 64 && hPx >= 50;
+    if (!onBox) html += `<text class="lbl no" x="${lx}" y="${ly}" style="font-size:${px(12)}px">${esc(r.no)}</text>`;
+    if (named) html += `<text class="lbl" x="${lx}" y="${ly + px(14)}" style="font-size:${px(11)}px">${esc(r.name)}</text>`;
     const sub = fire ? (cl?.cat ? `(${cl.cat})` : '미분류') : flow ? `${flow} CMH` : '';
-    if (wPx >= 64 && hPx >= 36 && sub) html += `<text class="lbl${fire && !cl?.cat ? ' warnt' : ''}" x="${lx}" y="${onBox ? ly : ly + px(15)}" style="font-size:${px(11)}px">${esc(sub)}</text>`;
+    if (wPx >= 64 && hPx >= 36 && sub) html += `<text class="lbl${fire && !cl?.cat ? ' warnt' : ''}" x="${lx}" y="${onBox ? ly : ly + px(named ? 28 : 15)}" style="font-size:${px(11)}px">${esc(sub)}</text>`;
    }
    if (r.id === S.room) sel = `<polygon class="selhalo" points="${pts}"/><polygon class="selline" points="${pts}"/>`;
   }
@@ -816,9 +862,11 @@
   }
   // a place picked in ⑤ (penetration row): a ring that fades
   if (S.focus && S.focus.deckId === S.deck) html += `<circle class="focus" cx="${S.focus.x}" cy="${Y(S.focus.y)}" r="${px(18)}"/>`;
-  // ship directions: +x forward, +y port (BOX) - BOX draws +y down the screen, its axes at the top left
-  const ox = Math.min(...xs) - px(34), oy = Math.min(...ys) - px(30), dy = Math.sign(Y(1));   // at the deck's top-left corner
-  if (!onBox) html += `<g class="dir" style="font-size:${px(11)}px"><line x1="${ox}" y1="${oy}" x2="${ox + px(46)}" y2="${oy}"/><path d="M${ox + px(46)} ${oy - px(4)}L${ox + px(54)} ${oy}L${ox + px(46)} ${oy + px(4)}Z"/><text x="${ox + px(58)}" y="${oy + px(4)}">선수 FWD</text><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy + dy * px(40)}"/><path d="M${ox - px(4)} ${oy + dy * px(40)}L${ox} ${oy + dy * px(48)}L${ox + px(4)} ${oy + dy * px(40)}Z"/><text x="${ox}" y="${oy + dy * px(62)}" text-anchor="middle">좌현</text></g>`;
+  // the origin axes as BOX draws them in ① ② (renderAxis2d): X to the right, Y up the screen, 0,0 - on BOX's canvas BOX's own
+  const al = px(18), ah = px(3), ar = px(2), afs = px(8);
+  if (!onBox) html += `<g class="axis"><line class="ax" x1="0" y1="0" x2="${al}" y2="0"/><polygon class="ax" points="${al},0 ${al - ah},${-ah * .55} ${al - ah},${ah * .55}"/>`
+   + `<line class="ay" x1="0" y1="0" x2="0" y2="${-al}"/><polygon class="ay" points="0,${-al} ${-ah * .55},${-al + ah} ${ah * .55},${-al + ah}"/><circle class="at" cx="0" cy="0" r="${ar * 1.8}"/><circle class="ao" cx="0" cy="0" r="${ar}"/>`
+   + `<text class="ax" x="${al + ah * .35}" y="${afs * .34}" style="font-size:${afs}px">X</text><text class="ay" x="${afs * .28}" y="${-al - ah * .18}" style="font-size:${afs}px">Y</text><text class="ao" x="${px(-13)}" y="${px(9)}" style="font-size:${afs * .82}px">0,0</text></g>`;
   svg.innerHTML = html; svg.classList.toggle('picking', S.pickRoot);
   svg.querySelectorAll('.rm').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); selectRoom(e.dataset.room); });
   if (ductMode) planDrag(svg);

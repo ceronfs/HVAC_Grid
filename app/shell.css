@@ -83,7 +83,8 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 /* center */
 .center{position:relative;min-width:0;min-height:0;background:var(--canvas)}
 .center iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
-/* the ③ ④ plan is the same canvas as BOX in ① ②: white, no grid, room lines in BOX's ROOM blue */
+/* the ③ ④ plan lies on BOX's canvas (on-box); without BOX's drawing of the deck it draws the deck itself, white, room
+   lines in BOX's ROOM blue */
 .plan{position:absolute;inset:0;width:100%;height:100%;stroke:none;background:var(--canvas)}
 .plan.picking{cursor:crosshair}
 .plan .rm{stroke:var(--room-stroke);stroke-width:1.2;vector-effect:non-scaling-stroke;cursor:pointer}
@@ -177,7 +178,12 @@ svg{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-l
 .plan .pass{fill:none;stroke-width:3;vector-effect:non-scaling-stroke;stroke-dasharray:6 4;pointer-events:visibleStroke}.plan .pass.fail{stroke:var(--red)}.plan .pass.check{stroke:var(--warn)}
 .plan .focus{fill:none;stroke:var(--accent);stroke-width:4;vector-effect:non-scaling-stroke;animation:focus 1.2s ease-out 3}
 @keyframes focus{from{stroke-opacity:1}to{stroke-opacity:.15}}
-.plan .dir{fill:var(--muted);stroke:none;pointer-events:none;font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif}.plan .dir line{stroke:var(--muted);stroke-width:1.5;vector-effect:non-scaling-stroke}
+/* origin axes as BOX's (.canvas-origin-axis): X red, Y green, origin blue */
+.plan .axis{pointer-events:none}.plan .axis line{stroke-width:2.2;vector-effect:non-scaling-stroke}
+.plan .axis .ax{stroke:#e24b4a;fill:#e24b4a}.plan .axis .ay{stroke:#1d9e75;fill:#1d9e75}
+.plan .axis .ao{fill:var(--canvas);stroke:#378add;stroke-width:2.4;vector-effect:non-scaling-stroke}.plan .axis .at{fill:none;stroke:#378add;stroke-width:1.5;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}
+.plan .axis text{font-family:system-ui,sans-serif;font-weight:700;stroke:var(--canvas);stroke-width:3px;paint-order:stroke;stroke-linejoin:round;vector-effect:non-scaling-stroke}.plan .axis text.ao{fill:#378add}
+.plan.panning{cursor:grabbing}
 .legend .pd.dk{border-radius:0;transform:rotate(45deg);width:8px;height:8px}.legend .pd.fd{border-radius:0;background:var(--canvas);border-color:var(--text);border-width:2px}
 @media (max-width:1499px){.brand small{display:none}.step{padding:0 10px}}
 @media (max-width:1366px){.main{grid-template-columns:208px minmax(0,1fr) 256px}.main.left-off{grid-template-columns:28px minmax(0,1fr) 256px}.main.right-off{grid-template-columns:208px minmax(0,1fr) 28px}.step{padding:0 8px;font-size:12px}.proj{max-width:150px}}
