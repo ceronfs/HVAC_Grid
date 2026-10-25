@@ -1,6 +1,6 @@
 # HVAC Grid Ver 2.0 계획서 — 작업 · 일정 · 검증
 
-작성 2026-10-25 · 상태: 계획 — K0 결정 완료(2026-10-25, [DECISIONS.md](DECISIONS.md)), 착수는 지시 뒤 · 기획서: [PLAN_V2.md](PLAN_V2.md) · V2-1 세부: [PLAN_PHG_LIB.md](PLAN_PHG_LIB.md) · 1.x 기준 커밋: `70a1e8d`(main, 2026-10-25)
+작성 2026-10-25 · 고침 2026-10-25(V2-0 조사 뒤, D7·D8 반영 — 게이트 K1 대기) · 상태: V2-0 끝, K1 대기 — K0 결정 완료(2026-10-25, [DECISIONS.md](DECISIONS.md)) · 기획서: [PLAN_V2.md](PLAN_V2.md) · V2-1 세부: [PLAN_PHG_LIB.md](PLAN_PHG_LIB.md) · 1.x 기준 커밋: `70a1e8d`(main, 2026-10-25)
 
 ## 1. 범위와 전제
 
@@ -8,8 +8,8 @@
 - **언제 시작하나**: 기획서를 검토하고 결정 D1~D6(기획서 11장)을 정한 뒤(게이트 K0). 그 전에는 이 계획서의 어떤 작업도 시작하지 않는다.
 - **1.x는 그대로 간다**: 지금 프로그램(main)은 계속 쓰고 고치고 배포한다. 2.0 작업은 별도 브랜치·폴더에서 하고, main의 수정은 2.0 쪽으로 주기적으로 합친다(2장).
 - **강제 항목은 모든 단계에 적용**: F-1 풍량은 여름(냉방) 기준 하나, 겨울은 같은 풍량에 난방 용량 · F-2 표준 값은 원문(`C:\Users\HK\Desktop\Program\DATA\7547.pdf`)으로 확인, 조항 번호를 값 옆에(`AGENTS.md`).
-- **원본은 원본에서**: SketchCAD(ceronfs/SketchCAD), PHG(ceronfs/PHG), CAL_Enhance는 각자 저장소에서만 고친다. HVAC Grid 2.0은 잘라 낸 사본(`npm run extract:*`)만 담는다.
-- **같은 답이 기준**: 옮긴 엔진의 결과가 1.x 결과(V2-0 기준값)와 같아야 단계가 끝난다. 다르면 원인을 적고 사용자 확인 없이 2.0 결과로 바꾸지 않는다.
+- **처음부터 새로 짠다(D7, 2026-10-25)**: SketchCAD(ceronfs/SketchCAD), PHG D(ceronfs/PHG), BOX CAL과 HVAC Grid 1.x `lib`는 **기능 참조**로만 쓴다. 2.0은 그 코드를 가져오거나 잘라 오지 않는다(옛 `extract:*`·`lib/phg/*` 사본·해시 시험 계획은 없앰). 기능 명세는 조사 세 건([STUDY_CAL.md](STUDY_CAL.md) · [STUDY_PHG.md](STUDY_PHG.md) · [STUDY_SKETCHCAD.md](STUDY_SKETCHCAD.md)). 원본 프로그램은 각자 저장소에서만 고친다.
+- **같은 기능, 차이는 기록(D8)**: 새 엔진은 1.x와 같은 기능을 내야 한다. 값이 1.x 기준값(V2-0, `test/fixtures/v1-golden`·`phg-golden`)과 다르면 차이와 원인을 기록하고, 받아들일 범위는 단계 게이트에서 사용자가 정한다. F-1·F-2는 D8과 관계없이 지킨다.
 
 ## 2. 작업 방식
 
@@ -23,34 +23,36 @@
 | 기록 | 결정·측정은 `docs/v2/`에(결정 기록 `DECISIONS.md`, 측정 `BASELINE.md`) |
 | 시험 | 단계마다 `npm test`(단위) + 해당 e2e. 게이트에서 `npm run test:all` + N3 정기 시험 |
 
-## 3. 일정 개요 (추정)
+## 3. 일정 개요 (추정 — K1에서 다시 추정, 2026-10-25)
 
-작업일 = 실제 작업하는 날. 추정은 V2-0 조사 뒤(게이트 K1) 다시 한다.
+작업일 = 실제 작업하는 날. K0 추정(합계 47~72일)은 "잘라 오기" 전제였다. D7(처음부터 새로)과 V2-0 조사 세 건으로 다시 추정했다. 근거는 각 조사의 작업 목록(STUDY_PHG 8장, STUDY_CAL 9장, STUDY_SKETCHCAD 8장)이다.
 
-| 단계 | 내용 | 추정(작업일) | 먼저 끝나야 하는 것 | 병행 | 게이트 |
-|---|---|---|---|---|---|
-| K0 | 기획서 검토, D1~D6 결정 | — | — | — | K0 |
-| V2-0 | 기준값 · 조사 · 성능 기준 측정 | 3~4 | K0 | — | K1 |
-| V2-1 | PHG 엔진(④가 PHG D 창 없이, 계통 병렬) | 8~12 | V2-0 | V2-2 | K2 |
-| V2-2 | SketchCAD 데크 지정 · 여러 데크 내보내기 | 4~6 | K0 | V2-1 | (K2에 포함) |
-| V2-3 | 모델 v2 · 캔버스 코어 · 모듈 틀 · ③④⑤ 모듈 | 10~15 | V2-1 | — | K3 |
-| V2-4 | 부하 엔진 · ② 모듈 | 8~15 | V2-3, V2-0 조사 | — | K4 |
-| V2-5 | 도면·격실 엔진 · 0·① 모듈 · 큰 도면 | 10~15 | V2-2, V2-4 | — | K5 |
-| V2-6 | 정리 · 배포 · 매뉴얼 · 성능표 | 4~5 | V2-5 | — | K6 출시 |
-| 합계 | | **약 47~72** | | | |
+| 단계 | 내용 | K0 추정 | **K1 추정** | 바뀐 이유 | 먼저 끝나야 하는 것 | 게이트 |
+|---|---|---|---|---|---|---|
+| K0 | 기획서 검토, D1~D6 결정 | — | — | | — | K0 |
+| V2-0 | 기준값 · 조사 · 성능 기준 측정 | 3~4 | **약 1.5(실제)** | 도구 셋, 조사 셋, 측정 | K0 | K1 |
+| V2-1 | 덕트 엔진(경로·덕트 지정·크기·압력, 계통 병렬) | 8~12 | **18~22** | 경로 A*·덕트망 계획·주관 척추·압력(ASHRAE 표)을 새로 짬 | V2-0 | K2 |
+| V2-2 | SketchCAD 데크 지정(단독판) | 4~6 | **4~6 또는 0** | D7 뒤로는 2.0 안의 "데크로 지정"(V2-5 5.8)과 두 번 만들게 됨 — K1 결정 3 | K0 | (K2) |
+| V2-3 | 모델 v2 · 캔버스 코어 · 모듈 틀 · ③④⑤ 모듈 | 10~15 | **18~26** | 1.x `lib`(풍량 F-1·계통·RU 배치·수직 덕트·SOLAS·보고서·DXF, 약 200 KB)도 새로 짬(D7) — +8~11 | V2-1 | K3 |
+| V2-4 | 부하 엔진 · ② 모듈 | 8~15 | **13~17** | CAL 부하 계산을 새로 짬. 형상(면 행)은 V2-5로 | V2-3(모델) | K4 |
+| V2-5 | 도면·격실 엔진(면 행 포함) · 0·① 모듈 · 큰 도면 | 10~15 | **25~34** | DXF 읽기·면 그래프·실 찾기(SketchCAD 20~28) + BOX 면 행 형상(외판 곡면·판넬 간극·흘수선·면적 보존) 겹치지 않는 부분 +5~6 | V2-4, (V2-2) | K5 |
+| V2-6 | 정리 · 배포 · 매뉴얼 · 성능표 | 4~5 | **5~6** | 2.0 한 파일판·독립망 새로 구성 | V2-5 | K6 출시 |
+| 합계 | | 47~72 | **약 85~111**(V2-2 포함) · **81~105**(V2-2 없음) | 약 1.6~1.8배 | | |
 
-주 경로: K0 → V2-0 → V2-1 → V2-3 → V2-4 → V2-5 → V2-6. V2-2는 V2-1과 함께 진행한다. 폭이 가장 큰 V2-4는 CAL이 BOX에 얼마나 묶여 있는지(V2-0.3 조사)에 달렸다.
+주 경로: K0 → V2-0 → V2-1 → V2-3 → V2-4 → V2-5 → V2-6. 작업하는 사람이 하나면 병행해도 작업일 합은 줄지 않는다. 엔진(V2-1·V2-4·V2-5의 `lib` 부분)은 화면 없이 노드 시험으로 끝나므로, 모델 스키마(V2-3.1)가 서면 V2-4 엔진은 V2-3 화면 작업과 순서를 바꿀 수 있다.
+
+**1.5배 규칙(8장)**: K1 추정이 K0의 1.5배를 넘는다. 범위를 줄이는 안은 K1 결정 4(5장)에 있다.
 
 ```
-작업일  0    10    20    30    40    50    60    70
-V2-0   ███
-V2-1      ██████████
-V2-2      █████
-V2-3                ████████████
-V2-4                            ███████████
-V2-5                                       ████████████
-V2-6                                                   ████
-게이트  K1        K2          K3          K4          K5  K6
+작업일  0     10    20    30    40    50    60    70    80    90   100
+V2-0   █
+V2-1    ███████████████████▌
+V2-2    (█████ 또는 없음)
+V2-3                        ██████████████████████
+V2-4                                              ███████████████
+V2-5                                                             ██████████████████████████████
+V2-6                                                                                           █████
+게이트  K1                  K2                    K3             K4                            K5   K6
 ```
 
 ## 4. 단계별 작업
@@ -58,6 +60,8 @@ V2-6                                                   ████
 ### V2-0 기준값 · 조사 · 성능 기준
 
 **목표**: 1.x가 내는 답과 성능을 고정하고, 큰 단계(V2-1·V2-4·V2-5)의 막힐 곳을 미리 확인한다.
+
+**결과(2026-10-25, D7 뒤 목적을 바꿔 진행)**: 기준값은 새 엔진의 정답지(D8), 조사 세 건은 다시 짤 기능 명세. 검토 [REVIEW_V2-0.md](REVIEW_V2-0.md), 측정 [BASELINE.md](BASELINE.md). 0.1에 면 행(`faces.json.gz`)·CAL 부하 전체(`cal-loads.json.gz`)를 더함(STUDY_CAL 8장).
 
 | 번호 | 작업 | 산출물 |
 |---|---|---|
@@ -71,23 +75,26 @@ V2-6                                                   ████
 **완료 기준**: 기준값을 1.x로 다시 뽑아도 같다(두 번 실행 비교). 조사 세 건이 끝나고 4장의 V2-1·V2-4·V2-5 작업 목록과 3장 추정을 고친다(K1).
 **주의**: 기준값은 PHG D 방향 수정(`d92643f`) 뒤의 1.x로 뽑는다(그 전 값과 일부 계통 ESP가 다르다 — T3 AHU-ACC 338.2 Pa, N3 EF-SAN 98 Pa).
 
-### V2-1 PHG 엔진
+### V2-1 덕트 엔진 (새로 짬 — [STUDY_PHG.md](STUDY_PHG.md))
 
-**목표**: ④ RU·덕트가 PHG D 창 없이 `lib`의 엔진으로 경로·덕트 지정·크기·압력을 계산하고, 계통을 병렬로 돌린다. 세부: [PLAN_PHG_LIB.md](PLAN_PHG_LIB.md).
+**목표**: ④ RU·덕트의 경로(AUTO)·덕트 지정·크기·압력을 `lib`의 새 엔진으로 계산하고, 계통을 병렬로 돌린다. PHG D는 기능 참조(D7)와 선택 편집기(D1)다. 옛 세부 계획 [PLAN_PHG_LIB.md](PLAN_PHG_LIB.md)의 P1(잘라 오기)·P2(DXF 없는 PHG D 상태)는 이 목록으로 대체된다.
 
-| 번호 | 작업 | 산출물 |
-|---|---|---|
-| 1.1 | 잘라 내는 도구 + 해시 시험 | `tools/extract-phg.cjs`, `npm run extract:phg`, `lib/phg/*`(머리에 원본 블록 id·vendor 해시) |
-| 1.2 | 순수 계산: 경로 엔진, 크기 워커, V2 계산 워커를 노드에서 실행해 0.2 워커 기준값과 비교 | `lib/phg/routing-engine.cjs`, `sizing-worker.cjs`, `typed-calc.cjs` |
-| 1.3 | 상태 만들기: 계획 → PHG D 상태(DXF 없이). 좌표는 BOX y(1.x `[y=BOX]` 약속과 같음) | `lib/phg-state.cjs` |
-| 1.4 | AUTO: 어댑터의 prepare·prepareRouting·후보·applyResult 이식, 금지 구역을 단계적으로 푸는 규칙(`zonesRelaxed`) 그대로 | `lib/phg-route.cjs` |
-| 1.5 | 덕트 지정·크기·수동 크기 유지·압력 | `lib/phg-ducts.cjs` |
-| 1.6 | 엔진 API와 워커 풀(코어 수 − 1, 계통 병렬, 멈춤 단추) | `lib/phg-engine.cjs`, `app/phg-worker.js` |
-| 1.7 | 셸 전환: `sendPlan`·`autoKey`·`reroute`·`resizeDuct`·`moveRu`·`runAll`이 엔진 사용. PHG D 편집기는 D1 결정대로 | `app/shell.js`, `app/bridge.js` |
-| 1.8 | 브라우저 없는 일괄 실행 | `tools/hvac-run.cjs --node` |
+| 번호 | 작업 | 산출물 | 작업일 |
+|---|---|---|---|
+| 1.1 | 엔진 입력: 계획 → 경로 모델(실·복도·RU 실·금지 구역·선체 밖·포트·격자 상한). 좌표는 BOX y 하나(기획서 원칙 7) | `lib/duct/input.cjs` | 1.5 |
+| 1.2 | 격자 A*: 방향 상태, 꺾임 비용, 포트 방향, 엘보 사이 최소 직관, 장애물·구역·덕트 폭 | `lib/duct/astar.cjs` | 2.5 |
+| 1.3 | 덕트망 계획: RU를 하나씩 붙이는 순서(Prim), 접속 규칙(300/500 mm, 십자 Tee 금지), 실 묶음, 완화 재시도, 부분 결과, 검증 | `lib/duct/network.cjs` | 3 |
+| 1.4 | 주관 척추·복도 우선·가중 비용 선택, 금지 구역 단계 완화(`zonesRelaxed`: outside → rooms → all), 후보 n개("다른 경로") | `lib/duct/route.cjs` | 2 |
+| 1.5 | 덕트 지정(종류 main/branch/sub_branch, 안정 id) + 크기(풍량 누적, 사각·원형, 속도·높이 한도, 50 mm 단위, 수동 크기 유지) | `lib/duct/assign.cjs`, `size.cjs` | 1.5 |
+| 1.6 | 압력: 마찰·수동 K·RU 손실·지수 경로, 배기·환기 합류. ASHRAE 이음쇠 표(원문 미확인 — K1 결정 6) | `lib/duct/pressure.cjs` | 2.5 |
+| 1.7 | 비교 도구: 기준값의 경로 모델·덕트망을 각 단계에 넣어 비교, 차이 기록(D8) | `tools/engine-compare.cjs` | 1.5 |
+| 1.8 | 엔진 API(`auto`·`resize`·멈춤)와 워커 풀(코어 수 − 1, 계통 병렬; 노드 `worker_threads`) | `lib/duct/engine.cjs`, `app/duct-worker.js` | 1.5 |
+| 1.9 | D1 선택 편집기 교환: 모델 덕트망 → PHG D 문서(`serializeTypedProject` 형식), 되읽기 | `lib/duct/phgd-doc.cjs` | 1.5 |
+| 1.10 | 브라우저 없는 일괄 실행, (K2 결정 뒤) 1.x 셸 ④ 전환 | `tools/hvac-run.cjs --node` | 2 |
+| 소계 | | | **19.5 (18~22)** |
 
-**완료 기준**: 단위 시험 — 각 단계 출력이 0.2 기준값과 같음. e2e — T3 18/18·N3 16/16 AUTO, 계통 ESP·팬 압력이 0.1 기준값과 같음, 검토 fail 0. 측정 — T3·N3 전체 AUTO 시간이 0.6 기준의 절반 이하(G6).
-**위험**: 압축된 V2 모듈의 접착 함수 → 기준값으로만 판단. DXF를 건너뛴 상태가 다름 → 맞추기 어려우면 DXF 경로 유지(PLAN_PHG_LIB 5장).
+**완료 기준**: 단위 시험(엔진 단계마다), T3 18/18·N3 16/16 AUTO 완료, 기준값 대비 차이표(경로 길이·덕트 수·크기·ESP·팬 압력) — 받아들일 범위는 K2 전에 사용자가 정함(D8). 측정: T3·N3 전체 AUTO 시간이 0.6 기준의 절반 이하(G6, 같은 기계).
+**위험**: 경로가 1.x와 달라짐(순서·동점·척추 선택이 얽힘) → 기능 지표로 비교. ASHRAE 표 원문 없음 → 수동 K 먼저. 1.x 수동 크기 유지가 덕트 이름으로 찾음 → 새 엔진은 안정 id.
 
 ### V2-2 SketchCAD 데크 지정 (SketchCAD 저장소)
 
@@ -116,48 +123,60 @@ V2-6                                                   ████
 | 3.4 | 1.x 가져오기(계약 + PHG D 프로젝트 + BOX JSON → v2). 옛 `rules.heatingSupplyDeltaTK`는 버림(F-1) | `lib/io/v1.cjs` |
 | 3.5 | 캔버스 코어: 보기(이동·확대·맞춤), 층 쌓기(래스터·벡터), 고르기, 스냅, 끌기, 선택, 데크 필터 | `app/canvas/` |
 | 3.6 | 모듈 약속과 모듈 시험(`reads`·`writes` 밖 쓰기 금지, 모듈 간 호출 금지) | `app/modules/README.md`, `test/modules.test.cjs` |
-| 3.7 | ③ `airflow`, ④ `ducts`, ⑤ `review` 모듈: 1.x `plan()`·`report()`를 층·도구·패널로 나눔 | `app/modules/{airflow,ducts,review}/` |
+| 3.7 | ③ `airflow`, ④ `ducts`, ⑤ `review` 모듈: 층·도구·패널 | `app/modules/{airflow,ducts,review}/` |
+| 3.9 | 엔진 새로 짜기(D7, 1.x `lib`는 기능 참조): 격실 풍량(F-1: 여름 하나, 겨울은 난방 용량)·구역 수지·전달 공기, 계통·공조기 데크·RU 배치, 수직 덕트·ESP, SOLAS II-2 분류·경계·관통부·제한 구역, 보고서·XLSX·통합 DXF·방화 등급도·계통도. 1.x 기준값과 차이표(D8) | `lib/engines/{airflow,systems,fire,output}/` |
 | 3.8 | 이 단계의 도면 층: 모델의 격실·경계 선을 직접 그림(BOX 캔버스 바탕 끔). ①②는 아직 BOX | `app/modules/rooms/layer.js`(임시) |
 
-**완료 기준**: ③④⑤가 한 캔버스에서 모듈로 돌고 단계 전환 때 보기·선택이 유지됨. 1.x 프로젝트를 열어 v2로 저장·다시 열기가 같음. 실행 취소 하나(셸·PHG 엔진 수정이 한 기록). 풍량·SOLAS·출력이 0.1 기준값과 같음.
+**완료 기준**: ③④⑤가 한 캔버스에서 모듈로 돌고 단계 전환 때 보기·선택이 유지됨. 1.x 프로젝트를 열어 v2로 저장·다시 열기가 같음. 실행 취소 하나. 풍량·SOLAS·출력을 0.1 기준값과 비교한 차이표(D8), F-1 시험("one airflow all year" 같은 뜻의 새 시험) 통과.
 **위험**: 셸 코드(142 KB)를 나누다 흐름이 깨짐 → 모듈 하나씩 옮기고 그때마다 e2e.
 
-### V2-4 부하 엔진 · ② 모듈
+### V2-4 부하 엔진 · ② 모듈 (새로 짬 — [STUDY_CAL.md](STUDY_CAL.md))
 
-**목표**: 부하를 숨긴 CAL 창 없이 엔진으로 계산한다. 입력은 모델(격실·경계·조건).
+**목표**: 부하를 숨긴 CAL 창 없이 새 엔진으로 계산한다. 입력은 모델(격실·경계 면·조건·K). 조사 결과 CAL은 형상을 계산하지 않고 BOX가 만든 면 행(A6) 위에서 경계 조건·K·부하만 계산한다 — 부하 계산은 얕게, 형상은 깊게 묶여 있다.
 
-| 번호 | 작업 | 산출물 |
-|---|---|---|
-| 4.1 | CAL 계산부를 잘라 오는 도구(0.3 조사 결과의 범위) | `tools/extract-cal.cjs`, `lib/engines/load/` |
-| 4.2 | 입력 어댑터: 모델 격실·경계·데크 상하 → CAL 입력(6면, 접한 면적, 외기 면) | `lib/engines/load/input.cjs` |
-| 4.3 | K 표·모드(ISO 적용·LY 적용·KU)와 설계 조건. 값마다 ISO 7547 조항 번호(F-2) | `lib/engines/load/k.cjs` |
-| 4.4 | ② `load` 모듈: 부하 색 층(W/m²), 외기 면 표시, 조건·K 패널, 격실 부하표 | `app/modules/load/` |
-| 4.5 | 기준값 시험: 격실 부하(현열·잠열·난방·최소 신기) W 반올림 같음, CAL 자체 시험 110개, K 변경 시험(`k-change`) | `test/load.test.cjs` |
+| 번호 | 작업 | 산출물 | 작업일 |
+|---|---|---|---|
+| 4.1 | 모델 입력 정의: `boundaries[]`에 방향(6면)·경계 종류(8종)·소유 격실 면적·z 구간·안정 면 키, `conditions.project/rooms/k`. V2-5 전까지는 1.x BOX 면 행 → `boundaries` 어댑터(K1 결정 1) | `lib/engines/load/input.cjs`, `lib/io/v1.cjs` 일부 | 2 |
+| 4.2 | 경계 조건: 8종(인접·외기·해수·탱크·지면·비공조·사용자·오류), 프리셋, 면 재정의, 흘수선 해수, 용도 기본 조건, `isoClass` 추정 | `lib/engines/load/boundary.cjs` | 1.5 |
+| 4.3 | K: 모드(프로젝트·ISO 적용·LY 적용·KU), LY 층 계산, 면 K 종류·직접 K. 값마다 ISO 7547 조항 번호(F-2, 원문 대조 전에는 "원문 미확인") | `lib/engines/load/k.cjs` | 1.5 |
+| 4.4 | 격실 부하: 관류, 창, 일사 3방식, 인체, 조명(주광), 기기, 신기·ACH, 잠열 2방식, 안전율, 완료 판정 | `lib/engines/load/room.cjs` | 2.5 |
+| 4.5 | 계통 신기, AHU 난방(주 히터·재열)·냉각 코일 — F-1: 풍량은 여름 하나, 겨울은 같은 풍량에 난방 용량, 22 K 초과는 확인 사항(K1 결정 2) | `lib/engines/load/ahu.cjs` | 1.5 |
+| 4.6 | ② `load` 모듈: 부하 색 층(W/m²), 외기 면 표시, 조건·K 패널, 격실 부하표, K 변경 비교 | `app/modules/load/` | 2.5 |
+| 4.7 | 시험: CAL 자체 시험 중 부하·K·습공기·AHU·ISO 구분·6.4.1 묶음을 같은 입력·기대값으로 옮김, S5 LOAD 7합계, 기준값 격실·면 비교와 차이 기록(`docs/v2/LOAD_DIFF.md`), K 변경, F-1 | `test/load.test.cjs` | 2 |
+| 소계 | | | **14.5 (13~17)** |
+| 4.8 (선택) | 부하 XLSX 수식판 | `lib/engines/output/load-xlsx.cjs` | +2~3 |
 
-**완료 기준**: 4.5 통과, ②가 캔버스 모듈, 강제 항목 시험(F-1: "one airflow all year", CAL "AHU 격실 풍량") 통과.
-**대안**(0.3에서 결합이 깊다고 나오면): 모델 → BOX 프로젝트 JSON → 숨긴 CAL의 `report()`로 잇는 중간 단계를 먼저 두고, 떼어 내기는 V2-6 뒤로 미룬다. 일정은 K1에서 다시 정한다.
+**완료 기준**: 4.7 통과(기준값 대비 차이표, 받아들일 범위는 K4에서 사용자가 정함 — D8), ②가 캔버스 모듈, F-1 시험(겨울 풍량 경로 없음) 통과.
+**기준값**: `test/fixtures/v1-golden/<배>/faces.json.gz`(BOX 면 행, CAL이 받는 그대로) · `cal-loads.json.gz`(CAL 격실 부하 전체 필드) · `cal.json` · `loads.json`. 면별 K·ΔT 추적(`roomLoadInputTrace`)은 CAL 프레임 밖에서 부를 수 없어 담지 못했다 — 같은 값을 4.7에서 면 행 + 조건으로 다시 계산해 비교한다.
 
-### V2-5 도면·격실 엔진 · 0·① 모듈
+### V2-5 도면·격실 엔진 · 0·① 모듈 (새로 짬 — [STUDY_SKETCHCAD.md](STUDY_SKETCHCAD.md), STUDY_CAL 2장)
 
-**목표**: SketchCAD 코어로 도면 정리·경계·실 찾기를 HVAC Grid 안에서 하고, BOX를 주 경로에서 뺀다. iframe 0개.
+**목표**: 도면 읽기·정리·경계·실 찾기와 부하가 쓰는 면 행(경계 면)을 HVAC Grid 안에서 새 엔진으로 하고, BOX를 주 경로에서 뺀다. iframe 0개. SketchCAD(main `3df0ba8`)는 기능 참조.
 
-| 번호 | 작업 | 산출물 |
-|---|---|---|
-| 5.1 | SketchCAD 코어를 잘라 오는 도구(DXF 읽기·계산용 정리·경계·실 찾기·면적) | `tools/extract-sketchcad.cjs`, `lib/engines/geometry/` |
-| 5.2 | 캔버스 코어에 큰 도면 래스터 층(SketchCAD 방식) | `app/canvas/raster.js` |
-| 5.3 | 0 `drawing` 모듈: 계산용으로 열기, 정리, STR·PNL·DECK 경계, 데크로 지정 | `app/modules/drawing/` |
-| 5.4 | ① `rooms` 모듈: 실 자동 찾기·지정·번호, 면적표, 상하 검사 | `app/modules/rooms/` |
-| 5.5 | 데크 상하 접촉(바닥·천장 면, 외기 판정) — BOX `deckStackIssues` 규칙과 같게 | `lib/engines/geometry/stack.cjs` |
-| 5.6 | BOX를 주 경로에서 뺌. 1.x 프로젝트 가져오기는 `lib/io/v1.cjs`로 유지 | `app/` |
+| 번호 | 작업 | 산출물 | 작업일 |
+|---|---|---|---|
+| 5.1 | DXF 읽기: Worker 바이트 스트림, 코드 페이지(UTF-8 → `$DWGCODEPAGE` → EUC-KR), 2패스(레이어 개수만 → 고른 레이어만 객체로), typed array | `lib/io/dxf-read.cjs`, `app/workers/dxf.js` | 3~4 |
+| 5.2 | 레이어 용도·조선소 매핑 규칙(모델 `source.mapping`), 계산용 열기·정리 한 함수 | `lib/engines/geometry/mapping.cjs` | 1~1.5 |
+| 5.3 | 경계 용도 지정(선마다 STR·PNL·DECK…, K1 결정 5) | `lib/engines/geometry/purpose.cjs` | 0.5~1 |
+| 5.4 | 평면 그래프: 교차 분할, 꼭짓점 합침, 매달린 변, 문 틈(≤ 1 000 mm), 면 추적, 섬 = 구멍, 면 색인(SketchCAD의 15만 조각 잘림·반변 전체 검색은 따라 하지 않음) | `lib/engines/geometry/faces.cjs` | 3~4 |
+| 5.5 | 실 찾기·지정·번호/이름 규칙·면적 거르기, 이웃 실 경계 | `lib/engines/geometry/rooms.cjs` | 2~3 |
+| 5.6 | 면적표, 가져오기(SketchCAD JSON·"HVAC Grid용 DXF"·1.x) | `lib/io/sketchcad.cjs` | 1~1.5 |
+| 5.7 | 큰 도면 래스터 층(색인 질의, 스타일 묶음, LOD, 이동 중 비트맵 재사용, 층별 그리기 시간) | `app/canvas/raster.js` | 2~3 |
+| 5.8 | 데크로 지정(영역 + 기준점 FR0·중심선, 데크 표 z·층고 — D4·D5) + 데크 필터. V2-2를 하면 그 형식 가져오기만(1) | `app/modules/drawing/` | 2~3 |
+| 5.9 | 데크 상하 접촉(바닥·천장 다각형 교집합, z 허용 10 mm, 외기 판정) — BOX `deckStackIssues` 규칙과 같은 기능 | `lib/engines/geometry/stack.cjs` | 1.5~2 |
+| 5.10 | 면 행(부하 입력): 벽 변 분할·판넬 간극 접촉·높이 패치, 외판 하부·상부 윤곽(곡면)과 체적·외벽 면적, 흘수선 분할(해수·외기), 면적 보존 검사 — V2-4.1 어댑터를 대체(STUDY_CAL 2장) | `lib/engines/geometry/boundaries.cjs` | 5~6 |
+| 5.11 | 0 `drawing`·① `rooms` 모듈 화면, BOX를 주 경로에서 뺌, 1.x 가져오기는 `lib/io/v1.cjs` | `app/modules/{drawing,rooms}/` | 2~3 |
+| 5.12 | 시험·벤치: 면·실·경계 단위 시험, 20·100·200 MB 합성 벤치(0.6과 같은 도면), S5·T3·N3 격실·면 행 기준값 비교·차이 기록(D8) | `test/geometry.test.cjs`, 벤치 | 1.5~2 |
+| 소계 | | | **약 25~34** |
 
-**완료 기준**: 200 MB 합성 도면 → ⑤ 출력까지 한 프로그램, iframe 0개(G3·G4·G7). S5·T3·N3 격실(번호·면적·체적)이 0.1 기준값과 같음.
-**위험**: SketchCAD 실 찾기와 BOX 실 인식의 결과 차이 → 0.1 기준값으로 비교, 다른 격실 목록을 사용자에게 보여 결정.
+**완료 기준**: 200 MB 합성 도면 → ⑤ 출력까지 한 프로그램, iframe 0개(G3·G4·G7). S5·T3·N3 격실(번호·면적·체적)·면 행을 0.1 기준값과 비교한 차이표, 받아들일 범위는 K5에서 사용자가 정함(D8).
+**위험**: 실 찾기·면 행이 BOX·SketchCAD와 다름 → 다른 격실·면 목록을 사용자에게 보여 결정. 메모리(SketchCAD 200 MB에 2.8 GB) → 개수만 세는 첫 패스·고른 레이어만. 외판 곡면·판넬 간극 규칙이 가장 깊다(5.10).
 
 ### V2-6 정리 · 배포 · 매뉴얼
 
 | 번호 | 작업 | 산출물 |
 |---|---|---|
-| 6.1 | 한 파일판·독립망 복사본 다시 구성(선택 편집기는 따로 불러옴) | `tools/make-single.cjs`, `make-offline.cjs` |
+| 6.1 | 2.0 한 파일판·독립망 복사본 새로 구성(엔진 + 캔버스, 선택 편집기 PHG D는 따로 불러옴) | `tools/make-single.cjs`, `make-offline.cjs` |
 | 6.2 | 성능표(0.6 기준 대비): AUTO 시간, 큰 도면, 크기, 메모리 | `docs/v2/RESULT.md` |
 | 6.3 | 매뉴얼(워드·PPT), `AGENTS.md`에 2.0 항목, `docs/` 정리 | |
 | 6.4 | 전체 시험 `npm run test:all`, N3 정기 시험 | |
@@ -170,12 +189,20 @@ V2-6                                                   ████
 | 게이트 | 언제 | 확인할 것 | 결정 |
 |---|---|---|---|
 | K0 | 착수 전 | 기획서 검토, D1~D6 | 착수 여부 |
-| K1 | V2-0 뒤 | 기준값, 조사 세 건, 다시 추정한 일정 | V2-4 방식(떼어 내기 / 중간 단계) |
+| K1 | V2-0 뒤 | 기준값, 조사 세 건, 다시 추정한 일정([REVIEW_V2-0.md](REVIEW_V2-0.md)) | 아래 K1 결정 1~6 |
 | K2 | V2-1·V2-2 뒤 | AUTO 같은 답·시간, SketchCAD 데크 | ④를 엔진으로 바꿔 1.x에도 넣을지 |
 | K3 | V2-3 뒤 | 모듈 틀, 1.x 가져오기 | 틀 확정 |
 | K4 | V2-4 뒤 | 부하 같은 답 | — |
 | K5 | V2-5 뒤 | iframe 0, 큰 도면 | 출시 준비 |
 | K6 | V2-6 뒤 | 지표, 전체 시험 | 출시(v2 → main) |
+
+**K1 결정 사항**(V2-0 조사에서 나옴, [REVIEW_V2-0.md](REVIEW_V2-0.md) 5장):
+1. V2-4 방식 — D7로 옛 선택지(떼어 내기 / 중간 단계)는 없어졌다. 새 부하 엔진의 입력을 (가) V2-5 전까지 1.x BOX 면 행 어댑터로 받는다(권장) / (나) 면 행 형상 엔진(5.10)을 V2-4로 당겨 먼저 짠다.
+2. AHU 난방에 쓰는 여름 풍량: 1.x에는 둘(BOX AHU의 실온 − 급기 온도 ΔT / HVAC Grid 계약 풍량) — 2.0은 HVAC Grid 계약 풍량 하나(권장).
+3. V2-2: SketchCAD 단독판 데크 지정(D3)을 지금 할지, 2.0 안의 "데크로 지정"(5.8) 한 번만 만들지.
+4. 일정(85~111일, K0의 1.6~1.8배): 그대로 / 범위 줄이기(예: 4.8 XLSX 수식판·1.9 편집기 교환을 V2-6 뒤로, 5.10 곡면 외판을 직선 외판 먼저).
+5. 선 용도 이름: SketchCAD `DECK`(갑판 가장자리·천장 선)와 데크(층) 이름 충돌 — `DECKEDGE`로 바꿀지, HULL을 STR과 따로 둘지.
+6. 압력의 ASHRAE 이음쇠 표: 원문이 없다(F-2). PHG D 표의 값을 기능 참조로 같은 값으로 쓸지(원문 미확인 표시), 원문을 구해 확인할지.
 
 게이트마다 검토 보고서에 강제 항목 F-1·F-2를 "지킴 / 어김"으로 적고, 어긴 곳은 결함(P1)으로 올린다(`AGENTS.md`).
 
@@ -183,8 +210,7 @@ V2-6                                                   ████
 
 | 무엇 | 도구 | 어느 단계부터 |
 |---|---|---|
-| 엔진 기준값(1.x와 같은 답) | `npm test` + `test/fixtures/v1-golden`, `phg-golden` | V2-1 |
-| 잘라 온 사본 해시 | 단위 시험 | V2-1 |
+| 1.x 기준값(정답지, D8: 차이 기록) | `npm test`(기준값을 1.x `lib`로 다시 계산) · `npm run golden:check`(1.x를 다시 돌려 비교) · `tools/engine-compare.cjs` | V2-0부터 |
 | 모듈 약속 | `test/modules.test.cjs` | V2-3 |
 | 강제 항목 F-1·F-2 | `test/iso7547.test.cjs`, `contract.test.cjs`, CAL 자체 시험 | 모든 단계 |
 | 화면 흐름(한 캔버스, 단계 전환, 실행 취소) | e2e(Edge) | V2-3 |
@@ -197,8 +223,8 @@ V2-6                                                   ████
 | 구분 | 파일 |
 |---|---|
 | 문서 | `docs/v2/`: `DECISIONS.md`, `BASELINE.md`, `STUDY_CAL.md`, `STUDY_PHG.md`, `STUDY_SKETCHCAD.md`, `REVIEW_V2-n.md`, `RESULT.md` |
-| 도구 | `tools/v1-golden.cjs`, `phg-golden.cjs`, `extract-phg.cjs`, `extract-cal.cjs`, `extract-sketchcad.cjs` |
-| 엔진 | `lib/phg/*`, `lib/phg-*.cjs`, `lib/engines/{geometry,load,airflow,systems,route,size,fire,output}/` |
+| 도구 | `tools/v1-golden.cjs`, `phg-golden.cjs`, `golden-run.cjs`, `v2-baseline.cjs`, `engine-compare.cjs` (D7: 잘라 오는 도구 `extract-*`는 만들지 않음) |
+| 엔진 | `lib/duct/*`, `lib/engines/{geometry,load,airflow,systems,fire,output}/` (모두 새로 짬, D7) |
 | 모델·입출력 | `lib/model/{schema,graph,commands}.cjs`, `lib/io/{v1,sketchcad,dxf}.cjs` |
 | 화면 | `app/canvas/`, `app/modules/{drawing,rooms,load,airflow,ducts,review}/`, `app/phg-worker.js` |
 | 시험 | `test/fixtures/{v1-golden,phg-golden}/`, `test/{modules,load,io-sketchcad}.test.cjs`, e2e |
@@ -208,11 +234,11 @@ V2-6                                                   ████
 
 | 위험 | 신호 | 대응 | 단계 |
 |---|---|---|---|
-| CAL이 BOX에 깊이 묶임 | 0.3 조사 | 중간 단계(모델 → BOX JSON → CAL) 먼저, 떼어 내기는 뒤로 | V2-0, V2-4 |
-| 압축된 PHG V2 모듈 | 1.2·1.5에서 기준값 불일치 | 워커 원문은 그대로, 접착만 기준값으로 맞춤 | V2-1 |
+| 면 행 형상이 깊다(0.3 조사) | 4.7·5.12 면 행 비교 | V2-4는 1.x 면 행 어댑터로 먼저, 형상 엔진은 V2-5.10 | V2-4, V2-5 |
+| 새 엔진이 1.x와 다른 답(D8) | 기준값 비교 | 차이표·원인 기록, 받아들일 범위는 게이트에서 사용자가 정함 | V2-1~V2-5 |
 | 엔진 결과가 1.x와 다름 | 기준값 시험 실패 | 원인 기록, 사용자 확인 전에는 2.0 결과로 바꾸지 않음 | 모든 단계 |
 | 셸 분해 중 흐름 깨짐 | e2e 실패 | 모듈 하나씩, 매번 e2e | V2-3 |
-| 원본 갱신으로 사본 깨짐 | 해시 시험 | `extract:*` 다시 → 기준값 시험 | V2-1 이후 |
+| 원본 프로그램이 계속 바뀜 | 기능 명세와 원본 main 차이 | 명세는 조사 때 판(PHG D 사본 `c3f7fa67380d1a2e`, SketchCAD `3df0ba8`, BOX `8892c20e503108f2`)으로 고정, 게이트 때 차이만 더함 | 모든 단계 |
 | 일정 초과 | 게이트 때 추정 대비 1.5배 이상 | 다음 단계 범위 줄이기(예: V2-5의 0 모듈을 SketchCAD 연결로 대체) | 게이트마다 |
 | 1.x와 2.0 갈라짐 | main 수정이 v2에 안 들어감 | 단계마다 main → v2 병합 | 모든 단계 |
 

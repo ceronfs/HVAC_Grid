@@ -2,6 +2,8 @@
 
 상태: Ver 2.0 기획의 일부(V2-1) — 검토 후 진행(2026-10-25). [PLAN_V2.md](PLAN_V2.md)
 
+> **대체됨(2026-10-25 D7·D8)**: 잘라 오기(P1·P2·`extract:phg`·`lib/phg/*`)는 하지 않는다. V2-1은 PHG D를 기능 참조로 새로 짠다 — 작업 목록은 [PLAN_V2_WORK.md](PLAN_V2_WORK.md) V2-1, 기능 명세는 [STUDY_PHG.md](STUDY_PHG.md). P0(기준값)은 `tools/phg-golden.cjs`로 했다. 아래는 기록으로 남긴다.
+
 ④ RU·덕트가 PHG D 화면(숨긴 iframe)을 거치지 않고, 경로(AUTO)·덕트 지정·크기·압력 계산을 `lib/`에서 직접 부른다.
 사용자 결정(2026-10-25): PHG 원본을 엔진으로 고치는 대신 **HVAC Grid lib로 옮긴다**.
 
