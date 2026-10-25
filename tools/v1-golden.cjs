@@ -7,6 +7,8 @@
 //                 stamps and run seconds fixed (results[*].at = 1, seconds = 0), BOX-made deck ids (N3) named DECK1..n
 //   cal.json      BOX CAL's rooms (HVACGrid.box.calSnapshot: K mode, design conditions, per-room inputs and loads with
 //                 the transmission parts) · box-extract.json  what the contract is built from (HVACGrid.box.extract)
+//   faces.json.gz BOX's rooms and A6 face rows as CAL gets them (CAL_ENHANCE_INPUT: rooms, summarized rows; raw by count)
+//   cal-loads.json.gz  CAL_ENHANCE.report().loads with every field (per-room parts the calculation shows)
 // Node (derive, from project.json only - test/v1-golden.test.cjs recomputes these with npm test):
 //   rooms.json (decks, rooms) · loads.json · airflow.json (rules, rooms, zones) · systems.json (systems, ESP, fan, risers)
 //   rus.json (plans: Root, RUs) · networks.json (ducts: path, size, flow; the AUTO result) · solas.json (classes,
@@ -14,12 +16,13 @@
 //   cell values by sheet, DXF entity counts by type and layer, report HTML size and hash)
 // meta.json (inputs and vendor hashes, browser, seconds) is not compared.
 'use strict';
-const fs = require('fs'), path = require('path'), crypto = require('crypto'), assert = require('node:assert/strict');
+const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib'), assert = require('node:assert/strict');
 const PJ = require('../lib/project.cjs'), RP = require('../lib/report.cjs'), XL = require('../lib/xlsx.cjs'), DX = require('../lib/dxf-out.cjs');
 const FP = require('../lib/fire-plan.cjs'), DG = require('../lib/diagram.cjs'), { readWorkbook } = require('../lib/xlsx-read.cjs');
 const ROOT = path.join(__dirname, '..'), FIXTURES = path.join(ROOT, 'test', 'fixtures', 'v1-golden');
 const DERIVED = ['rooms', 'loads', 'airflow', 'systems', 'rus', 'networks', 'solas', 'review', 'outputs'];
-const BROWSER = ['project', 'cal', 'box-extract'];
+const BROWSER = ['project', 'cal', 'box-extract', 'faces', 'cal-loads'];
+const GZ = new Set(['faces', 'cal-loads']);   // large (1-2 MB each): kept as .json.gz
 const clone = v => JSON.parse(JSON.stringify(v ?? null));
 const sha = b => crypto.createHash('sha256').update(b).digest('hex').slice(0, 16);
 
@@ -27,9 +30,16 @@ const sha = b => crypto.createHash('sha256').update(b).digest('hex').slice(0, 16
 function deckIds(project) {
  const ids = (project.contract?.decks || []).map(d => d.id), map = {};
  ids.forEach((id, i) => { if (/^D\d{12,}\.\d+$/.test(id)) map[id] = `DECK${i + 1}`; });
- if (!Object.keys(map).length) return { map, fix: v => v };
+ if (!Object.keys(map).length) return { map, fix: v => v ?? null };
  const re = new RegExp(Object.keys(map).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
- return { map, fix: v => JSON.parse(JSON.stringify(v).replace(re, m => map[m])) };
+ return { map, fix: v => v === undefined ? null : JSON.parse(JSON.stringify(v).replace(re, m => map[m])) };
+}
+
+// BOX's room face ids (topologyFaceId "F:<md5>") hash the deck id: numbered in order of first use (faces and CAL
+// loads share the numbering, so the cross references stay)
+function faceIds(...values) {
+ const ids = new Map(), re = /"F:[0-9a-f]{32}"/g;
+ return values.map(v => v == null ? v : JSON.parse(JSON.stringify(v).replace(re, m => { if (!ids.has(m)) ids.set(m, `"F:#${ids.size + 1}"`); return ids.get(m); })));
 }
 
 // the project as 1.x saved it, made comparable
@@ -37,8 +47,8 @@ function normalize(run) {
  const { fix, map } = deckIds(run.project), { projects, box, ...rest } = run.project;
  const project = fix({ ...rest, savedAt: '-',
   results: Object.fromEntries(Object.entries(rest.results || {}).map(([k, r]) => [k, { ...r, ...(r.at ? { at: 1 } : {}), ...('seconds' in r ? { seconds: 0 } : {}) }])) });
- const cal = fix(run.cal), extract = fix(run.extract);
- return { project, cal, 'box-extract': extract, deckMap: map, phgProjects: Object.keys(projects || {}).length, boxFile: box ? box.format : null };
+ const cal = fix(run.cal), extract = fix(run.extract), [faces, calLoads] = faceIds(fix(run.faces), fix(run.calLoads));
+ return { project, cal, 'box-extract': extract, faces, 'cal-loads': calLoads, deckMap: map, phgProjects: Object.keys(projects || {}).length, boxFile: box ? box.format : null };
 }
 
 // DXF: entities in ENTITIES by type and by layer (POLYLINE's VERTEX and SEQEND counted as their own types)
@@ -75,9 +85,9 @@ function derive(project) {
  return clone({ rooms, loads, airflow, systems, rus, networks, solas, review, outputs });
 }
 
-const read = (dir, name) => JSON.parse(fs.readFileSync(path.join(dir, name + '.json'), 'utf8'));
+const read = (dir, name) => GZ.has(name) ? JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(dir, name + '.json.gz'))).toString('utf8')) : JSON.parse(fs.readFileSync(path.join(dir, name + '.json'), 'utf8'));
 const text = v => JSON.stringify(v, null, 1) + '\n';
-function files(norm) { const d = derive(norm.project); return { project: norm.project, cal: norm.cal, 'box-extract': norm['box-extract'], ...d }; }
+function files(norm) { const d = derive(norm.project); return { ...Object.fromEntries(BROWSER.map(k => [k, norm[k]])), ...d }; }
 
 // first differing paths of two JSON values (for the --check report)
 function diff(a, b, at = '', out = []) {
@@ -116,7 +126,7 @@ async function main() {
    if (diffs.length) bad++;
   } else {
    fs.mkdirSync(dir, { recursive: true });
-   for (const [k, v] of Object.entries(all)) fs.writeFileSync(path.join(dir, k + '.json'), text(v));
+   for (const [k, v] of Object.entries(all)) if (GZ.has(k)) fs.writeFileSync(path.join(dir, k + '.json.gz'), zlib.gzipSync(Buffer.from(JSON.stringify(v)), { level: 9 })); else fs.writeFileSync(path.join(dir, k + '.json'), text(v));
    fs.writeFileSync(path.join(dir, 'meta.json'), text(meta(ship, run, norm)));
    console.log(`${ship}: ${path.relative(ROOT, dir)} (${Math.round((Date.now() - t) / 1000)} s · AUTO ${done}/${total} ${run.timing.autoS} s)`);
   }
@@ -126,4 +136,4 @@ async function main() {
 
 if (require.main === module) main().catch(e => { console.error(e); process.exit(1); });
 
-module.exports = { FIXTURES, DERIVED, BROWSER, derive, normalize, dxfCounts, diff, read };
+module.exports = { FIXTURES, DERIVED, BROWSER, GZ, derive, normalize, faceIds, dxfCounts, diff, read };

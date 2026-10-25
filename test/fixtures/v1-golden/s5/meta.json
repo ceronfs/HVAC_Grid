@@ -1,8 +1,8 @@
 {
  "ship": "s5",
  "tool": "tools/v1-golden.cjs",
- "made": "2026-10-25T22:14:04.972Z",
- "commit": "03e744d",
+ "made": "2026-10-25T22:39:20.642Z",
+ "commit": "554bdbb",
  "inputs": {
   "vendor/BOX_CAL_Enhance.html": "8892c20e503108f2"
  },
@@ -21,29 +21,29 @@
   "err": false
  },
  "timing": {
-  "appS": 1.6,
-  "openS": 1.9,
-  "autoS": 86.2,
+  "appS": 0.7,
+  "openS": 1.5,
+  "autoS": 90.3,
   "plans": {
-   "S3__AHU-AC-01": 5.1,
-   "S3__AHU-AC-02": 3.6,
-   "S5__AHU-BRG-01": 10.9,
-   "S5__AHU-BRG-02": 8.3,
-   "S4__AHU-OFC-01": 5.3,
-   "S4__AHU-OFC-02": 7.7,
-   "S1__SUP-ER-01": 4.3,
-   "S1__SUP-ER-02": 8.6,
-   "S2__SUP-SVC-01": 5.7,
-   "S2__SUP-SVC-02": 3.5,
-   "S4__EXH-ROOM": 0.2,
-   "S2__EXH-ROOM": 0.2,
+   "S3__AHU-AC-01": 5.3,
+   "S3__AHU-AC-02": 3.7,
+   "S5__AHU-BRG-01": 10.8,
+   "S5__AHU-BRG-02": 8.8,
+   "S4__AHU-OFC-01": 6.2,
+   "S4__AHU-OFC-02": 8.4,
+   "S1__SUP-ER-01": 4.4,
+   "S1__SUP-ER-02": 8.5,
+   "S2__SUP-SVC-01": 6,
+   "S2__SUP-SVC-02": 3.9,
+   "S4__EXH-ROOM": 0.3,
+   "S2__EXH-ROOM": 0.3,
    "S3__EXH-ROOM": 0.4,
    "S5__EXH-ROOM": 0.3,
-   "S1__RET-ROOM": 0.9,
-   "S3__RET-ROOM": 5.4,
-   "S4__RET-ROOM": 7.6,
+   "S1__RET-ROOM": 0.8,
+   "S3__RET-ROOM": 5.6,
+   "S4__RET-ROOM": 8.5,
    "S5__RET-ROOM": 1.9
   },
-  "totalS": 91.1
+  "totalS": 94.5
  }
 }

@@ -136,6 +136,16 @@ async function runShip(ship, { phg = false, log = () => {} } = {}) {
   else { await H(name => HVACGrid.openSample(name), ship); await idle(); }
   timing.openS = sec(to);
   const cal = await H(() => HVACGrid.box.calSnapshot()), extract = await H(() => HVACGrid.box.extract());
+  // the rooms and face rows CAL gets from BOX (CAL_ENHANCE_INPUT: BOX's L4 worker, A6 face rows raw and summarized),
+  // CAL's room loads as it reports them with every field (calSnapshot keeps a list), and per room the face trace CAL's
+  // own tables show (roomLoadInputTrace: boundary type, area, K, temperatures, ΔT per face) where the frame has it -
+  // the face-level reference for the 2.0 load and geometry engines (STUDY_CAL 8장)
+  const faces = await H(async () => { await HVACGrid.box.openCal(); const w = HVACGrid.box.doc.querySelector('#calEnhancePanel iframe').contentWindow, i = w.CAL_ENHANCE_INPUT || {};
+   return JSON.parse(JSON.stringify({ rooms: i.rooms || null, summarized: i.faces?.summarized || null, raw: i.faces?.raw?.length ?? null })); });
+  const calLoads = await H(async () => { await HVACGrid.box.openCal(); const w = HVACGrid.box.doc.querySelector('#calEnhancePanel iframe').contentWindow, rep = w.CAL_ENHANCE.report();
+   let trace = null, why = null;
+   try { const f = w.eval('typeof roomLoadInputTrace === "function" ? roomLoadInputTrace : null'); if (f) trace = Object.fromEntries(rep.loads.map(r => [r.id, f(r)])); else why = 'roomLoadInputTrace 없음'; } catch (e) { why = e.message; }
+   return JSON.parse(JSON.stringify({ kMode: rep.kMode ?? null, loads: rep.loads, faceTrace: trace, faceTraceMissing: why })); });
   if (ship === 'n3') await belowDeck(p, idle, '기관실 — A류');
   if (phg) await H(phgHooks);
   await H(() => HVACGrid.go('duct')); await idle();
@@ -148,7 +158,7 @@ async function runShip(ship, { phg = false, log = () => {} } = {}) {
   timing.plans = Object.fromEntries(Object.entries(project.results).map(([k, r]) => [k, r.seconds]));
   timing.totalS = sec(t0);
   log(`${ship}: AUTO ${timing.autoS} s · ${status.msg}`);
-  return { ship, project, cal, extract, errors, status, timing, phg: phgLog, browser: `${b.browserType().name()} ${b.version()}` };
+  return { ship, project, cal, extract, faces, calLoads, errors, status, timing, phg: phgLog, browser: `${b.browserType().name()} ${b.version()}` };
  } finally { await b.close(); await s.close(); }
 }
 
