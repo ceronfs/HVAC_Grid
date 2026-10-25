@@ -1,9 +1,9 @@
 // End-to-end: SketchCAD 2D -> HVAC Grid, the way docs/WORKFLOW_SKETCHCAD.md has a beginner do it, on the N3 drawings:
-//  SketchCAD: the DXF through its file input, (PANEL on the wall lines), ROOMAUTO -> rooms, ROOMTABLE "HVAC Grid용 DXF"
+//  SketchCAD: the DXF through its file input, (PNL on the wall lines), ROOMAUTO -> rooms, ROOMTABLE "HVAC Grid용 DXF"
 //  (a real download) -> lib/dxf-in.cjs reads that DXF -> HVAC Grid ① DXF 열기 (BOX): every room with its number and name.
 //  Each room's number, name and area against samples/n3/N3.inputs.json.
 //  Cases: D2 with the walls on a layer WALL (a received drawing), D2 as made (walls on ROOM - SketchCAD keeps that layer
-//  for its own room outlines, so the walls go to PANEL first, WORKFLOW 1-3), D1 (R12, code page ANSI_949) with WALL.
+//  for its own room outlines, so the walls go to PNL first, WORKFLOW 1-3), D1 (R12, code page ANSI_949) with WALL.
 // SketchCAD is not part of this repository: SKETCHCAD_HTML, else ../SketchCAD/SketchCAD.html next to this folder
 // (github.com/ceronfs/SketchCAD). Without it the test says so and passes.
 'use strict';
@@ -20,7 +20,7 @@ const withWallLayer = file => { const f = path.join(OUT, 'received_' + path.base
  fs.writeFileSync(f, fs.readFileSync(file, 'latin1').replace(/(\r?\n\s*8\r?\n)ROOM(\r?\n)/g, '$1WALL$2'), 'latin1'); return f; };
 const CASES = [
  { name: 'D2 벽 WALL', deck: 'D2', file: () => withWallLayer(path.join(N3, 'N3_D2.dxf')) },
- { name: 'D2 벽 ROOM → 패널 지정', deck: 'D2', file: () => path.join(N3, 'N3_D2.dxf'), panel: true },
+ { name: 'D2 벽 ROOM → PNL 지정', deck: 'D2', file: () => path.join(N3, 'N3_D2.dxf'), panel: true },
  { name: 'D1 R12 EUC-KR 벽 WALL', deck: 'D1', file: () => withWallLayer(path.join(N3, 'N3_D1.dxf')) },
 ];
 // numbers, names and areas against the inputs of that deck
@@ -60,9 +60,9 @@ const check = (where, got, deck) => {
    await p.waitForFunction(() => CAD.doc.ents.length > 0, null, { timeout: 60000 });
    const asIs = await p.evaluate(() => CAD.findRoomsByText().length);
    if (c.panel) {
-    // ② 경계 지정: the wall lines selected, PANEL, Enter
+    // ② 경계 지정: the wall lines selected, PNL, Enter
     await p.evaluate(() => { CAD.sel.clear(); for (const e of CAD.doc.ents) if (e.layer === 'ROOM' && e.type !== 'text') CAD.sel.add(e.id); });
-    await p.mouse.move(800, 450); await p.keyboard.type('PANEL'); await p.keyboard.press('Enter');
+    await p.mouse.move(800, 450); await p.keyboard.type('PNL'); await p.keyboard.press('Enter');
     await p.waitForFunction(() => !CAD.doc.ents.some(e => e.layer === 'ROOM' && e.type !== 'text'), null, { timeout: 10000 });
    }
    // ③ 실 자동 찾기 -> 실 만들기
