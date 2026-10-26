@@ -68,3 +68,25 @@ test('duct engine: golden plans - every RU joined, the zone step 1.x took, out o
   assert.ok(a.result.lengthM > e.auto.result.lengthM * 0.5 && a.result.lengthM < e.auto.result.lengthM * 1.5, `${at} ${a.result.lengthM} m vs ${e.auto.result.lengthM}`);
  }
 });
+
+test('duct engine: plans in worker threads give what one thread gives', async () => {
+ const { createPool } = require('../lib/duct/pool.cjs'), pool = createPool({ threads: 2 });
+ try {
+  const jobs = [plan(), plan({ key: 'D1__AHU2', rus: plan().rus.slice(0, 3) })].map(p => ({ plan: p, rooms }));
+  const outs = await pool.run(jobs);
+  outs.forEach((o, i) => { assert.ok(!o.error, o.error); assert.deepEqual(o.network, E.auto(jobs[i].plan, rooms).network); });
+ } finally { await pool.close(); }
+});
+
+test('duct engine: hvac-run --node - the whole T3 without a browser, every plan, the 1.x review', { skip: !fs.existsSync(path.join(__dirname, '..', 'samples', 't3.contract.json')) && 'T3 없음' }, async () => {
+ const H = require('../tools/hvac-run.cjs'), os = require('os'), out = fs.mkdtempSync(path.join(os.tmpdir(), 'hg-node-'));
+ try {
+  const solas = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'samples', 't3', 'T3.solas.json'), 'utf8'));
+  const r = await H.runNode(path.join(__dirname, '..', 'samples', 't3.contract.json'), out, { solas, log: () => {} });
+  assert.deepEqual(r.errors, []);
+  const { summary } = H.writeOutputs(r.project, out);
+  assert.equal(summary.autoDone, 18); assert.equal(summary.plans, 18); assert.equal(summary.count.fail, 0);
+  assert.ok(summary.solas.penetrations > 100 && summary.systems.find(s => s.system === 'AHU-ACC').espPa > 0);
+  for (const f of ['project.json', 'report.xlsx', 'integrated.dxf', 'fire-plan.dxf']) assert.ok(fs.statSync(path.join(out, f)).size > 1000, f);
+ } finally { fs.rmSync(out, { recursive: true, force: true }); }
+});
