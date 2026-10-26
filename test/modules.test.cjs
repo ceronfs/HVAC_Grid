@@ -73,3 +73,10 @@ test('modules F-1: the airflow module sets the summer rules only - no winter air
  assert.equal(A.act(ctxOf(m), 'rule', 'heatingSupplyDeltaTK', '22').error, true);
  assert.equal(A.act(ctxOf(m), 'rule', 'supplyDeltaTK', '20').error, true, 'ΔT above 15 K refused (ISO 7547 6.3)');
 });
+
+test('one-file copy (tools/make-single2.cjs): every script and library inside, nothing pointing beside it', () => {
+ const M = require('../tools/make-single2.cjs'), page = M.html({ commit: 'test', builtAt: '2026-10-26T00:00:00Z' });
+ assert.ok(!/\s(?:src|href)="(?!data:|#)/.test(page));
+ for (const f of LD.FILES) assert.ok(page.includes(JSON.stringify(f)), f);
+ assert.ok(page.length < 3e6, `${page.length} bytes`);
+});

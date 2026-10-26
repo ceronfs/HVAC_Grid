@@ -2,12 +2,13 @@
 // Chrome) in app mode: no tabs, no address bar, its own icon and title on the taskbar, a profile of its own. The server
 // stops when that window closes (or, as a fallback, some minutes after the open app last said it is still there).
 // When a server already answers on the port, only another window opens.
-//   node tools/launch.cjs [port] [--console]   (--console: messages in this console instead of message boxes)
+//   node tools/launch.cjs [port] [--console] [--v2]   (--console: messages in this console instead of message boxes;
+//   --v2: Ver 2.0 (app2/, HVAC_Grid_2.bat) instead of the 1.x shell)
 'use strict';
 const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), { spawn } = require('child_process');
 const { start } = require('./serve.cjs');
 const args = process.argv.slice(2), consoleMode = args.includes('--console'), port = Number(args.find(a => /^\d+$/.test(a)) || 8792);
-const url = `http://127.0.0.1:${port}/app/`, DATA = path.join(process.env.LOCALAPPDATA || os.tmpdir(), 'HVAC_Grid');
+const v2 = args.includes('--v2'), url = `http://127.0.0.1:${port}/${v2 ? 'app2' : 'app'}/`, DATA = path.join(process.env.LOCALAPPDATA || os.tmpdir(), v2 ? 'HVAC_Grid_2' : 'HVAC_Grid');
 const ALIVE_MS = 150000;   // > the 1 min timer throttling of a minimized window
 
 fs.mkdirSync(DATA, { recursive: true });

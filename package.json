@@ -4,7 +4,7 @@
   "description": "BOX CAL + PHG D HVAC platform (HVAC Grid)",
   "scripts": {
     "test": "node --test \"test/**/*.test.cjs\"",
-    "test:e2e": "node test/e2e/shell.e2e.cjs && node test/e2e/t3.e2e.cjs && node test/e2e/vendor.e2e.cjs && node test/e2e/project-box.e2e.cjs && node test/e2e/fireplan.e2e.cjs && node test/e2e/solas-tool.e2e.cjs && node test/e2e/k-change.e2e.cjs && node test/e2e/sketchcad.e2e.cjs && node test/e2e/single.e2e.cjs && node test/e2e/duct-worker.e2e.cjs && node test/e2e/app2.e2e.cjs && node test/e2e/n3.e2e.cjs 20261023",
+    "test:e2e": "node test/e2e/shell.e2e.cjs && node test/e2e/t3.e2e.cjs && node test/e2e/vendor.e2e.cjs && node test/e2e/project-box.e2e.cjs && node test/e2e/fireplan.e2e.cjs && node test/e2e/solas-tool.e2e.cjs && node test/e2e/k-change.e2e.cjs && node test/e2e/sketchcad.e2e.cjs && node test/e2e/single.e2e.cjs && node test/e2e/duct-worker.e2e.cjs && node test/e2e/app2.e2e.cjs && node test/e2e/single2.e2e.cjs && node test/e2e/n3.e2e.cjs 20261023",
     "test:all": "npm test && npm run test:e2e",
     "start": "node tools/serve.cjs",
     "run:t3": "node tools/hvac-run.cjs samples/t3.contract.json out/t3 --shots --solas=samples/t3/T3.solas.json",
@@ -25,7 +25,8 @@
     "baseline": "node tools/v2-baseline.cjs",
     "compare:duct": "node tools/engine-compare.cjs --md=docs/v2/V2-1_COMPARE.md",
     "start:v2": "node tools/serve.cjs 8793",
-    "test:app2": "node test/e2e/app2.e2e.cjs"
+    "test:app2": "node test/e2e/app2.e2e.cjs",
+    "make:single2": "node tools/make-single2.cjs"
   },
   "engines": {
     "node": ">=20"

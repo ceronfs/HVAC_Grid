@@ -95,7 +95,12 @@
   download(`${(st.name || 'HVAC_Grid').replace(/\.(box\.)?json$/i, '').replace(/\.hg2$/, '')}.hg2.json`, JSON.stringify(m));
   st.model = m; say('모델 저장 — HVAC Grid 2.0 (원본 DXF는 담지 않음)');
  }
- async function sample(name) { const r = await fetch(`../samples/${name}.contract.json`); if (!r.ok) throw new Error(name + ' 예제 없음'); await open(await r.json(), name.toUpperCase()); }
+ // the samples: in the one-file copy from its table, else from the server
+ async function sample(name) {
+  const f = `samples/${name}.contract.json`, inFile = window.HVACGridFiles?.[f];
+  if (inFile != null) return open(JSON.parse(inFile), name.toUpperCase());
+  const r = await fetch('../' + f); if (!r.ok) throw new Error(name + ' 예제 없음'); await open(await r.json(), name.toUpperCase());
+ }
  async function shellAct(name, arg) {
   if (name === 'open') { $('file').click(); return; }
   if (name === 'sample') return sample(arg);
@@ -159,6 +164,9 @@
   else if (e.altKey && /^[1-5]$/.test(e.key)) { e.preventDefault(); go(+e.key); }
   else if (e.key === 'Escape') { for (const s of Object.values(st.mstate)) delete s.picking; st.sel = null; say(''); render(); }
  });
+
+ // started by HVAC_Grid_2.bat: tell the local server the window is still open (it stops when none is left)
+ if (!window.HVACGridFiles && location.protocol.startsWith('http')) { const alive = () => fetch('../__alive', { method: 'POST', keepalive: true }).catch(() => {}); alive(); setInterval(alive, 5000); addEventListener('pagehide', () => navigator.sendBeacon('../__bye')); }
 
  window.HG2 = { open: guard(open), sample: guard(sample), model: () => st.model, go, act, auto: () => act('ducts', 'auto'), state: st, canvas, L, history: st.history };
  render();
