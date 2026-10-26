@@ -283,3 +283,26 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .fp-legend span,.fp-cats span{display:inline-flex;align-items:center;gap:4px}
 .fireplan-wrap{overflow:auto;border:1px solid var(--line);border-radius:4px;background:#fff;margin:6px 0}
 .fireplan-wrap svg{display:block;max-width:100%;height:auto}
+
+/* one canvas (docs/PLAN.md H5): ⑤ on the ③ ④ plan, its tables in a dock under the canvas - between the floating tree
+   and inspector, its height dragged on its top edge, folded to its tabs */
+/* (an svg does not stretch between top and bottom: its height is set) */
+.plan{height:calc(100% - var(--dock-h,0px))}
+.dock{position:absolute;left:0;right:0;bottom:0;z-index:4;background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.dock .report{position:absolute;inset:0}
+.dock.folded{height:auto}.dock.folded .report{position:static;overflow:hidden;padding-bottom:4px}.dock.folded .report>:not(.tabs){display:none}
+.dock.folded .report .tabs{margin-bottom:0;border-bottom:0}
+.dock-grip{position:absolute;left:0;right:0;top:-4px;height:8px;cursor:ns-resize;z-index:3;touch-action:none}
+.dock-grip::after{content:"";position:absolute;left:50%;top:2px;width:44px;height:4px;margin-left:-22px;border-radius:2px;background:var(--line)}
+.dock-grip:hover::after{background:var(--accent)}
+.report .tabs .dock-fold{margin-left:auto;color:var(--muted);font-size:12px}
+.main.plan-view .dock{left:240px;right:280px}
+@media (max-width:1366px){.main.plan-view .dock{left:208px;right:256px}}
+.main.plan-view.left-off .dock{left:28px}.main.plan-view.right-off .dock{right:28px}
+/* a row with a place on the plan */
+.report tbody tr.go{cursor:pointer}.report tbody tr.go:hover td{background:var(--soft)}
+/* the fire layer (lib/fire-plan.cjs layout): ratings along the walls, FD / SL beside the penetrations */
+.plan .fb.dash{stroke-dasharray:4 3}
+.plan .fpl{font-weight:700;stroke:var(--canvas);stroke-width:3px;paint-order:stroke;stroke-linejoin:round;vector-effect:non-scaling-stroke;pointer-events:none;font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif}
+.plan .fpl.pl{font-weight:600;fill:var(--text)}
+.plan line.focus{stroke-width:9;stroke-linecap:round;stroke-opacity:.6}

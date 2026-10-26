@@ -122,8 +122,15 @@ HVACGridProject {
 | 방화 등급도는 별도 기능 (2026-10-21, 사용자 제안): 등급을 글자로 적은 평면을 화면·DXF(별도 파일)·보고서로. 같은 등급으로 한 줄에 이어진 벽은 한 번, 1 m 미만·C급·외벽(*)은 기본 생략 | 덕트 도면과 섞으면 읽기 어려움. 짧은 조각마다 적으면 글자가 겹침 | `lib/fire-plan.cjs` |
 | 실별 신기 부족(ROOM_OA)은 검사로 두고 구역 신기를 자동으로 올리지 않음 | 가장 불리한 실에 맞추면 T3 AHU-ACC 신기 47 % — 설계자 결정 | `lib/project.cjs` ROOM_OA |
 | 한 파일판 (2026-10-25, 요청 "HVAC Grid 전체를 HTML 파일 하나로"): vendor 앱은 srcdoc iframe(페이지와 같은 출처)으로, lib·samples·popup.css는 `window.HVACGridFiles`에서 읽음. vendor 사본은 고치지 않고 글자 그대로 넣음. PHG D 설계 비교의 작업 창은 bridge가 같은 글자로 열어 줌 | `file://` 문서끼리·`blob:` iframe은 같은 출처가 아님(Edge로 시험). srcdoc은 BOX가 CAL 패널에 이미 쓰는 방식. 서버판은 그대로(`HVACGridFiles`가 없으면 fetch·src) | `tools/make-single.cjs`, `app/bridge.js` `get`·`compareFrame`, `docs/SINGLE_FILE.md` |
+| ⑤ 검토도 평면 위에, 표는 아래 도크 (2026-10-26, 하나의 캔버스 1단계 — 개선안의 권장대로: 1단계부터, 도크 기본 열림·캔버스의 40 %) | ③④⑤가 한 캔버스: 단계를 바꿔도 보기·Deck·격실이 그대로. 표 행(관통·제한 구역·점검표·분류 확인·검토 확인 사항)을 누르면 그 Deck·위치로 가서 링으로 강조(화면 밖이면 가운데로, 축척 유지), 덕트망 행·계통도 Deck 상자는 한 번 = 평면, 두 번 = ④. 방화 층은 방화 등급도의 배치(`FP.layout`)를 그대로 씀 — 보고서 SVG·DXF는 바뀌지 않음(기준값 해시) | `app/shell.js` showPlace·fireLayer·dockSize, `lib/fire-plan.cjs` layout, `lib/report.cjs` openItemsAt |
 
 ### H5 남은 것
 1. BOX·PHG D 편집과 HVAC Grid 편집을 하나의 Undo 기록으로 (지금은 화면별: ①② BOX, ④ PHG D, ③⑤ HVAC Grid)
 2. 셸 공통 평면에서 RU 이동·덕트 편집 (지금은 PHG D 화면에서 편집 후 "결과 읽기")
 3. 실도면 검증(설계자 덕트와 AUTO 비교) — PHG D A 계획 1번과 같은 자료 필요
+4. 하나의 캔버스 (개선안 2026-10-26, 브랜치 `feat/one-canvas`): ①~⑤ 모두 BOX 캔버스 + HVAC Grid 층 하나에서. 계산 결과·출력은 바뀌지 않음 — 매 단계 `npm run golden:check`(S5·T3·N3 1.x 기준값, v2 브랜치에서 가져옴)
+   - 1단계 ⑤를 캔버스 위로 — **완료 2026-10-26**: ⑤도 ③④ 평면(BOX 배경 + 방화 층), 보고서 탭은 아래 도크(접기·높이 끌기, 기본 열림 40 %), 표 행 → 그 위치. 위 8장 표
+   - 2단계 공통 층 패널과 데크 필터(이 Deck만 / 위·아래 흐리게), 범례를 패널로
+   - 3단계 ①②에도 셸 층(기본 꺼짐), ③→①② 같은 보기, BOX·셸 격실 선택 양방향, 단계 전환 때 맞춤 없음
+   - 4단계 PHG D 편집기 쓰는 일 줄이기 — 평면으로 가져올 범위는 사용자 확인 뒤
+   - 5단계(선택) 실행 취소 하나 (위 1)

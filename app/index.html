@@ -37,10 +37,10 @@
    <iframe id="boxFrame" title="BOX CAL" style="visibility:hidden"></iframe>
    <iframe id="phgFrame" title="PHG D" style="visibility:hidden"></iframe>
    <svg class="plan" id="plan" aria-label="Deck 평면" hidden></svg>
-   <div class="report" id="report" hidden></div>
    <div class="legend" id="legend" hidden></div>
    <div class="empty" id="empty" hidden></div>
    <div class="phg-hint" id="phgHint" hidden></div>
+   <div class="dock" id="dock" hidden><div class="dock-grip" id="dockGrip" role="separator" aria-orientation="horizontal" aria-label="표 높이" title="끌어서 표 높이 조절"></div><div class="report" id="report"></div></div>
    <div class="busy" id="busy" hidden><div><span class="spin"></span><div class="busy-body"><b id="busyText"></b><div class="busy-bar" id="busyBar" hidden><i id="busyFill"></i></div><small id="busyEta"></small></div><button class="btn" id="busyStop" hidden>멈춤</button></div></div>
   </section>
   <aside class="side right" id="right">
@@ -59,7 +59,7 @@
     <li><b>② 부하</b> — <i>격실 입력</i>에서 실마다 계통(SUP·EXH·RET)·인원·신기·장비 발열을 확인·입력하고, 설계 조건·K값(ISO·LY·사용자)을 정한 뒤 <b>설계 데이터 만들기</b>. 설계 조건과 K값 창(ISO 기준·ISO 적용·LY·LY 적용·사용자)은 도면 없이도 열립니다 — 정한 값은 다음에 여는 DXF에 적용(예제·BOX 프로젝트는 자기 설정). CAL은 뒤에서 계산하고(상태 줄에 격실 수) 표는 따로 창으로 열립니다.</li>
     <li><b>③ 풍량·계통</b> — 급기 ΔT·가압·최소 신기를 정하고 <i>적용</i>. 계통별로 공조기(공조기 Deck)나 수직 덕트 위치를 평면에서 지정합니다. <i>방화</i> 보기로 SOLAS 경계를 확인합니다.</li>
     <li><b>④ RU·덕트</b> — ③과 같은 평면에서 <b>모든 계통 AUTO</b>(또는 계통 하나씩 <i>보내기 + AUTO</i>). PHG D는 뒤에서 경로·크기·압력을 계산하고 덕트망은 이 평면에 그려집니다. 평면에서 바로: <b>RU·공조기를 끌어서 옮기면</b> 다시 AUTO, 덕트를 누르고 <b>크기</b>를 고르면(풍속 표시) PHG D가 그 크기를 지키며 다시 계산, <b>다른 경로</b>는 AUTO의 다음 후보. 그 밖의 세부 편집은 <i>PHG D 편집기</i> → <i>평면으로</i>(고친 내용을 읽어 옴).</li>
-    <li><b>⑤ 검토·출력</b> — 검토 실패·확인을 보고 고친 뒤 <b>프로젝트 저장</b>, <i>통합 XLSX·DXF·보고서</i>.</li></ol>
+    <li><b>⑤ 검토·출력</b> — ③④와 같은 평면에 방화 경계(등급 색·등급 글자)·관통(FD·슬리브)·제한 구역 통과가 그려지고, 표는 아래 도크에 있습니다(윗변을 끌어 높이 조절, <i>접기</i>). 표의 행을 누르면 그 Deck·위치로 가서 표시하고, 덕트망 행·계통도 Deck은 두 번 누르면 ④에서 엽니다. 검토 실패·확인을 보고 고친 뒤 <b>프로젝트 저장</b>, <i>통합 XLSX·DXF·보고서</i>.</li></ol>
     <p class="muted">상태 줄 왼쪽의 <b>다음:</b> 단추가 지금 할 일을 알려 줍니다.</p></section>
    <section><h4>단축키</h4><table class="keys"><tbody>
     <tr><td>Alt + 1 ~ 5</td><td>단계 ①~⑤로 이동</td></tr>
