@@ -1,9 +1,12 @@
 // Ver 2.0 engines of V2-3.9 (lib/engines/{fire,airflow,systems,review}), new code, against the 1.x golden values of S5,
 // T3 and N3 (D8, D15: the same function - here the same numbers): SOLAS spaces, room airflow and zones, systems, the
-// duct engine's plans, risers and ESP, fire boundaries, penetrations and the review. And F-1: one airflow all year.
+// duct engine's plans, risers and ESP, fire boundaries, penetrations, the review and the outputs (XLSX, HTML report, DXF).
+// And F-1: one airflow all year.
 'use strict';
 const test = require('node:test'), assert = require('node:assert/strict'), path = require('path');
 const V = require('../lib/io/v1.cjs'), G = require('../tools/v1-golden.cjs');
+const crypto = require('crypto'), { readWorkbook } = require('../lib/xlsx-read.cjs');
+const RP = require('../lib/engines/output/report.cjs'), XL = require('../lib/engines/output/xlsx.cjs'), DX = require('../lib/engines/output/dxf.cjs'), DG = require('../lib/engines/output/diagram.cjs'), FP = require('../lib/engines/output/fireplan.cjs');
 const F = require('../lib/engines/fire/classify.cjs'), A = require('../lib/engines/airflow/airflow.cjs'), PS = require('../lib/engines/systems/plans.cjs'), RV = require('../lib/engines/review/review.cjs'), AC = require('../lib/engines/review/air.cjs');
 
 const golden = (ship, part) => G.read(path.join(G.FIXTURES, ship), part);
@@ -25,6 +28,13 @@ for (const ship of ['s5', 't3', 'n3']) test(`engines: ${ship} - the 2.0 engines 
  assert.deepEqual(J(r.risers), sys.risers, 'risers');
  assert.deepEqual(J(r.systems.map(s => ({ system: s.systemKey, systemId: s.systemId, kind: s.kind, unitDeck: s.unitDeckId, fanCmh: s.fanCmh, designCmh: s.designCmh, decks: s.decks.map(d => d.deckId ?? d), complete: s.complete, espPa: s.indexPa, fanPa: s.fanPa, indexDeck: s.indexDeckId, riserLengthM: s.riserLengthM }))), sys.analysis, 'ESP, fan pressure');
  for (const k of ['count', 'checks', 'air', 'done', 'stale', 'total', 'staleNets', 'rootsOutside', 'rootsBadRoom', 'deepDucts', 'trunks', 'deckAlign']) assert.deepEqual(J(r[k]), rv[k], k);
+ // outputs: every XLSX sheet and cell, the report (its time masked), the integrated DXF and the fire-rating plan DXF
+ const mm = { ...m, ...a }, out = golden(ship, 'outputs');
+ assert.deepEqual(J(readWorkbook(Buffer.from(XL.xlsx(RP.sheets(mm, r))))), out.xlsx, 'XLSX');
+ const html = RP.html(mm, r), sha = t => crypto.createHash('sha256').update(t).digest('hex').slice(0, 16);
+ assert.deepEqual({ bytes: Buffer.byteLength(html), sha256_16: sha(html.replace(/\d{4}-\d\d-\d\d \d\d:\d\d/g, 'YYYY-MM-DD hh:mm')) }, out.html, 'HTML report');
+ assert.deepEqual(G.dxfCounts(DX.integratedDxf(mm, { diagrams: DG.systemDiagrams(mm, r), plans: r.plans, nets: r.nets, boundaries: r.solas.boundaries, penetrations: r.solas.penetrations, risers: r.risers })), out.dxf.integrated, 'integrated DXF');
+ assert.deepEqual(G.dxfCounts(FP.toDxf(FP.model(mm, r.solas))), out.dxf.firePlan, 'fire-rating plan DXF');
 });
 
 test('engines: SOLAS spaces as 1.x for every ship type', () => {
