@@ -3,7 +3,7 @@
 //   node tools/v2-baseline.cjs [auto] [big] [size] [--sizes=20,100,200] [--ships=t3,n3]
 //   auto  T3·N3 every plan AUTO (tools/golden-run.cjs - the same path as "모든 계통 AUTO"), seconds per plan and in all
 //   big   synthetic deck drawings of 20·100·200 MB (N3 D2 with furniture lines in the rooms, layer FURNITURE, as in
-//         docs/REVIEW_2026-10-25_BIG_DXF.md): ① BOX DXF 열기 (box.setFile, as the shell does) - time to the deck, to
+//         docs/REVIEW_2026-10-25_BIG_DXF.md; for SketchCAD the walls on WALL as in test/e2e/sketchcad.e2e.cjs): ① BOX DXF 열기 (box.setFile, as the shell does) - time to the deck, to
 //         the room list, rooms found, JS heap; SketchCAD (SKETCHCAD_HTML, else ../SketchCAD/SketchCAD.html) - open,
 //         ROOMAUTO, rooms, heap. Each step has a time limit (BIG_LIMIT_S, default 600 s): over it the step is "> limit".
 //   size  one-file copy (tools/make-single.cjs) and closed-network copy (tools/make-offline.cjs) bytes, made in out/
@@ -22,8 +22,12 @@ function machine() {
 
 // N3 D2 (29 rooms) with furniture: short horizontal and vertical LINEs on layer FURNITURE inside every room's box,
 // added until the file has the size asked. The rooms and their texts stay as they were.
-function bigDxf(mb, file) {
- const src = fs.readFileSync(path.join(ROOT, 'samples', 'n3', 'N3_D2.dxf'), 'latin1'), inp = JSON.parse(fs.readFileSync(path.join(ROOT, 'samples', 'n3', 'N3.inputs.json'), 'utf8'));
+// wallLayer: the walls (layer ROOM in N3, which SketchCAD keeps for its own room outlines) on another layer, as a
+// shipyard drawing has them (test/e2e/sketchcad.e2e.cjs withWallLayer)
+function bigDxf(mb, file, { wallLayer = null } = {}) {
+ let src = fs.readFileSync(path.join(ROOT, 'samples', 'n3', 'N3_D2.dxf'), 'latin1');
+ if (wallLayer) src = src.replace(/(\r?\n\s*8\r?\n)ROOM(\r?\n)/g, `$1${wallLayer}$2`);
+ const inp = JSON.parse(fs.readFileSync(path.join(ROOT, 'samples', 'n3', 'N3.inputs.json'), 'utf8'));
  const rooms = inp.rooms.filter(r => r.deck === 'D2').map(r => { const xs = r.points.map(p => p[0]), ys = r.points.map(p => p[1]); return [Math.min(...xs) + 100, Math.min(...ys) + 100, Math.max(...xs) - 100, Math.max(...ys) - 100]; });
  const end = src.lastIndexOf('ENDSEC', src.lastIndexOf('EOF')), head = src.slice(0, src.lastIndexOf('\n', src.lastIndexOf('\n', end - 1) - 1) + 1), tail = src.slice(head.length);
  const eol = src.includes('\r\n') ? '\r\n' : '\n', fd = fs.openSync(file, 'w'), target = mb * 1e6; let bytes = 0, n = 0, i = 0;
@@ -42,9 +46,9 @@ function bigDxf(mb, file) {
 }
 
 async function heapMB(page) {
- try { const c = await page.context().newCDPSession(page), m = await c.send('Performance.getMetrics'); await c.send('Performance.enable').catch(() => {}); const v = m.metrics.find(x => x.name === 'JSHeapUsedSize')?.value; return v ? Math.round(v / 2 ** 20) : null; } catch { return null; }
+ try { const c = await page.context().newCDPSession(page); await c.send('Performance.enable'); const m = await c.send('Performance.getMetrics'); await c.detach().catch(() => {}); const v = m.metrics.find(x => x.name === 'JSHeapUsedSize')?.value; return v ? Math.round(v / 2 ** 20) : null; } catch { return null; }
 }
-const timed = async (f, limit = LIMIT) => { const t = Date.now(); try { const v = await Promise.race([f(), new Promise((_, no) => setTimeout(() => no(new Error('limit')), limit))]); return { s: Math.round((Date.now() - t) / 100) / 10, v }; } catch (e) { return { s: e.message === 'limit' ? `> ${limit / 1000}` : null, error: e.message.slice(0, 200) }; } };
+const timed = async (f, limit = LIMIT) => { const t = Date.now(); try { const v = await Promise.race([f(), new Promise((_, no) => setTimeout(() => no(new Error('limit')), limit))]); return { s: Math.round((Date.now() - t) / 100) / 10, v }; } catch (e) { return { s: e.message === 'limit' ? `> ${Math.round(limit / 1000)}` : null, error: e.message.slice(0, 200) }; } };
 
 async function autoTimes(ships) {
  const { runShip } = require('./golden-run.cjs'), out = {};
@@ -94,14 +98,16 @@ async function sketchcadBig(file) {
 }
 
 async function big(sizes) {
- const out = {}, tmp = path.join(ROOT, 'samples', '__big.dxf');   // served by tools/serve.cjs (samples/), removed after
+ const out = {}, tmp = path.join(ROOT, 'samples', '__big.dxf'), wall = path.join(ROOT, 'samples', '__big_wall.dxf');   // served by tools/serve.cjs (samples/), removed after
  try {
   for (const mb of sizes) {
    const made = bigDxf(mb, tmp); console.log(`${mb} MB: ${made.lines} furniture lines`);
-   out[mb] = { bytes: made.bytes, furnitureLines: made.lines, box: await boxBig(tmp), sketchcad: await sketchcadBig(tmp) };
+   const box = await boxBig(tmp); fs.rmSync(tmp, { force: true });
+   bigDxf(mb, wall, { wallLayer: 'WALL' });
+   out[mb] = { bytes: made.bytes, furnitureLines: made.lines, box, sketchcad: await sketchcadBig(wall) }; fs.rmSync(wall, { force: true });
    console.log(mb, 'MB', JSON.stringify(out[mb]));
   }
- } finally { fs.rmSync(tmp, { force: true }); }
+ } finally { fs.rmSync(tmp, { force: true }); fs.rmSync(wall, { force: true }); }
  return out;
 }
 
