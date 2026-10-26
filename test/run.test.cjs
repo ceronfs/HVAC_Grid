@@ -46,3 +46,15 @@ test('run: the 2.0 duct engine makes every network of S5 again, in worker thread
  assert.deepEqual(strip(two), strip(one));
  assert.deepEqual(two.review.systems.map(s => s.indexPa), one.review.systems.map(s => s.indexPa));
 });
+
+test('run: tools/hvac-run2.cjs - S5 design data to every output with 2.0 code only', async () => {
+ const H = require('../tools/hvac-run2.cjs'), os = require('os'), fs = require('fs'), out = fs.mkdtempSync(path.join(os.tmpdir(), 'hg2-'));
+ try {
+  const r = await H.run(path.join(__dirname, '..', 'samples', 's5.contract.json'), out, { threads: 2, log: () => {} }), { summary } = H.writeOutputs(r.model, out);
+  assert.deepEqual([summary.autoDone, summary.plans, summary.unconnected], [18, 18, 0]);
+  for (const f of ['model.hg2.json', 'report.xlsx', 'report.html', 'integrated.dxf', 'fire-plan.dxf']) assert.ok(fs.statSync(path.join(out, f)).size > 1000, f);
+  // the model file opens again with nothing to recompute
+  const again = S.clean(JSON.parse(fs.readFileSync(path.join(out, 'model.hg2.json'), 'utf8'))).model;
+  assert.deepEqual(RUN.state(again).filter(s => s.state === 'stale'), []);
+ } finally { fs.rmSync(out, { recursive: true, force: true }); }
+});
