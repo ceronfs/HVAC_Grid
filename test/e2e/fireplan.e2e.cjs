@@ -74,6 +74,38 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e'); fs.mkdirSync(OUT, { 
   const d1 = (await rect('dock')).height; assert.ok(Math.abs(d1 - d0 - 100) < 12, `dock dragged ${d0} -> ${d1}`);
   assert.ok(Math.abs((await rect('plan')).bottom - (await rect('dock')).top) < 2, 'plan above the dock after the drag');
   log('dock fold, open, drag', d0, '->', d1);
+  // the layer panel (docs/PLAN.md H5 4, step 2): one list of layers in ③ ④ ⑤, each step with its own set on, kept per
+  // step; the legend is in it
+  const layers = () => H(() => Object.fromEntries([...document.querySelectorAll('#legend [data-layer]')].map(e => [e.dataset.layer, e.checked])));
+  const count = sel => H(s => document.querySelectorAll(s).length, sel);
+  if (!(await H(() => !!document.querySelector('#legend [data-layer]')))) { await p.click('#legend .lg-tog'); await p.waitForTimeout(200); }
+  assert.deepEqual(await layers(), { rooms: true, sys: false, xfer: false, units: true, ducts: true, rus: false, fire: true, pens: true }, '⑤ opens with its layers');
+  assert.ok(await H(() => /A-60/.test(document.querySelector('#legend').textContent)), 'the fire legend in the panel');
+  await p.locator('#legend [data-layer="pens"]').uncheck(); await p.waitForTimeout(150);
+  assert.equal(await count('#plan .pen'), 0, '관통부 off');
+  await p.locator('#legend [data-layer="fire"]').uncheck(); await p.waitForTimeout(150);
+  assert.equal(await count('#plan line.fb'), 0, '방화 경계 off');
+  await p.locator('#legend [data-layer="rooms"]').uncheck(); await p.waitForTimeout(150);
+  assert.deepEqual(await H(() => [document.querySelectorAll('#plan .rm.bare').length === document.querySelectorAll('#plan .rm').length, HVACGrid.box.doc.documentElement.classList.contains('hg-nolabel')]), [true, true], '격실 off: outlines and BOX labels go, rooms still pickable');
+  await p.click('.step[data-step=air]'); await idle(); await p.waitForTimeout(200);
+  const air = await layers();
+  assert.deepEqual(air, { rooms: true, sys: true, xfer: true, units: true, ducts: true, rus: false, fire: false, pens: false }, '③ opens with its own layers');
+  assert.ok(await count('#plan .xfer') > 0 && !(await H(() => HVACGrid.box.doc.documentElement.classList.contains('hg-nolabel'))), '③: transfer air, BOX labels');
+  await p.click('.step[data-step=review]'); await idle(); await p.waitForTimeout(200);
+  assert.deepEqual(await layers(), { rooms: false, sys: false, xfer: false, units: true, ducts: true, rus: false, fire: false, pens: false }, '⑤ keeps what was switched');
+  for (const id of ['rooms', 'fire', 'pens']) { await p.locator(`#legend [data-layer="${id}"]`).check(); await p.waitForTimeout(100); }
+  assert.ok(await count('#plan .pen') > 0 && await count('#plan line.fb') > 0, 'layers on again');
+  // the deck filter: the decks above and below, faint
+  await H(() => { HVACGrid.S.deck = 'D2'; HVACGrid.render(); }); await p.waitForTimeout(200);
+  assert.equal(await count('#plan g.ghost'), 0, '이 Deck만');
+  await p.locator('#legend [data-ghost="1"]').click(); await p.waitForTimeout(200);
+  const ghost = await H(() => [...document.querySelectorAll('#plan g.ghost')].map(g => [g.dataset.deck, g.classList.contains('up') ? 'up' : 'down', g.querySelectorAll('polygon').length]));
+  const near = await H(() => { const ds = [...HVACGrid.S.contract.decks].sort((a, b) => a.elevationMm - b.elevationMm), i = ds.findIndex(d => d.id === 'D2'); return [ds[i + 1].id, ds[i - 1].id]; });
+  assert.deepEqual(ghost.map(g => g[0]), near, 'the decks above and below ' + JSON.stringify(ghost)); assert.ok(ghost.every(g => g[2] > 5));
+  await p.screenshot({ path: path.join(OUT, 'one-canvas-layers.png') });
+  await p.locator('#legend [data-ghost="0"]').click(); await p.waitForTimeout(150);
+  assert.equal(await count('#plan g.ghost'), 0);
+  log('layers: per step, kept; deck filter', JSON.stringify(ghost));
   log('page errors', errors.length, errors.slice(0, 3)); assert.equal(errors.length, 0);
   log('E2E FIREPLAN PASS');
  } catch (e) { console.error('E2E FIREPLAN FAIL', e); process.exitCode = 1; }

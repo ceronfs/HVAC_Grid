@@ -152,7 +152,8 @@
 html.hg-bg #roomZoneLayer,html.hg-bg #roomHighlightLayer,html.hg-bg #gripLayer,html.hg-bg #previewLayer,html.hg-bg #osnapLayer,
 html.hg-bg #olWorkflowOverlay,html.hg-bg #l4DiagnosticsOverlay{display:none!important}
 html.hg-bg .main>.side,html.hg-bg #canvas>.viewbar,html.hg-bg #canvas>.status{visibility:hidden!important}
-html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
+html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}
+html.hg-bg.hg-nolabel #roomLabelLayer{display:none!important}`;
  const CAL_APPLY = new Set(['K7', 'C✓']);
  // CAL commands on CAL's settings alone - the K values (ISO 기준, ISO 적용, LY, LY 적용, 사용자) and the design conditions
  // (project K): they open with no drawing too. CAL then has no rooms; BOX keeps the settings for the drawing opened next
@@ -185,8 +186,9 @@ html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
   roomIds() { try { return this.win.CAD_APP.rooms().map(r => String(r.id)); } catch { return []; } }
   // BOX's own light / dark follows the shell
   theme() { try { this.doc.documentElement.dataset.theme = document.documentElement.dataset.theme || ''; } catch {} }
-  // BOX's canvas as the background of ③ ④ (BOX_CSS hg-bg); BOX itself is not changed
-  backdrop(on, duct = false) { try { const c = this.doc.documentElement.classList; c.toggle('hg-bg', !!on); c.toggle('hg-duct', !!on && duct); this.solo(on); } catch {} }
+  // BOX's canvas as the background of ③ ④ ⑤ (BOX_CSS hg-bg); labels: BOX's room labels (the plan's 격실 layer). BOX itself
+  // is not changed
+  backdrop(on, duct = false, { labels = true } = {}) { try { const c = this.doc.documentElement.classList; c.toggle('hg-bg', !!on); c.toggle('hg-duct', !!on && duct); c.toggle('hg-nolabel', !!on && !labels); this.solo(on); } catch {} }
   // as the background BOX draws its active deck alone: BOX draws the lines of every shown deck, and decks stacked at one
   // place (as BOX opens drawings) crossed the chosen deck's rooms. BOX's render filter hook (shownForRender) does it - the
   // decks' own visibility, BOX's undo and the saved drawing stay as they are. st.stackView, a key of BOX's canvas cache,

@@ -306,3 +306,17 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .plan .fpl{font-weight:700;stroke:var(--canvas);stroke-width:3px;paint-order:stroke;stroke-linejoin:round;vector-effect:non-scaling-stroke;pointer-events:none;font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif}
 .plan .fpl.pl{font-weight:600;fill:var(--text)}
 .plan line.focus{stroke-width:9;stroke-linecap:round;stroke-opacity:.6}
+/* the layer panel (in the legend's place): a switch per layer, its key under it while on, the deck filter */
+.legend{max-height:calc(100% - var(--dock-h,0px) - 24px);overflow:auto}
+.legend .layers{display:grid;gap:1px;margin:4px 0 6px}
+.legend .ly{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600}.legend .ly input{margin:0}
+.legend .ly-key{margin:0 0 4px 20px;font-size:12px;line-height:1.5}
+.legend .ghost-seg{margin:4px 0}
+/* 격실 layer off: the room stays pickable, its outline goes */
+.plan .rm.bare{stroke:none}
+/* the decks above and below, faint and dashed */
+.plan .ghost{pointer-events:none;opacity:.6}
+.plan .ghost polygon,.plan .ghost .gd,.plan .ghost .gu{fill:none;vector-effect:non-scaling-stroke}
+.plan .ghost polygon{stroke-width:1;stroke-dasharray:5 4}.plan .ghost .gd{stroke-width:1.6;stroke-dasharray:6 3}.plan .ghost .gu{stroke-width:1.6}
+.plan .ghost.up polygon,.plan .ghost.up .gd,.plan .ghost.up .gu{stroke:#7b5ea7}
+.plan .ghost.down polygon,.plan .ghost.down .gd,.plan .ghost.down .gu{stroke:#b5731f}

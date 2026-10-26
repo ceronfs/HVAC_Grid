@@ -12,9 +12,11 @@
  const esc = U.esc, fmt = v => v == null || v === '' || Number.isNaN(+v) ? '—' : Math.round(v).toLocaleString();
  const box = new B.Box($('boxFrame')), phg = new B.Phg($('phgFrame'));
  const S = { step: 'room', contract: null, deck: null, room: null, kind: 'supply', sys: null, filter: 'all', overlay: 'air', tab: 'nets', gradeFilter: null, focus: null, projects: {}, results: {}, geometry: {}, active: null,
-  pickRoot: false, msg: '', msgErr: false, phgDocked: false, undo: [], redo: [], dockOpen: true, dockH: null };
+  pickRoot: false, msg: '', msgErr: false, phgDocked: false, undo: [], redo: [], dockOpen: true, dockH: null, layers: {}, deckGhost: false };
  // ⑤'s dock: open or folded, and its height, kept for the next start (a viewer's convenience only)
  try { const d = JSON.parse(localStorage.getItem('hvac-grid-dock') || '{}'); if (d.open === false) S.dockOpen = false; if (d.h > 0) S.dockH = d.h; } catch {}
+ // the plan's layers switched per step and the deck filter (layerPanel), kept the same way
+ try { const l = JSON.parse(localStorage.getItem('hvac-grid-layers') || '{}'); if (l.layers && typeof l.layers === 'object') S.layers = l.layers; S.deckGhost = !!l.ghost; } catch {}
  const saveDock = () => { try { localStorage.setItem('hvac-grid-dock', JSON.stringify({ open: S.dockOpen, h: S.dockH })); } catch {} };
  let plansCache = null, analysisCache = null;
  const invalidate = () => { plansCache = null; analysisCache = null; };
@@ -790,81 +792,84 @@
    minY = (y0 + y1) / 2 - rc.height / 2 / k; maxY = minY + rc.height / k;
   }
   const onBox = boxDeck && (!!bv || (() => { try { return box.viewTo(minX, minY, k, rc); } catch { return false; } })());
-  $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); box.backdrop(onBox, S.step === 'duct'); svg.classList.toggle('on-box', onBox);
+  $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); svg.classList.toggle('on-box', onBox);
   svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'none');
   S.planShown = { deck: S.deck, minX, minY, k }; planNav(svg);
-  // sizes in screen px: k = px per mm of the plan
-  // ⑤ (review) draws the fire layer over the deck's ducts; ③ when its 방화 보기 is on
-  const px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', review = S.step === 'review', fire = review || (S.overlay === 'fire' && !ductMode), a = analysis();
+  // sizes in screen px: k = px per mm of the plan; the layers on (the layer panel, LAYER_DEFAULT per step)
+  const px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', review = S.step === 'review', a = analysis(), L = layersOn();
+  box.backdrop(onBox, ductMode, { labels: L.has('rooms') });
   let html = '', sel = '';
   for (const r of rooms) {
    const sid = r.systems[S.kind], bx = r.polygon.map(p => p.x), by = r.polygon.map(p => Y(p.y)), x0 = Math.min(...bx), y0 = Math.min(...by), wPx = (Math.max(...bx) - x0) * k, hPx = (Math.max(...by) - y0) * k;
-   const pts = r.polygon.map(p => p.x + ',' + Y(p.y)).join(' '), cl = a.solas.classes[r.id], flow = C.airflow[r.id][FIELD[S.kind]];
-   const fill = fire ? (cl?.cat ? 'transparent' : 'var(--warn-fill)') : sid ? sysColor(sid) + (sid === cur?.systemId ? (ductMode ? '1f' : '38') : (ductMode ? '0d' : '1a')) : 'transparent';
-   html += `<polygon class="rm${fire && !cl?.cat ? ' uncls' : ''}" data-room="${esc(r.id)}" points="${pts}" fill="${fill}"><title>${esc(r.no)} ${esc(r.name)} · ${fire ? 'SOLAS ' + esc(cl?.space || '미분류') + (cl?.cat ? ` (${cl.cat}) ` + esc(SO.catName(a.solas.settings.ship, cl.cat)) : '') : `${KL[S.kind]} ${flow} CMH`}</title></polygon>`;
+   const pts = r.polygon.map(p => p.x + ',' + Y(p.y)).join(' '), cl = a.solas.classes[r.id], flow = C.airflow[r.id][FIELD[S.kind]], fireOnly = L.has('fire') && !L.has('sys'), uncls = L.has('fire') && !cl?.cat;
+   const fill = L.has('sys') && sid ? sysColor(sid) + (sid === cur?.systemId ? (ductMode ? '1f' : '38') : (ductMode ? '0d' : '1a')) : uncls ? 'var(--warn-fill)' : 'transparent';
+   // the room stays pickable with the 격실 layer off (its outline and labels go)
+   html += `<polygon class="rm${uncls ? ' uncls' : ''}${L.has('rooms') ? '' : ' bare'}" data-room="${esc(r.id)}" points="${pts}" fill="${fill}"><title>${esc(r.no)} ${esc(r.name)} · ${fireOnly ? 'SOLAS ' + esc(cl?.space || '미분류') + (cl?.cat ? ` (${cl.cat}) ` + esc(SO.catName(a.solas.settings.ship, cl.cat)) : '') : `${KL[S.kind]} ${flow} CMH`}</title></polygon>`;
    // labels pinned to the top-left corner inside the room (RUs and the unit sit at the centre); an L-shaped room whose
    // corner is cut out gets them at its interior point; narrow rooms keep only the number
    if (wPx >= 28 && hPx >= 18) {
     let lx = x0 + px(6), ly = y0 + px(17);
     if (!PL.inside({ x: lx, y: Y(ly + px(15)) }, r.polygon) || !PL.inside({ x: lx + px(40), y: Y(ly - px(10)) }, r.polygon)) { const ip = PL.interiorPoint(r.polygon, 100, r.holes); lx = ip.x - px(20); ly = Y(ip.y) - px(18); }
     // on BOX's canvas BOX labels the room; drawn alone, the plan writes the number, and the name where it fits
-    const named = !onBox && wPx >= 64 && hPx >= 50;
-    if (!onBox) html += `<text class="lbl no" x="${lx}" y="${ly}" style="font-size:${px(12)}px">${esc(r.no)}</text>`;
+    const own = !onBox && L.has('rooms'), named = own && wPx >= 64 && hPx >= 50;
+    if (own) html += `<text class="lbl no" x="${lx}" y="${ly}" style="font-size:${px(12)}px">${esc(r.no)}</text>`;
     if (named) html += `<text class="lbl" x="${lx}" y="${ly + px(14)}" style="font-size:${px(11)}px">${esc(r.name)}</text>`;
-    const sub = fire ? (cl?.cat ? `(${cl.cat})` : '미분류') : flow ? `${flow} CMH` : '';
-    if (wPx >= 64 && hPx >= 36 && sub) html += `<text class="lbl${fire && !cl?.cat ? ' warnt' : ''}" x="${lx}" y="${onBox ? ly : ly + px(named ? 28 : 15)}" style="font-size:${px(11)}px">${esc(sub)}</text>`;
+    const sub = L.has('sys') ? (flow ? `${flow} CMH` : '') : L.has('fire') ? (cl?.cat ? `(${cl.cat})` : '미분류') : '';
+    if (wPx >= 64 && hPx >= 36 && sub) html += `<text class="lbl${!L.has('sys') && uncls ? ' warnt' : ''}" x="${lx}" y="${!own ? ly : ly + px(named ? 28 : 15)}" style="font-size:${px(11)}px">${esc(sub)}</text>`;
    }
    if (r.id === S.room) sel = `<polygon class="selhalo" points="${pts}"/><polygon class="selline" points="${pts}"/>`;
   }
-  if (fire) {
-   // ⑤: every system's ducts of the deck, faint - the penetrations sit on them
-   if (review) for (const p of deckPlans()) (S.geometry[p.key]?.ducts || []).forEach(d => {
-    html += `<polyline class="duct" points="${d.points.map(q => `${q.x},${Y(-q.y)}`).join(' ')}" stroke="${sysColor(p.systemId)}" stroke-width="${d.type === 'main' ? 2.5 : 1.5}" opacity=".4"><title>${KL[p.kind]} ${esc(p.systemId)} ${esc(d.displayName)} ${d.widthMm ? d.widthMm + '×' + d.heightMm : d.diameterMm ? 'Ø' + d.diameterMm : ''} · ${d.flowCmh} CMH</title></polyline>`; });
-   for (const p of a.solas.passages.filter(x => x.deckId === S.deck && x.roomId)) { const r = C.rooms.find(x => x.id === p.roomId); if (!r) continue;
-    html += `<polygon class="pass ${p.level}" points="${r.polygon.map(q => q.x + ',' + Y(q.y)).join(' ')}"><title>${esc(p.systemId)}: ${esc(p.text)} (${esc(p.rule)})</title></polygon>`; }
-   html += fireLayer(a, px);
-  } else {
-   // transfer air: a short arrow across the middle of the wall the two rooms share (where the door grille or transfer
-   // duct goes), with its CMH; solid when the user chose the source, orange through an A-class boundary
-   for (const r of ductMode ? [] : rooms) { const A = C.airflow[r.id], src = C.rooms.find(x => x.id === A.transferFrom); if (!src || !A.transferInCmh) continue;
-    let seg = null; for (const e of GE.roomEdges(src)) for (const g of GE.roomEdges(r)) { const q = GE.sharedSegment(e, g, 400, 100); if (q && (!seg || q.lengthMm > seg.lengthMm)) seg = q; }
-    let m, ux, uy;
-    if (seg) { m = { x: (seg.a.x + seg.b.x) / 2, y: (seg.a.y + seg.b.y) / 2 }; const L = seg.lengthMm || 1; ux = -(seg.b.y - seg.a.y) / L; uy = (seg.b.x - seg.a.x) / L;
-     const c = PL.interiorPoint(src.polygon, 100, src.holes); if ((c.x - m.x) * ux + (c.y - m.y) * uy > 0) { ux = -ux; uy = -uy; } }
-    else { const p = PL.interiorPoint(src.polygon, 100, src.holes), q = PL.interiorPoint(r.polygon, 100, r.holes), L = Math.hypot(q.x - p.x, q.y - p.y) || 1; ux = (q.x - p.x) / L; uy = (q.y - p.y) / L; m = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 }; }
-    const len = px(16), h = px(6), fx = m.x - ux * len, fy = m.y - uy * len, tx = m.x + ux * len, ty = m.y + uy * len;
-    const bd = a.solas.boundaries.find(b => b.kind === 'bulkhead' && ((b.roomA === r.id && b.roomB === src.id) || (b.roomB === r.id && b.roomA === src.id))), aClass = /^A/.test(bd?.grade || '');
-    // the label's halo is the CSS one, 3 screen px (non-scaling): a plan-unit stroke-width here, scaled as screen px,
-    // drew white discs over the rooms' names (N3 captures 2026-10-22)
-    html += `<g class="xfer${A.transferSet ? ' set' : ''}${aClass ? ' acls' : ''}"><line x1="${fx}" y1="${Y(fy)}" x2="${tx}" y2="${Y(ty)}"/><polygon points="${tx + ux * h},${Y(ty + uy * h)} ${tx - uy * h * .6},${Y(ty + ux * h * .6)} ${tx + uy * h * .6},${Y(ty - ux * h * .6)}"/>`
-     + `<text x="${m.x - uy * px(9)}" y="${Y(m.y + ux * px(9)) + px(3)}" text-anchor="middle" style="font-size:${px(10)}px">${fmt(A.transferInCmh)}</text>`
-     + `<title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${bd?.grade ? ' · 경계 ' + esc(bd.grade) : ''}${A.transferSet ? ' (지정)' : ' (자동)'}</title></g>`; }
-   // ducts of the chosen kind that PHG D made, thin, under the markers
-   // in ④ (the shared canvas): the chosen system's network strong and pickable, others of the deck faint as asked
-   const show = S.ductShow || 'sys', ductPlans = ductMode ? deckPlans().filter(p => show === 'all' || (show === 'kind' ? p.kind === S.kind : p.key === cur?.key)) : deckPlans(S.kind);
+  // the decks above and below, faint (deck filter)
+  if (S.deckGhost) html += ghostDecks(px);
+  // ducts PHG D made: ③ of the chosen kind, thin; ④ the chosen system's network strong and pickable, others of the deck
+  // faint as asked; ⑤ every system of the deck, faint (the penetrations sit on them)
+  if (L.has('ducts')) {
+   const show = S.ductShow || 'sys', ductPlans = ductMode ? deckPlans().filter(p => show === 'all' || (show === 'kind' ? p.kind === S.kind : p.key === cur?.key)) : review ? deckPlans() : deckPlans(S.kind);
    for (const p of ductPlans) (S.geometry[p.key]?.ducts || []).forEach((d, i) => {
     const on = p.key === cur?.key, w = ductMode ? (d.type === 'main' ? 4 : d.type === 'branch' ? 2.6 : 1.6) : (d.type === 'main' ? 2.5 : 1.5), pts = d.points.map(q => `${q.x},${Y(-q.y)}`).join(' ');
     if (ductMode && S.duct?.key === p.key && S.duct.i === i) html += `<polyline class="duct dsel" points="${pts}" stroke-width="${w + 7}"></polyline>`;
-    html += `<polyline class="duct${ductMode ? ' pick' : ''}" data-key="${esc(p.key)}" data-i="${i}" points="${pts}" stroke="${sysColor(p.systemId)}" stroke-width="${w}" opacity="${on ? .95 : ductMode ? .3 : .45}"><title>${esc(p.systemId)} ${esc(d.displayName)} ${d.widthMm ? d.widthMm + '×' + d.heightMm : d.diameterMm ? 'Ø' + d.diameterMm : ''} · ${d.flowCmh} CMH</title></polyline>`;
+    html += `<polyline class="duct${ductMode ? ' pick' : ''}" data-key="${esc(p.key)}" data-i="${i}" points="${pts}" stroke="${sysColor(p.systemId)}" stroke-width="${w}" opacity="${ductMode ? (on ? .95 : .3) : review ? .4 : on ? .95 : .45}"><title>${KL[p.kind]} ${esc(p.systemId)} ${esc(d.displayName)} ${d.widthMm ? d.widthMm + '×' + d.heightMm : d.diameterMm ? 'Ø' + d.diameterMm : ''} · ${d.flowCmh} CMH</title></polyline>`;
    });
-   if (ductMode && cur) {
-    // main duct sizes along the network, where there is room for them
-    for (const d of (S.geometry[cur.key]?.ducts || []).filter(d => d.type === 'main' && d.points.length > 1)) {
-     const [p0, p1] = [d.points[0], d.points.at(-1)], L = Math.hypot(p1.x - p0.x, p1.y - p0.y) * k; if (L < 70) continue;
-     const size = d.widthMm ? `${d.widthMm}×${d.heightMm}` : d.diameterMm ? `Ø${d.diameterMm}` : ''; if (!size) continue;
-     const vert = Math.abs(p1.x - p0.x) < Math.abs(p1.y - p0.y), mx = (p0.x + p1.x) / 2, my = Y(-(p0.y + p1.y) / 2);
-     html += `<text class="dsz" x="${mx + (vert ? px(6) : 0)}" y="${my - (vert ? 0 : px(6))}" text-anchor="${vert ? 'start' : 'middle'}" style="font-size:${px(10)}px">${size}</text>`;
-    }
-    // the plan's RUs: supply circle, return diamond, exhaust square (shape and colour)
-    for (const u of cur.rus) { const x = u.x, y = Y(u.y), r = px(4.5), t = `<title>${esc(u.id)} · ${fmt(u.flowCmh)} CMH${u.moved ? ' · 옮김' : ''} — 끌어서 옮기기</title>`, dg = `data-key="${esc(cur.key)}" data-ru="${esc(u.id)}"`;
-     html += cur.kind === 'supply' ? `<circle class="ru drag${u.moved ? ' moved' : ''}" ${dg} cx="${x}" cy="${y}" r="${r}" fill="${sysColor(cur.systemId)}">${t}</circle>`
-      : cur.kind === 'return' ? `<path class="ru drag${u.moved ? ' moved' : ''}" ${dg} d="M${x} ${y - r * 1.2}L${x + r * 1.2} ${y}L${x} ${y + r * 1.2}L${x - r * 1.2} ${y}Z" fill="${sysColor(cur.systemId)}">${t}</path>`
-      : `<rect class="ru drag${u.moved ? ' moved' : ''}" ${dg} x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}" fill="${sysColor(cur.systemId)}">${t}</rect>`; }
+   // ④: main duct sizes along the network, where there is room for them
+   if (ductMode && cur) for (const d of (S.geometry[cur.key]?.ducts || []).filter(d => d.type === 'main' && d.points.length > 1)) {
+    const [p0, p1] = [d.points[0], d.points.at(-1)], len = Math.hypot(p1.x - p0.x, p1.y - p0.y) * k; if (len < 70) continue;
+    const size = d.widthMm ? `${d.widthMm}×${d.heightMm}` : d.diameterMm ? `Ø${d.diameterMm}` : ''; if (!size) continue;
+    const vert = Math.abs(p1.x - p0.x) < Math.abs(p1.y - p0.y), mx = (p0.x + p1.x) / 2, my = Y(-(p0.y + p1.y) / 2);
+    html += `<text class="dsz" x="${mx + (vert ? px(6) : 0)}" y="${my - (vert ? 0 : px(6))}" text-anchor="${vert ? 'start' : 'middle'}" style="font-size:${px(10)}px">${size}</text>`;
    }
+  }
+  // fire boundaries: the restricted spaces a duct passes, the rated walls (the 방화 등급도's layer)
+  if (L.has('fire')) {
+   for (const p of a.solas.passages.filter(x => x.deckId === S.deck && x.roomId)) { const r = C.rooms.find(x => x.id === p.roomId); if (!r) continue;
+    html += `<polygon class="pass ${p.level}" points="${r.polygon.map(q => q.x + ',' + Y(q.y)).join(' ')}"><title>${esc(p.systemId)}: ${esc(p.text)} (${esc(p.rule)})</title></polygon>`; }
+   html += fireLayer(a, px, { pens: false });
+  }
+  // transfer air: a short arrow across the middle of the wall the two rooms share (where the door grille or transfer
+  // duct goes), with its CMH; solid when the user chose the source, orange through an A-class boundary
+  if (L.has('xfer')) for (const r of rooms) { const A = C.airflow[r.id], src = C.rooms.find(x => x.id === A.transferFrom); if (!src || !A.transferInCmh) continue;
+   let seg = null; for (const e of GE.roomEdges(src)) for (const g of GE.roomEdges(r)) { const q = GE.sharedSegment(e, g, 400, 100); if (q && (!seg || q.lengthMm > seg.lengthMm)) seg = q; }
+   let m, ux, uy;
+   if (seg) { m = { x: (seg.a.x + seg.b.x) / 2, y: (seg.a.y + seg.b.y) / 2 }; const sl = seg.lengthMm || 1; ux = -(seg.b.y - seg.a.y) / sl; uy = (seg.b.x - seg.a.x) / sl;
+    const c = PL.interiorPoint(src.polygon, 100, src.holes); if ((c.x - m.x) * ux + (c.y - m.y) * uy > 0) { ux = -ux; uy = -uy; } }
+   else { const p = PL.interiorPoint(src.polygon, 100, src.holes), q = PL.interiorPoint(r.polygon, 100, r.holes), sl = Math.hypot(q.x - p.x, q.y - p.y) || 1; ux = (q.x - p.x) / sl; uy = (q.y - p.y) / sl; m = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 }; }
+   const len = px(16), h = px(6), fx = m.x - ux * len, fy = m.y - uy * len, tx = m.x + ux * len, ty = m.y + uy * len;
+   const bd = a.solas.boundaries.find(b => b.kind === 'bulkhead' && ((b.roomA === r.id && b.roomB === src.id) || (b.roomB === r.id && b.roomA === src.id))), aClass = /^A/.test(bd?.grade || '');
+   // the label's halo is the CSS one, 3 screen px (non-scaling): a plan-unit stroke-width here, scaled as screen px,
+   // drew white discs over the rooms' names (N3 captures 2026-10-22)
+   html += `<g class="xfer${A.transferSet ? ' set' : ''}${aClass ? ' acls' : ''}"><line x1="${fx}" y1="${Y(fy)}" x2="${tx}" y2="${Y(ty)}"/><polygon points="${tx + ux * h},${Y(ty + uy * h)} ${tx - uy * h * .6},${Y(ty + ux * h * .6)} ${tx + uy * h * .6},${Y(ty - ux * h * .6)}"/>`
+    + `<text x="${m.x - uy * px(9)}" y="${Y(m.y + ux * px(9)) + px(3)}" text-anchor="middle" style="font-size:${px(10)}px">${fmt(A.transferInCmh)}</text>`
+    + `<title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${bd?.grade ? ' · 경계 ' + esc(bd.grade) : ''}${A.transferSet ? ' (지정)' : ' (자동)'}</title></g>`; }
+  if (L.has('pens')) html += fireLayer(a, px, { walls: false });
+  // the current plan's RUs: supply circle, return diamond, exhaust square (shape and colour); dragged in ④
+  if (L.has('rus') && cur) for (const u of cur.rus) {
+   const x = u.x, y = Y(u.y), r = px(4.5), cls = `ru${ductMode ? ' drag' : ''}${u.moved ? ' moved' : ''}`, t = `<title>${esc(u.id)} · ${fmt(u.flowCmh)} CMH${u.moved ? ' · 옮김' : ''}${ductMode ? ' — 끌어서 옮기기' : ''}</title>`, dg = `data-key="${esc(cur.key)}" data-ru="${esc(u.id)}"`;
+   html += cur.kind === 'supply' ? `<circle class="${cls}" ${dg} cx="${x}" cy="${y}" r="${r}" fill="${sysColor(cur.systemId)}">${t}</circle>`
+    : cur.kind === 'return' ? `<path class="${cls}" ${dg} d="M${x} ${y - r * 1.2}L${x + r * 1.2} ${y}L${x} ${y + r * 1.2}L${x - r * 1.2} ${y}Z" fill="${sysColor(cur.systemId)}">${t}</path>`
+    : `<rect class="${cls}" ${dg} x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}" fill="${sysColor(cur.systemId)}">${t}</rect>`;
   }
   html += sel;
   // units (filled = set by the user, dashed = a guess) on the unit deck; vertical duct shafts (circles) on the other decks
-  for (const p of deckPlans(S.kind)) {
+  if (L.has('units')) for (const p of deckPlans(S.kind)) {
    const col = sysColor(p.systemId), on = p.key === cur?.key, user = p.rootSource === 'user', firm = user || /^(fan|shaft|own)-room|above-unit/.test(p.rootSource), s = px(on ? 22 : 18), cx = p.root.x, cy = Y(p.root.y);
    const tip = `${esc(p.systemId)} ${p.isUnitDeck ? (p.kind === 'supply' ? '공조기' : '팬') : '수직 덕트'} · ${esc(rootText(p.rootSource))}`;
    html += p.isUnitDeck ? `<g class="mk${ductMode && on ? ' drag' : ''}" data-key="${esc(p.key)}" opacity="${on ? 1 : .6}"><rect class="root${firm ? '' : ' guess'}" x="${cx - s / 2}" y="${cy - s / 2}" width="${s}" height="${s}" rx="${px(3)}" ${user ? `fill="${col}" stroke="${col}"` : `stroke="${col}"`}><title>${tip}</title></rect><text class="ahu${user ? '' : ' guess'}" x="${cx}" y="${cy + px(3)}" text-anchor="middle" style="font-size:${px(8)}px">${UNIT_WORD[p.kind]}</text></g>`
@@ -884,36 +889,73 @@
   // ④: a duct picked on the plan (a duct of another system makes that system the current one)
   svg.querySelectorAll('.duct.pick').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); const p = plans().find(x => x.key === e.dataset.key); if (p) { S.sys = p.systemKey; S.kind = p.kind; } S.duct = { key: e.dataset.key, i: +e.dataset.i }; S.room = null; render(); });
   svg.onclick = ev => { if (!S.pickRoot) return; const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()); setRoot({ x: q.x, y: Y(q.y) }); render(); };
-  if (fire) {
-   const sum = a.solas.summary, on = a.solas.boundaries.filter(x => x.deckId === S.deck), cnt = g => on.filter(x => x.grade === g).length;
-   $('legend').innerHTML = `<b>${esc(deckName(S.deck))} 방화 경계</b> <span class="muted">${esc(SO.DATA.ships[a.solas.settings.ship].label)}</span><br>${['A-60', 'A-30', 'A-15', 'A-0', 'B-15', 'B-0'].filter(cnt).map(g => `<span class="ln" style="background:${SVG.GRADE_COLORS[g]}"></span>${g} · ${cnt(g)}`).join('<br>')}<br><span class="pd fd"></span>방화댐퍼 ${a.solas.penetrations.filter(x => x.deckId === S.deck && x.damper).length} · <span class="pd"></span>관통 ${a.solas.penetrations.filter(x => x.deckId === S.deck).length} · <span class="pd dk"></span>갑판 관통<br>${a.solas.passages.some(x => x.deckId === S.deck) ? '<span class="err">▨ 제한 구역 통과</span><br>' : ''}${sum.unclassified.length ? `<span class="warn">미분류 실 ${sum.unclassified.length} (전체) — 실 선택 후 오른쪽에서 지정</span>` : '<span class="muted">모든 실 분류됨</span>'}`;
-  } else {
-   const sys = [...new Set(rooms.map(r => r.systems[S.kind]).filter(Boolean))].sort();
-   if (ductMode) { const res = cur && result(cur.key);
-    // a network made before the plan changed (air, unit, RUs): said on the canvas, with the way out
-    let banner = $('staleBanner'); if (!banner) { banner = document.createElement('div'); banner.id = 'staleBanner'; banner.className = 'stale-banner'; $('center').appendChild(banner); }
-    show(banner, !!res?.auto && !!res.stale && !S.phgEditor);
-    if (res?.stale) { banner.innerHTML = `↻ 이 덕트망은 풍량·위치가 바뀌기 전 것입니다 <button class="btn primary">다시 AUTO</button>`; banner.querySelector('button').onclick = () => act('AUTO 계산 중', () => autoKey()); }
-    const view = S.ductShow || 'sys', shown = deckPlans().filter(p => p.key !== cur?.key && (view === 'all' || (view === 'kind' && p.kind === S.kind))), keyOthers = shown.length ? `<br>${shown.map(p => `<span class="ln" style="background:${sysColor(p.systemId)};height:3px;opacity:.6"></span>${KL[p.kind]} ${esc(p.systemId)}${result(p.key)?.auto ? '' : ' <span class="muted">(덕트망 없음)</span>'}`).join('<br>')}` : '';
-    $('legend').innerHTML = cur ? `<b>${esc(deckName(S.deck))} · ${KL[cur.kind]} ${esc(cur.systemId)}</b><br>${res?.auto ? `덕트 ${res.ducts}개 · ${res.lengthM} m · 최대 ${res.indexPa ?? '—'} Pa${res.stale ? ' · <span class="warn">다시 보내기 필요</span>' : ''}` : '<span class="warn">덕트망 없음 — 보내기 + AUTO</span>'}<br><span class="ln" style="background:${sysColor(cur.systemId)};height:4px"></span>주 덕트 · <span class="ln" style="background:${sysColor(cur.systemId)};height:2px"></span>분기${keyOthers}<br><span class="muted">● 급기 RU · ◆ 환기 RU · ■ 배기 RU · 덕트를 누르면 크기·풍량<br>RU·공조기는 끌어서 옮김 → 놓으면 다시 AUTO</span>` : '<span class="muted">이 Deck에 계통이 없습니다</span>';
-   } else $('legend').innerHTML = `<b>${esc(deckName(S.deck))} ${KL[S.kind]} 계통</b><br>${sys.map(id => `<span class="dot" style="background:${sysColor(id)}"></span>${esc(id)} · ${fmt(C.systems.find(s => s.id === id && s.kind === S.kind)?.designCmh)} CMH`).join('<br>') || '<span class="muted">이 Deck에 없음</span>'}<br><span class="muted">${UNIT_WORD[S.kind]} □ 공조기·팬 · ⇅ ○ 수직 덕트 · 채움 = 지정 · 점선 = 임시</span>${C.rooms.some(r => r.deckId === S.deck && C.airflow[r.id].transferInCmh && C.rooms.some(x => x.id === C.airflow[r.id].transferFrom)) ? '<br><span class="muted">→ 전달 공기 CMH (실선 = 지정 · 주황 = A급 경계)</span>' : ''}`;
+  if (ductMode) { const res = cur && result(cur.key);
+   // a network made before the plan changed (air, unit, RUs): said on the canvas, with the way out
+   let banner = $('staleBanner'); if (!banner) { banner = document.createElement('div'); banner.id = 'staleBanner'; banner.className = 'stale-banner'; $('center').appendChild(banner); }
+   show(banner, !!res?.auto && !!res.stale && !S.phgEditor);
+   if (res?.stale) { banner.innerHTML = `↻ 이 덕트망은 풍량·위치가 바뀌기 전 것입니다 <button class="btn primary">다시 AUTO</button>`; banner.querySelector('button').onclick = () => act('AUTO 계산 중', () => autoKey()); }
   }
+  layerPanel(L, rooms, cur, a);
+ }
+ // ---------- the plan's layers (③ ④ ⑤; ① ② later - docs/PLAN.md H5 4) ----------
+ // one list for every step; a step opens with its own set on (③ by its 풍량 / 방화 보기), and what the user switches is
+ // kept per step for the next start
+ const LAYERS = [['rooms', '격실'], ['sys', '계통 색·풍량'], ['xfer', '전달 공기'], ['units', '공조기·수직 덕트'], ['ducts', '덕트'], ['rus', 'RU'], ['fire', '방화 경계'], ['pens', '관통부']];
+ const LAYER_DEFAULT = { 'air:air': ['rooms', 'sys', 'xfer', 'units', 'ducts'], 'air:fire': ['rooms', 'units', 'fire', 'pens'], duct: ['rooms', 'sys', 'units', 'ducts', 'rus'], review: ['rooms', 'units', 'ducts', 'fire', 'pens'] };
+ const layerKey = () => S.step === 'air' ? 'air:' + (S.overlay === 'fire' ? 'fire' : 'air') : S.step;
+ const layersOn = () => new Set(S.layers[layerKey()] || LAYER_DEFAULT[layerKey()] || LAYER_DEFAULT.review);
+ const saveLayers = () => { try { localStorage.setItem('hvac-grid-layers', JSON.stringify({ layers: S.layers, ghost: S.deckGhost })); } catch {} };
+ function setLayer(id, on) { const s = layersOn(); if (on) s.add(id); else s.delete(id); S.layers = { ...S.layers, [layerKey()]: LAYERS.map(([x]) => x).filter(x => s.has(x)) }; saveLayers(); }
+ // the decks just above and below (deck filter "위·아래 흐리게"), faint and dashed: their rooms, their ducts and their
+ // units and shafts - where a vertical duct or a deck penetration lines up (③ ④ of the chosen kind, ⑤ every kind)
+ function ghostDecks(px) {
+  const ds = [...S.contract.decks].sort((x, y) => x.elevationMm - y.elevationMm), i = ds.findIndex(d => d.id === S.deck);
+  return [[ds[i + 1], 'up', '위'], [ds[i - 1], 'down', '아래']].filter(([d]) => d).map(([d, cls, w]) => {
+   let h = S.contract.rooms.filter(r => r.deckId === d.id).map(r => `<polygon points="${r.polygon.map(p => p.x + ',' + Y(p.y)).join(' ')}"/>`).join('');
+   for (const p of plans().filter(x => x.deckId === d.id && (S.step === 'review' || x.kind === S.kind))) {
+    for (const dc of S.geometry[p.key]?.ducts || []) h += `<polyline class="gd" points="${dc.points.map(q => `${q.x},${Y(-q.y)}`).join(' ')}"/>`;
+    h += `<circle class="gu" cx="${p.root.x}" cy="${Y(p.root.y)}" r="${px(p.isUnitDeck ? 10 : 8)}"/>`;
+   }
+   return `<g class="ghost ${cls}" data-deck="${esc(d.id)}"><title>${w} Deck: ${esc(d.name)}</title>${h}</g>`;
+  }).join('');
+ }
+ // the layer panel (top right of the plan, where the legend was): a switch per layer with its key under it while it is
+ // on, and the deck filter
+ function layerPanel(L, rooms, cur, a) {
+  const C = S.contract, onDeck = x => x.deckId === S.deck, ln = (c, h = 3, o = 1) => `<span class="ln" style="background:${c};height:${h}px;opacity:${o}"></span>`;
+  const bnd = a.solas.boundaries.filter(onDeck), cnt = g => bnd.filter(x => x.grade === g).length, pens = a.solas.penetrations.filter(onDeck);
+  const sys = [...new Set(rooms.map(r => r.systems[S.kind]).filter(Boolean))].sort(), res = cur && result(cur.key);
+  const keys = {
+   sys: `${KL[S.kind]} 계통<br>${sys.map(id => `<span class="dot" style="background:${sysColor(id)}"></span>${esc(id)} · ${fmt(C.systems.find(s => s.id === id && s.kind === S.kind)?.designCmh)} CMH`).join('<br>') || '<span class="muted">이 Deck에 없음</span>'}`,
+   xfer: rooms.some(r => C.airflow[r.id].transferInCmh && C.rooms.some(x => x.id === C.airflow[r.id].transferFrom)) ? '→ CMH (실선 = 지정 · 주황 = A급 경계)' : '<span class="muted">이 Deck에 없음</span>',
+   units: `${UNIT_WORD[S.kind]} □ 공조기·팬 · ⇅ ○ 수직 덕트 · 채움 = 지정 · 점선 = 임시`,
+   ducts: S.step === 'duct' ? (cur ? `<b>${KL[cur.kind]} ${esc(cur.systemId)}</b> ${res?.auto ? `덕트 ${res.ducts}개 · ${res.lengthM} m · 최대 ${res.indexPa ?? '—'} Pa${res.stale ? ' · <span class="warn">다시 보내기 필요</span>' : ''}` : '<span class="warn">덕트망 없음 — 보내기 + AUTO</span>'}<br>${ln(sysColor(cur.systemId), 4)}주 덕트 · ${ln(sysColor(cur.systemId), 2)}분기${deckPlans().filter(p => p.key !== cur.key && ((S.ductShow || 'sys') === 'all' || ((S.ductShow || 'sys') === 'kind' && p.kind === S.kind))).map(p => `<br>${ln(sysColor(p.systemId), 3, .6)}${KL[p.kind]} ${esc(p.systemId)}${result(p.key)?.auto ? '' : ' <span class="muted">(덕트망 없음)</span>'}`).join('')}<br><span class="muted">덕트를 누르면 크기·풍량</span>` : '<span class="muted">이 Deck에 계통이 없습니다</span>')
+    : S.step === 'review' ? 'Deck의 모든 계통 (옅게)' : `${KL[S.kind]} 계통 (얇게)`,
+   rus: `● 급기 · ◆ 환기 · ■ 배기${S.step === 'duct' ? '<br><span class="muted">RU·공조기는 끌어서 옮김 → 놓으면 다시 AUTO</span>' : cur ? '' : ' <span class="muted">(계통을 고르면)</span>'}`,
+   fire: `<span class="muted">${esc(SO.DATA.ships[a.solas.settings.ship].label)}</span><br>${['A-60', 'A-30', 'A-15', 'A-0', 'B-15', 'B-0'].filter(cnt).map(g => `${ln(SVG.GRADE_COLORS[g], 4)}${g} · ${cnt(g)}`).join('<br>')}${bnd.some(x => !x.grade) ? `<br>${ln('#d97706', 3)}등급 미정` : ''}${a.solas.passages.some(onDeck) ? '<br><span class="err">▨ 제한 구역 통과</span>' : ''}<br>${a.solas.summary.unclassified.length ? `<span class="warn">미분류 실 ${a.solas.summary.unclassified.length} (전체) — 실 선택 후 오른쪽에서 지정</span>` : '<span class="muted">모든 실 분류됨</span>'}`,
+   pens: `<span class="pd fd"></span>방화댐퍼 ${pens.filter(x => x.damper).length} · <span class="pd"></span>관통 ${pens.length} · <span class="pd dk"></span>갑판 관통` };
+  const ds = [...C.decks].sort((x, y) => x.elevationMm - y.elevationMm), i = ds.findIndex(d => d.id === S.deck), up = ds[i + 1], down = ds[i - 1];
+  $('legend').innerHTML = `<b>${esc(deckName(S.deck))} · 층</b><div class="layers">${LAYERS.map(([id, name]) => `<label class="ly"><input type="checkbox" data-layer="${id}" ${L.has(id) ? 'checked' : ''}> ${name}</label>${L.has(id) && keys[id] ? `<div class="ly-key">${keys[id]}</div>` : ''}`).join('')}</div>`
+   + (up || down ? `<div class="seg ghost-seg" role="radiogroup" aria-label="Deck 필터"><button role="radio" data-ghost="0" aria-checked="${!S.deckGhost}">이 Deck만</button><button role="radio" data-ghost="1" aria-checked="${!!S.deckGhost}">위·아래 흐리게</button></div>${S.deckGhost ? `<div class="ly-key">${up ? `${ln('#7b5ea7', 2)}위 ${esc(up.name)}` : ''}${up && down ? ' · ' : ''}${down ? `${ln('#b5731f', 2)}아래 ${esc(down.name)}` : ''}</div>` : ''}` : '');
+  $('legend').querySelectorAll('[data-layer]').forEach(e => e.onchange = () => { setLayer(e.dataset.layer, e.checked); plan(); });
+  $('legend').querySelectorAll('[data-ghost]').forEach(e => e.onclick = () => { S.deckGhost = e.dataset.ghost === '1'; saveLayers(); plan(); });
+  legendFold();
  }
  // the deck's fire layer as the 방화 등급도 lays it out (lib/fire-plan.cjs layout - the report's and the DXF's drawing):
  // the wall runs in their rating's colour with the rating along them (등급 미정 and outer walls dashed; C and outer
  // walls as the 방화 등급도 tab's choices), the penetrations - circle, fire damper square with a slash, deck penetration (vertical duct)
- // diamond - with FD / SL beside them. Strokes in screen px, as the rest of the plan
- function fireLayer(a, px) {
+ // diamond - with FD / SL beside them (the two are layers of their own). Strokes in screen px, as the rest of the plan
+ function fireLayer(a, px, { walls = true, pens: withPens = true } = {}) {
   const d = fireModel().decks.find(x => x.id === S.deck); if (!d) return '';
   const L = FP.layout(d, { s: px }), bnd = new Map(a.solas.boundaries.map(b => [b.id, b])), pens = new Map(a.solas.penetrations.filter(p => p.deckId === S.deck).map(p => [p.no, p]));
   let lines = '', marks = '', labels = '';
-  for (const w of L.walls) {
+  for (const w of walls ? L.walls : []) {
    const g = w.run.grade; if (g === '-' || (g === 'C' && !S.fpShowC) || (g === '*' && !S.fpShowOuter)) continue;
    const bs = w.run.ids.map(id => bnd.get(id)).filter(Boolean), pairs = [...new Set(bs.map(b => `${b.aSpace || '?'} ↔ ${b.bSpace || '?'}`))], checks = [...new Set(bs.flatMap(b => b.check || []))];
    lines += `<line class="fb${w.dash ? ' dash' : ''}" data-run="${w.i}" x1="${w.x1}" y1="${w.y1}" x2="${w.x2}" y2="${w.y2}" stroke="${w.color}" stroke-width="${((FP.WIDTH[g] || 1.4) * 1.1).toFixed(2)}"><title>${esc(g || '등급 미정')} · ${(w.run.lengthMm / 1000).toFixed(1)} m · ${esc(pairs.slice(0, 3).join(', '))}${pairs.length > 3 ? ' …' : ''}${bs[0]?.table ? ` (Table ${esc(bs[0].table)})` : ''}${checks.length ? ' · ' + esc(checks.join(' / ')) : ''}</title></line>`;
    if (w.label) labels += `<text class="fpl" x="${w.label.x}" y="${w.label.y}" transform="rotate(${w.label.rot} ${w.label.x} ${w.label.y})" text-anchor="middle" dy="${w.label.dy}" style="font-size:${w.label.size}px" fill="${w.color}">${esc(w.label.text)}</text>`;
   }
-  for (const { pen, x, y, label } of L.pens) {
+  for (const { pen, x, y, label } of withPens ? L.pens : []) {
    const pn = pens.get(pen.no); if (!pn) continue;
    const r = px(pn.damper ? 6 : 4.5), cls = `pen${/SIZE|CHECK/.test(pn.code) || pn.note ? ' chk' : ''}`, tip = `<title>${esc(pn.no)} ${esc(pn.systemId)} ${esc(pn.duct)} · ${esc(pn.grade || '미정')} · ${esc(pn.size)} · ${esc(pn.text)}${pn.note ? ' · ' + esc(pn.note) : ''}</title>`;
    marks += pn.boundaryKind === 'deck' ? `<path class="${cls} dk${pn.damper ? ' fd' : ''}" d="M${x} ${y - r}L${x + r} ${y}L${x} ${y + r}L${x - r} ${y}Z">${tip}</path>`
@@ -1119,7 +1161,7 @@
   // ⑤'s dock first: the plan measures the canvas above it
   if (docked) report();
   dockSize();
-  if (view === 'plan' && S.contract) { plan(); legendFold(); }
+  if (view === 'plan' && S.contract) plan();
   phgHint(view);
  }
  function status() {
@@ -1135,13 +1177,13 @@
   $('nextBtn').onclick = () => nextTo ? (nextTo === S.step && nextTo === 'review' ? (S.tab = 'checks', render()) : go(nextTo)) : act(null, () => saveProject());
   document.title = C ? `${RP.PROJECT_NAME(C) || '설계 데이터'}${S.dirty ? ' *' : ''} — HVAC Grid` : 'HVAC Grid';
  }
- // the plan legend opens and closes; it starts closed when the plan is narrow (it would cover rooms)
+ // the layer panel (with the legend) opens and closes; it starts closed when the plan is narrow (it would cover rooms)
  let legendRoom = true;
  function legendOpen() { return S.legendOpen ?? ((legendRoom || (S.overlay === 'fire' && S.step === 'air') || S.step === 'review') && $('center').getBoundingClientRect().width > 1000); }
  function legendFold() {
   const lg = $('legend'), open = legendOpen();
-  if (!open) lg.innerHTML = '<button class="lg-tog" title="범례 펼치기" aria-expanded="false">범례 ▾</button>';
-  else lg.insertAdjacentHTML('afterbegin', '<button class="lg-tog close" title="범례 접기" aria-expanded="true">×</button>');
+  if (!open) lg.innerHTML = '<button class="lg-tog" title="층·범례 펼치기" aria-expanded="false">층 ▾</button>';
+  else lg.insertAdjacentHTML('afterbegin', '<button class="lg-tog close" title="층·범례 접기" aria-expanded="true">×</button>');
   lg.classList.toggle('folded', !open); lg.querySelector('.lg-tog').onclick = () => { S.legendOpen = !open; render(); };
  }
  // ④ with a plan not in PHG D yet: what to do, over the empty canvas
