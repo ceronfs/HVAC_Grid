@@ -1,5 +1,5 @@
 // HVAC Grid shell: one workflow over BOX CAL (rooms, loads) and PHG D (RUs, ducts) - docs/UI_REVIEW.md, UI_DESIGN_REVIEW.md.
-// ① 도면·격실 and ② 부하 show BOX; ③ 풍량·계통, ④ RU·덕트 and ⑤ 검토·출력 are the shell's own plan over the HVAC Grid
+// ① 도면·격실 and ② 부하 show BOX (the shell's layers over it when switched on); ③ 풍량·계통, ④ RU·덕트 and ⑤ 검토·출력 are the shell's own plan over the HVAC Grid
 // project (lib/*.cjs: contract, plans per deck and system, vertical ducts, SOLAS, outputs) on BOX's canvas - ⑤ with its
 // tables in a dock under it; PHG D's own screen only as ④'s detail editor. The vendor apps are driven through
 // app/bridge.js and never modified.
@@ -649,11 +649,34 @@
  const stepOf = id => STEPS.find(s => s.id === id);
  // the view a step shows: ④ is the shared HVAC Grid plan; PHG D only while its editor is open (S.phgEditor)
  const viewOf = id => id === 'duct' ? (S.phgEditor ? 'phg' : 'plan') : stepOf(id).view;
+ // ① ② → ③ ④ ⑤: the deck BOX shows, the room picked in it, and BOX's view kept also when BOX shows only part of the
+ // deck (plan() takes BOX's view by itself when it frames the deck; else it would fit the deck - a jump)
+ function fromBox() {
+  followBoxDeck();
+  const picked = box.pickedRoom(new Set(S.contract.rooms.map(r => r.id)));
+  if (picked) { S.room = picked; const d = S.contract.rooms.find(r => r.id === picked).deckId; if (d !== S.deck) { S.deck = d; pickSystem(); } }
+  const v = box.view2d(), rooms = S.contract.rooms.filter(r => r.deckId === S.deck); if (!v || !rooms.length || box.win.CAD_APP.st.activeDeck !== S.deck) return;
+  const xs = rooms.flatMap(r => r.polygon.map(p => p.x)), ys = rooms.flatMap(r => r.polygon.map(p => Y(p.y))), cr = $('center').getBoundingClientRect();
+  if (boxView(xs, ys, cr)) return;
+  const x1 = v.minX + v.rect.width / v.k, y1 = v.minY + v.rect.height / v.k;
+  if (Math.max(...xs) > v.minX && Math.min(...xs) < x1 && Math.max(...ys) > v.minY && Math.min(...ys) < y1) S.planView = { deck: S.deck, k: v.k, minX: v.minX - v.rect.left / v.k, minY: v.minY - v.rect.top / v.k };
+ }
+ // ③ ④ ⑤ → ① ②: BOX on the deck and at the view the plan showed, the plan's room picked in BOX (as from its room list)
+ function toBox() {
+  try {
+   if (!box.loading || !box.hasDrawing()) return;
+   box.showDeck(S.deck);
+   const v = S.planShown; if (v?.deck === S.deck) box.viewTo(v.minX, v.minY, v.k, $('center').getBoundingClientRect());
+   box.highlight(S.contract.rooms.find(r => r.id === S.room) || null);
+  } catch {}
+ }
  // ③ opens on the deck BOX showed in ① ② - the same deck on the same canvas
  function followBoxDeck() { try { const a = box.loading && box.win.CAD_APP?.st?.activeDeck; if (a && S.contract?.decks.some(d => d.id === a) && S.deck !== a) { S.deck = a; S.room = null; pickSystem(); } } catch {} }
  async function go(id) {
   if (S.step === 'duct' && id !== 'duct') { if (S.phgEditor) readBackIfEdited(); S.phgEditor = false; }
-  if (viewOf(S.step) === 'box' && viewOf(id) === 'plan') followBoxDeck();
+  const from = viewOf(S.step), to = viewOf(id);
+  if (from === 'box' && to === 'plan' && S.contract) fromBox();
+  if (from === 'plan' && to === 'box' && S.contract) toBox();
   // ③ ④ ⑤ are one canvas: the view on screen stays (⑤'s dock takes the bottom of it; a double click fits the deck again)
   if (viewOf(S.step) === 'plan' && viewOf(id) === 'plan' && !S.planView && S.planShown?.deck === S.deck) S.planView = { ...S.planShown };
   S.step = id; S.pickRoot = false; render();
@@ -756,8 +779,21 @@
   } catch { return null; }
  }
  function plan() {
-  const C = S.contract, svg = $('plan'), rooms = C.rooms.filter(r => r.deckId === S.deck); if (!rooms.length) { svg.innerHTML = ''; return; }
+  // ① ②: the layers over BOX's own canvas - its view and its active deck; BOX takes every click (docs/PLAN.md H5 4)
+  const over = viewOf(S.step) === 'box', bv2 = over ? box.view2d() : null;
+  if (over) followBoxDeck();
+  const C = S.contract, svg = $('plan'), rooms = C.rooms.filter(r => r.deckId === S.deck);
+  svg.classList.toggle('over-box', over);
+  // (over BOX in 3D or on a deck the design data has not got: nothing over BOX - the plan's own background would hide it)
+  if (!rooms.length || (over && !bv2)) { svg.innerHTML = ''; if (over) { show(svg, false); layerPanel(layersOn(), rooms, curPlan(), analysis()); } return; }
+  if (over) show(svg, true);
   const xs = rooms.flatMap(r => r.polygon.map(p => p.x)), ys = rooms.flatMap(r => r.polygon.map(p => Y(p.y)));
+  let minX, minY, maxX, maxY, k, onBox;
+  if (over) {
+   Object.assign(svg.style, { left: bv2.rect.left + 'px', top: bv2.rect.top + 'px', width: bv2.rect.width + 'px', height: bv2.rect.height + 'px' });
+   ({ minX, minY, k } = bv2); maxX = minX + bv2.rect.width / k; maxY = minY + bv2.rect.height / k; onBox = true;
+  } else {
+  svg.style.left = svg.style.top = svg.style.width = svg.style.height = '';
   // the ① ② canvas itself (BOX: its lines, room labels, grid and origin axes, at its resolution) is the background, the
   // chosen deck alone on it (box.solo); the plan draws only what BOX has not got - system colours, flows, units, RUs,
   // ducts, fire boundaries. Without BOX's drawing of this deck (or BOX in 3D) the plan draws the deck itself
@@ -776,7 +812,6 @@
     if (box.fitDeck(deck, { left: L, right: R, top: rc.top, bottom: rc.bottom })) bv = boxView(xs, ys, rc);
    }
   }
-  let minX, minY, maxX, maxY, k;
   // the user's own view, BOX's view (② → ③ without a jump) or the deck fitted; BOX's canvas is moved to the plan's view
   // when the plan chose it
   if (nav) { ({ minX, minY, k } = nav); maxX = minX + rc.width / k; maxY = minY + rc.height / k; legendRoom = true; }
@@ -791,15 +826,18 @@
    minX = (x0 + x1) / 2 - (sideL + free / 2) / k; maxX = minX + rc.width / k;
    minY = (y0 + y1) / 2 - rc.height / 2 / k; maxY = minY + rc.height / k;
   }
-  const onBox = boxDeck && (!!bv || (() => { try { return box.viewTo(minX, minY, k, rc); } catch { return false; } })());
-  $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); svg.classList.toggle('on-box', onBox);
-  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'none');
+  onBox = boxDeck && (!!bv || (() => { try { return box.viewTo(minX, minY, k, rc); } catch { return false; } })());
+  $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox);
   S.planShown = { deck: S.deck, minX, minY, k }; planNav(svg);
+  }
+  svg.classList.toggle('on-box', onBox);
+  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'none');
   // sizes in screen px: k = px per mm of the plan; the layers on (the layer panel, LAYER_DEFAULT per step)
   const px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', review = S.step === 'review', a = analysis(), L = layersOn();
-  box.backdrop(onBox, ductMode, { labels: L.has('rooms') });
+  if (!over) box.backdrop(onBox, ductMode, { labels: L.has('rooms') });
   let html = '', sel = '';
-  for (const r of rooms) {
+  // over BOX the rooms are BOX's (its pick, its labels): drawn only for a layer that colours or outlines them
+  for (const r of over && !['rooms', 'sys', 'fire'].some(x => L.has(x)) ? [] : rooms) {
    const sid = r.systems[S.kind], bx = r.polygon.map(p => p.x), by = r.polygon.map(p => Y(p.y)), x0 = Math.min(...bx), y0 = Math.min(...by), wPx = (Math.max(...bx) - x0) * k, hPx = (Math.max(...by) - y0) * k;
    const pts = r.polygon.map(p => p.x + ',' + Y(p.y)).join(' '), cl = a.solas.classes[r.id], flow = C.airflow[r.id][FIELD[S.kind]], fireOnly = L.has('fire') && !L.has('sys'), uncls = L.has('fire') && !cl?.cat;
    const fill = L.has('sys') && sid ? sysColor(sid) + (sid === cur?.systemId ? (ductMode ? '1f' : '38') : (ductMode ? '0d' : '1a')) : uncls ? 'var(--warn-fill)' : 'transparent';
@@ -817,7 +855,7 @@
     const sub = L.has('sys') ? (flow ? `${flow} CMH` : '') : L.has('fire') ? (cl?.cat ? `(${cl.cat})` : '미분류') : '';
     if (wPx >= 64 && hPx >= 36 && sub) html += `<text class="lbl${!L.has('sys') && uncls ? ' warnt' : ''}" x="${lx}" y="${!own ? ly : ly + px(named ? 28 : 15)}" style="font-size:${px(11)}px">${esc(sub)}</text>`;
    }
-   if (r.id === S.room) sel = `<polygon class="selhalo" points="${pts}"/><polygon class="selline" points="${pts}"/>`;
+   if (r.id === S.room && !over) sel = `<polygon class="selhalo" points="${pts}"/><polygon class="selline" points="${pts}"/>`;
   }
   // the decks above and below, faint (deck filter)
   if (S.deckGhost) html += ghostDecks(px);
@@ -897,11 +935,28 @@
   }
   layerPanel(L, rooms, cur, a);
  }
+ // ① ②: BOX redraws on its own pan, zoom and deck change and the user picks rooms in it - the layers over it and the
+ // shell's deck and room follow (a frame's look at BOX's view, deck and pick; drawn again only on a change)
+ let boxSeen = '', boxWatching = false;
+ function watchBox() {
+  if (viewOf(S.step) !== 'box' || !S.contract) { boxSeen = ''; boxWatching = false; return; }
+  boxWatching = true;
+  try {
+   const v = box.view2d(), st = box.win.CAD_APP.st, ids = new Set(S.contract.rooms.map(r => r.id)), picked = box.pickedRoom(ids);
+   const seen = JSON.stringify([v, st.activeDeck, picked]);
+   if (seen !== boxSeen) {
+    boxSeen = seen;
+    if (picked && picked !== S.room) { S.room = picked; S.deck = S.contract.rooms.find(r => r.id === picked).deckId; pickSystem(); }
+    plan(); status();
+   }
+  } catch {}
+  requestAnimationFrame(watchBox);
+ }
  // ---------- the plan's layers (③ ④ ⑤; ① ② later - docs/PLAN.md H5 4) ----------
  // one list for every step; a step opens with its own set on (③ by its 풍량 / 방화 보기), and what the user switches is
  // kept per step for the next start
  const LAYERS = [['rooms', '격실'], ['sys', '계통 색·풍량'], ['xfer', '전달 공기'], ['units', '공조기·수직 덕트'], ['ducts', '덕트'], ['rus', 'RU'], ['fire', '방화 경계'], ['pens', '관통부']];
- const LAYER_DEFAULT = { 'air:air': ['rooms', 'sys', 'xfer', 'units', 'ducts'], 'air:fire': ['rooms', 'units', 'fire', 'pens'], duct: ['rooms', 'sys', 'units', 'ducts', 'rus'], review: ['rooms', 'units', 'ducts', 'fire', 'pens'] };
+ const LAYER_DEFAULT = { room: [], load: [], 'air:air': ['rooms', 'sys', 'xfer', 'units', 'ducts'], 'air:fire': ['rooms', 'units', 'fire', 'pens'], duct: ['rooms', 'sys', 'units', 'ducts', 'rus'], review: ['rooms', 'units', 'ducts', 'fire', 'pens'] };
  const layerKey = () => S.step === 'air' ? 'air:' + (S.overlay === 'fire' ? 'fire' : 'air') : S.step;
  const layersOn = () => new Set(S.layers[layerKey()] || LAYER_DEFAULT[layerKey()] || LAYER_DEFAULT.review);
  const saveLayers = () => { try { localStorage.setItem('hvac-grid-layers', JSON.stringify({ layers: S.layers, ghost: S.deckGhost })); } catch {} };
@@ -937,6 +992,9 @@
   const ds = [...C.decks].sort((x, y) => x.elevationMm - y.elevationMm), i = ds.findIndex(d => d.id === S.deck), up = ds[i + 1], down = ds[i - 1];
   $('legend').innerHTML = `<b>${esc(deckName(S.deck))} · 층</b><div class="layers">${LAYERS.map(([id, name]) => `<label class="ly"><input type="checkbox" data-layer="${id}" ${L.has(id) ? 'checked' : ''}> ${name}</label>${L.has(id) && keys[id] ? `<div class="ly-key">${keys[id]}</div>` : ''}`).join('')}</div>`
    + (up || down ? `<div class="seg ghost-seg" role="radiogroup" aria-label="Deck 필터"><button role="radio" data-ghost="0" aria-checked="${!S.deckGhost}">이 Deck만</button><button role="radio" data-ghost="1" aria-checked="${!!S.deckGhost}">위·아래 흐리게</button></div>${S.deckGhost ? `<div class="ly-key">${up ? `${ln('#7b5ea7', 2)}위 ${esc(up.name)}` : ''}${up && down ? ' · ' : ''}${down ? `${ln('#b5731f', 2)}아래 ${esc(down.name)}` : ''}</div>` : ''}` : '');
+  // over BOX (① ②): at the top right of BOX's canvas, clear of its side columns
+  const bv2 = viewOf(S.step) === 'box' ? box.view2d() : null, lg = $('legend');
+  lg.style.top = bv2 ? bv2.rect.top + 12 + 'px' : ''; lg.style.right = bv2 ? $('center').clientWidth - bv2.rect.left - bv2.rect.width + 12 + 'px' : '';
   $('legend').querySelectorAll('[data-layer]').forEach(e => e.onchange = () => { setLayer(e.dataset.layer, e.checked); plan(); });
   $('legend').querySelectorAll('[data-ghost]').forEach(e => e.onclick = () => { S.deckGhost = e.dataset.ghost === '1'; saveLayers(); plan(); });
   legendFold();
@@ -1152,7 +1210,8 @@
   // BOX's canvas is a background only in the plan (plan() decides); back in ① ② it is BOX again
   if (view !== 'plan') { $('boxFrame').classList.remove('backdrop'); if (box.loading) box.backdrop(false); }
   $('phgFrame').style.visibility = view === 'phg' && !noContract ? 'visible' : 'hidden';
-  show($('plan'), view === 'plan' && !noContract); show($('legend'), view === 'plan' && !noContract); show($('dock'), docked);
+  const layered = (view === 'plan' || view === 'box') && !!S.contract;
+  show($('plan'), layered); show($('legend'), layered); show($('dock'), docked);
   show($('empty'), noContract);
   if (noContract) {
    $('empty').innerHTML = `<div><b>아직 설계 데이터가 없습니다</b>BOX의 격실·부하를 HVAC Grid 설계 데이터로 만들어야 풍량·계통과 덕트 단계를 쓸 수 있습니다.<br><button class="btn primary" id="emptyGo">② 부하에서 설계 데이터 만들기</button><button class="btn" id="emptySample">S5 예제 열기 (도면 + 설계 데이터)</button><button class="btn" id="emptyT3">T3 시험선 열기</button></div>`;
@@ -1161,7 +1220,8 @@
   // ⑤'s dock first: the plan measures the canvas above it
   if (docked) report();
   dockSize();
-  if (view === 'plan' && S.contract) plan();
+  if (layered) plan();
+  if (view === 'box' && !boxWatching) watchBox();
   phgHint(view);
  }
  function status() {
@@ -1179,7 +1239,7 @@
  }
  // the layer panel (with the legend) opens and closes; it starts closed when the plan is narrow (it would cover rooms)
  let legendRoom = true;
- function legendOpen() { return S.legendOpen ?? ((legendRoom || (S.overlay === 'fire' && S.step === 'air') || S.step === 'review') && $('center').getBoundingClientRect().width > 1000); }
+ function legendOpen() { return S.legendOpen ?? (viewOf(S.step) !== 'box' && (legendRoom || (S.overlay === 'fire' && S.step === 'air') || S.step === 'review') && $('center').getBoundingClientRect().width > 1000); }
  function legendFold() {
   const lg = $('legend'), open = legendOpen();
   if (!open) lg.innerHTML = '<button class="lg-tog" title="층·범례 펼치기" aria-expanded="false">층 ▾</button>';

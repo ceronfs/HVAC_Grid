@@ -225,6 +225,35 @@ html.hg-bg.hg-nolabel #roomLabelLayer{display:none!important}`;
     A.render(); return true;
    } catch { return false; }
   }
+  // the room picked in BOX (its room list, the RM tool, or the room itself selected), one of ids; null if none
+  pickedRoom(ids) {
+   try { const st = this.win.CAD_APP.st, h = st.highlightRoom; if (h?.id && !h.pending && ids.has(String(h.id))) return String(h.id);
+    const sel = [...st.selected].map(String).filter(id => ids.has(id)); return sel.length === 1 ? sel[0] : null; } catch { return null; }
+  }
+  // the shell's room shown picked in BOX as BOX's room list shows its pick (the floor area highlighted, its deck active);
+  // only with BOX's select tool and no pick of BOX's own in hand (an RM step waiting for Enter). room: { id, polygon,
+  // holes, no, name, deckId } or null to clear the shell's pick. A view state, not saved, not on BOX's undo
+  highlight(room) {
+   try {
+    const A = this.win.CAD_APP, st = A.st, h = st.highlightRoom;
+    if (st.tool !== 'select' || (h && !h.listPick)) return false;
+    if (!room) { if (h?.hvacGrid) { st.highlightRoom = null; A.render(); } return false; }
+    if (h?.id === room.id) return true;
+    st.highlightFace = null; st.highlightRoom = { id: room.id, polygon: room.polygon, holes: room.holes || [], listPick: true, hvacGrid: true, label: `${room.no} · ${room.name}` };
+    if (room.deckId && st.decks.some(d => d.id === room.deckId)) st.activeDeck = room.deckId;
+    A.render(); return true;
+   } catch { return false; }
+  }
+  // BOX's 2D view of the shell's screen: px per mm and the world point at the top-left of BOX's canvas, with the canvas'
+  // box in the frame (its own svg). Null in 3D or with BOX's canvas turned
+  view2d() {
+   try {
+    const d = this.doc, bs = d.getElementById('svg'); if (!bs || d.getElementById('canvas')?.classList.contains('iso')) return null;
+    const m = bs.getScreenCTM(), r = bs.getBoundingClientRect();
+    if (!m || !(m.a > 0) || Math.abs(m.b) > 1e-9 || Math.abs(m.c) > 1e-9 || Math.abs(m.a - m.d) > 1e-6 * m.a || !(r.width > 0)) return null;
+    return { k: m.a, minX: (r.left - m.e) / m.a, minY: (r.top - m.f) / m.a, rect: { left: r.left, top: r.top, width: r.width, height: r.height } };
+   } catch { return null; }
+  }
   // the deck BOX shows - a view change, as a click on BOX's deck card (not selectDeck, which selects the deck's objects)
   showDeck(id) { const A = this.win?.CAD_APP; if (!A || A.st.activeDeck === id || !A.st.decks.some(d => d.id === id)) return false; A.st.activeDeck = id; A.render(); return true; }
   calStatus() { return this.doc.querySelector('#calEnhancePanel [role=status]')?.textContent || ''; }

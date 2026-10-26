@@ -320,3 +320,5 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .plan .ghost polygon{stroke-width:1;stroke-dasharray:5 4}.plan .ghost .gd{stroke-width:1.6;stroke-dasharray:6 3}.plan .ghost .gu{stroke-width:1.6}
 .plan .ghost.up polygon,.plan .ghost.up .gd,.plan .ghost.up .gu{stroke:#7b5ea7}
 .plan .ghost.down polygon,.plan .ghost.down .gd,.plan .ghost.down .gu{stroke:#b5731f}
+/* ① ②: the layers over BOX's own canvas take no click - BOX does (the plan's svg is placed on BOX's canvas) */
+.plan.over-box,.plan.over-box *{pointer-events:none!important}
