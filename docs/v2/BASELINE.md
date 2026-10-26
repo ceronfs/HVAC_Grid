@@ -1,6 +1,6 @@
 # V2-0.6 성능 기준 (1.x)
 
-작성 2026-10-26 · 도구 `tools/v2-baseline.cjs`(`npm run baseline`) · 원 자료 `out/v2-baseline/<기계>.json`(저장소에 넣지 않음) · 대상 HVAC Grid `v2` `c797f4c`(1.x 코드는 main `a8e601b`와 같음) · SketchCAD ceronfs/SketchCAD main `3df0ba8`
+작성 2026-10-26 · 도구 `tools/v2-baseline.cjs`(`npm run baseline`) · 원 자료 `out/v2-baseline/<기계>.json`(저장소에 넣지 않음) · 대상 HVAC Grid `v2` `c797f4c`(1.x 코드는 main `a8e601b`와 같음) · SketchCAD ceronfs/SketchCAD main `3df0ba8`(측정 판; 최신 `8285aef`는 로고 크기 CSS만 달라 측정값에 영향 없음)
 
 Ver 2.0 목표(PLAN_V2.md G6·G7·G9)를 잴 때 비교할 1.x 값이다. **같은 기계에서 잰 값끼리만 비교한다.** 아래 두 기계의 값은 서로 비교하지 않는다.
 

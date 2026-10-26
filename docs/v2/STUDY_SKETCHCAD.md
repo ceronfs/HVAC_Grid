@@ -2,7 +2,9 @@
 
 작성 2026-10-25 · V2-0.5 · 대상: `ceronfs/SketchCAD` main `3df0ba8`("Boundaries are STR (structure) and PNL (panel)", 2026-10-25, 얕은 복제) `SketchCAD.html`(544,070 B, sha256_16 `2ceaef8103c1bbb9`, 제목 "PHG SketchCAD 2D", 파일 안 판·커밋 표시 없음) + `README.md` · 방향: D7(2.0은 새로 짠다, SketchCAD는 기능 참조) · D8(같은 기능, 값 차이는 기록)
 
-- 파일은 실행하지 않고 읽기만 했다. 줄 번호는 `SketchCAD.html:<줄>`(`3df0ba8` 판).
+**최신판 확인 2026-10-26**: main `8285aef`("Logo 0.5 cm left of the program name", 2026-10-26, `SketchCAD.html` sha256_16 `10f0c0bd1b398fea`). `3df0ba8`과의 차이는 CSS 한 줄(머리줄 PHG 로고 `img.phg` 크기 30 px → 0.5 cm)뿐이다. DXF 읽기·계산용 열기·경계·실 찾기·면적표·캔버스는 같고 줄 번호도 그대로라, 이 명세는 `8285aef`에도 그대로 맞는다.
+
+- 파일은 실행하지 않고 읽기만 했다. 줄 번호는 `SketchCAD.html:<줄>`(`3df0ba8` 판 — `8285aef`에서도 같음).
 - **먼저 본 옛 파일**: 사용자가 올린 `SketchCAD.html`(535,538 B, sha256_16 `880e532b45e60849`)을 먼저 읽었다. main과 다른 곳은 약 210줄이고 세 가지다. ① "계산용으로 열기"(`8295e36`)가 없음 ② 실 자동 찾기가 문자마다 `roomAt` → `roomEnts()`로 도면 전체를 다시 훑고, `roomData`도 실마다 구멍·문자·경계를 다시 거름(`cb6f602` 전) ③ 경계 이름이 BHD·PANEL, 용도가 HULL·BHD·PANEL·PANEL_B15·PANEL_B0·PANEL_C·DECK(STR·PNL 전). 경계 그래프·문 틈 잇기·그리기·색인·실행 취소·DXF 읽기 본체·내보내기는 두 파일이 같다.
 - 강제 항목: F-1 해당 없음(풍량 코드와 무관한 형상 조사, 2.0 형상 엔진에도 풍량 경로 없음) · F-2 표준 값을 인용하지 않음.
 
@@ -272,12 +274,12 @@ D3(2026-10-25 K0)는 "SketchCAD 단독판에도 데크 지정을 넣는다", 이
 | Worker ↔ 본 화면 전송 비용 | 5.1 측정 | typed array 전송(transfer), 정리 결과만 모델로 |
 | DECK 이름 충돌, HULL을 STR에 합칠지 | 3.3·6장 | K1 결정 |
 | 코드 페이지 오판(ANSI_1252로 표시된 EUC-KR 등) | N3 D1(R12, EUC-KR) | 같은 판정 규칙 + 시험 도면 |
-| SketchCAD main이 계속 바뀜(오늘만 `8295e36`·`cb6f602`·`3df0ba8`) | 기능 명세와 main 차이 | 명세는 `3df0ba8` 기준으로 고정, K1·K5 때 main을 다시 보고 차이만 더함(D7: 코드는 가져오지 않으므로 해시 시험 없음) |
+| SketchCAD main이 계속 바뀜(2026-10-25 `8295e36`·`cb6f602`·`3df0ba8`, 10-26 `8285aef` — 로고 크기만) | 기능 명세와 main 차이 | 명세는 `3df0ba8` 기능 기준으로 고정(`8285aef` 확인: 기능 같음), K1·K5 때 main을 다시 보고 차이만 더함(D7: 코드는 가져오지 않으므로 해시 시험 없음) |
 | 캔버스 층이 많아 느려짐 | 층별 그리기 시간 | 래스터는 보기 바뀔 때만, 모듈 층은 지금 데크·화면 안만(PLAN_V2 12장) |
 
 ## 9. 확인하지 못한 것
 
-- 저장소 이력: 얕은 복제라 커밋이 `3df0ba8` 하나만 보인다. `8295e36`·`cb6f602`가 main에 들어 있다는 것은 코드(`calcKeepLayers`·`chooseCalcOpen`·`rooms0`)와 저장소 문서로 확인했고, 커밋 단위 차이는 보지 못했다.
+- 저장소 이력: 처음에는 얕은 복제라 커밋이 `3df0ba8` 하나만 보였다. 2026-10-26 이력을 더 받아 main 전체(`ce24384` → `d94124f` → `a71025a` → `cb6f602` → `8295e36` → `3df0ba8` → `8285aef`)를 확인했다. `cb6f602`·`8295e36`의 커밋 단위 차이는 이 문서에 따로 적지 않았다(기능은 코드로 확인).
 - 실행·측정: 파일을 실행하지 않았다. 5장 시간·메모리는 모두 `docs/WORKFLOW_SKETCHCAD.md`·`docs/REVIEW_2026-10-25_BIG_DXF.md`·SketchCAD `README.md`(합성 도면)의 값이다. 200 MB 계산용으로 열기는 아무도 재지 않았다.
 - 매뉴얼(`SketchCAD_전체기능_매뉴얼.docx/.pdf`, `SketchCAD_초보자_매뉴얼.pptx`)은 읽지 않았다(기능은 코드로 확인).
 - 판넬 방화 등급(B-15·B-0·C) 레이어 이름을 2.0이 참고 정보로 남겨야 하는지(main은 모두 PNL) — ⑤ `fire` 엔진 조사 때 확인.
