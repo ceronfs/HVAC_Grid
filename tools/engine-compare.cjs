@@ -11,7 +11,7 @@ const ROOT = path.join(__dirname, '..');
 const len = ds => ds.reduce((t, d) => t + Math.abs(d.points[0].x - d.points.at(-1).x) + Math.abs(d.points[0].y - d.points.at(-1).y), 0) / 1000;
 const lenOf = (ds, type) => len(ds.filter(d => d.type === type));
 
-function compare({ select = 'cost' } = {}) {
+function compare({ select = 'pressure' } = {}) {
  const rows = [];
  for (const ship of ['s5', 't3', 'n3']) {
   const dir = path.join(P.FIXTURES, ship), index = JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8')), rooms = G.read(path.join(G.FIXTURES, ship), 'project').contract.rooms;
@@ -39,7 +39,7 @@ function markdown({ rows, summary }) {
 
 if (require.main === module) {
  const args = process.argv.slice(2), opt = k => (args.find(a => a.startsWith(`--${k}=`)) || '').slice(k.length + 3) || null;
- const r = compare({ select: opt('select') || 'cost' });
+ const r = compare({ select: opt('select') || 'pressure' });
  console.log(JSON.stringify(r.summary));
  if (opt('md')) fs.writeFileSync(path.resolve(ROOT, opt('md')), markdown(r) + '\n');
  if (opt('json')) fs.writeFileSync(path.resolve(ROOT, opt('json')), JSON.stringify(r, null, 1));

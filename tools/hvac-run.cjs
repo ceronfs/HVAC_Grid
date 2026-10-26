@@ -4,7 +4,8 @@
 //   node tools/hvac-run.cjs <contract.json | project.json> <outDir> [--shots] [--solas=<settings.json>] [--strict]
 //   --node: no browser - the Ver 2.0 duct engine (lib/duct, V2-1.10) routes, sizes and works out the pressure of every
 //           plan in worker threads; the review and outputs are the same 1.x lib (the loads are the contract's)
-//   --select=pressure (with --node): the engine's lowest-pressure choice among near-equal candidates (not 1.x)
+//   --select=cost (with --node): the least weighted cost as 1.x; the default is the engine's lowest-pressure choice among
+//   near-equal candidates (D16)
 // outDir: project.json, report.xlsx, report.html, integrated.dxf, fire-plan.dxf (방화 등급도), summary.json, phg/<deck__system>.phg.json, shots/*.png
 // --solas: { "lowestBelow": "<space>", "ship": "CARG", "method": "IC", "sprinkler": false, "rooms": { "<room no>": "<space>" } }
 //          (a flat { "<room no>": "<space>" } map works too). Exit code 1 when a plan did not finish AUTO or the page
@@ -53,7 +54,7 @@ async function run(input, outDir, { shots = false, solas = null, log = console.l
 
 // --node: every plan through lib/duct/engine.cjs in a worker pool; results and networks stored as the shell stores
 // PHG D's (y = −BOX y in the stored networks, app/bridge.js Phg.geometry)
-async function runNode(input, outDir, { solas = null, select = 'cost', log = console.log } = {}) {
+async function runNode(input, outDir, { solas = null, select = 'pressure', log = console.log } = {}) {
  const PL = require('../lib/phg-plan.cjs'), { createPool } = require('../lib/duct/pool.cjs');
  const data = JSON.parse(fs.readFileSync(input, 'utf8')), { project: given } = PJ.read(data);
  const contract = applySolas(given.contract, solas), plans = PL.plan(contract), byId = new Map(contract.rooms.map(r => [r.id, r]));
@@ -99,7 +100,7 @@ if (require.main === module) (async () => {
  const args = process.argv.slice(2), [input, outDir = 'out/run'] = args.filter(a => !a.startsWith('--'));
  if (!input) { console.error('사용법: node tools/hvac-run.cjs <contract.json|project.json> <outDir> [--shots] [--solas=<settings.json>] [--strict]'); process.exit(2); }
  const solasArg = args.find(a => a.startsWith('--solas=')), solas = solasArg ? JSON.parse(fs.readFileSync(solasArg.slice(8), 'utf8')) : null;
- const select = (args.find(a => a.startsWith('--select=')) || '--select=cost').slice(9);
+ const select = (args.find(a => a.startsWith('--select=')) || '--select=pressure').slice(9);
  const { project, errors, seconds } = args.includes('--node') ? await runNode(input, outDir, { solas, select }) : await run(input, outDir, { shots: args.includes('--shots'), solas });
  const { summary } = writeOutputs(project, outDir);
  console.log(JSON.stringify({ out: outDir, seconds, autoDone: `${summary.autoDone}/${summary.plans}`, count: summary.count, notOk: summary.checks.filter(c => c.level !== 'ok').map(c => `${c.level}: ${c.text}`), penetrations: summary.solas.penetrations, fireDampers: summary.solas.fireDampers, pageErrors: errors.length }));
