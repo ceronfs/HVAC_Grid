@@ -73,6 +73,7 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e'); fs.mkdirSync(OUT, { 
   // of every duct and RU, a duct's kind changed (PHG D calculates again; AUTO only when the user runs it)
   const key = 'D2__AHU-ACC', ribbon = label => p.locator('#ribbon .cmd', { hasText: label }).first();
   await p.click('.step[data-step=duct]'); await idle();
+  await ribbon('HVAC Grid 평면').click(); await idle();   // ④ opens on PHG D's canvas; these are the HVAC Grid plan's
   await H(k => { const pl = HVACGrid.plans().find(x => x.key === k); Object.assign(HVACGrid.S, { deck: pl.deckId, sys: pl.systemKey, kind: pl.kind, room: null }); HVACGrid.render(); }, key);
   await H(k => HVACGrid.runAll([k]), key); await idle(); await frame();
   assert.equal(await ribbon('놓으면 AUTO').getAttribute('aria-pressed'), 'false', 'AUTO on a drop is off at first');
@@ -99,51 +100,58 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e'); fs.mkdirSync(OUT, { 
   await H(() => HVACGrid.undo()); await idle();
   assert.equal(await H(([k, id]) => HVACGrid.S.geometry[k].ducts.find(d => d.id === id)?.type, [key, d0.id]), 'branch', 'undo: the kind of before');
   log('④: zones', zones.drawn, '· velocity', vel.length, '· pressure', pa.ducts.length, 'ducts', pa.rus, 'RUs · kind', d0.displayName, d0.type, '->', d1.displayName, d1.type, `${d0.widthMm}×${d0.heightMm} -> ${d1.widthMm}×${d1.heightMm}`);
-  // 덕트 그리기 (2026-10-26): after ③ the plan's RUs go to PHG D by themselves (no AUTO); the designer draws the ducts on
-  // the plan and 덕트 지정·계산 makes PHG D's network of the lines
-  const hk = 'D2__EF-SAN';
-  await H(k => { const pl = HVACGrid.plans().find(x => x.key === k); Object.assign(HVACGrid.S, { deck: pl.deckId, sys: pl.systemKey, kind: pl.kind, room: null, duct: null, planView: null, legendOpen: false }); HVACGrid.render(); }, hk);
-  await idle(); await frame();
-  const sent = await H(k => ({ project: !!HVACGrid.S.projects[k], auto: !!HVACGrid.result(k)?.auto, rus: HVACGrid.phg.result().rus, want: HVACGrid.plans().find(x => x.key === k).rus.length, banner: document.getElementById('staleBanner')?.textContent || '' }), hk);
-  assert.ok(sent.project && !sent.auto && sent.rus === sent.want && /덕트 그리기/.test(sent.banner), 'RUs in PHG D, no AUTO, the way on said ' + JSON.stringify(sent));
-  await ribbon('덕트 그리기').click(); await idle();
-  assert.ok(await H(() => !!HVACGrid.S.draw), 'drawing');
-  // a run with the mouse: from the fan (snapped), along to an RU's x (ortho, grid), down onto the RU (snapped), the same
-  // point again ends it
-  const geo = await H(k => { const pl = HVACGrid.plans().find(x => x.key === k), u = pl.rus.find(u => u.x !== pl.root.x && u.y !== pl.root.y), m = document.getElementById('plan').getScreenCTM(), s = p => [m.a * p.x + m.e, m.d * p.y + m.f];
-   return { root: pl.root, ru: { x: u.x, y: u.y }, at: [s({ x: pl.root.x + 60, y: pl.root.y - 40 }), s({ x: u.x + 30, y: pl.root.y + 70 }), s({ x: u.x - 50, y: u.y + 40 })] }; }, hk);
-  for (const q of geo.at) { await p.mouse.click(...q); await frame(); }
-  await p.mouse.click(...geo.at[2]); await frame();
-  const run = await H(k => HVACGrid.sketchOf(k).map(l => [l.a.x, l.a.y, l.b.x, l.b.y, l.role]), hk);
-  assert.deepEqual(run, [[geo.root.x, geo.root.y, geo.ru.x, geo.root.y, 'main'], [geo.ru.x, geo.root.y, geo.ru.x, geo.ru.y, 'main']], 'snapped to the fan and the RU, square to the grid');
-  assert.equal(await H(() => HVACGrid.S.draw.from), null, 'the same point again ended the run');
-  await p.screenshot({ path: path.join(OUT, 'one-canvas-4-draw.png') });
-  // the rest drawn (a main along the fan's line, a branch chain to the RUs of each x), 분기 for the branches
-  await H(([k, first]) => { const pl = HVACGrid.plans().find(x => x.key === k), y = pl.root.y, xs = [...new Set([pl.root.x, ...pl.rus.map(u => u.x)])].sort((a, b) => a - b);
-   for (let i = 0; i + 1 < xs.length; i++) if (!(xs[i] === Math.min(pl.root.x, first.x) && xs[i + 1] === Math.max(pl.root.x, first.x) && Math.abs(xs.indexOf(pl.root.x) - xs.indexOf(first.x)) === 1)) HVACGrid.addSegment(k, { x: xs[i], y }, { x: xs[i + 1], y }, 'main');
+  // ④ on PHG D's own canvas (2026-10-27: "캔버스만 가져오고 기능은 PHG D 그대로"): the same deck and view as ③ ⑤, the
+  // HVAC Grid layers over it, every click PHG D's; a network made with PHG D's own commands is read back as 직접 작성
+  const phgAt = (x, y) => H(([x, y]) => { const m = HVACGrid.phg.doc.getElementById('svg').getScreenCTM(), fr = document.getElementById('phgFrame').getBoundingClientRect(); return { k: m.a, x: (x - fr.left - m.e) / m.a, y: (y - fr.top - m.f) / m.a }; }, [x, y]);
+  await ribbon('PHG D 캔버스').click(); await idle();
+  await p.click('.step[data-step=air]'); await idle(); await frame();
+  const ar3 = await p.locator('#plan').boundingBox(), at3 = [ar3.x + ar3.width * 0.5, ar3.y + ar3.height * 0.5];
+  await p.mouse.move(...at3); await p.mouse.wheel(0, 150); await frame();
+  const v3 = await planAt(...at3);
+  await p.click('.step[data-step=duct]'); await idle(); await frame();
+  const canvas = await H(() => ({ phg: getComputedStyle(document.getElementById('phgFrame')).visibility, plan: document.getElementById('main').classList.contains('plan-view'), key: HVACGrid.S.active }));
+  assert.deepEqual([canvas.phg, canvas.plan], ['visible', true], '④ on PHG D\'s canvas, full width');
+  assert.ok(near(await phgAt(...at3), v3), '③ → ④: PHG D at the view of ③ ' + JSON.stringify([await phgAt(...at3), v3]));
+  if (!(await H(() => !!document.querySelector('#legend [data-layer]')))) { await p.click('#legend .lg-tog'); await frame(); }
+  assert.equal(await H(() => [...document.querySelectorAll('#legend [data-layer]')].filter(e => e.checked).length), 0, 'no layer over PHG D at first');
+  await p.locator('#legend [data-layer="sys"]').check(); await p.locator('#legend [data-layer="ducts"]').check(); await frame();
+  assert.ok(near(await planAt(...at3), await phgAt(...at3), 0.6), 'the layers on PHG D\'s view');
+  assert.equal(await H(([x, y]) => document.elementFromPoint(x, y)?.id, at3), 'phgFrame', 'a click goes to PHG D');
+  await H(() => { const w = HVACGrid.phg.win, v = w.LineDesignLegacy.getState().view, svg = HVACGrid.phg.doc.getElementById('svg'); v.x += 1200; v.y -= 600; svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`); w.LineDesignLegacy.renderEverything(); }); await frame();
+  assert.ok(near(await planAt(...at3), await phgAt(...at3), 0.6), 'the layers follow PHG D\'s pan');
+  await p.screenshot({ path: path.join(OUT, 'one-canvas-4-phg.png') });
+  // another system of the deck: sent to PHG D with its RUs (no AUTO), shown at the same view
+  const before = await phgAt(...at3);
+  await p.selectOption('#sysSel', 'EF-SAN'); await idle(); await frame();
+  const ef = await H(() => ({ active: HVACGrid.S.active, auto: !!HVACGrid.result(HVACGrid.S.active)?.auto, rus: HVACGrid.phg.result().rus, want: HVACGrid.plans().find(x => x.key === HVACGrid.S.active).rus.length, ducts: HVACGrid.phg.result().ducts }));
+  assert.ok(ef.active === 'D2__EF-SAN' && !ef.auto && ef.rus === ef.want && ef.ducts === 0, 'RUs in PHG D, no AUTO ' + JSON.stringify(ef));
+  assert.ok(near(await phgAt(...at3), before), 'another system of the deck at the same view');
+  // drawn with PHG D's own commands (lines, 덕트 지정, 계산) as a designer would in PHG D
+  const made = await H(async () => {
+   const P = HVACGrid.phg, w = P.win, L = w.LineDesignLegacy, st = L.getState(), pl = HVACGrid.plans().find(x => x.key === HVACGrid.S.active), y = pl.root.y, ids = [];
+   const seg = (a, b) => { if (Math.hypot(b.x - a.x, b.y - a.y) < 1) return; const id = 'e2e-' + (ids.length + 1); st.entities.push({ type: 'LINE', layer: 'DUCT_SKETCH', x1: a.x, y1: a.y, x2: b.x, y2: b.y, id }); ids.push(id); };
+   const xs = [...new Set([pl.root.x, ...pl.rus.map(u => u.x)])].sort((a, b) => a - b); for (let i = 0; i + 1 < xs.length; i++) seg({ x: xs[i], y }, { x: xs[i + 1], y });
    const byX = {}; for (const u of pl.rus) (byX[u.x] = byX[u.x] || []).push(u);
-   for (const [x, us] of Object.entries(byX)) for (const side of [us.filter(u => u.y < y).sort((a, b) => b.y - a.y), us.filter(u => u.y > y).sort((a, b) => a.y - b.y)]) {
-    let prev = { x: +x, y }; for (const u of side) { if (!(u.x === first.x && u.y === first.y)) HVACGrid.addSegment(k, prev, { x: u.x, y: u.y }, 'branch'); prev = { x: u.x, y: u.y }; } } }, [hk, geo.ru]);
-  await idle(); await frame();
-  const drawn = await H(k => HVACGrid.sketchOf(k).length, hk);
-  assert.ok(await p.isVisible('#staleBanner') && /아직 덕트망이 아닙니다/.test(await p.textContent('#staleBanner')), 'lines, not a network yet');
-  await ribbon('덕트 지정·계산').click(); await idle();
-  const built = await H(k => { const r = HVACGrid.result(k), a = HVACGrid.analysis(), st = HVACGrid.phg.win.LineDesignLegacy.getState(); return { manual: r.manual, auto: !!r.auto, ducts: r.ducts, unconnected: r.unconnected, stale: r.stale, flow: r.flowCmh, design: r.designCmh, types: r.ductTypes, lines: HVACGrid.S.geometry[k].ducts.filter(d => d.line).length, sized: st.ducts.every(d => +d.widthMm > 0 || +d.diameterMm > 0), done: a.results[k] && a.done, status: HVACGrid.LIB.report.sheets(HVACGrid.project(), a).find(s => s.name === 'Deck 덕트망').rows.find(r => r[2] === 'EF-SAN' && /A DK/.test(r[0]))?.includes('직접 작성'), banner: !document.getElementById('staleBanner').hidden }; }, hk);
-  assert.ok(built.manual && !built.auto && built.ducts > 10 && built.unconnected === 0 && !built.stale && built.sized && built.flow === built.design, 'a network of the lines, sized, every RU on it ' + JSON.stringify(built));
-  assert.ok(built.lines === built.ducts && built.types.main > 0 && built.types.branch > 0, 'one duct per line, of the line\'s kind ' + JSON.stringify(built.types));
-  assert.ok(built.status && !built.banner, 'counted as done (직접 작성), nothing left to do on the canvas');
-  await p.screenshot({ path: path.join(OUT, 'one-canvas-4-built.png') });
-  // undo: the lines again, no network of them; redo: the network
-  await H(() => HVACGrid.undo()); await idle();
-  assert.deepEqual(await H(k => [HVACGrid.sketchOf(k).length, !!HVACGrid.result(k)?.manual], hk), [drawn, false], 'undo: the lines, not the network');
-  await H(() => HVACGrid.redo()); await idle();
-  assert.ok(await H(k => HVACGrid.result(k)?.manual && HVACGrid.S.geometry[k].ducts.length > 10, hk), 'redo: the network');
-  // AUTO asks before it replaces work drawn by hand; 취소 keeps it
-  await H(() => { HVACGrid.S.draw = null; HVACGrid.render(); });
+   for (const [x, us] of Object.entries(byX)) for (const side of [us.filter(u => u.y < y).sort((a, b) => b.y - a.y), us.filter(u => u.y > y).sort((a, b) => a.y - b.y)]) { let prev = { x: +x, y }; for (const u of side) { seg(prev, u); prev = { x: u.x, y: u.y }; } }
+   st.selectedEntityIds.clear(); ids.forEach(i => st.selectedEntityIds.add(i)); L.renderEverything();
+   P.click('makeDuctBtn'); for (let i = 0; i < 100 && !(st.ducts.length || P.doc.getElementById('phgb-conversion')?.open); i++) await new Promise(r => setTimeout(r, 100));
+   const conv = P.doc.getElementById('phgb-conversion'); if (conv?.open) { P.doc.getElementById('phgb-conversion-apply').click(); for (let i = 0; i < 100 && (conv.open || !st.ducts.length); i++) await new Promise(r => setTimeout(r, 100)); }
+   await w.LineDesignV2.calculateTypedNetwork(''); L.renderEverything();
+   return { lines: ids.length, ducts: st.ducts.length, unconnected: st.diffusers.filter(d => !d.connectedDuctId).length };
+  });
+  assert.ok(made.ducts > 10 && made.unconnected === 0, 'a network drawn in PHG D ' + JSON.stringify(made));
+  const v4 = await phgAt(...at3);
+  // ④ → ⑤: read back as 직접 작성 (done), ⑤ at PHG D's view
+  await p.click('.step[data-step=review]'); await idle(); await frame();
+  const hand = await H(() => { const r = HVACGrid.result('D2__EF-SAN'), a = HVACGrid.analysis(); return { manual: r.manual, auto: !!r.auto, ducts: r.ducts, edited: r.edited, stale: r.stale, status: HVACGrid.LIB.report.sheets(HVACGrid.project(), a).find(s => s.name === 'Deck 덕트망').rows.some(x => x[2] === 'EF-SAN' && /A DK/.test(x[0]) && x.includes('직접 작성')), geometry: HVACGrid.S.geometry['D2__EF-SAN'].ducts.length }; });
+  assert.ok(hand.manual && !hand.auto && hand.ducts === made.ducts && hand.geometry === made.ducts && !hand.stale && hand.status, 'read back as 직접 작성 ' + JSON.stringify(hand));
+  assert.ok(near(await planAt(...at3), v4), '④ → ⑤ at PHG D\'s view');
+  // AUTO asks before it replaces a network made by hand; 취소 keeps it
+  await p.click('.step[data-step=duct]'); await idle();
   await ribbon('보내기 + AUTO').click(); await p.waitForSelector('#dlg[open]');
   await p.click('#dlgBtns button[data-v=cancel]'); await idle();
-  assert.ok(await H(k => HVACGrid.result(k)?.manual && !HVACGrid.result(k)?.auto, hk), 'AUTO asked, the drawn network kept');
-  log('덕트 그리기', drawn, 'lines →', JSON.stringify({ ducts: built.ducts, types: built.types, flow: built.flow }));
+  assert.ok(await H(() => HVACGrid.result('D2__EF-SAN')?.manual && !HVACGrid.result('D2__EF-SAN')?.auto), 'AUTO asked, the network made by hand kept');
+  log('④ PHG D canvas: view kept ③ → ④ → ⑤, layers over it, a network drawn in PHG D', JSON.stringify(made), '→ 직접 작성');
   log('page errors', errors.length, errors.slice(0, 3)); assert.equal(errors.length, 0);
   log('E2E ONE-CANVAS PASS');
  } catch (e) { console.error('E2E ONE-CANVAS FAIL', e); await p.screenshot({ path: path.join(OUT, 'one-canvas-fail.png') }).catch(() => {}); process.exitCode = 1; }

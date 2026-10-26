@@ -438,27 +438,6 @@ html.hg-bg.hg-nolabel #roomLabelLayer{display:none!important}`;
    L.renderEverything();
    return this.result();
   }
-  // a network from the lines drawn on the HVAC Grid plan (④ 덕트 그리기), on the plan just sent (Root, RUs, zones, no
-  // ducts): the lines go in as LINE entities (layer HG_DUCT, ids hg-<line>), PHG D's 덕트 지정 makes the ducts (joined at
-  // the line ends, to the Root and the RUs), each duct gets the kind of its line and a size set by hand back (sizes: line
-  // id -> size), and PHG D calculates (sizes, flows, pressure). lines: [{ id, a, b, role }] in BOX y. No AUTO
-  async buildFromLines(lines, sizes = {}) {
-   const w = this.win, L = w.LineDesignLegacy, st = L.getState(), y = this.yBox() ? v => v : v => -v, eid = id => 'hg-' + id;
-   for (const ln of lines) st.entities.push({ type: 'LINE', layer: 'HG_DUCT', x1: ln.a.x, y1: y(ln.a.y), x2: ln.b.x, y2: y(ln.b.y), id: eid(ln.id) });
-   st.selectedEntityIds.clear(); for (const ln of lines) st.selectedEntityIds.add(eid(ln.id)); L.renderEverything();
-   this.click('makeDuctBtn');
-   await until(() => st.ducts.length > 0 || this.doc.getElementById('phgb-conversion')?.open, 30000, '덕트 지정');
-   const conv = this.doc.getElementById('phgb-conversion'); if (conv?.open) { this.doc.getElementById('phgb-conversion-apply').click(); await until(() => st.ducts.length > 0 && !conv.open, 30000, '덕트 변환'); }
-   const role = Object.fromEntries(lines.map(ln => [eid(ln.id), ln.role]));
-   for (const d of st.ducts) {
-    const r = role[d.sourceEntityId], s = sizes[String(d.sourceEntityId).slice(3)];
-    if (r) Object.assign(d, { type: r, manualType: r });
-    if (s && String(d.sourceEntityId).startsWith('hg-')) Object.assign(d, { manualSize: true, shape: s.diameterMm ? 'round' : 'rect', widthMm: s.widthMm || 0, heightMm: s.heightMm || 0, diameterMm: s.diameterMm || 0 });
-   }
-   await w.LineDesignV2.calculateTypedNetwork('');
-   st.selectedEntityIds.clear(); L.renderEverything(); this.fit();
-   return { ...this.result(), unconnected: st.diffusers.filter(d => !d.connectedDuctId).length };
-  }
   // a duct's kind (main | branch | sub_branch) as PHG D's 주 덕트·분기·보조 분기 set it (manualType too, which PHG D keeps
   // when it calculates); the network is calculated again - sizes by the kind's velocity, flows, pressure. No AUTO
   async setDuctType(ductId, type) {
@@ -491,7 +470,8 @@ html.hg-bg.hg-nolabel #roomLabelLayer{display:none!important}`;
   // the project open in PHG D differs from the stored text (edited in PHG D since)
   // content changed since text (a saved project)? PHG D writes keys in another order, new time stamps and default fields
   // when it reloads a project: a project opened from text is compared with what PHG D made of it, in a canonical form
-  changedSince(text) { try { const base = this.opened?.text === text ? this.opened.base : text; return canonical(JSON.parse(this.serialize())) !== canonical(JSON.parse(base)); } catch { return false; } }
+  // (PHG D keeps its view in the project: a pan or zoom - the shell's too, viewTo - is no edit)
+  changedSince(text) { try { const base = this.opened?.text === text ? this.opened.base : text, bare = t => { const o = JSON.parse(t); delete o.view; return o; }; return canonical(bare(this.serialize())) !== canonical(bare(base)); } catch { return false; } }
   // what the inspector and the review table show for the project now open in PHG D
   result() {
    const w = this.win, st = w.LineDesignLegacy.getState(), len = d => d.points.slice(1).reduce((s, q, i) => s + Math.hypot(q.x - d.points[i].x, q.y - d.points[i].y), 0);
@@ -500,6 +480,27 @@ html.hg-bg.hg-nolabel #roomLabelLayer{display:none!important}`;
    return { rus: st.diffusers.length, flowCmh: st.diffusers.reduce((t, d) => t + (+d.flowCmh || 0), 0), roots: st.nodes.filter(n => n.type === 'root').length,
     ducts: st.ducts.length, lengthM: Math.round(st.ducts.reduce((s, d) => s + len(d), 0) / 100) / 10, indexPa,
     ductTypes: st.ducts.reduce((o, d) => (o[d.type] = (o[d.type] || 0) + 1, o), {}) };
+  }
+  // ④'s canvas is PHG D's own (docs/PLAN.md H5 4): its view in the shell's terms - px per mm, the world point at the
+  // top-left of PHG D's canvas, the canvas' box in the frame - for a project the way round the plan is (Y_BOX), else null
+  view2d() {
+   try {
+    if (!this.yBox()) return null;
+    const bs = this.doc.getElementById('svg'), m = bs?.getScreenCTM(), r = bs?.getBoundingClientRect();
+    if (!m || !(m.a > 0) || Math.abs(m.b) > 1e-9 || Math.abs(m.c) > 1e-9 || Math.abs(m.a - m.d) > 1e-6 * m.a || !(r.width > 0)) return null;
+    return { k: m.a, minX: (r.left - m.e) / m.a, minY: (r.top - m.f) / m.a, rect: { left: r.left, top: r.top, width: r.width, height: r.height } };
+   } catch { return null; }
+  }
+  // PHG D's view set to the shell's (each world point on the same screen pixel as on the plan: rc the plan's screen box,
+  // minX / minY its top-left world point, k px per mm) - a view change only, as a pan / zoom in PHG D
+  viewTo(minX, minY, k, rc) {
+   try {
+    if (!this.yBox() || !(k > 0)) return false;
+    const w = this.win, v = w.LineDesignLegacy.getState().view, svg = this.doc.getElementById('svg'), r = svg.getBoundingClientRect(), fr = this.frame.getBoundingClientRect();
+    if (!(r.width > 0)) return false;
+    Object.assign(v, { x: minX + (fr.left + r.left - rc.left) / k, y: minY + (fr.top + r.top - rc.top) / k, w: r.width / k, h: r.height / k });
+    svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`); w.LineDesignLegacy.renderEverything(); return true;
+   } catch { return false; }
   }
   dockShown(side) { const d = this.doc.getElementById(`phgb-${side}-dock`); return !!d && d.getBoundingClientRect().width > 20; }
   // show an area (BOX coordinates) with a margin in mm
@@ -516,7 +517,7 @@ html.hg-bg.hg-nolabel #roomLabelLayer{display:none!important}`;
    const s = this.win.LineDesignLegacy.getState(), r = s.nodes.find(n => n.type === 'root'), num = v => Number.isFinite(+v) && +v > 0 ? Math.round(+v) : 0, y = this.yBox() ? v => -v : v => v;
    return { root: r ? { x: r.x, y: y(r.y) } : null, rus: s.diffusers.map(d => ({ x: d.x, y: y(d.y), flowCmh: d.flowCmh })),
     ducts: s.ducts.map(d => ({ id: d.id, displayName: d.displayName || d.id, type: d.type, shape: d.shape, widthMm: d.shape === 'round' ? 0 : num(d.widthMm), heightMm: d.shape === 'round' ? 0 : num(d.heightMm),
-     diameterMm: d.shape === 'round' ? num(d.diameterMm) : 0, flowCmh: Math.round(+d.flowCmh || 0), ...(d.manualSize ? { manualSize: true } : {}), ...(String(d.sourceEntityId).startsWith('hg-') ? { line: String(d.sourceEntityId).slice(3) } : {}), points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(y(p.y)) || 0 })) })) };
+     diameterMm: d.shape === 'round' ? num(d.diameterMm) : 0, flowCmh: Math.round(+d.flowCmh || 0), ...(d.manualSize ? { manualSize: true } : {}), points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(y(p.y)) || 0 })) })) };
   }
  }
 

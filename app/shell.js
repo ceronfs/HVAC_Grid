@@ -317,8 +317,8 @@
  }
  // the plans one after another; 멈춤 stops after the plan running now (the done ones keep their results)
  async function runAll(keys = plans().map(p => p.key), { onlyNeeded = false } = {}) {
-  // 남은 것만: not the networks drawn by hand; all of them: the user says first what becomes of work drawn by hand
-  const todo = onlyNeeded ? keys.filter(k => { const r = result(k); return !r?.manual && !sketchOf(k).length && (!r?.auto || r.stale); }) : await keepsHand(keys), t0 = performance.now();
+  // 남은 것만: not the networks made by hand; all of them: the user says first what becomes of those
+  const todo = onlyNeeded ? keys.filter(k => { const r = result(k); return !r?.manual && (!r?.auto || r.stale); }) : await keepsHand(keys), t0 = performance.now();
   let stopped = false; const stop = () => { stopped = true; $('busyStop').disabled = true; $('busyText').textContent += ' — 지금 계통까지 하고 멈춤'; };
   let ran = 0;
   // one undo entry for the whole run: Ctrl+Z puts every network it made back as it was
@@ -332,6 +332,8 @@
    busy(`${i + 1}/${todo.length} · ${keyText(key)} AUTO`, { done: i, total: todo.length, eta: perRu != null ? perRu * (allRu - doneRu) : null, stop: todo.length > 1 ? stop : null });
    await autoKey(key); ran++; doneRu += rus(key);
   }
+  // on PHG D's canvas: the plan chosen shown again (AUTO opened one plan after another)
+  if (S.step === 'duct' && S.phgEditor && curKey() && S.active !== curKey()) await showInPhg(curKey());
   const done = keys.filter(k => netDone(result(k)) && !result(k).stale).length;
   say(`AUTO ${stopped ? '멈춤' : '완료'}: ${done}/${keys.length} (이번에 ${ran}개${stopped ? ` · 남은 ${todo.length - ran}개는 "남은 것만"으로` : ''})`);
   if (todo.length > 1) toast(`AUTO ${stopped ? '멈춤' : '완료'}: ${done}/${keys.length}`);
@@ -356,101 +358,13 @@
   const ds = S.geometry[key]?.ducts || [], at = ds.findIndex(x => x.id === d.id); S.duct = { key, i: Math.max(0, at >= 0 ? at : ds.findIndex(x => x.displayName === d.displayName)) };
   say(`${d.displayName}: ${size ? (size.diameterMm ? 'Ø' + size.diameterMm : size.widthMm + '×' + size.heightMm) + ' (수동)' : 'PHG D 자동 크기'} · 계통 최대 ${r.indexPa ?? '—'} Pa`);
  }
- // ---------- 덕트 그리기: the designer's own duct lines on the ④ plan (2026-10-26) ----------
- // After ③ the plan's RUs and its unit are in PHG D (sent when ④ shows the plan, no AUTO); the designer draws the ducts
- // as lines on this plan, and 덕트 지정·계산 makes PHG D's network of them - the plan sent again (Root, RUs, forbidden
- // zones), the lines as LINE entities, PHG D's 덕트 지정 (joined at the line ends, to the Root and the RUs), each duct of
- // the kind of its line, sizes set by hand kept, PHG D's calculation (sizes, flows, pressure). A plan's lines are in its
- // result (results[key].sketch: [{ id, a, b, role, size? }], BOX y): saved with the project, on the undo history with it
- const ROLE_NAME = { main: '주 덕트', branch: '분기', sub_branch: '보조 분기' };
- const sketchOf = key => S.results[key]?.sketch || [];
- const sketchSig = lines => JSON.stringify(lines.map(l => [l.a.x, l.a.y, l.b.x, l.b.y, l.role]));
- // the network is the one made of the lines drawn now
- const sketchBuilt = key => { const r = S.results[key]; return !!r?.manual && r.sketchSig === sketchSig(sketchOf(key)); };
+ // a network made by hand (in PHG D's canvas, read back) counts as done as AUTO's does
  const netDone = r => !!(r?.auto || r?.manual);
- function setSketch(key, lines, label) { edit(label, () => { S.results[key] = { ...(S.results[key] || {}), sketch: lines }; }, [key]); }
- const nextLineId = lines => 'L' + (1 + Math.max(0, ...lines.map(l => +String(l.id).slice(1) || 0)));
- // a point on a line's run, not at its ends (a tee: the line is cut there)
- function onRun(p, l) {
-  const dx = l.b.x - l.a.x, dy = l.b.y - l.a.y, L2 = dx * dx + dy * dy; if (!L2) return false;
-  const t = ((p.x - l.a.x) * dx + (p.y - l.a.y) * dy) / L2, q = { x: l.a.x + t * dx, y: l.a.y + t * dy };
-  return t > 0 && t < 1 && Math.hypot(p.x - q.x, p.y - q.y) < 1 && Math.hypot(p.x - l.a.x, p.y - l.a.y) > 1 && Math.hypot(p.x - l.b.x, p.y - l.b.y) > 1;
- }
- // a segment drawn: the lines it ends on are cut there, so PHG D joins them
- function addSegment(key, A, B, role) {
-  if (Math.hypot(B.x - A.x, B.y - A.y) < 50) return false;
-  const lines = sketchOf(key).slice();
-  for (const P of [A, B]) { const i = lines.findIndex(l => onRun(P, l)); if (i >= 0) { const l = lines[i], id = nextLineId(lines); const { size, ...rest } = l; lines.splice(i, 1, { ...l, b: { x: P.x, y: P.y } }, { ...rest, ...(size ? { size } : {}), id, a: { x: P.x, y: P.y } }); } }
-  lines.push({ id: nextLineId(lines), a: { x: A.x, y: A.y }, b: { x: B.x, y: B.y }, role });
-  setSketch(key, lines, `${ROLE_NAME[role]} 선 그리기`); return true;
- }
- // where a click lands: the Root, an RU or a line end near it; else along the last point (가로·세로, Shift: free) on the
- // 100 mm grid - onto a line that crosses that way; with no last point, onto a line near it
- function snapAt(q, from, free) {
-  const pl = curPlan(), k = S.planShown?.k || 0.05, tol = 10 / k, lines = sketchOf(pl.key);
-  const pts = [pl.root, ...pl.rus, ...lines.flatMap(l => [l.a, l.b])].map(p => ({ x: p.x, y: p.y }));
-  const hit = pts.map(p => [p, Math.hypot(p.x - q.x, p.y - q.y)]).filter(([, d]) => d < tol).sort((a, b) => a[1] - b[1])[0];
-  if (hit) return { ...hit[0], snap: 'point' };
-  let p = { x: Math.round(q.x / 100) * 100, y: Math.round(q.y / 100) * 100 };
-  if (from && !free) { if (Math.abs(q.x - from.x) >= Math.abs(q.y - from.y)) p.y = from.y; else p.x = from.x; }
-  for (const l of lines) {
-   const hz = l.a.y === l.b.y, vt = l.a.x === l.b.x, inX = x => x > Math.min(l.a.x, l.b.x) && x < Math.max(l.a.x, l.b.x), inY = y => y > Math.min(l.a.y, l.b.y) && y < Math.max(l.a.y, l.b.y);
-   if (hz && Math.abs(p.y - l.a.y) < tol && inX(p.x) && (!from || free || p.x === from.x)) return { x: p.x, y: l.a.y, snap: 'line' };
-   if (vt && Math.abs(p.x - l.a.x) < tol && inY(p.y) && (!from || free || p.y === from.y)) return { x: l.a.x, y: p.y, snap: 'line' };
-  }
-  return { ...p, snap: from && !free ? 'ortho' : 'grid' };
- }
- // a network's ducts as lines (to change a network AUTO made, or one made before): one line per duct run between its
- // points, of the duct's kind, with a size set by hand kept
- function linesFromDucts(ducts) {
-  const out = []; let n = 1;
-  for (const d of ducts) {
-   const size = d.manualSize ? (d.diameterMm ? { diameterMm: d.diameterMm } : { widthMm: d.widthMm, heightMm: d.heightMm }) : null;
-   for (let i = 0; i + 1 < d.points.length; i++) { const a = { x: d.points[i].x, y: -d.points[i].y }, b = { x: d.points[i + 1].x, y: -d.points[i + 1].y }; if (Math.hypot(b.x - a.x, b.y - a.y) < 1) continue; out.push({ id: 'L' + n++, a, b, role: d.type || 'branch', ...(size ? { size } : {}) }); }
-  }
-  return out;
- }
- async function toggleDraw() {
-  if (S.draw) { S.draw = null; say('덕트 그리기 끝'); return; }
-  const key = curKey(); if (!key) throw new Error('계통을 고르세요');
-  if (!S.projects[key]) await sendPlan(key);
-  const g = S.geometry[key]?.ducts || [];
-  if (!sketchOf(key).length && g.length) {
-   const v = await ask(`${keyText(key)}에 덕트망이 있습니다. 그 덕트를 선으로 가져와 고칠까요, 빈 평면에 그릴까요? 덕트 지정·계산 때 그린 선으로 덕트망을 새로 만듭니다.`, [['from', '덕트망을 선으로 가져오기', true], ['empty', '빈 평면에 그리기'], ['cancel', '취소']]);
-   if (v === 'cancel') return;
-   if (v === 'from') setSketch(key, linesFromDucts(g), '덕트망을 선으로');
-  }
-  S.draw = { key, from: null }; S.duct = null; S.lineSel = null; S.room = null;
-  say(`덕트 그리기 (${ROLE_NAME[S.drawRole || 'main']}): 평면을 눌러 점을 찍습니다 — 가로·세로로(Shift: 자유), 100 mm 격자, 공조기·RU·선 끝·선 위에 붙음 · 같은 점을 다시 누르거나 Enter = 한 줄 끝 · Esc = 그리기 끝`);
- }
- // 덕트 지정·계산: the network made of the plan's lines (no AUTO); on the undo history as one step
- async function buildKey(key = curKey()) {
-  const sketch = sketchOf(key), lines = sketch.filter(l => Math.hypot(l.b.x - l.a.x, l.b.y - l.a.y) >= 1);
-  if (!lines.length) throw new Error('먼저 덕트 그리기로 선을 그리세요');
-  const sizes = Object.fromEntries(lines.filter(l => l.size).map(l => [l.id, l.size]));
-  for (const d of S.geometry[key]?.ducts || []) if (d.manualSize && d.line) sizes[d.line] = d.diameterMm ? { diameterMm: d.diameterMm } : { widthMm: d.widthMm, heightMm: d.heightMm };
-  record(`${keyText(key)} 덕트 지정·계산`, [key]);
-  const t = performance.now();
-  await sendPlan(key);
-  const r = await phg.buildFromLines(lines, sizes);
-  store(key, { manual: true, sketch, sketchSig: sketchSig(sketch), unconnected: r.unconnected, seconds: Math.round((performance.now() - t) / 100) / 10 });
-  S.draw = S.draw && { ...S.draw, from: null };
-  say(`${keyText(key)}: 그린 선 ${lines.length}개 → 덕트 ${r.ducts}개 · ${r.lengthM} m · 최대 ${r.indexPa ?? '—'} Pa${r.unconnected ? ` · 연결 안 된 RU ${r.unconnected}개 — 선을 RU까지 이으세요` : ''}`, !!r.unconnected);
- }
- function removeLines(key, ids, label) { const set = new Set(ids); setSketch(key, sketchOf(key).filter(l => !set.has(l.id)), label); if (set.has(S.lineSel)) S.lineSel = null; }
- function setLineRole(key, id, role) { setSketch(key, sketchOf(key).map(l => l.id === id ? { ...l, role } : l), `선 ${id} ${ROLE_NAME[role]}`); }
- // work drawn by hand that AUTO would replace (the lines, a network made of them): asked first
+ // networks made by hand that AUTO would replace: asked first (keep them, replace them, or neither)
  async function keepsHand(keys) {
-  const hand = keys.filter(k => S.results[k]?.manual || sketchOf(k).length); if (!hand.length) return keys;
-  const v = await ask(`직접 그린 덕트(선·덕트망) ${hand.length}개 계통(${hand.slice(0, 3).map(keyText).join(', ')}${hand.length > 3 ? ' …' : ''})이 있습니다. AUTO는 그것을 지우고 새 경로를 만듭니다.`, [['skip', '직접 그린 것은 두고 AUTO', true], ['all', '모두 AUTO로 바꾸기'], ['cancel', '취소']]);
+  const hand = keys.filter(k => S.results[k]?.manual); if (!hand.length) return keys;
+  const v = await ask(`직접 만든 덕트망 ${hand.length}개(${hand.slice(0, 3).map(keyText).join(', ')}${hand.length > 3 ? ' …' : ''})가 있습니다. AUTO는 그것을 지우고 새 경로를 만듭니다.`, [['skip', '직접 만든 것은 두고 AUTO', true], ['all', '모두 AUTO로 바꾸기'], ['cancel', '취소']]);
   return v === 'cancel' ? [] : v === 'skip' ? keys.filter(k => !hand.includes(k)) : keys;
- }
- // ④ shows a plan that is not in PHG D yet: its RUs and unit go there (the drawing, Root, RUs, zones - no AUTO)
- let sending = null;
- function ensureSent() {
-  const key = curKey();
-  if (S.step !== 'duct' || S.phgEditor || !key || S.projects[key] || sending || busyNow()) return;
-  sending = key; act('RU 배치 — PHG D로 보내는 중', () => sendPlan(key)).finally(() => { sending = null; });
  }
  // a duct's kind (주 덕트·분기·보조 분기) changed on the plan: PHG D calculates the network again (no AUTO)
  async function setDuctType(key, i, type) {
@@ -460,8 +374,6 @@
   await loadPhg(); if (S.active !== key) await openKey(key);
   record(`${d.displayName} 종류`, [key]);
   let r; try { r = await phg.setDuctType(d.id, type); } catch (e) { S.undo.pop(); throw e; } store(key, { edited: true }, { keepSig: true });
-  // a network drawn by hand: its line takes the kind too (the next 덕트 지정·계산 keeps it)
-  if (S.results[key]?.manual && d.line) { const sk = sketchOf(key).map(l => l.id === d.line ? { ...l, role: type } : l); S.results[key] = { ...S.results[key], sketch: sk, sketchSig: sketchSig(sk) }; }
   // PHG D names the duct again by its kind: found by id
   const ds = S.geometry[key]?.ducts || [], at = ds.findIndex(x => x.id === d.id); S.duct = { key, i: Math.max(0, at) };
   const nd = ds[S.duct.i], name = { main: '주 덕트', branch: '분기', sub_branch: '보조 분기' };
@@ -486,19 +398,19 @@
   const q = { x: Math.round(p.x / 100) * 100, y: Math.round(p.y / 100) * 100 };
   if (!room || !GE.inRoom(q, room)) { say(`RU는 자기 실(${room ? room.no + ' ' + room.name : '?'}) 안에만 둘 수 있습니다`, true); return; }
   edit(`RU ${ruId} 이동`, () => { S.contract = { ...S.contract, ruMoves: { ...(S.contract.ruMoves || {}), [ruId]: q } }; }, [key]);
-  if (S.dropAuto && !S.results[key]?.manual) await autoKey(key); else if (netDone(result(key))) say(`RU ${ruId} 옮김 — 덕트망은 옮기기 전 것입니다. 새 경로는 "다시 AUTO"`);
+  if (S.dropAuto) await autoKey(key); else if (result(key)?.auto) say(`RU ${ruId} 옮김 — 덕트망은 옮기기 전 것입니다. 새 경로는 "다시 AUTO"`);
  }
  // this plan's RUs back where the plan puts them
  async function resetRuMoves(key = curKey()) {
   const pl = plans().find(x => x.key === key), ids = new Set((pl?.rus || []).filter(u => u.moved).map(u => u.id)); if (!ids.size) return;
   edit('RU 위치 초기화', () => { S.contract = { ...S.contract, ruMoves: Object.fromEntries(Object.entries(S.contract.ruMoves || {}).filter(([k]) => !ids.has(k))) }; }, [key]);
-  if (S.dropAuto && !S.results[key]?.manual) await autoKey(key); else if (netDone(result(key))) say('RU 위치 초기화 — 덕트망은 그 전 것입니다. 새 경로는 "다시 AUTO"');
+  if (S.dropAuto) await autoKey(key); else if (result(key)?.auto) say('RU 위치 초기화 — 덕트망은 그 전 것입니다. 새 경로는 "다시 AUTO"');
  }
  // dragging an RU or the unit / shaft of the current system on the ④ plan
  function planDrag(svg) {
   const toPlan = ev => { const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()); return { x: q.x, y: Y(q.y) }; };
   svg.querySelectorAll('.drag').forEach(el => el.onpointerdown = ev => {
-   if (ev.button !== 0 || S.pickRoot || S.draw) return;
+   if (ev.button !== 0 || S.pickRoot) return;
    const x0 = ev.clientX, y0 = ev.clientY, a = toPlan(ev); let moved = false;
    el.setPointerCapture(ev.pointerId); el.classList.add('dragging');
    el.onpointermove = e => { if (Math.hypot(e.clientX - x0, e.clientY - y0) > 4) moved = true; if (!moved) return; const b = toPlan(e); el.setAttribute('transform', `translate(${b.x - a.x} ${-(b.y - a.y)})`); };
@@ -525,7 +437,7 @@
    S.planView = { deck: S.deck, k, minX: wx - sx / k, minY: wy - sy / k }; redraw();
   }, { passive: false });
   svg.addEventListener('pointerdown', ev => {
-   if (ev.button !== 1 && (ev.button !== 0 || S.pickRoot || S.draw || ev.target.closest('.drag'))) return;
+   if (ev.button !== 1 && (ev.button !== 0 || S.pickRoot || ev.target.closest('.drag'))) return;
    // a double click, counted here: the first click on a room selects it and draws the plan again, so the browser's
    // dblclick (both clicks on one element) does not come
    const now = performance.now(), twice = ev.button === 0 && last && now - last.t < 400 && Math.hypot(ev.clientX - last.x, ev.clientY - last.y) < 6;
@@ -546,10 +458,8 @@
  }
  // PHG D as the detail editor of the plan in ④: its own screen; closing reads back what was changed there
  async function openEditor() {
-  await loadPhg(); const key = curKey();
-  if (key && S.projects[key]) { if (S.active !== key) await openKey(key); }
-  else if (key) await sendPlan(key);
-  S.phgEditor = true; say('PHG D 편집기 — 고친 뒤 "평면으로"를 누르면 결과를 읽어 옵니다');
+  await loadPhg(); await showInPhg(curKey());
+  S.phgEditor = true; S.ductView = 'phg'; render(); toPhg(); say('PHG D 캔버스 — PHG D 도구로 그리고 고칩니다. 다른 단계·계통으로 가거나 "HVAC Grid 평면"을 누르면 결과를 읽어 옵니다');
  }
  // sections near a duct's own, each with the velocity it gives; "auto" lets PHG D size it again
  function sizeOptions(d) {
@@ -561,8 +471,8 @@
   for (const [w, h] of sizes) out += opt(JSON.stringify({ widthMm: w, heightMm: h }), `${w}×${h} · ${vel(w * h / 1e6)} m/s${w === d.widthMm && h === d.heightMm ? ' · 지금' : ''}`, w === d.widthMm && h === d.heightMm);
   return out;
  }
- function closeEditor() { if (S.active && phg.loading) readBackIfEdited(); S.phgEditor = false; S.duct = null; }
- function readBack() { if (!S.active) throw new Error('PHG D에 열린 계통이 없습니다'); store(S.active, { edited: true }, { keepSig: true }); say('PHG D 결과를 읽었습니다'); }
+ function closeEditor() { if (S.active && phg.loading) readBackIfEdited(); fromPhg(); S.phgEditor = false; S.ductView = 'plan'; S.duct = null; }
+ function readBack() { if (!S.active) throw new Error('PHG D에 열린 계통이 없습니다'); const auto = S.results[S.active]?.auto; store(S.active, { edited: true, ...(auto ? {} : { manual: phg.result().ducts > 0 }) }, { keepSig: true }); say('PHG D 결과를 읽었습니다'); }
  // leaving ④ with edits made in PHG D: read them back so ⑤ and the outputs show what is on screen
  function readBackIfEdited() { if (S.active && phg.loading && S.projects[S.active] && phg.changedSince(S.projects[S.active])) { readBack(); say(`${keyText(S.active)}: PHG D에서 고친 내용을 읽었습니다`); } }
 
@@ -731,7 +641,7 @@
    ['보기', [seg('평면 보기', S.overlay, [['air', '풍량'], ['fire', '방화']], v => { S.overlay = v; })]],
    ['설계 데이터', [c('open', '열기', () => act(null, openProject), { title: 'HVAC Grid 프로젝트 또는 설계 데이터 JSON' }), c('save', '설계 데이터 저장', () => act(null, OUT.contract), { disabled: needContract })]]] },
   { id: 'duct', name: 'RU·덕트', view: 'plan', groups: () => S.phgEditor ? [
-   ['편집기', [c('back', '평면으로', () => act(null, closeEditor), { primary: true, title: 'PHG D에서 고친 내용을 읽고 HVAC Grid 평면으로 돌아갑니다' })]],
+   ['보기', [c('back', 'HVAC Grid 평면', () => act(null, closeEditor), { title: 'PHG D에서 고친 내용을 읽고 ④를 HVAC Grid 평면(풍속·압력 글자, 덕트 종류·크기, RU 끌기)으로 봅니다' })]],
    ['HVAC Grid', [sysField(true), c('send', 'PHG D로 보내기', () => act('PHG D로 보내는 중', () => sendPlan()), { primary: true, disabled: () => !curKey(), title: 'Deck 격실 도면 + 공조기·수직 덕트 + 격실별 RU(풍량)' }), c('auto', '보내기 + AUTO', () => act('AUTO 계산 중', async () => { if ((await keepsHand([curKey()])).length) await autoKey(); }), { disabled: () => !curKey(), title: 'AUTO → 첫 후보 → 덕트 지정 → 계산 → 압력' }), c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '결과 읽기', () => act(null, readBack), { disabled: () => !S.active, title: 'PHG D에서 고친 결과를 HVAC Grid로' })]],
    ['계통', [c('root', '공조기', phgCmd('rootBtn'), { code: 'R', title: '공조기 · 계통 시작점 배치' }), c('ru', 'RU 배치', phgCmd('diffuserBtn'), { code: 'RU' }), c('ruAuto', 'RU 자동', phgCmd('autoDiffuserBtn')), c('flow', '풍량 초안', phgCmd('phgdFlowBtn'))]],
    ['자동 라우팅', [c('zone', '금지 영역', phgText('금지 영역')), c('auto', 'AUTO', phgCmd('autoRouteOpenBtn'), { title: 'AUTO · 편집 가능한 경로 객체 생성 · 덕트 지정으로 덕트화' }), c('cmp', '비교', phgCmd('phgdCompareBtn')), c('set', '설정', phgCmd('phgdAutoSettingsBtn'))]],
@@ -739,15 +649,10 @@
    ['계산', [c('lines', '선 검사', phgCmd('lineCheckBtn')), c('calc', '계산', phgCmd('calculateBtn'), { title: '풍량과 덕트 크기' }), c('noise', '소음', phgCmd('noiseCalcBtn')), c('press', '압력', phgCmd('pressureCalcBtn'))]],
    ['보기', [c('fit', '전체 보기', phgCmd('zoomAllBtn')), c('dockL', '왼쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-left-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('left'), title: 'PHG D 도구·레이어 패널' }), c('dockR', '오른쪽', () => act(null, async () => { await loadPhg(); phg.click('phgb-right-panel'); }), { pressed: () => phg.loading && S.phgDocked && phg.dockShown('right'), title: 'PHG D 프로젝트 상태·검증 패널' })]]] : [
    ['HVAC Grid', [sysField(true), c('send', 'PHG D로 보내기', () => act('PHG D로 보내는 중', () => sendPlan()), { primary: true, disabled: () => !curKey(), title: 'Deck 격실 도면 + 공조기·수직 덕트 + 격실별 RU(풍량)' }), c('auto', '보내기 + AUTO', () => act('AUTO 계산 중', async () => { if ((await keepsHand([curKey()])).length) await autoKey(); }), { disabled: () => !curKey(), title: 'AUTO → 첫 후보 → 덕트 지정 → 계산 → 압력' }), c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' })]],
-   ['직접 그리기', [c('ml', '덕트 그리기', () => act(null, toggleDraw), { pressed: () => !!S.draw, disabled: () => !curKey(), title: '평면에 덕트를 선으로 그립니다 (RU·공조기는 PHG D에 이미 배치). 가로·세로·100 mm 격자, 공조기·RU·선 끝·선 위에 붙음. 같은 점 다시·Enter = 한 줄 끝, Esc = 그리기 끝. 그린 뒤 덕트 지정·계산' }),
-    seg('선 종류', S.drawRole || 'main', [['main', '주'], ['branch', '분기'], ['sub_branch', '보조']], v => { S.drawRole = v; if (S.lineSel) act(null, () => setLineRole(curKey(), S.lineSel, v)); }),
-    c('ad', '덕트 지정·계산', () => act('덕트 지정·계산 중', () => buildKey()), { disabled: () => !sketchOf(curKey()).length, title: '그린 선으로 PHG D 덕트망을 만듭니다: 덕트 지정(선 끝·공조기·RU에서 이어짐) → 선 종류대로 주·분기·보조 → 크기·풍량·압력 계산. AUTO는 돌리지 않음' }),
-    c('unpin', '선 지우기', () => act(null, () => removeLines(curKey(), [S.lineSel], '선 지우기')), { disabled: () => !S.lineSel, title: '고른 선을 지웁니다 (Delete)' }),
-    c('reset', '모든 선 지우기', () => act(null, async () => { const k = curKey(), n = sketchOf(k).length; if (n && (await ask(`${keyText(k)}의 그린 선 ${n}개를 모두 지울까요? (Ctrl+Z로 되돌림)`, [['ok', '지우기', true], ['cancel', '취소']])) === 'ok') removeLines(k, sketchOf(k).map(l => l.id), '모든 선 지우기'); }), { disabled: () => !sketchOf(curKey()).length })]],
    ['편집', [c('reroute', '다른 경로', () => act('다른 경로 찾는 중', () => reroute()), { disabled: () => !result(curKey())?.auto || result(curKey())?.candidates === 1, title: result(curKey())?.candidates === 1 ? 'PHG D가 찾은 경로가 하나뿐 — RU·공조기를 끌어서 옮기면 다른 경로가 나옵니다' : 'AUTO의 다음 후보 경로로 바꿉니다 (RU·공조기는 평면에서 끌어서 옮깁니다)' }), c('resetRu', 'RU 위치 초기화', () => act(S.dropAuto ? 'RU 위치 되돌리고 다시 AUTO' : null, () => resetRuMoves()), { disabled: () => !curPlan()?.rus.some(u => u.moved), title: '이 계통에서 옮긴 RU를 계획 위치로' }),
     c('auto', '놓으면 AUTO', () => { S.dropAuto = !S.dropAuto; saveLayers(); say(S.dropAuto ? 'RU·공조기를 놓으면 AUTO를 다시 돌립니다' : 'RU·공조기를 놓아도 AUTO는 돌리지 않습니다 — 덕트망에 "다시 AUTO" 표시'); render(); }, { pressed: () => !!S.dropAuto, title: '꺼짐(기본): RU·공조기를 끌어 놓으면 위치만 바뀌고 덕트망에 "다시 AUTO" 표시 — AUTO는 사용자가 실행. 켜면 놓을 때마다 AUTO' })]],
    ['보기', [seg('덕트 보기', S.ductShow || 'sys', [['sys', '이 계통'], ['kind', '같은 종류'], ['all', '모든 계통']], v => { S.ductShow = v; }), seg('덕트 글자', S.ductLabel || 'size', [['size', '크기'], ['vel', '풍속'], ['pa', '압력']], v => { S.ductLabel = v; })]],
-   ['PHG D', [c('editor', 'PHG D 편집기', () => act('PHG D 여는 중', openEditor), { disabled: () => !curKey(), title: '세부 편집: 경로·RU·덕트를 PHG D 화면에서 직접 고칩니다. "평면으로"를 누르면 고친 내용을 읽어 옵니다' })]]] },
+   ['PHG D', [c('editor', 'PHG D 캔버스', () => act('PHG D 여는 중', openEditor), { disabled: () => !curKey(), title: '세부 편집: 경로·RU·덕트를 PHG D 화면에서 직접 고칩니다. "평면으로"를 누르면 고친 내용을 읽어 옵니다' })]]] },
   { id: 'review', name: '검토·출력', view: 'plan', groups: () => [
    ['덕트망', [c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { primary: true, disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '남은 것만', () => act('AUTO 계산 중', () => runAll(undefined, { onlyNeeded: true })), { disabled: needContract, title: 'AUTO가 없거나 다시 보내야 하는 계통만' })]],
    ['방화 (SOLAS)', [field(`<label class="field">선종<select id="shipSel" ${S.contract ? '' : 'disabled'}>${Object.values(SO.DATA.ships).map(s => `<option value="${s.key}" ${s.key === (S.contract?.solas?.ship || SO.DEFAULT_SETTINGS.ship) ? 'selected' : ''}>${esc(s.label)} · ${s.tB}/${s.tD}</option>`).join('')}</select></label>`),
@@ -780,6 +685,17 @@
  const stepOf = id => STEPS.find(s => s.id === id);
  // the view a step shows: ④ is the shared HVAC Grid plan; PHG D only while its editor is open (S.phgEditor)
  const viewOf = id => id === 'duct' ? (S.phgEditor ? 'phg' : 'plan') : stepOf(id).view;
+ // ④ on PHG D's canvas: a plan opened there, or sent there first (its drawing, unit, RUs, zones - no AUTO); the view kept
+ // when the deck is the same (PHG D fits a project it opens)
+ async function showInPhg(key) {
+  if (!key) return;
+  const v = S.active && S.active.split('__')[0] === key.split('__')[0] ? phg.view2d() : null;
+  if (S.projects[key]) { if (S.active !== key) await openKey(key); } else await sendPlan(key);
+  if (v) phg.viewTo(v.minX - v.rect.left / v.k, v.minY - v.rect.top / v.k, v.k, $('center').getBoundingClientRect());
+ }
+ // the plan's view onto PHG D's canvas (③ ⑤ → ④, the HVAC Grid plan → PHG D) and back
+ function toPhg() { const v = S.planShown; if (v?.deck === S.deck && S.active?.startsWith(S.deck + '__')) phg.viewTo(v.minX, v.minY, v.k, $('center').getBoundingClientRect()); }
+ function fromPhg() { const v = phg.loading && phg.view2d(); if (v && S.active?.startsWith(S.deck + '__')) S.planView = S.planShown = { deck: S.deck, k: v.k, minX: v.minX - v.rect.left / v.k, minY: v.minY - v.rect.top / v.k }; }
  // ① ② → ③ ④ ⑤: the deck BOX shows, the room picked in it, and BOX's view kept also when BOX shows only part of the
  // deck (plan() takes BOX's view by itself when it frames the deck; else it would fit the deck - a jump)
  function fromBox() {
@@ -804,7 +720,10 @@
  // ③ opens on the deck BOX showed in ① ② - the same deck on the same canvas
  function followBoxDeck() { try { const a = box.loading && box.win.CAD_APP?.st?.activeDeck; if (a && S.contract?.decks.some(d => d.id === a) && S.deck !== a) { S.deck = a; S.room = null; pickSystem(); } } catch {} }
  async function go(id) {
-  if (S.step === 'duct' && id !== 'duct') { if (S.phgEditor) readBackIfEdited(); S.phgEditor = false; S.draw = null; S.lineSel = null; }
+  // ④ is PHG D's own canvas (all of PHG D's tools) unless the HVAC Grid plan was chosen there; leaving it, the edits are
+  // read back and its view is the view of the step after
+  if (S.step === 'duct' && id !== 'duct') { if (S.phgEditor) { readBackIfEdited(); fromPhg(); } S.phgEditor = false; }
+  if (id === 'duct' && S.step !== 'duct') S.phgEditor = S.ductView !== 'plan';
   const from = viewOf(S.step), to = viewOf(id);
   if (from === 'box' && to === 'plan' && S.contract) fromBox();
   if (from === 'plan' && to === 'box' && S.contract) toBox();
@@ -813,7 +732,7 @@
   S.step = id; S.pickRoot = false; render();
   const view = viewOf(id);
   if (view === 'box') await act(box.loading ? null : 'BOX CAL 여는 중', () => box.load());
-  if (view === 'phg') await act(phg.loading ? null : 'PHG D 여는 중', async () => { await loadPhg(); const key = curKey(); if (key && S.projects[key] && S.active !== key) await openKey(key); });
+  if (view === 'phg') await act(phg.loading ? null : 'PHG D 여는 중', async () => { await loadPhg(); await showInPhg(curKey()); toPhg(); });
  }
  // undo / redo go to the app on screen (each keeps its own history); in ③ and ⑤ to the HVAC Grid edits
  const frameOnScreen = () => ({ box: box.loading && box, phg: phg.loading && phg }[viewOf(S.step)] || null);
@@ -852,7 +771,7 @@
   ribbonMore();
   $('ribbon').querySelectorAll('.cmd').forEach(b => b.onclick = () => runs[+b.dataset.i].run());
   $('ribbon').querySelectorAll('.seg').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => { segs[g.dataset.seg](b.dataset.v); render(); }));
-  const sel = $('sysSel'); if (sel) sel.onchange = () => { S.sys = sel.value; const p = curPlan(); if (p) S.kind = p.kind; S.pickRoot = false; if (S.step === 'duct' && S.phgEditor) act(null, async () => { const k = curKey(); if (S.projects[k]) await openKey(k); }); else render(); };
+  const sel = $('sysSel'); if (sel) sel.onchange = () => { S.sys = sel.value; const p = curPlan(); if (p) S.kind = p.kind; S.pickRoot = false; if (S.step === 'duct' && S.phgEditor) act(null, () => showInPhg(curKey())); else render(); };
   const unit = $('unitSel'); if (unit && !unit.disabled) unit.onchange = () => act(null, () => setUnitDeck(unit.value));
   const ship = $('shipSel'); if (ship) ship.onchange = () => act(null, () => { setSolas('ship', ship.value); say('SOLAS 선종: ' + SO.DATA.ships[ship.value].label); });
   const method = $('methodSel'); if (method) method.onchange = () => act(null, () => { setSolas('method', method.value); say('방화방식 ' + method.value); });
@@ -880,7 +799,7 @@
     return `<button class="room" data-room="${esc(r.id)}" aria-selected="${r.id === S.room}" title="${esc(r.no)} ${esc(r.name)}${r.isoClass ? ' · ISO 분류 ' + esc(isoName(r.isoClass)) : ''} · SOLAS ${esc(cls[r.id]?.space || '미분류')}"><span class="no">${esc(r.no)}</span><span class="nm">${dots ? `<span class="dot" style="background:${sid ? sysColor(sid) : 'transparent'};${sid ? '' : 'border:1px solid var(--line)'}"></span>` : ''}${esc(r.name)}</span><span class="cmh">${value(r, C)}</span></button>`; }).join('') : ''}</div>`;
   }).join('');
   $('treeCount').textContent = count + '실';
-  $('tree').querySelectorAll('.deckh').forEach(e => e.onclick = () => { S.deck = e.dataset.deck; S.room = null; pickSystem(); render(); if (S.step === 'duct' && S.phgEditor) act(null, async () => { const k = curKey(); if (k && S.projects[k]) await openKey(k); }); });
+  $('tree').querySelectorAll('.deckh').forEach(e => e.onclick = () => { S.deck = e.dataset.deck; S.room = null; pickSystem(); render(); if (S.step === 'duct' && S.phgEditor) act(null, () => showInPhg(curKey())); });
   $('tree').querySelectorAll('.room').forEach(e => e.onclick = () => selectRoom(e.dataset.room));
  }
  function selectRoom(id) {
@@ -911,8 +830,9 @@
  }
  function plan() {
   // ① ②: the layers over BOX's own canvas - its view and its active deck; BOX takes every click (docs/PLAN.md H5 4)
-  const over = viewOf(S.step) === 'box', bv2 = over ? box.view2d() : null;
-  if (over) followBoxDeck();
+  // ④ on PHG D's canvas: the layers over it the same way, PHG D drawing the plan's own network, RUs and unit
+  const overView = viewOf(S.step), over = overView === 'box' || overView === 'phg', onPhg = overView === 'phg', bv2 = overView === 'box' ? box.view2d() : onPhg && S.active === curKey() ? phg.view2d() : null;
+  if (overView === 'box') followBoxDeck();
   const C = S.contract, svg = $('plan'), rooms = C.rooms.filter(r => r.deckId === S.deck);
   svg.classList.toggle('over-box', over);
   // (over BOX in 3D or on a deck the design data has not got: nothing over BOX - the plan's own background would hide it)
@@ -994,13 +914,13 @@
   // faint as asked; ⑤ every system of the deck, faint (the penetrations sit on them)
   // the current plan's forbidden zones for AUTO as PHG D gets them (lib/phg-plan.cjs: the restricted rooms it does not
   // serve, pulled in 50 mm; the outside of the deck) - AUTO may have run without some (zonesRelaxed, the panel says)
-  if (L.has('zones') && cur) {
+  if (L.has('zones') && cur && !onPhg) {
    html += `<defs><pattern id="zoneHatch" width="${px(7)}" height="${px(7)}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="${px(7)}" class="zh"/></pattern><pattern id="outHatch" width="${px(9)}" height="${px(9)}" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="${px(9)}" class="oh"/></pattern></defs>`;
    for (const z of cur.outside || []) html += `<polygon class="zone out" points="${z.map(q => q.x + ',' + Y(q.y)).join(' ')}"><title>금지 영역: 선체 밖 (AUTO가 피함)</title></polygon>`;
    for (const z of (cur.avoid || []).filter(z => z.zone?.length > 2)) html += `<polygon class="zone" points="${z.zone.map(q => q.x + ',' + Y(q.y)).join(' ')}"><title>금지 영역: ${esc(z.no)} ${esc(z.name)} (${esc(z.space)}) — AUTO가 피함 (II-2/9.7.2)</title></polygon>`;
   }
   if (L.has('ducts')) {
-   const show = S.ductShow || 'sys', ductPlans = ductMode ? deckPlans().filter(p => show === 'all' || (show === 'kind' ? p.kind === S.kind : p.key === cur?.key)) : review ? deckPlans() : deckPlans(S.kind);
+   const show = S.ductShow || 'sys', ductPlans = onPhg ? deckPlans().filter(p => p.key !== cur?.key) : ductMode ? deckPlans().filter(p => show === 'all' || (show === 'kind' ? p.kind === S.kind : p.key === cur?.key)) : review ? deckPlans() : deckPlans(S.kind);
    for (const p of ductPlans) (S.geometry[p.key]?.ducts || []).forEach((d, i) => {
     const on = p.key === cur?.key, w = ductMode ? (d.type === 'main' ? 4 : d.type === 'branch' ? 2.6 : 1.6) : (d.type === 'main' ? 2.5 : 1.5), pts = d.points.map(q => `${q.x},${Y(-q.y)}`).join(' ');
     if (ductMode && S.duct?.key === p.key && S.duct.i === i) html += `<polyline class="duct dsel" points="${pts}" stroke-width="${w + 7}"></polyline>`;
@@ -1009,8 +929,8 @@
    // ④: the current network's ducts labelled where there is room (덕트 글자) - the main ducts' sizes, every duct's
    // velocity, or the loss from the Root to its end with each RU's path total (PHG D's pressure calculation, the index
    // RU in red)
-   const lab = S.ductLabel || 'size', pr = ductMode && cur && lab === 'pa' ? pressureOf(cur.key) : null;
-   if (ductMode && cur) for (const d of (S.geometry[cur.key]?.ducts || []).filter(d => d.points.length > 1 && (lab !== 'size' || d.type === 'main'))) {
+   const lab = S.ductLabel || 'size', pr = ductMode && cur && !onPhg && lab === 'pa' ? pressureOf(cur.key) : null;
+   if (ductMode && cur && !onPhg) for (const d of (S.geometry[cur.key]?.ducts || []).filter(d => d.points.length > 1 && (lab !== 'size' || d.type === 'main'))) {
     const [p0, p1] = [d.points[0], d.points.at(-1)], len = Math.hypot(p1.x - p0.x, p1.y - p0.y) * k; if (len < 70) continue;
     const area = d.widthMm ? d.widthMm * d.heightMm / 1e6 : d.diameterMm ? Math.PI * (d.diameterMm / 2000) ** 2 : 0;
     const text = lab === 'vel' ? (area ? (d.flowCmh / 3600 / area).toFixed(1) + ' m/s' : '') : lab === 'pa' ? (pr?.ducts[d.id] ? Math.round(pr.ducts[d.id].fromRootPa) + ' Pa' : '') : d.widthMm ? `${d.widthMm}×${d.heightMm}` : d.diameterMm ? `Ø${d.diameterMm}` : ''; if (!text) continue;
@@ -1018,16 +938,6 @@
     html += `<text class="dsz" x="${mx + (vert ? px(6) : 0)}" y="${my - (vert ? 0 : px(6))}" text-anchor="${vert ? 'start' : 'middle'}" style="font-size:${px(10)}px">${text}</text>`;
    }
    if (pr) for (const u of pr.rus) html += `<text class="dsz ru-pa${u.id === pr.indexRu ? ' idx' : ''}" x="${u.x + px(7)}" y="${Y(u.y) - px(7)}" style="font-size:${px(10)}px">${Math.round(u.totalPa)} Pa<title>${esc(u.name)} ${fmt(u.flowCmh)} CMH: Root에서 이 RU까지 ${u.totalPa} Pa (RU 포함)${u.id === pr.indexRu ? ' — 최대(인덱스)' : ''}</title></text>`;
-  }
-  // ④: the lines drawn by hand (덕트 그리기) - dashed while the network is not made of them; their ends while drawing
-  if (S.draw && S.draw.key !== cur?.key) S.draw = null;
-  if (ductMode && cur) {
-   const lines = sketchOf(cur.key), built = sketchBuilt(cur.key);
-   if (lines.length && (!built || S.draw || S.lineSel)) {
-    for (const l of lines) html += `<line class="sk ${l.role}${built ? ' built' : ''}${l.id === S.lineSel ? ' sel' : ''}" data-line="${esc(l.id)}" x1="${l.a.x}" y1="${Y(l.a.y)}" x2="${l.b.x}" y2="${Y(l.b.y)}"><title>선 ${esc(l.id)} · ${ROLE_NAME[l.role]} · ${(Math.hypot(l.b.x - l.a.x, l.b.y - l.a.y) / 1000).toFixed(1)} m${built ? '' : ' — 덕트 지정·계산 전'}</title></line>`;
-    if (S.draw) { const ends = new Map(lines.flatMap(l => [l.a, l.b]).map(p => [p.x + ',' + p.y, p])); for (const p of ends.values()) html += `<rect class="sk-end" x="${p.x - px(2.5)}" y="${Y(p.y) - px(2.5)}" width="${px(5)}" height="${px(5)}"/>`; }
-   }
-   if (S.draw) html += `<g id="skPrev">${S.draw.from ? `<circle class="sk-from" cx="${S.draw.from.x}" cy="${Y(S.draw.from.y)}" r="${px(4)}"/>` : ''}</g>`;
   }
   // fire boundaries: the restricted spaces a duct passes, the rated walls (the 방화 등급도's layer)
   if (L.has('fire')) {
@@ -1052,7 +962,7 @@
     + `<title>전달 공기 ${fmt(A.transferInCmh)} CMH: ${esc(src.no)} ${esc(src.name)} → ${esc(r.no)} ${esc(r.name)}${bd?.grade ? ' · 경계 ' + esc(bd.grade) : ''}${A.transferSet ? ' (지정)' : ' (자동)'}</title></g>`; }
   if (L.has('pens')) html += fireLayer(a, px, { walls: false });
   // the current plan's RUs: supply circle, return diamond, exhaust square (shape and colour); dragged in ④
-  if (L.has('rus') && cur) for (const u of cur.rus) {
+  if (L.has('rus') && cur && !onPhg) for (const u of cur.rus) {
    const x = u.x, y = Y(u.y), r = px(4.5), cls = `ru${ductMode ? ' drag' : ''}${u.moved ? ' moved' : ''}`, t = `<title>${esc(u.id)} · ${fmt(u.flowCmh)} CMH${u.moved ? ' · 옮김' : ''}${ductMode ? ' — 끌어서 옮기기' : ''}</title>`, dg = `data-key="${esc(cur.key)}" data-ru="${esc(u.id)}"`;
    html += cur.kind === 'supply' ? `<circle class="${cls}" ${dg} cx="${x}" cy="${y}" r="${r}" fill="${sysColor(cur.systemId)}">${t}</circle>`
     : cur.kind === 'return' ? `<path class="${cls}" ${dg} d="M${x} ${y - r * 1.2}L${x + r * 1.2} ${y}L${x} ${y + r * 1.2}L${x - r * 1.2} ${y}Z" fill="${sysColor(cur.systemId)}">${t}</path>`
@@ -1060,7 +970,7 @@
   }
   html += sel;
   // units (filled = set by the user, dashed = a guess) on the unit deck; vertical duct shafts (circles) on the other decks
-  if (L.has('units')) for (const p of deckPlans(S.kind)) {
+  if (L.has('units')) for (const p of deckPlans(S.kind).filter(p => !onPhg || p.key !== cur?.key)) {
    const col = sysColor(p.systemId), on = p.key === cur?.key, user = p.rootSource === 'user', firm = user || /^(fan|shaft|own)-room|above-unit/.test(p.rootSource), s = px(on ? 22 : 18), cx = p.root.x, cy = Y(p.root.y);
    const tip = `${esc(p.systemId)} ${p.isUnitDeck ? (p.kind === 'supply' ? '공조기' : '팬') : '수직 덕트'} · ${esc(rootText(p.rootSource))}`;
    html += p.isUnitDeck ? `<g class="mk${ductMode && on ? ' drag' : ''}" data-key="${esc(p.key)}" opacity="${on ? 1 : .6}"><rect class="root${firm ? '' : ' guess'}" x="${cx - s / 2}" y="${cy - s / 2}" width="${s}" height="${s}" rx="${px(3)}" ${user ? `fill="${col}" stroke="${col}"` : `stroke="${col}"`}><title>${tip}</title></rect><text class="ahu${user ? '' : ' guess'}" x="${cx}" y="${cy + px(3)}" text-anchor="middle" style="font-size:${px(8)}px">${UNIT_WORD[p.kind]}</text></g>`
@@ -1073,37 +983,22 @@
   if (!onBox) html += `<g class="axis"><line class="ax" x1="0" y1="0" x2="${al}" y2="0"/><polygon class="ax" points="${al},0 ${al - ah},${-ah * .55} ${al - ah},${ah * .55}"/>`
    + `<line class="ay" x1="0" y1="0" x2="0" y2="${-al}"/><polygon class="ay" points="0,${-al} ${-ah * .55},${-al + ah} ${ah * .55},${-al + ah}"/><circle class="at" cx="0" cy="0" r="${ar * 1.8}"/><circle class="ao" cx="0" cy="0" r="${ar}"/>`
    + `<text class="ax" x="${al + ah * .35}" y="${afs * .34}" style="font-size:${afs}px">X</text><text class="ay" x="${afs * .28}" y="${-al - ah * .18}" style="font-size:${afs}px">Y</text><text class="ao" x="${px(-13)}" y="${px(9)}" style="font-size:${afs * .82}px">0,0</text></g>`;
-  svg.innerHTML = html; svg.classList.toggle('picking', S.pickRoot); svg.classList.toggle('drawing', !!S.draw);
-  svg.querySelectorAll('.rm').forEach(e => e.onclick = ev => { if (S.pickRoot || S.draw) return; ev.stopPropagation(); selectRoom(e.dataset.room); });
-  if (ductMode) planDrag(svg);
-  svg.querySelectorAll('.mk').forEach(e => e.onclick = ev => { if (S.pickRoot || S.draw) return; ev.stopPropagation(); if (e.dataset.dragged) { delete e.dataset.dragged; return; } S.sys = plans().find(p => p.key === e.dataset.key).systemKey; render(); });
+  svg.innerHTML = html; svg.classList.toggle('picking', S.pickRoot);
+  svg.querySelectorAll('.rm').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); selectRoom(e.dataset.room); });
+  if (ductMode && !over) planDrag(svg);
+  svg.querySelectorAll('.mk').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); if (e.dataset.dragged) { delete e.dataset.dragged; return; } S.sys = plans().find(p => p.key === e.dataset.key).systemKey; render(); });
   // ④: a duct picked on the plan (a duct of another system makes that system the current one)
-  svg.querySelectorAll('.duct.pick').forEach(e => e.onclick = ev => { if (S.pickRoot || S.draw) return; ev.stopPropagation(); const p = plans().find(x => x.key === e.dataset.key); if (p) { S.sys = p.systemKey; S.kind = p.kind; } S.duct = { key: e.dataset.key, i: +e.dataset.i }; S.room = null; S.lineSel = null; render(); });
-  // ④: a line drawn by hand picked (its kind, its removal)
-  svg.querySelectorAll('.sk').forEach(e => e.onclick = ev => { if (S.pickRoot || S.draw) return; ev.stopPropagation(); S.lineSel = e.dataset.line; S.duct = null; S.room = null; render(); });
-  const world = ev => { const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()); return { x: q.x, y: Y(q.y) }; };
-  svg.onclick = ev => {
-   // 덕트 그리기: a point; the same point again ends the run
-   if (S.draw) { const from = S.draw.from, P = snapAt(world(ev), from, ev.shiftKey);
-    if (from && Math.hypot(P.x - from.x, P.y - from.y) < 1) S.draw.from = null; else { if (from) act(null, () => addSegment(S.draw.key, from, P, S.drawRole || 'main')); S.draw.from = { x: P.x, y: P.y }; }
-    render(); return; }
-   if (!S.pickRoot) return; setRoot(world(ev)); render();
-  };
-  // 덕트 그리기: the next segment and where it would snap, under the pointer; a right click ends the run
-  svg.onpointermove = S.draw ? ev => { const g = svg.querySelector('#skPrev'); if (!g) return; const from = S.draw.from, P = snapAt(world(ev), from, ev.shiftKey);
-   g.innerHTML = (from ? `<circle class="sk-from" cx="${from.x}" cy="${Y(from.y)}" r="${px(4)}"/><line class="sk-prev ${S.drawRole || 'main'}" x1="${from.x}" y1="${Y(from.y)}" x2="${P.x}" y2="${Y(P.y)}"/>` : '') + `<circle class="snap ${P.snap}" cx="${P.x}" cy="${Y(P.y)}" r="${px(P.snap === 'point' ? 7 : 5)}"/>`; } : null;
-  svg.oncontextmenu = S.draw ? ev => { ev.preventDefault(); S.draw.from = null; render(); } : null;
+  svg.querySelectorAll('.duct.pick').forEach(e => e.onclick = ev => { if (S.pickRoot) return; ev.stopPropagation(); const p = plans().find(x => x.key === e.dataset.key); if (p) { S.sys = p.systemKey; S.kind = p.kind; } S.duct = { key: e.dataset.key, i: +e.dataset.i }; S.room = null; render(); });
+  svg.onclick = ev => { if (!S.pickRoot) return; const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const q = pt.matrixTransform(svg.getScreenCTM().inverse()); setRoot({ x: q.x, y: Y(q.y) }); render(); };
   if (ductMode) { const res = cur && result(cur.key);
    // a network made before the plan changed (air, unit, RUs): said on the canvas, with the way out
    let banner = $('staleBanner'); if (!banner) { banner = document.createElement('div'); banner.id = 'staleBanner'; banner.className = 'stale-banner'; $('center').appendChild(banner); }
-   // the way on: lines not made a network yet, a network of before the plan changed, or no network at all
-   const lines = cur ? sketchOf(cur.key) : [], what = !cur || S.phgEditor ? null : lines.length && !sketchBuilt(cur.key) ? 'lines' : res?.stale && netDone(res) ? (res.manual ? 'hand' : 'stale') : !netDone(res) && !lines.length && S.projects[cur.key] && !S.draw ? 'none' : null;
+   const what = !cur || S.phgEditor ? null : res?.stale && netDone(res) ? (res.manual ? 'hand' : 'stale') : !netDone(res) && S.projects[cur.key] ? 'none' : null;
    show(banner, !!what);
-   banner.innerHTML = { lines: `✎ 그린 선 ${lines.length}개 — 아직 덕트망이 아닙니다 <button class="btn primary" data-a="build">덕트 지정·계산</button>`,
-    stale: '↻ 이 덕트망은 풍량·위치가 바뀌기 전 것입니다 <button class="btn primary" data-a="auto">다시 AUTO</button>',
-    hand: '↻ 풍량·위치가 바뀌었습니다 — 선을 고친 뒤 <button class="btn primary" data-a="build">다시 덕트 지정·계산</button>',
-    none: `덕트망 없음 — RU ${cur?.rus.length ?? 0}개가 PHG D에 있습니다 <button class="btn primary" data-a="draw">덕트 그리기</button><button class="btn" data-a="auto">보내기 + AUTO</button>` }[what] || '';
-   banner.querySelectorAll('button').forEach(b => b.onclick = () => ({ build: () => act('덕트 지정·계산 중', () => buildKey()), auto: () => act('AUTO 계산 중', async () => { if ((await keepsHand([curKey()])).length) await autoKey(); }), draw: () => act(null, toggleDraw) })[b.dataset.a]());
+   banner.innerHTML = { stale: '↻ 이 덕트망은 풍량·위치가 바뀌기 전 것입니다 <button class="btn primary" data-a="auto">다시 AUTO</button>',
+    hand: '↻ 풍량·위치가 바뀌었습니다 — <button class="btn primary" data-a="phg">PHG D 캔버스에서 고치기</button>',
+    none: `덕트망 없음 — RU ${cur?.rus.length ?? 0}개가 PHG D에 있습니다 <button class="btn primary" data-a="phg">PHG D 캔버스에서 그리기</button><button class="btn" data-a="auto">보내기 + AUTO</button>` }[what] || '';
+   banner.querySelectorAll('button').forEach(b => b.onclick = () => ({ auto: () => act('AUTO 계산 중', async () => { if ((await keepsHand([curKey()])).length) await autoKey(); }), phg: () => act('PHG D 여는 중', openEditor) })[b.dataset.a]());
   }
   layerPanel(L, rooms, cur, a);
  }
@@ -1111,8 +1006,10 @@
  // shell's deck and room follow (a frame's look at BOX's view, deck and pick; drawn again only on a change)
  let boxSeen = '', boxWatching = false;
  function watchBox() {
-  if (viewOf(S.step) !== 'box' || !S.contract) { boxSeen = ''; boxWatching = false; return; }
+  const view = viewOf(S.step);
+  if ((view !== 'box' && view !== 'phg') || !S.contract) { boxSeen = ''; boxWatching = false; return; }
   boxWatching = true;
+  if (view === 'phg') { try { const seen = JSON.stringify([phg.view2d(), S.active]); if (seen !== boxSeen) { boxSeen = seen; plan(); } } catch {} requestAnimationFrame(watchBox); return; }
   try {
    const v = box.view2d(), st = box.win.CAD_APP.st, ids = new Set(S.contract.rooms.map(r => r.id)), picked = box.pickedRoom(ids);
    const seen = JSON.stringify([v, st.activeDeck, picked]);
@@ -1128,8 +1025,8 @@
  // one list for every step; a step opens with its own set on (③ by its 풍량 / 방화 보기), and what the user switches is
  // kept per step for the next start
  const LAYERS = [['rooms', '격실'], ['sys', '계통 색·풍량'], ['xfer', '전달 공기'], ['units', '공조기·수직 덕트'], ['zones', '금지 영역'], ['ducts', '덕트'], ['rus', 'RU'], ['fire', '방화 경계'], ['pens', '관통부']];
- const LAYER_DEFAULT = { room: [], load: [], 'air:air': ['rooms', 'sys', 'xfer', 'units', 'ducts'], 'air:fire': ['rooms', 'units', 'fire', 'pens'], duct: ['rooms', 'sys', 'units', 'zones', 'ducts', 'rus'], review: ['rooms', 'units', 'ducts', 'fire', 'pens'] };
- const layerKey = () => S.step === 'air' ? 'air:' + (S.overlay === 'fire' ? 'fire' : 'air') : S.step;
+ const LAYER_DEFAULT = { room: [], load: [], 'duct:phg': [], 'air:air': ['rooms', 'sys', 'xfer', 'units', 'ducts'], 'air:fire': ['rooms', 'units', 'fire', 'pens'], duct: ['rooms', 'sys', 'units', 'zones', 'ducts', 'rus'], review: ['rooms', 'units', 'ducts', 'fire', 'pens'] };
+ const layerKey = () => S.step === 'air' ? 'air:' + (S.overlay === 'fire' ? 'fire' : 'air') : S.step === 'duct' && S.phgEditor ? 'duct:phg' : S.step;
  const layersOn = () => new Set(S.layers[layerKey()] || LAYER_DEFAULT[layerKey()] || LAYER_DEFAULT.review);
  const saveLayers = () => { try { localStorage.setItem('hvac-grid-layers', JSON.stringify({ layers: S.layers, ghost: S.deckGhost, dropAuto: S.dropAuto })); } catch {} };
  function setLayer(id, on) { const s = layersOn(); if (on) s.add(id); else s.delete(id); S.layers = { ...S.layers, [layerKey()]: LAYERS.map(([x]) => x).filter(x => s.has(x)) }; saveLayers(); }
@@ -1156,7 +1053,7 @@
    sys: `${KL[S.kind]} 계통<br>${sys.map(id => `<span class="dot" style="background:${sysColor(id)}"></span>${esc(id)} · ${fmt(C.systems.find(s => s.id === id && s.kind === S.kind)?.designCmh)} CMH`).join('<br>') || '<span class="muted">이 Deck에 없음</span>'}`,
    xfer: rooms.some(r => C.airflow[r.id].transferInCmh && C.rooms.some(x => x.id === C.airflow[r.id].transferFrom)) ? '→ CMH (실선 = 지정 · 주황 = A급 경계)' : '<span class="muted">이 Deck에 없음</span>',
    units: `${UNIT_WORD[S.kind]} □ 공조기·팬 · ⇅ ○ 수직 덕트 · 채움 = 지정 · 점선 = 임시`,
-   ducts: S.step === 'duct' ? (cur ? `<b>${KL[cur.kind]} ${esc(cur.systemId)}</b> ${netDone(res) ? `${res.manual ? '직접 작성 · ' : ''}덕트 ${res.ducts}개 · ${res.lengthM} m · 최대 ${res.indexPa ?? '—'} Pa${res.stale ? ' · <span class="warn">다시 보내기 필요</span>' : ''}` : '<span class="warn">덕트망 없음 — 덕트 그리기 또는 보내기 + AUTO</span>'}${sketchOf(cur.key).length ? `<br>${ln('#0d47a1', 3)}주 · ${ln('#1976d2', 2)}분기 · ${ln('#4fc3f7', 2)}보조 — 그린 선${sketchBuilt(cur.key) ? '' : ' (점선 = 아직 덕트 아님)'}` : ''}<br>${ln(sysColor(cur.systemId), 4)}주 덕트 · ${ln(sysColor(cur.systemId), 2)}분기${deckPlans().filter(p => p.key !== cur.key && ((S.ductShow || 'sys') === 'all' || ((S.ductShow || 'sys') === 'kind' && p.kind === S.kind))).map(p => `<br>${ln(sysColor(p.systemId), 3, .6)}${KL[p.kind]} ${esc(p.systemId)}${result(p.key)?.auto ? '' : ' <span class="muted">(덕트망 없음)</span>'}`).join('')}<br><span class="muted">${{ vel: '글자 = 풍속 (풍량 ÷ 단면)', pa: '글자 = Root에서 그 덕트 끝까지 손실(덕트·이음) · RU 옆 = 그 RU까지 합계(RU 포함), 빨강 = 최대' }[S.ductLabel] || '글자 = 주 덕트 크기'} · 덕트를 누르면 크기·종류·압력</span>` : '<span class="muted">이 Deck에 계통이 없습니다</span>')
+   ducts: S.step === 'duct' && S.phgEditor ? '같은 Deck의 다른 계통 덕트 (옅게) — 이 계통은 PHG D가 그림' : S.step === 'duct' ? (cur ? `<b>${KL[cur.kind]} ${esc(cur.systemId)}</b> ${netDone(res) ? `${res.manual ? '직접 작성 · ' : ''}덕트 ${res.ducts}개 · ${res.lengthM} m · 최대 ${res.indexPa ?? '—'} Pa${res.stale ? ' · <span class="warn">다시 보내기 필요</span>' : ''}` : '<span class="warn">덕트망 없음 — PHG D 캔버스에서 그리기 또는 보내기 + AUTO</span>'}<br>${ln(sysColor(cur.systemId), 4)}주 덕트 · ${ln(sysColor(cur.systemId), 2)}분기${deckPlans().filter(p => p.key !== cur.key && ((S.ductShow || 'sys') === 'all' || ((S.ductShow || 'sys') === 'kind' && p.kind === S.kind))).map(p => `<br>${ln(sysColor(p.systemId), 3, .6)}${KL[p.kind]} ${esc(p.systemId)}${result(p.key)?.auto ? '' : ' <span class="muted">(덕트망 없음)</span>'}`).join('')}<br><span class="muted">${{ vel: '글자 = 풍속 (풍량 ÷ 단면)', pa: '글자 = Root에서 그 덕트 끝까지 손실(덕트·이음) · RU 옆 = 그 RU까지 합계(RU 포함), 빨강 = 최대' }[S.ductLabel] || '글자 = 주 덕트 크기'} · 덕트를 누르면 크기·종류·압력</span>` : '<span class="muted">이 Deck에 계통이 없습니다</span>')
     : S.step === 'review' ? 'Deck의 모든 계통 (옅게)' : `${KL[S.kind]} 계통 (얇게)`,
    rus: `● 급기 · ◆ 환기 · ■ 배기${S.step === 'duct' ? `<br><span class="muted">RU·공조기는 끌어서 옮김 → ${S.dropAuto ? '놓으면 다시 AUTO' : '덕트망에 "다시 AUTO" 표시 (AUTO는 직접)'}</span>` : cur ? '' : ' <span class="muted">(계통을 고르면)</span>'}`,
    zones: cur ? `<span class="zk"></span>제한 구역 ${(cur.avoid || []).filter(z => z.zone?.length > 2).length} · <span class="zk out"></span>선체 밖 <span class="muted">(AUTO가 피함)</span>${res?.zonesRelaxed ? `<br><span class="warn">이 덕트망은 AUTO가 ${{ outside: '선체 밖', rooms: '제한 구역', all: '모든 금지 영역' }[res.zonesRelaxed === true ? 'all' : res.zonesRelaxed] || '금지 영역'}을 풀고 만든 것</span>` : ''}` : '<span class="muted">(계통을 고르면)</span>',
@@ -1166,6 +1063,7 @@
   $('legend').innerHTML = `<b>${esc(deckName(S.deck))} · 층</b><div class="layers">${LAYERS.map(([id, name]) => `<label class="ly"><input type="checkbox" data-layer="${id}" ${L.has(id) ? 'checked' : ''}> ${name}</label>${L.has(id) && keys[id] ? `<div class="ly-key">${keys[id]}</div>` : ''}`).join('')}</div>`
    + (up || down ? `<div class="seg ghost-seg" role="radiogroup" aria-label="Deck 필터"><button role="radio" data-ghost="0" aria-checked="${!S.deckGhost}">이 Deck만</button><button role="radio" data-ghost="1" aria-checked="${!!S.deckGhost}">위·아래 흐리게</button></div>${S.deckGhost ? `<div class="ly-key">${up ? `${ln('#7b5ea7', 2)}위 ${esc(up.name)}` : ''}${up && down ? ' · ' : ''}${down ? `${ln('#b5731f', 2)}아래 ${esc(down.name)}` : ''}</div>` : ''}` : '');
   // over BOX (① ②): at the top right of BOX's canvas, clear of its side columns
+  // (over PHG D's canvas, under the floating panels as ③, where ③ has it)
   const bv2 = viewOf(S.step) === 'box' ? box.view2d() : null, lg = $('legend');
   lg.style.top = bv2 ? bv2.rect.top + 12 + 'px' : ''; lg.style.right = bv2 ? $('center').clientWidth - bv2.rect.left - bv2.rect.width + 12 + 'px' : '';
   $('legend').querySelectorAll('[data-layer]').forEach(e => e.onchange = () => { setLayer(e.dataset.layer, e.checked); plan(); });
@@ -1333,16 +1231,6 @@
  function inspector() {
   const C = S.contract;
   if (!C) { $('inspTitle').textContent = '속성'; $('insp').innerHTML = `<div class="card"><h4>시작</h4><span class="muted">① BOX에서 도면을 열고(S5·T3 예제 포함) ② CAL로 부하를 계산한 뒤 <b>설계 데이터 만들기</b>를 누르세요. 저장한 HVAC Grid 프로젝트는 위쪽 열기 버튼으로 엽니다.</span></div>`; return; }
-  const ln = S.step === 'duct' && S.lineSel ? sketchOf(curKey()).find(l => l.id === S.lineSel) : null;
-  if (ln) {
-   $('inspTitle').textContent = `선 ${ln.id}`;
-   $('insp').innerHTML = `<div class="card now"><h4>${ROLE_NAME[ln.role]}<span class="from">덕트 그리기</span></h4><div class="kv"><span>길이</span><span>${(Math.hypot(ln.b.x - ln.a.x, ln.b.y - ln.a.y) / 1000).toFixed(2)} m</span><span>시작</span><span>${Math.round(ln.a.x)}, ${Math.round(ln.a.y)}</span><span>끝</span><span>${Math.round(ln.b.x)}, ${Math.round(ln.b.y)}</span>${ln.size ? `<span>크기 (수동)</span><span>${ln.size.diameterMm ? 'Ø' + ln.size.diameterMm : ln.size.widthMm + '×' + ln.size.heightMm}</span>` : ''}</div>
-    <label class="field" style="margin-top:6px">종류<select id="lineRole">${Object.entries(ROLE_NAME).map(([v, l]) => `<option value="${v}" ${v === ln.role ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="btn" id="lineDel" style="margin-top:8px;width:100%">선 지우기 (Delete)</button>
-    <p class="muted" style="margin:6px 0 0">${sketchBuilt(curKey()) ? '덕트망은 이 선들로 만든 것입니다.' : '선을 고친 뒤 덕트 지정·계산으로 덕트망에 반영합니다.'}</p></div>`;
-   $('lineRole').onchange = e => act(null, () => setLineRole(curKey(), ln.id, e.target.value));
-   $('lineDel').onclick = () => act(null, () => removeLines(curKey(), [ln.id], '선 지우기'));
-   return;
-  }
   const r = C.rooms.find(x => x.id === S.room), a = analysis();
   const dk = S.step === 'duct' && S.duct ? plans().find(p => p.key === S.duct.key) : null, d = dk && S.geometry[dk.key]?.ducts?.[S.duct.i];
   if (!r && d) {
@@ -1354,12 +1242,12 @@
      <span>크기</span><span><b>${d.widthMm ? d.widthMm + ' × ' + d.heightMm : d.diameterMm ? 'Ø ' + d.diameterMm : '—'}</b> mm</span>
      <span>풍량</span><span><b>${fmt(d.flowCmh)}</b> CMH</span><span>풍속</span><span>${v ? v.toFixed(1) + ' m/s' : '—'}</span><span>길이</span><span>${L.toFixed(1)} m</span></div>${d.manualSize ? '<div class="muted" style="margin-top:6px">수동 크기 — PHG D가 다시 정하지 않음</div>' : ''}</div>`
     + (() => { const pq = pressureOf(dk.key), q = pq?.ducts?.[d.id];
-     return `<div class="card"><h4>압력<span class="from">PHG D 계산</span></h4>${q ? `<div class="kv"><span>풍속</span><span>${q.velocityMps} m/s</span><span>마찰</span><span>${q.perMPa ?? '—'} Pa/m · ${q.frictionPa} Pa</span><span>곡관</span><span>${q.bendPa} Pa</span><span>분기</span><span>${q.branchPa} Pa</span><span>Root에서 끝까지</span><span><b>${q.fromRootPa}</b> Pa</span><span>계통 최대</span><span>${pq.indexPa ?? '—'} Pa</span></div>` : `<span class="muted">${pq ? '이 덕트는 RU로 가는 경로에 없음' : netDone(res) ? 'PHG D에서 계산 중…' : '덕트망 없음'}</span>`}</div>`; })()
+     return `<div class="card"><h4>압력<span class="from">PHG D 계산</span></h4>${q ? `<div class="kv"><span>풍속</span><span>${q.velocityMps} m/s</span><span>마찰</span><span>${q.perMPa ?? '—'} Pa/m · ${q.frictionPa} Pa</span><span>곡관</span><span>${q.bendPa} Pa</span><span>분기</span><span>${q.branchPa} Pa</span><span>Root에서 끝까지</span><span><b>${q.fromRootPa}</b> Pa</span><span>계통 최대</span><span>${pq.indexPa ?? '—'} Pa</span></div>` : `<span class="muted">${pq ? '이 덕트는 RU로 가는 경로에 없음' : res?.auto ? 'PHG D에서 계산 중…' : '덕트망 없음'}</span>`}</div>`; })()
     + `<div class="card"><h4>덕트 종류<span class="from">PHG D 다시 계산</span></h4><label class="field">종류<select id="ductType">${[['main', '주 덕트'], ['branch', '분기'], ['sub_branch', '보조 분기']].map(([v, l]) => `<option value="${v}" ${v === d.type ? 'selected' : ''}>${l}${v === d.type ? ' · 지금' : ''}</option>`).join('')}</select></label><button class="btn" id="ductTypeApply" style="margin-top:8px;width:100%">적용 · 다시 계산</button><p class="muted" style="margin:6px 0 0">크기는 종류의 기준 풍속으로 다시 정해짐 (AUTO는 다시 돌리지 않음)</p></div>`
     + `<div class="card"><h4>덕트 크기<span class="from">PHG D 다시 계산</span></h4><label class="field">크기 (풍속)<select id="ductSize">${sizeOptions(d)}</select></label><button class="btn primary" id="ductSizeApply" style="margin-top:8px;width:100%">적용 · 다시 계산</button></div>`
     + `<div class="card"><h4>덕트망 · ${esc(deckName(dk.deckId))}<span class="from">PHG D</span></h4><div class="kv"><span>RU · 풍량</span><span>${res?.rus ?? '—'} · ${fmt(res?.flowCmh)} CMH</span><span>덕트 · 길이</span><span>${res?.ducts ?? '—'} · ${res?.lengthM ?? '—'} m</span><span>Deck 최대 손실</span><span>${res?.indexPa ?? '—'} Pa</span></div>
      <button class="btn" id="inspReroute" style="margin-top:10px;width:100%" ${res?.candidates === 1 ? 'disabled title="PHG D가 찾은 경로가 하나뿐 — RU·공조기를 옮기면 다른 경로가 나옵니다"' : ''}>다른 경로 (후보 ${(res?.pick ?? 0) + 1}/${res?.candidates ?? '?'})</button>
-     <button class="btn" id="inspEditor" style="margin-top:6px;width:100%">PHG D 편집기에서 고치기</button><p class="muted" style="margin:6px 0 0">RU·공조기는 평면에서 끌어서 옮기고, 덕트의 크기·종류는 여기서 바꿉니다. 경로를 손으로 고칠 때는 편집기, "평면으로"로 돌아오면 반영됩니다.</p></div>`;
+     <button class="btn" id="inspEditor" style="margin-top:6px;width:100%">PHG D 캔버스에서 고치기</button><p class="muted" style="margin:6px 0 0">RU·공조기는 평면에서 끌어서 옮기고, 덕트의 크기·종류는 여기서 바꿉니다. 경로를 손으로 고칠 때는 편집기, "평면으로"로 돌아오면 반영됩니다.</p></div>`;
    $('inspEditor').onclick = () => act('PHG D 여는 중', openEditor);
    $('inspReroute').onclick = () => act('다른 경로 찾는 중', () => reroute(dk.key));
    const sz = $('ductSize'); $('ductSizeApply').onclick = () => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(dk.key, S.duct.i, sz.value === 'auto' ? null : JSON.parse(sz.value)));
@@ -1397,7 +1285,7 @@
   // BOX's canvas is a background only in the plan (plan() decides); back in ① ② it is BOX again
   if (view !== 'plan') { $('boxFrame').classList.remove('backdrop'); if (box.loading) box.backdrop(false); }
   $('phgFrame').style.visibility = view === 'phg' && !noContract ? 'visible' : 'hidden';
-  const layered = (view === 'plan' || view === 'box') && !!S.contract;
+  const layered = (view === 'plan' || view === 'box' || view === 'phg') && !!S.contract;
   show($('plan'), layered); show($('legend'), layered); show($('dock'), docked);
   show($('empty'), noContract);
   if (noContract) {
@@ -1408,8 +1296,8 @@
   if (docked) report();
   dockSize();
   if (layered) plan();
-  if (S.step === 'duct' && S.contract) ensureSent();
-  if (view === 'box' && !boxWatching) watchBox();
+  if (view === 'plan' && S.step === 'duct' && S.contract) ensureSent();
+  if ((view === 'box' || view === 'phg') && !boxWatching) watchBox();
   phgHint(view);
  }
  function status() {
@@ -1427,7 +1315,7 @@
  }
  // the layer panel (with the legend) opens and closes; it starts closed when the plan is narrow (it would cover rooms)
  let legendRoom = true;
- function legendOpen() { return S.legendOpen ?? (viewOf(S.step) !== 'box' && (legendRoom || (S.overlay === 'fire' && S.step === 'air') || S.step === 'review') && $('center').getBoundingClientRect().width > 1000); }
+ function legendOpen() { return S.legendOpen ?? (viewOf(S.step) !== 'box' && viewOf(S.step) !== 'phg' && (legendRoom || (S.overlay === 'fire' && S.step === 'air') || S.step === 'review') && $('center').getBoundingClientRect().width > 1000); }
  function legendFold() {
   const lg = $('legend'), open = legendOpen();
   if (!open) lg.innerHTML = '<button class="lg-tog" title="층·범례 펼치기" aria-expanded="false">층 ▾</button>';
@@ -1444,6 +1332,13 @@
   $('phgHint').querySelectorAll('button').forEach(b => b.onclick = () => ({ auto: () => act('AUTO 계산 중', () => autoKey()), send: () => act('PHG D로 보내는 중', () => sendPlan()), all: () => act('AUTO 계산 중', () => runAll()), off: () => { S.hintOff = { ...(S.hintOff || {}), [key]: true }; show($('phgHint'), false); if (!S.phgEditor) act('PHG D 여는 중', openEditor); } })[b.dataset.a]());
  }
  const busyNow = () => !$('busy').hidden;
+ // ④ (HVAC Grid plan) shows a plan not in PHG D yet: its RUs and unit go there (the drawing, Root, RUs, zones - no AUTO)
+ let sending = null;
+ function ensureSent() {
+  const key = curKey();
+  if (S.step !== 'duct' || S.phgEditor || !key || S.projects[key] || sending || busyNow()) return;
+  sending = key; act('RU 배치 — PHG D로 보내는 중', () => sendPlan(key)).finally(() => { sending = null; });
+ }
  // BOX's ISO 7547 room classes in words
  const ISO_NAME = { AC: '공조 격실', WHEELHOUSE: '조타실', ALLEY_SOUND: '방음 복도', ALLEY_NON_SOUND: '비방음 복도', ENGINE: '기관 공간', CONTROL: '기관제어실', BOILER: '보일러실', NON_AC: '비공조 공간' };
  const isoName = c => c ? (ISO_NAME[c] ? `${ISO_NAME[c]} (${c})` : c) : '—';
@@ -1476,7 +1371,7 @@
  function render() { const m = $('main'); m.classList.toggle('left-off', S.leftOff === true); m.classList.toggle('right-off', S.rightOff === true);
   // ① ② are BOX's own screens: the HVAC Grid tree and inspector (design data, from ③ on) step aside for the drawing;
   // ③ ④ ⑤ keep that full-width canvas, the tree and inspector float over its edges (⑤'s dock between them)
-  m.classList.toggle('box-view', viewOf(S.step) === 'box'); m.classList.toggle('plan-view', viewOf(S.step) === 'plan');
+  m.classList.toggle('box-view', viewOf(S.step) === 'box'); m.classList.toggle('plan-view', viewOf(S.step) === 'plan' || viewOf(S.step) === 'phg');
   steps(); ribbon(); tree(); center(); inspector(); status(); }
 
  // ---------- wiring ----------
@@ -1501,15 +1396,13 @@
   if ((e.ctrlKey || e.metaKey) && !e.altKey && /^o$/i.test(e.key)) { e.preventDefault(); act(null, () => openProject()); return true; }
   if (e.key === 'F1') { e.preventDefault(); help(); return true; }
   if (e.key === 'Escape' && S.pickRoot) { S.pickRoot = false; say(''); render(); return true; }
-  if (S.draw && (e.key === 'Escape' || e.key === 'Enter') && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName || '')) { e.preventDefault(); if (S.draw.from) S.draw.from = null; else if (e.key === 'Escape') { S.draw = null; say('덕트 그리기 끝'); } render(); return true; }
   const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName || '');
-  if (!typing && S.step === 'duct' && S.lineSel && /^(Delete|Backspace)$/.test(e.key)) { e.preventDefault(); act(null, () => removeLines(curKey(), [S.lineSel], '선 지우기')); return true; }
   if ((e.ctrlKey || e.metaKey) && !typing && !frameOnScreen() && S.contract && /^[zy]$/i.test(e.key)) { e.preventDefault(); act(null, () => (e.key.toLowerCase() === 'y' || e.shiftKey) ? redoShell() : undoShell()); return true; }
   return false;
  };
  document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) || ((e.ctrlKey || e.metaKey) && /^[so]$/i.test(e.key)) || ((e.ctrlKey || e.metaKey) && /^[zy]$/i.test(e.key) && !frameOnScreen()) || e.key === 'F1' ? onKey(e) : false;
- window.addEventListener('resize', () => { if (viewOf(S.step) === 'plan' && S.contract) { dockSize(); plan(); } });
- window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, parseJson, newStart: () => act(null, newStart), undo: () => act(null, undoShell), redo: () => act(null, redoShell), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act(S.dropAuto ? 'RU 옮기고 다시 AUTO' : null, () => moveRu(k, id, p)), setDuctType: (k, i, t) => act('덕트 종류 바꾸고 다시 계산', () => setDuctType(k, i, t)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, loadProject, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, showPlace, toggleDraw: () => act(null, toggleDraw), buildKey: k => act('덕트 지정·계산 중', () => buildKey(k)), addSegment: (k, a, b, role) => act(null, () => addSegment(k, a, b, role)), sketchOf, OUT, LIB,
+ window.addEventListener('resize', () => { if (['plan', 'phg', 'box'].includes(viewOf(S.step)) && S.contract) { dockSize(); plan(); } });
+ window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, parseJson, newStart: () => act(null, newStart), undo: () => act(null, undoShell), redo: () => act(null, redoShell), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act(S.dropAuto ? 'RU 옮기고 다시 AUTO' : null, () => moveRu(k, id, p)), setDuctType: (k, i, t) => act('덕트 종류 바꾸고 다시 계산', () => setDuctType(k, i, t)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, loadProject, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, showPlace, OUT, LIB,
   runAll: (keys, opt) => act('AUTO 계산 중', () => runAll(keys, opt)) };   // with the busy overlay and error message, as from the ribbon
  render(); go('room');
 })();

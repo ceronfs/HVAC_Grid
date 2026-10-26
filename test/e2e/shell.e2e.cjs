@@ -123,6 +123,10 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   // step 4: PHG D with the BOX rooms, the user's unit location and the RUs, then AUTO
   // ④ is the shared HVAC Grid plan (PHG D computes in the background)
   await p.click('.step[data-step=duct]'); await idle();
+  // ④ opens on PHG D's own canvas (its tools), full width under the floating panels as ① - ⑤; the HVAC Grid plan is the
+  // other view of ④
+  assert.ok(await p.evaluate(() => getComputedStyle(document.getElementById('phgFrame')).visibility === 'visible' && document.getElementById('main').classList.contains('plan-view')), '④ shows PHG D canvas');
+  await ribbon('HVAC Grid 평면').click(); await idle();
   assert.ok(await p.isVisible('#plan') && !(await p.evaluate(() => getComputedStyle(document.getElementById('phgFrame')).visibility === 'visible')), '④ shows the plan');
   await p.selectOption('#sysSel', 'AHU-AC-01');
   await ribbon('보내기 + AUTO').click(); await idle();
@@ -163,14 +167,14 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   const d2 = await p.evaluate(i => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts[i], di);
   assert.deepEqual([d2.widthMm, d2.heightMm, !!d2.manualSize], [d0.widthMm, d0.heightMm, !!d0.manualSize], 'Ctrl+Z: the size of before'); log('undo / redo: RU move and duct size with their ducts');
   // PHG D as the detail editor, and back
-  await ribbon('PHG D 편집기').click(); await idle();
+  await ribbon('PHG D 캔버스').click(); await idle();
   assert.ok(await p.evaluate(() => getComputedStyle(document.getElementById('phgFrame')).visibility === 'visible'), 'editor open'); await shot('4-duct-editor');
   // the PHG D editor shows the deck the way round ① - ④ do: PHG D got the drawing as drawn, its app y is BOX y (the deck
   // showed upside down, 2026-10-25); the stored network keeps its y (-BOX y)
   const way = await H(() => { const st = HVACGrid.phg.win.LineDesignLegacy.getState(), r = st.nodes.find(n => n.type === 'root'), pl = HVACGrid.plans().find(x => x.key === 'S3__AHU-AC-01');
    return { phg: [r.x, r.y], plan: [pl.root.x, pl.root.y], stored: [HVACGrid.S.geometry['S3__AHU-AC-01'].root.x, HVACGrid.S.geometry['S3__AHU-AC-01'].root.y], yBox: HVACGrid.phg.yBox() }; });
   assert.deepEqual([way.phg, way.stored, way.yBox], [way.plan, [way.plan[0], -way.plan[1]], true], 'PHG D the way round the plan is ' + JSON.stringify(way));
-  await ribbon('평면으로').click(); await idle();
+  await ribbon('HVAC Grid 평면').click(); await idle();
   assert.ok(await p.isVisible('#plan'), 'back on the plan');
   const r = await H(() => HVACGrid.result('S3__AHU-AC-01'));
   log('AUTO', JSON.stringify({ rus: r.rus, flow: r.flowCmh, ducts: r.ducts, len: r.lengthM, pa: r.indexPa }));

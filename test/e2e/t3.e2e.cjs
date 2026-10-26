@@ -66,6 +66,7 @@ const ROOT = path.join(__dirname, '..', '..'), OUT = path.join(ROOT, 'out', 'e2e
   // the saved PHG D project opens in PHG D as it was
   await p.click('.step[data-step=duct]'); await idle();
   await H(() => { HVACGrid.S.deck = 'D3'; HVACGrid.S.sys = 'AHU-ACC'; HVACGrid.S.kind = 'supply'; HVACGrid.render(); return HVACGrid.go('duct'); }); await idle();
+  await H(() => HVACGrid.closeEditor()); await idle();   // ④'s HVAC Grid plan (it opens on PHG D's canvas)
   assert.ok(await p.locator('#plan polyline.duct.pick').count() > 0, 'saved ducts on the shared plan');
   await H(() => HVACGrid.openEditor()); await idle();   // PHG D, the detail editor, opens the saved project
   const reopened = await H(() => HVACGrid.phg.result()); assert.equal(reopened.ducts, (await H(() => HVACGrid.result('D3__AHU-ACC'))).ducts); await shot('4-duct-D3');

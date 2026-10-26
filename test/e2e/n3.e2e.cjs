@@ -151,7 +151,7 @@ const LIST_FIELDS = ['sup', 'exh', 'ret', 'people', 'minimumFreshAir', 'equipW',
   const tab = async (name, file) => { await p.locator('#report .tabs button', { hasText: name }).first().click(); await p.waitForTimeout(400); if (file) await shot(file); await scan('⑤ ' + name); };
   await tab('덕트망', '5-review-nets');
   await tab('계통·수직', '5-review-systems'); await tab('계통도', '5-diagram'); await tab('방화 (SOLAS)', '5-review-fire'); await tab('방화 등급도', '5-fire-plan');
-  await p.click('.step[data-step=duct]'); await idle();
+  await p.click('.step[data-step=duct]'); await idle(); await H(() => HVACGrid.closeEditor()); await idle();
   await H(() => { const d = HVACGrid.S.contract.decks.find(x => x.name === 'CREW DK'); if (d) Object.assign(HVACGrid.S, { deck: d.id }); HVACGrid.render(); });
   await p.locator('.seg button', { hasText: '모든 계통' }).first().click().catch(() => {}); await idle(); await p.waitForTimeout(400); await shot('4-duct');
   assert.equal(a.done, a.total, 'AUTO done on every plan'); assert.equal(a.out, 0, 'no duct outside the decks');
