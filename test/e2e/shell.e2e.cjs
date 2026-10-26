@@ -136,13 +136,18 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e');
   await p.evaluate(([i, w, h]) => HVACGrid.resizeDuct('S3__AHU-AC-01', i, { widthMm: w, heightMm: h }), [di, d0.widthMm + 100, d0.heightMm]); await idle();
   const d1 = await H(() => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts[HVACGrid.S.duct.i]);   // the same duct, picked again after PHG D calculated
   assert.deepEqual([d1.widthMm, d1.heightMm, d1.manualSize], [d0.widthMm + 100, d0.heightMm, true]); assert.ok(await H(() => HVACGrid.result('S3__AHU-AC-01').edited));
-  // an RU dragged with the mouse stays where it was dropped and AUTO runs again; Ctrl+Z takes the move back with the
-  // ducts it made (the plan shows the network of before, not new ducts under the RU that went back), Ctrl+Y again
+  // an RU dragged with the mouse stays where it was dropped; AUTO is the user's to run (2026-10-26): the network says
+  // "다시 AUTO" until the banner's button runs it. Ctrl+Z takes the move back with the ducts AUTO made then (the plan
+  // shows the network of before, not new ducts under the RU that went back), Ctrl+Y again
   const net = () => H(() => JSON.stringify(HVACGrid.S.geometry['S3__AHU-AC-01']));
   const netResized = await net();
   const ru = await p.$('#plan .ru.drag'), rb = await ru.boundingBox(), ruId = await ru.getAttribute('data-ru');
   await p.mouse.move(rb.x + rb.width / 2, rb.y + rb.height / 2); await p.mouse.down(); await p.mouse.move(rb.x + rb.width / 2 + 6, rb.y + rb.height / 2 + 6, { steps: 4 }); await p.mouse.up(); await p.waitForTimeout(300); await idle();
-  assert.ok(await p.evaluate(id => !!HVACGrid.S.contract.ruMoves?.[id], ruId), 'RU moved'); assert.ok(!(await H(() => HVACGrid.result('S3__AHU-AC-01').stale)), 'AUTO ran again');
+  assert.ok(await p.evaluate(id => !!HVACGrid.S.contract.ruMoves?.[id], ruId), 'RU moved');
+  assert.ok(await H(() => HVACGrid.result('S3__AHU-AC-01').stale), 'no AUTO by itself: the network is of before the move'); assert.equal(await net(), netResized);
+  assert.ok(await p.isVisible('#staleBanner'), '"다시 AUTO" on the canvas');
+  await p.locator('#staleBanner button').click(); await idle();
+  assert.ok(!(await H(() => HVACGrid.result('S3__AHU-AC-01').stale)), 'AUTO run by the user');
   const netMoved = await net(); assert.notEqual(netMoved, netResized, 'the move made other ducts');
   // the size set by hand is kept by the new AUTO (on the duct of the same name)
   const kept = await p.evaluate(n => HVACGrid.S.geometry['S3__AHU-AC-01'].ducts.find(d => d.displayName === n), d0.displayName);

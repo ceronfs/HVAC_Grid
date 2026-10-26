@@ -79,7 +79,7 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e'); fs.mkdirSync(OUT, { 
   const layers = () => H(() => Object.fromEntries([...document.querySelectorAll('#legend [data-layer]')].map(e => [e.dataset.layer, e.checked])));
   const count = sel => H(s => document.querySelectorAll(s).length, sel);
   if (!(await H(() => !!document.querySelector('#legend [data-layer]')))) { await p.click('#legend .lg-tog'); await p.waitForTimeout(200); }
-  assert.deepEqual(await layers(), { rooms: true, sys: false, xfer: false, units: true, ducts: true, rus: false, fire: true, pens: true }, '⑤ opens with its layers');
+  assert.deepEqual(await layers(), { rooms: true, sys: false, xfer: false, units: true, zones: false, ducts: true, rus: false, fire: true, pens: true }, '⑤ opens with its layers');
   assert.ok(await H(() => /A-60/.test(document.querySelector('#legend').textContent)), 'the fire legend in the panel');
   await p.locator('#legend [data-layer="pens"]').uncheck(); await p.waitForTimeout(150);
   assert.equal(await count('#plan .pen'), 0, '관통부 off');
@@ -89,10 +89,10 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e'); fs.mkdirSync(OUT, { 
   assert.deepEqual(await H(() => [document.querySelectorAll('#plan .rm.bare').length === document.querySelectorAll('#plan .rm').length, HVACGrid.box.doc.documentElement.classList.contains('hg-nolabel')]), [true, true], '격실 off: outlines and BOX labels go, rooms still pickable');
   await p.click('.step[data-step=air]'); await idle(); await p.waitForTimeout(200);
   const air = await layers();
-  assert.deepEqual(air, { rooms: true, sys: true, xfer: true, units: true, ducts: true, rus: false, fire: false, pens: false }, '③ opens with its own layers');
+  assert.deepEqual(air, { rooms: true, sys: true, xfer: true, units: true, zones: false, ducts: true, rus: false, fire: false, pens: false }, '③ opens with its own layers');
   assert.ok(await count('#plan .xfer') > 0 && !(await H(() => HVACGrid.box.doc.documentElement.classList.contains('hg-nolabel'))), '③: transfer air, BOX labels');
   await p.click('.step[data-step=review]'); await idle(); await p.waitForTimeout(200);
-  assert.deepEqual(await layers(), { rooms: false, sys: false, xfer: false, units: true, ducts: true, rus: false, fire: false, pens: false }, '⑤ keeps what was switched');
+  assert.deepEqual(await layers(), { rooms: false, sys: false, xfer: false, units: true, zones: false, ducts: true, rus: false, fire: false, pens: false }, '⑤ keeps what was switched');
   for (const id of ['rooms', 'fire', 'pens']) { await p.locator(`#legend [data-layer="${id}"]`).check(); await p.waitForTimeout(100); }
   assert.ok(await count('#plan .pen') > 0 && await count('#plan line.fb') > 0, 'layers on again');
   // the deck filter: the decks above and below, faint

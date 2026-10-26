@@ -69,6 +69,36 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e'); fs.mkdirSync(OUT, { 
   assert.equal(await H(() => [...document.querySelectorAll('#legend [data-layer]')].filter(e => e.checked).length), 0, '② has its own layers');
   await p.click('.step[data-step=room]'); await idle(); await frame();
   assert.deepEqual(await H(() => [...document.querySelectorAll('#legend [data-layer]')].filter(e => e.checked).map(e => e.dataset.layer)), ['sys', 'units'], '① keeps what was switched');
+  // step 4: ④ shows on the plan what took the PHG D editor - AUTO's forbidden zones, the velocity and PHG D's pressure
+  // of every duct and RU, a duct's kind changed (PHG D calculates again; AUTO only when the user runs it)
+  const key = 'D2__AHU-ACC', ribbon = label => p.locator('#ribbon .cmd', { hasText: label }).first();
+  await p.click('.step[data-step=duct]'); await idle();
+  await H(k => { const pl = HVACGrid.plans().find(x => x.key === k); Object.assign(HVACGrid.S, { deck: pl.deckId, sys: pl.systemKey, kind: pl.kind, room: null }); HVACGrid.render(); }, key);
+  await H(k => HVACGrid.runAll([k]), key); await idle(); await frame();
+  assert.equal(await ribbon('놓으면 AUTO').getAttribute('aria-pressed'), 'false', 'AUTO on a drop is off at first');
+  const zones = await H(k => { const pl = HVACGrid.plans().find(x => x.key === k); return { want: pl.avoid.filter(z => z.zone?.length > 2).length + pl.outside.length, drawn: document.querySelectorAll('#plan polygon.zone').length, on: document.querySelector('#legend [data-layer="zones"]')?.checked }; }, key);
+  assert.ok(zones.on && zones.want > 0 && zones.drawn === zones.want, 'forbidden zones on the plan ' + JSON.stringify(zones));
+  await p.locator('.seg[data-seg="덕트 글자"] button', { hasText: '풍속' }).click(); await frame();
+  const vel = await H(() => [...document.querySelectorAll('#plan text.dsz')].map(t => t.textContent));
+  assert.ok(vel.length > 3 && vel.every(t => / m\/s$/.test(t)), 'velocity on the ducts ' + vel.slice(0, 4));
+  await p.locator('.seg[data-seg="덕트 글자"] button', { hasText: '압력' }).click(); await idle();
+  await p.waitForFunction(() => document.querySelectorAll('#plan text.ru-pa').length > 0, null, { timeout: 30000 });
+  const pa = await H(k => ({ ducts: [...document.querySelectorAll('#plan text.dsz:not(.ru-pa)')].map(t => t.textContent), rus: document.querySelectorAll('#plan text.ru-pa').length, idx: [...document.querySelectorAll('#plan text.ru-pa.idx')].map(t => parseInt(t.textContent)), want: HVACGrid.result(k).rus, indexPa: HVACGrid.result(k).indexPa }), key);
+  assert.ok(pa.ducts.length > 3 && pa.ducts.every(t => / Pa$/.test(t)) && pa.rus === pa.want, 'loss from the Root on the ducts, the total at every RU ' + JSON.stringify(pa).slice(0, 300));
+  assert.ok(pa.idx.length === 1 && Math.abs(pa.idx[0] - pa.indexPa) <= 1, 'the index RU is the network\'s largest loss ' + JSON.stringify([pa.idx, pa.indexPa]));
+  await p.screenshot({ path: path.join(OUT, 'one-canvas-4-pressure.png') });
+  // a branch duct picked: its PHG D pressure, its kind changed to 주 덕트 - sized again, no AUTO, on the undo history
+  const r0 = await H(k => HVACGrid.result(k), key);
+  const bi = await H(k => { const i = HVACGrid.S.geometry[k].ducts.findIndex(d => d.type === 'branch'); HVACGrid.S.duct = { key: k, i }; HVACGrid.render(); return i; }, key);
+  const d0 = await H(([k, i]) => HVACGrid.S.geometry[k].ducts[i], [key, bi]);
+  await p.waitForFunction(() => /Root에서 끝까지/.test(document.getElementById('insp').textContent), null, { timeout: 30000 });
+  await p.selectOption('#ductType', 'main'); await p.click('#ductTypeApply'); await idle();
+  const d1 = await H(([k, id]) => HVACGrid.S.geometry[k].ducts.find(d => d.id === id), [key, d0.id]), r1 = await H(k => HVACGrid.result(k), key);
+  assert.equal(d1.type, 'main', 'the duct is a main duct now'); assert.ok((d1.widthMm || d1.diameterMm) >= (d0.widthMm || d0.diameterMm), 'sized again by its kind');
+  assert.ok(r1.edited && !r1.stale && r1.seconds === r0.seconds && r1.candidate === r0.candidate, 'PHG D calculated again, AUTO did not run');
+  await H(() => HVACGrid.undo()); await idle();
+  assert.equal(await H(([k, id]) => HVACGrid.S.geometry[k].ducts.find(d => d.id === id)?.type, [key, d0.id]), 'branch', 'undo: the kind of before');
+  log('④: zones', zones.drawn, '· velocity', vel.length, '· pressure', pa.ducts.length, 'ducts', pa.rus, 'RUs · kind', d0.displayName, d0.type, '->', d1.displayName, d1.type, `${d0.widthMm}×${d0.heightMm} -> ${d1.widthMm}×${d1.heightMm}`);
   log('page errors', errors.length, errors.slice(0, 3)); assert.equal(errors.length, 0);
   log('E2E ONE-CANVAS PASS');
  } catch (e) { console.error('E2E ONE-CANVAS FAIL', e); await p.screenshot({ path: path.join(OUT, 'one-canvas-fail.png') }).catch(() => {}); process.exitCode = 1; }

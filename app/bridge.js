@@ -438,6 +438,35 @@ html.hg-bg.hg-nolabel #roomLabelLayer{display:none!important}`;
    L.renderEverything();
    return this.result();
   }
+  // a duct's kind (main | branch | sub_branch) as PHG D's 주 덕트·분기·보조 분기 set it (manualType too, which PHG D keeps
+  // when it calculates); the network is calculated again - sizes by the kind's velocity, flows, pressure. No AUTO
+  async setDuctType(ductId, type) {
+   const w = this.win, L = w.LineDesignLegacy, d = L.getState().ducts.find(x => x.id === ductId);
+   if (!d) throw new Error('PHG D에 덕트 ' + ductId + '가 없습니다');
+   Object.assign(d, { type, manualType: type });
+   await w.LineDesignV2.calculateTypedNetwork('');
+   L.renderEverything();
+   return this.result();
+  }
+  // PHG D's pressure calculation of the open project (as its 압력 command): per duct its velocity and losses and the loss
+  // from the Root to its end (the duct's own and the fittings' before it, on the path to an RU), per RU the path's total
+  // with the RU and its position in BOX y; the index path's RU. For the shell to show - nothing is kept in the project
+  pressure() {
+   const w = this.win, st = w.LineDesignLegacy.getState(), by = this.yBox() ? v => v : v => -v, r1 = v => Math.round((+v || 0) * 10) / 10;
+   let pr; try { pr = w.LineDesignV2.calculateSimplePressure({}); } catch { return null; }
+   const ducts = {}, rus = [];
+   for (const path of pr?.paths || []) {
+    let acc = 0;
+    for (const d of path.details || []) {
+     acc += (+d.frictionLossPa || 0) + (+d.bendLossPa || 0) + (+d.branchLossPa || 0);
+     if (!ducts[d.ductId]) ducts[d.ductId] = { velocityMps: r1(d.velocityMps), lengthM: r1(d.lengthM), frictionPa: r1(d.frictionLossPa), perMPa: d.lengthM ? Math.round(d.frictionLossPa / d.lengthM * 100) / 100 : null, bendPa: r1(d.bendLossPa), branchPa: r1(d.branchLossPa), fromRootPa: r1(acc) };
+    }
+    const ru = st.diffusers.find(x => x.id === path.diffuserId);
+    if (ru) rus.push({ id: ru.id, name: path.diffuserName, memo: ru.memo || '', x: ru.x, y: by(ru.y), flowCmh: Math.round(+path.flowCmh || 0), totalPa: r1(path.totalPressureLossPa) });
+   }
+   const index = rus.reduce((m, u) => !m || u.totalPa > m.totalPa ? u : m, null);
+   return { mode: pr?.mode || null, ducts, rus, indexPa: index?.totalPa ?? null, indexRu: index?.id ?? null };
+  }
   // the project open in PHG D differs from the stored text (edited in PHG D since)
   // content changed since text (a saved project)? PHG D writes keys in another order, new time stamps and default fields
   // when it reloads a project: a project opened from text is compared with what PHG D made of it, in a canonical form
