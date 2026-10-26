@@ -1,0 +1,354 @@
+{
+ "source": "HVAC Grid 1.0 lib/solas.cjs (SYNONYMS, EXTRA_SPACES, SPACE_CHECKS, ISO_CLASS_SPACE) - data moved as is (D20)",
+ "names": [
+  [
+   "조타실|선교|WHEEL\\s*HOUSE|BRIDGE",
+   "i",
+   "조타실"
+  ],
+  [
+   "선교\\s*윙|BRIDGE\\s*WING|개방\\s*갑판|OPEN\\s*DECK",
+   "i",
+   "개방갑판"
+  ],
+  [
+   "해도실?|CHART\\s*(ROOM)?",
+   "i",
+   "해도실"
+  ],
+  [
+   "무선실|통신실|RADIO\\s*(ROOM)?",
+   "i",
+   "무선실"
+  ],
+  [
+   "(항해|통신|무선|전자|GMDSS)\\s*(장비|설비|기기)\\s*실|GMDSS\\s*(실|ROOM)|NAV\\w*\\s*EQUIP\\w*(\\s*ROOM)?|RADIO\\s*EQUIP\\w*(\\s*ROOM)?|ELECTRONIC\\s*(EQUIP\\w*\\s*)?ROOM",
+   "i",
+   "항해·통신 장비실 (제어장소)"
+  ],
+  [
+   "비상\\s*발전기?실|비상\\s*전원실|EMERG\\w*\\s*GEN\\w*(\\s*ROOM)?",
+   "i",
+   "비상발전기실"
+  ],
+  [
+   "(화재|소방)\\s*제어(소|실)|FIRE\\s*CONTROL(\\s*STATION)?",
+   "i",
+   "화재제어소"
+  ],
+  [
+   "CO2실?|CO₂실?|소화제\\s*(저장)?실|FIRE\\s*EXTING\\w*",
+   "i",
+   "소화제 저장실 (CO₂실)"
+  ],
+  [
+   "기관\\s*제어실|\\bECR\\b|ENGINE\\s*CONTROL(\\s*ROOM)?",
+   "i",
+   "추진제어실 (기관구역 외)"
+  ],
+  [
+   "계단실?|STAIR\\w*",
+   "i",
+   "계단격실"
+  ],
+  [
+   "승강기(\\s*트렁크)?|엘리베이터|\\bLIFT(\\s*TRUNK)?\\b|ELEVATOR",
+   "i",
+   "승강기 트렁크"
+  ],
+  [
+   "비상\\s*탈출\\S*|ESCAPE\\s*TRUNK",
+   "i",
+   "비상탈출트렁크"
+  ],
+  [
+   "(덕트|공조|환기)\\s*(트렁크|스페이스|샤프트)|트렁크|DUCT\\s*(TRUNK|SPACE|SHAFT)|\\bTRUNK\\b",
+   "i",
+   "덕트 트렁크"
+  ],
+  [
+   "조리실|주방|갤리|GALLEY|KITCHEN",
+   "i",
+   "조리실"
+  ],
+  [
+   "화장실|샤워실?|욕실|변소|탈의실|TOILET|\\bW\\.?C\\b|SHOWER|BATH(ROOM)?|LAVATORY|SANITARY|CHANGING\\s*ROOM",
+   "i",
+   "화장실·샤워실·욕실"
+  ],
+  [
+   "복도|통로|\\bALLEY|CORRIDOR|PASSAGE",
+   "i",
+   "통로"
+  ],
+  [
+   "로비|LOBBY|ENTRANCE",
+   "i",
+   "로비"
+  ],
+  [
+   "팬트리|배식실|PANTRY",
+   "i",
+   "팬트리 — 조리기구 없음"
+  ],
+  [
+   "식당|MESS(\\s*ROOM)?|DINING(\\s*ROOM)?",
+   "i",
+   "식당"
+  ],
+  [
+   "오락실|휴게실|흡연실|체육실|헬스장|취미실|RECREATION(\\s*ROOM)?|LOUNGE|SMOKING(\\s*ROOM)?|\\bGYM\\b|HOBBY(\\s*ROOM)?",
+   "i",
+   "오락실"
+  ],
+  [
+   "사무실|OFFICE",
+   "i",
+   "사무실"
+  ],
+  [
+   "병원|진료실|의무실|HOSPITAL|SICK\\s*BAY",
+   "i",
+   "병원"
+  ],
+  [
+   "조제실|DISPENSARY",
+   "i",
+   "조제실"
+  ],
+  [
+   "이발소|미용실|BARBER",
+   "i",
+   "이발소·미용실"
+  ],
+  [
+   "사우나|SAUNA",
+   "i",
+   "사우나"
+  ],
+  [
+   "침실|선실|숙소|거실|(선장|기관장|항해사|기관사|통신장|조리장|갑판장|도선사|부원|사관)실|CABIN|BERTH|DAY\\s*ROOM|BED\\s*ROOM|SUITE|ENGINEER|CAPTAIN|MASTER|\\bMATE\\b",
+   "i",
+   "선실 — 비제한 가구"
+  ],
+  [
+   "회의실|도서실|CONFERENCE(\\s*ROOM)?|MEETING(\\s*ROOM)?|LIBRARY",
+   "i",
+   "@public"
+  ],
+  [
+   "세탁실|LAUNDRY",
+   "i",
+   "@laundry"
+  ],
+  [
+   "건조실|DRYING(\\s*ROOM)?",
+   "i",
+   "@drying"
+  ],
+  [
+   "냉장(고|실)|냉동(고|실)|REFRIG\\w*(\\s*(STORE|CHAMBER|ROOM))?|COLD\\s*ROOM|FREEZER",
+   "i",
+   "냉장실"
+  ],
+  [
+   "(식료품|식품|부식)\\s*(냉장|냉동)(고|실|창고)|냉장고|냉동고|PROVISION\\w*\\s*(REFRIG\\w*|COLD|FREEZ\\w*)(\\s*(STORE|ROOM))?",
+   "i",
+   "식료품 냉장고"
+  ],
+  [
+   "페인트\\s*(창고|로커|실)?|PAINT(\\s*(STORE|LOCKER))?",
+   "i",
+   "페인트 로커"
+  ],
+  [
+   "쓰레기실?|폐기물\\s*(보관)?실?|GARBAGE(\\s*ROOM)?",
+   "i",
+   "쓰레기실"
+  ],
+  [
+   "램프실|LAMP\\s*ROOM",
+   "i",
+   "램프실"
+  ],
+  [
+   "작업(장|실)|공작실|WORKSHOP",
+   "i",
+   "작업장 (기관구역 외)"
+  ],
+  [
+   "청소\\s*(도구|용구)?\\s*(실|로커)|CLEANING(\\s*GEAR)?(\\s*(LOCKER|STORE))?",
+   "i",
+   "청소구 로커"
+  ],
+  [
+   "팬룸|팬실|공조기?실|공조\\s*기계실|FAN\\s*ROOM|\\bAHU(\\s*ROOM)?|A\\/C\\s*ROOM|\\bAC\\s*ROOM|환기실",
+   "i",
+   "환기·공조 기계실"
+  ],
+  [
+   "냉동\\s*기계실|REFRIG\\w*\\s*MACHINERY(\\s*ROOM)?",
+   "i",
+   "냉동기계실"
+  ],
+  [
+   "기계실",
+   "i",
+   "환기·공조 기계실"
+  ],
+  [
+   "보일러실?|BOILER(\\s*ROOM)?",
+   "i",
+   "보일러실"
+  ],
+  [
+   "기관실|기관구역|발전기실|정화기실|케이싱|ENGINE(?!ER)(\\s*(ROOM|CASING))?|CASING|MACHINERY\\s*SPACE|GENERATOR\\s*ROOM|PURIFIER(\\s*ROOM)?",
+   "i",
+   "기관실 — A류"
+  ],
+  [
+   "조타기실|STEERING\\s*GEAR(\\s*ROOM)?",
+   "i",
+   "조타기실"
+  ],
+  [
+   "양묘기실|WINDLASS(\\s*ROOM)?",
+   "i",
+   "양묘기실"
+  ],
+  [
+   "(소화|스프링클러)\\s*펌프실|FIRE\\s*PUMP(\\s*ROOM)?|SPRINKLER(\\s*PUMP)?(\\s*ROOM)?",
+   "i",
+   "스프링클러·소화펌프실"
+  ],
+  [
+   "축계실|축로|파이프\\s*터널|SHAFT\\s*(ALLEY|TUNNEL)|PIPE\\s*TUNNEL",
+   "i",
+   "축로·파이프터널"
+  ],
+  [
+   "펌프실|PUMP\\s*ROOM",
+   "i",
+   "펌프실 (기관구역)"
+  ],
+  [
+   "오수\\s*처리실|SEWAGE(\\s*TREATMENT)?(\\s*ROOM)?",
+   "i",
+   "오수처리실"
+  ],
+  [
+   "배터리실|축전지실|BATTERY(\\s*ROOM)?",
+   "i",
+   "축전지실"
+  ],
+  [
+   "(전기|배전|변압기?)\\s*(장비|설비)?실|ELEC\\w*(\\s*EQUIPMENT)?\\s*ROOM|SWBD(\\s*ROOM)?|SWITCHBOARD(\\s*ROOM)?",
+   "i",
+   "전기설비실"
+  ],
+  [
+   "창고|식료품\\S*|로커|저장실|보관실|린넨실?|STORE\\w*|PROVISION\\w*|LOCKER|LINEN|BOND\\w*",
+   "i",
+   "@store"
+  ]
+ ],
+ "extraSpaces": [
+  [
+   "냉동기계실",
+   "Refrigerating machinery room",
+   10,
+   7,
+   7,
+   7
+  ],
+  [
+   "펌프실 (기관구역)",
+   "Pump room (machinery, not cargo)",
+   10,
+   7,
+   7,
+   7
+  ],
+  [
+   "오수처리실",
+   "Sewage treatment room",
+   10,
+   7,
+   7,
+   7
+  ],
+  [
+   "축전지실",
+   "Battery room",
+   10,
+   7,
+   7,
+   7
+  ],
+  [
+   "항해·통신 장비실 (제어장소)",
+   "Navigation / radio equipment room (control station, II-2/3.18)",
+   1,
+   1,
+   1,
+   1
+  ],
+  [
+   "덕트 트렁크",
+   "Air-conditioning duct trunk",
+   10,
+   7,
+   7,
+   7
+  ],
+  [
+   "식료품 냉장고",
+   "Provision refrigerated store",
+   13,
+   9,
+   9,
+   9
+  ]
+ ],
+ "checks": {
+  "축전지실": "GMDSS·비상전원 축전지실이면 제어장소(1)일 수 있음 — 확인",
+  "식료품 냉장고": "식료품 냉장고를 창고(고위험)로 분류 — 화물구역으로 볼지 주관청 확인",
+  "냉장실": "냉장실(화물구역)로 분류 — 식료품 냉장고면 창고로 지정",
+  "전기설비실": "주항해·무선 장비가 있으면 제어장소(1) — 확인",
+  "덕트 트렁크": "트렁크 벽은 관통하는 갑판의 방화 성능을 이어야 함 — 확인"
+ },
+ "isoClassSpace": {
+  "WHEELHOUSE": "조타실",
+  "ALLEY_SOUND": "통로",
+  "ALLEY_NON_SOUND": "통로",
+  "ENGINE": "기관실 — A류",
+  "BOILER": "보일러실",
+  "CONTROL": "추진제어실 (기관구역 외)"
+ },
+ "areaRules": {
+  "@public": [
+   50,
+   "공공장소 — 50㎡ 미만",
+   "공공장소 — 50㎡ 이상 · 비제한",
+   "lt"
+  ],
+  "@laundry": [
+   4,
+   "소세탁실",
+   "주세탁실",
+   "le"
+  ],
+  "@drying": [
+   4,
+   "소건조실 — 4㎡ 이하",
+   "대건조실 — 4㎡ 초과",
+   "le"
+  ],
+  "@store": [
+   4,
+   "로커·소창고 — 4㎡ 미만",
+   "로커·창고 — 4㎡ 초과",
+   "lt"
+  ]
+ }
+}

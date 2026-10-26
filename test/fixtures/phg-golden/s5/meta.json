@@ -1,0 +1,34 @@
+{
+ "ship": "s5",
+ "tool": "tools/phg-golden.cjs",
+ "made": "2026-10-25T23:17:39.828Z",
+ "browser": "chromium 153.0.8010.12",
+ "node": "v22.22.0",
+ "pageErrors": [],
+ "timing": {
+  "appS": 0.7,
+  "openS": 1.5,
+  "autoS": 85.9,
+  "plans": {
+   "S3__AHU-AC-01": 4.6,
+   "S3__AHU-AC-02": 3.5,
+   "S5__AHU-BRG-01": 10.5,
+   "S5__AHU-BRG-02": 8.7,
+   "S4__AHU-OFC-01": 5.6,
+   "S4__AHU-OFC-02": 8,
+   "S1__SUP-ER-01": 4.1,
+   "S1__SUP-ER-02": 8.1,
+   "S2__SUP-SVC-01": 5.7,
+   "S2__SUP-SVC-02": 3.7,
+   "S4__EXH-ROOM": 0.2,
+   "S2__EXH-ROOM": 0.3,
+   "S3__EXH-ROOM": 0.3,
+   "S5__EXH-ROOM": 0.3,
+   "S1__RET-ROOM": 0.8,
+   "S3__RET-ROOM": 5.4,
+   "S4__RET-ROOM": 7.8,
+   "S5__RET-ROOM": 1.7
+  },
+  "totalS": 93.3
+ }
+}

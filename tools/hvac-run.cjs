@@ -2,6 +2,10 @@
 // the ribbon), opens a contract or a project, sends every deck and system (supply, exhaust, return) to PHG D with AUTO,
 // and writes the project file and the outputs.
 //   node tools/hvac-run.cjs <contract.json | project.json> <outDir> [--shots] [--solas=<settings.json>] [--strict]
+//   --node: no browser - the Ver 2.0 duct engine (lib/duct, V2-1.10) routes, sizes and works out the pressure of every
+//           plan in worker threads; the review and outputs are the same 1.0 lib (the loads are the contract's)
+//   --select=cost (with --node): the least weighted cost as 1.0; the default is the engine's lowest-pressure choice among
+//   near-equal candidates (D16)
 // outDir: project.json, report.xlsx, report.html, integrated.dxf, fire-plan.dxf (방화 등급도), summary.json, phg/<deck__system>.phg.json, shots/*.png
 // --solas: { "lowestBelow": "<space>", "ship": "CARG", "method": "IC", "sprinkler": false, "rooms": { "<room no>": "<space>" } }
 //          (a flat { "<room no>": "<space>" } map works too). Exit code 1 when a plan did not finish AUTO or the page
@@ -48,6 +52,33 @@ async function run(input, outDir, { shots = false, solas = null, log = console.l
  } finally { await b.close(); await s.close(); }
 }
 
+// --node: every plan through lib/duct/engine.cjs in a worker pool; results and networks stored as the shell stores
+// PHG D's (y = −BOX y in the stored networks, app/bridge.js Phg.geometry)
+async function runNode(input, outDir, { solas = null, select = 'pressure', log = console.log } = {}) {
+ const PL = require('../lib/phg-plan.cjs'), { createPool } = require('../lib/duct/pool.cjs');
+ const data = JSON.parse(fs.readFileSync(input, 'utf8')), { project: given } = PJ.read(data);
+ const contract = applySolas(given.contract, solas), plans = PL.plan(contract), byId = new Map(contract.rooms.map(r => [r.id, r]));
+ fs.mkdirSync(path.join(outDir, 'phg'), { recursive: true });
+ const t0 = Date.now(), pool = createPool(), results = {}, geometry = {};
+ log(`${plans.length} plans · ${pool.threads} threads`);
+ const jobs = plans.map(p => ({ plan: { ...p, dxf: undefined }, rooms: (p.rooms || []).map(id => byId.get(id)).filter(Boolean), opt: { select } }));
+ const outs = await pool.run(jobs, { onDone: (i, o) => log(`${plans[i].key}: ${o.error ? 'FAIL ' + o.error.split('\n')[0] : `RU ${o.result.rus} · ${o.result.flowCmh} CMH · 덕트 ${o.result.ducts} · ${o.result.lengthM} m · ${o.result.indexPa} Pa · ${o.result.seconds}s${o.result.zonesRelaxed ? ' · 금지 영역 해제(' + o.result.zonesRelaxed + ')' : ''}`}`) });
+ await pool.close();
+ const errors = [];
+ outs.forEach((o, i) => {
+  const p = plans[i];
+  if (o.error) { errors.push(`${p.key}: ${o.error}`); return; }
+  const r = o.result;
+  results[p.key] = { rus: r.rus, flowCmh: r.flowCmh, roots: 1, ducts: r.ducts, lengthM: r.lengthM, indexPa: r.indexPa, ductTypes: r.ductTypes, kind: p.kind, rootSource: p.rootSource, designCmh: p.designCmh, sig: PJ.planSig(p), at: Date.now(),
+   auto: r.unconnected === 0, seconds: r.seconds, candidate: `HVAC Grid 2.0 엔진${r.spine ? ' · 주관 ' + r.spine : ''}`, candidates: r.candidates, pick: 0, unconnected: r.unconnected, zonesRelaxed: r.zonesRelaxed, edited: false };
+  const n = o.network, root = n.nodes.find(x => x.type === 'root'), flip = q => ({ x: Math.round(q.x), y: Math.round(-q.y) || 0 });
+  geometry[p.key] = { root: root ? flip(root) : null, rus: n.diffusers.map(u => ({ ...flip(u), flowCmh: u.flowCmh })),
+   ducts: n.ducts.map(d => ({ id: d.id, displayName: d.displayName, type: d.type, shape: d.shape, widthMm: d.shape === 'round' ? 0 : Math.round(d.widthMm), heightMm: d.shape === 'round' ? 0 : Math.round(d.heightMm), diameterMm: d.shape === 'round' ? Math.round(d.diameterMm) : 0, flowCmh: Math.round(d.flowCmh), ...(d.manualSize ? { manualSize: true } : {}), points: d.points.map(flip) })) };
+ });
+ const project = PJ.make({ contract, projects: {}, results, geometry, app: { version: '2.0-engine' } });
+ return { project, errors, seconds: Math.round((Date.now() - t0) / 1000) };
+}
+
 function writeOutputs(project, outDir) {
  const a = PJ.analyze(project);
  fs.writeFileSync(path.join(outDir, 'project.json'), JSON.stringify(project));
@@ -69,7 +100,8 @@ if (require.main === module) (async () => {
  const args = process.argv.slice(2), [input, outDir = 'out/run'] = args.filter(a => !a.startsWith('--'));
  if (!input) { console.error('사용법: node tools/hvac-run.cjs <contract.json|project.json> <outDir> [--shots] [--solas=<settings.json>] [--strict]'); process.exit(2); }
  const solasArg = args.find(a => a.startsWith('--solas=')), solas = solasArg ? JSON.parse(fs.readFileSync(solasArg.slice(8), 'utf8')) : null;
- const { project, errors, seconds } = await run(input, outDir, { shots: args.includes('--shots'), solas });
+ const select = (args.find(a => a.startsWith('--select=')) || '--select=pressure').slice(9);
+ const { project, errors, seconds } = args.includes('--node') ? await runNode(input, outDir, { solas, select }) : await run(input, outDir, { shots: args.includes('--shots'), solas });
  const { summary } = writeOutputs(project, outDir);
  console.log(JSON.stringify({ out: outDir, seconds, autoDone: `${summary.autoDone}/${summary.plans}`, count: summary.count, notOk: summary.checks.filter(c => c.level !== 'ok').map(c => `${c.level}: ${c.text}`), penetrations: summary.solas.penetrations, fireDampers: summary.solas.fireDampers, pageErrors: errors.length }));
  if (errors.length) console.error(errors.slice(0, 10).join('\n'));
@@ -77,4 +109,4 @@ if (require.main === module) (async () => {
  if (args.includes('--strict') && summary.count.fail > 0) { console.error(`--strict: 검토 실패 ${summary.count.fail}건`); process.exit(3); }
 })().catch(e => { console.error(e); process.exit(1); });
 
-module.exports = { run, writeOutputs, applySolas };
+module.exports = { run, runNode, writeOutputs, applySolas };

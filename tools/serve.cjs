@@ -6,7 +6,7 @@
 'use strict';
 const http = require('http'), fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..');
-const PUBLIC = ['app', 'vendor', 'lib', 'samples'];
+const PUBLIC = ['app', 'app2', 'vendor', 'lib', 'samples'];   // app2: Ver 2.0 (V2-3), beside 1.0 until K6
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.cjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
  '.json': 'application/json; charset=utf-8', '.dxf': 'application/dxf', '.png': 'image/png', '.svg': 'image/svg+xml', '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
 

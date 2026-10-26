@@ -24,3 +24,4 @@
 - 패치·원본 반영: `docs/VENDOR_PATCHES.md`, `vendor/VERSIONS.json`. vendor 사본을 바꾸면 `npm run extract:s5`·`npm run make:t3`로 예제를 다시 뽑는다(단위 시험이 해시를 확인).
 - 시험: `npm test`(단위), `npm run test:e2e`(Edge; `HVAC_GRID_BROWSER_PATH`로 다른 Chromium).
 - 검토 기록: `docs/REVIEW_*.md`.
+- Ver 2.0(`v2` 브랜치): 결정이 필요하면 사용자에게 묻지 않고 권장안으로 진행하고 `docs/v2/DECISIONS.md`에 기록한다(사용자 지정 2026-10-26, D19). 강제 항목 F-1·F-2를 바꾸는 일과 main에 올리는 일은 예외 — 먼저 묻는다.
