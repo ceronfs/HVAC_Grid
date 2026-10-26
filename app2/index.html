@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HVAC Grid 2.0</title>
+<link rel="stylesheet" href="app.css">
+<link rel="icon" type="image/png" sizes="32x32" href="../app/logo-32.png">
+</head>
+<body>
+<div class="app" id="app">
+ <header class="bar">
+  <div class="brand"><img src="../app/logo-128.png" alt="PHG" width="19" height="19"><span>HVAC <b>Grid</b> <small>2.0</small></span></div>
+  <nav class="steps" id="steps" role="tablist" aria-label="작업 단계"></nav>
+  <div class="proj" id="proj">모델 없음</div>
+  <div class="baricons">
+   <button class="ib" id="undo" title="실행 취소 (Ctrl+Z)" disabled>↶</button>
+   <button class="ib" id="redo" title="다시 실행 (Ctrl+Y)" disabled>↷</button>
+  </div>
+ </header>
+ <div class="ribbon" id="ribbon" role="toolbar" aria-label="명령"></div>
+ <div class="main">
+  <aside class="side" id="left">
+   <div class="sh">Deck · 격실</div>
+   <input class="search" id="q" placeholder="격실 번호·이름 검색" aria-label="격실 검색">
+   <div class="tree" id="tree" data-mod="rooms"></div>
+  </aside>
+  <section class="center">
+   <canvas id="canvas" aria-label="Deck 평면"></canvas>
+   <div class="layers" id="layers"></div>
+   <div class="empty" id="empty">HVAC Grid 1.x 프로젝트·설계 데이터 또는 2.0 모델(JSON)을 여세요 — 리본의 <b>열기</b>, 연습은 <b>T3 시험선</b>.</div>
+   <div class="dock" id="dock" hidden><div class="dock-body" id="table"></div></div>
+   <div class="busy" id="busy" hidden><span class="spin"></span><b id="busyText"></b></div>
+  </section>
+  <aside class="side right" id="right"><div class="sh" id="inspTitle">속성</div><div class="insp" id="insp"></div></aside>
+ </div>
+ <footer class="status" id="status"></footer>
+ <div class="toast" id="toast" role="alert" hidden></div>
+ <input type="file" id="file" accept=".json,application/json" hidden>
+</div>
+<script src="ui.js"></script>
+<script src="loader.js"></script>
+<script src="canvas.js"></script>
+<script src="../app/duct-pool.js"></script>
+<script src="modules/rooms.js"></script>
+<script src="modules/airflow.js"></script>
+<script src="modules/ducts.js"></script>
+<script src="modules/review.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>

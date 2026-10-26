@@ -67,6 +67,17 @@ test('commands: structural sharing, undo and redo, a module writes only its part
  assert.ok(C.apply(m0, { ops: [{ path: ['results', 'x'], value: { inputHash: 'a', at: null } }] }, { writes: ['networks'] }).model.results.x, 'results goes with any module');
 });
 
+test('commands: a group - an edit and the recompute it led to - undoes and redoes as one', () => {
+ const h = C.createHistory(), m0 = small(), g = h.group();
+ let m = h.run(m0, { label: 'ΔT 8 K', ops: [{ path: ['rules', 'supplyDeltaTK'], value: 8 }] }, { group: g });
+ m = h.run(m, { label: '다시 계산', ops: [{ path: ['airflow', 'R1'], value: { supplyCmh: 100 } }] }, { group: g });
+ m = h.run(m, { label: '전달', ops: [{ path: ['transfers', 'R1'], value: 'own-inlet' }] });
+ assert.deepEqual(h.labels(), { undo: '전달', redo: null });
+ m = h.undo(m); assert.equal(h.labels().undo, 'ΔT 8 K');
+ m = h.undo(m); assert.deepEqual([m.rules.supplyDeltaTK, m.airflow], [10, {}]); assert.equal(h.canUndo, false);
+ m = h.redo(m); assert.deepEqual([m.rules.supplyDeltaTK, m.airflow.R1.supplyCmh], [8, 100]); assert.equal(h.labels().redo, '전달');
+});
+
 for (const ship of ['s5', 't3', 'n3']) test(`v1: ${ship} 1.x project → hvac-grid/2 → saved → read → 1.x project is the same, and so is what 1.x works out from it`, () => {
  const p = G.read(path.join(G.FIXTURES, ship), 'project'), { model, notes } = V.fromV1(p);
  assert.deepEqual(notes, []);
