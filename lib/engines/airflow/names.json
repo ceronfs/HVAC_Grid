@@ -1,5 +1,5 @@
 {
- "source": "HVAC Grid 1.x lib/contract.cjs (CORRIDOR, SEALED, NO_SOURCE, NO_SOURCE_SPACES) - data moved as is (D20)",
+ "source": "HVAC Grid 1.0 lib/contract.cjs (CORRIDOR, SEALED, NO_SOURCE, NO_SOURCE_SPACES) - data moved as is (D20)",
  "corridor": [
   "복도|통로|\\bALLEY|CORRIDOR|PASSAGE",
   "i"

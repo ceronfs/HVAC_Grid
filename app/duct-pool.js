@@ -1,5 +1,5 @@
 // Ver 2.0 duct engine in the browser (V2-1.8): plans in Web Workers (cores − 1), each running lib/duct/engine.cjs - what
-// lib/duct/pool.cjs does in Node. Not used by the 1.x shell yet (K2 decides whether ④ moves to the engine).
+// lib/duct/pool.cjs does in Node. Not used by the 1.0 shell yet (K2 decides whether ④ moves to the engine).
 //   const pool = await HVACGridDuct.createPool({ base: '../' }); const outs = await pool.run(jobs, { onDone }); pool.close();
 //   jobs: [{ plan, rooms, opt }] → [{ network, result } | { error }] in the same order; pool.stop(): no more plans started
 'use strict';

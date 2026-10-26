@@ -1,5 +1,5 @@
 @echo off
-rem HVAC Grid 2.0 (development version, app2/) - double-click to start. The 1.x program is HVAC_Grid.bat.
+rem HVAC Grid 2.0 (development version, app2/) - double-click to start. The 1.0 program is HVAC_Grid.bat.
 rem Opens in its own window like a desktop program; closing the window stops it.
 rem   HVAC_Grid_2.bat [port]            normal start (no console window)
 rem   HVAC_Grid_2.bat console [port]    with a console window that shows what happens (for checking problems)

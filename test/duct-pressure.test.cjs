@@ -1,6 +1,6 @@
 // Ver 2.0 duct engine, pressure (lib/duct/pressure.cjs, V2-1.6): the final networks of the PHG D golden values (S5, T3,
 // N3: sized ducts, nodes, RUs) through the new engine - every RU path, every duct's friction, elbow and junction
-// coefficient, and the index pressure 1.x takes (indexPa) - and the rules on small networks.
+// coefficient, and the index pressure 1.0 takes (indexPa) - and the rules on small networks.
 'use strict';
 const test = require('node:test'), assert = require('node:assert/strict'), fs = require('fs'), path = require('path');
 const X = require('../lib/duct/pressure.cjs'), P = require('../tools/phg-golden.cjs');

@@ -1,5 +1,5 @@
-// V2-1.7 the new duct engine (lib/duct/engine.cjs) against 1.x (PHG D) on every plan of S5, T3 and N3 - from the
-// golden values (test/fixtures/phg-golden: the plans 1.x sent, PHG D's results; v1-golden: the rooms). D8: the same
+// V2-1.7 the new duct engine (lib/duct/engine.cjs) against 1.0 (PHG D) on every plan of S5, T3 and N3 - from the
+// golden values (test/fixtures/phg-golden: the plans 1.0 sent, PHG D's results; v1-golden: the rooms). D8: the same
 // function, not the same numbers - this lists the differences (docs/v2/STUDY_PHG.md 7).
 //   node tools/engine-compare.cjs [--select=cost|pressure] [--md=<file>] [--json=<file>]
 // Columns: RUs joined, zones relaxed, length (m), ducts (straight pieces), main length (m), index pressure (Pa), seconds.
@@ -31,7 +31,7 @@ function compare({ select = 'pressure' } = {}) {
 }
 
 function markdown({ rows, summary }) {
- const L = [`| 배 | 계획 | RU 연결 | 금지 구역 완화 (새 / 1.x) | 길이 m (새 / 1.x) | 덕트 조각 | 주관 m | 지수 압력 Pa (새 / 1.x) | 척추 | s |`, '|---|---|---|---|---|---|---|---|---|---|'];
+ const L = [`| 배 | 계획 | RU 연결 | 금지 구역 완화 (새 / 1.0) | 길이 m (새 / 1.0) | 덕트 조각 | 주관 m | 지수 압력 Pa (새 / 1.0) | 척추 | s |`, '|---|---|---|---|---|---|---|---|---|---|'];
  for (const r of rows) L.push(`| ${r.ship.toUpperCase()} | ${r.key} | ${r.joined}/${r.rus}${r.relaxedRus ? ` (규칙 완화 ${r.relaxedRus})` : ''} | ${r.zones || '-'} / ${r.zones1 || '-'} | ${r.lengthM} / ${r.lengthM1} | ${r.ducts} / ${r.ducts1} | ${r.mainM} / ${r.mainM1} | ${r.indexPa} / ${r.indexPa1} | ${r.spine || '-'} | ${r.seconds.toFixed(1)} |`);
  const s = summary;
  return [`선택 기준 \`${s.select}\` · 계획 ${s.plans} · RU 연결 ${s.joined}/${s.rus} · 금지 구역 완화 같음 ${s.zonesSame}/${s.plans} · 길이 비 ${s.length.min}/${s.length.median}/${s.length.max} (최소/중앙/최대), ±15 % 안 ${s.lengthWithin15} · 지수 압력 비 ${s.indexPa.min}/${s.indexPa.median}/${s.indexPa.max}, ±15 % 안 ${s.paWithin15} · 계산 ${s.seconds} s(한 스레드)`, '', ...L].join('\n');

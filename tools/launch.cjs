@@ -3,7 +3,7 @@
 // stops when that window closes (or, as a fallback, some minutes after the open app last said it is still there).
 // When a server already answers on the port, only another window opens.
 //   node tools/launch.cjs [port] [--console] [--v2]   (--console: messages in this console instead of message boxes;
-//   --v2: Ver 2.0 (app2/, HVAC_Grid_2.bat) instead of the 1.x shell)
+//   --v2: Ver 2.0 (app2/, HVAC_Grid_2.bat) instead of the 1.0 shell)
 'use strict';
 const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), { spawn } = require('child_process');
 const { start } = require('./serve.cjs');

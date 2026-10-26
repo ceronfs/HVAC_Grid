@@ -1,4 +1,4 @@
-// Ver 2.0 model (V2-3.1 to 3.4): schema hvac-grid/2, the recompute table, commands with one undo, and the 1.x project
+// Ver 2.0 model (V2-3.1 to 3.4): schema hvac-grid/2, the recompute table, commands with one undo, and the 1.0 project
 // read into the model and written back - S5, T3 and N3 of the golden values come back the same.
 'use strict';
 const test = require('node:test'), assert = require('node:assert/strict'), path = require('path');
@@ -78,7 +78,7 @@ test('commands: a group - an edit and the recompute it led to - undoes and redoe
  m = h.redo(m); assert.deepEqual([m.rules.supplyDeltaTK, m.airflow.R1.supplyCmh], [8, 100]); assert.equal(h.labels().redo, '전달');
 });
 
-for (const ship of ['s5', 't3', 'n3']) test(`v1: ${ship} 1.x project → hvac-grid/2 → saved → read → 1.x project is the same, and so is what 1.x works out from it`, () => {
+for (const ship of ['s5', 't3', 'n3']) test(`v1: ${ship} 1.0 project → hvac-grid/2 → saved → read → 1.0 project is the same, and so is what 1.0 works out from it`, () => {
  const p = G.read(path.join(G.FIXTURES, ship), 'project'), { model, notes } = V.fromV1(p);
  assert.deepEqual(notes, []);
  assert.equal(model.schema, 'hvac-grid/2'); assert.equal(model.rooms.length, p.contract.rooms.length);
@@ -99,5 +99,5 @@ test('v1: an old file - the winter airflow rule, the PHG D projects and the BOX 
  const { model, notes } = V.fromV1(old);
  assert.equal(notes.length, 3); assert.match(notes.join('\n'), /PHG D 프로젝트 1개/); assert.match(notes.join('\n'), /F-1/);
  assert.equal('heatingSupplyDeltaTK' in model.rules, false); assert.equal('heatingSupplyDeltaTK' in V.toV1(model).contract.rules, false);
- assert.throws(() => V.fromV1({ schema: 'x' }), /1.x 파일이 아닙니다/);
+ assert.throws(() => V.fromV1({ schema: 'x' }), /1.0 파일이 아닙니다/);
 });

@@ -1,9 +1,9 @@
-// V2-0.1 1.x 기준값: what HVAC Grid 1.x makes of S5, T3 and N3, kept in test/fixtures/v1-golden/<ship>/ so that every
+// V2-0.1 1.0 기준값: what HVAC Grid 1.0 makes of S5, T3 and N3, kept in test/fixtures/v1-golden/<ship>/ so that every
 // Ver 2.0 engine can be held to the same answer (docs/v2/PLAN_V2_WORK.md 0.1, PLAN_V2.md G8).
 //   node tools/v1-golden.cjs [s5 t3 n3] [--out=<dir>]   write the fixtures (default: all three, test/fixtures/v1-golden)
-//   node tools/v1-golden.cjs [s5 t3 n3] --check          run 1.x again and compare with the fixtures (exit 1 on a difference)
+//   node tools/v1-golden.cjs [s5 t3 n3] --check          run 1.0 again and compare with the fixtures (exit 1 on a difference)
 // Browser (tools/golden-run.cjs): BOX → CAL loads → design data → ⑤ SOLAS → ④ every plan AUTO in PHG D. Files:
-//   project.json  the 1.x project as saved, without the PHG D projects (tools/phg-golden.cjs) and the BOX file; time
+//   project.json  the 1.0 project as saved, without the PHG D projects (tools/phg-golden.cjs) and the BOX file; time
 //                 stamps and run seconds fixed (results[*].at = 1, seconds = 0), BOX-made deck ids (N3) named DECK1..n
 //   cal.json      BOX CAL's rooms (HVACGrid.box.calSnapshot: K mode, design conditions, per-room inputs and loads with
 //                 the transmission parts) · box-extract.json  what the contract is built from (HVACGrid.box.extract)
@@ -42,7 +42,7 @@ function faceIds(...values) {
  return values.map(v => v == null ? v : JSON.parse(JSON.stringify(v).replace(re, m => { if (!ids.has(m)) ids.set(m, `"F:#${ids.size + 1}"`); return ids.get(m); })));
 }
 
-// the project as 1.x saved it, made comparable
+// the project as 1.0 saved it, made comparable
 function normalize(run) {
  const { fix, map } = deckIds(run.project), { projects, box, ...rest } = run.project;
  const project = fix({ ...rest, savedAt: '-',

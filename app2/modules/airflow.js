@@ -84,7 +84,7 @@
    const names = kind => [...new Set(m.systems.filter(s => s.kind === kind).map(s => s.id))].sort();
    const neighbours = m.rooms.filter(x => x.deckId === r.deckId && x !== r && m.assign[x.id]?.supply);
    const basis = { cooling: '냉방 현열', freshAir: '최소 신기', makeup: '전달 공기 보충' }[A.basis] || '—';
-   return card('부하', kv([['냉방 현열', `${fmt(L.coolingSensibleW)} W`], ['난방', `${fmt(L.heatingW)} W`], ['최소 신기', `${fmt(L.minFreshAirCmh)} CMH`], ['상태', esc(L.status || (L.complete ? '완료' : '미완료'))]]), { from: '1.x (BOX CAL)' })
+   return card('부하', kv([['냉방 현열', `${fmt(L.coolingSensibleW)} W`], ['난방', `${fmt(L.heatingW)} W`], ['최소 신기', `${fmt(L.minFreshAirCmh)} CMH`], ['상태', esc(L.status || (L.complete ? '완료' : '미완료'))]]), { from: '1.0 (BOX CAL)' })
     + card('풍량', kv([['급기(SA)', `<b>${fmt(A.supplyCmh)}</b> CMH`], ['근거', basis], ['배기(EA)', `${fmt(A.exhaustCmh)} CMH`], ['환기(RA)', `${fmt(A.returnCmh)} CMH`],
       A.transferInCmh ? ['전달 공기 받음', `${fmt(A.transferInCmh)} CMH · ${A.transferFrom === 'own-inlet' ? '자체 흡입구' : A.transferFrom === 'outside' ? '이웃 급기 실 없음' : esc(label(m.rooms.find(x => x.id === A.transferFrom)))}`] : null,
       A.transferOutCmh ? ['전달 공기 보냄', `${fmt(A.transferOutCmh)} CMH`] : null]), { from: 'HVAC Grid', now: true })

@@ -1,4 +1,4 @@
-// V2-0.6 성능 기준 (docs/v2/BASELINE.md): what 1.x takes on the machine it runs on, for Ver 2.0 to be measured against
+// V2-0.6 성능 기준 (docs/v2/BASELINE.md): what 1.0 takes on the machine it runs on, for Ver 2.0 to be measured against
 // (PLAN_V2.md G6·G7·G9). Writes out/v2-baseline/<host>.json and prints a table for BASELINE.md.
 //   node tools/v2-baseline.cjs [auto] [big] [size] [--sizes=20,100,200] [--ships=t3,n3]
 //   auto  T3·N3 every plan AUTO (tools/golden-run.cjs - the same path as "모든 계통 AUTO"), seconds per plan and in all

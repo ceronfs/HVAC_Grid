@@ -1,7 +1,7 @@
-// HVAC Grid 2.0 in the browser (app2/, V2-3): one canvas, the modules, one undo, no vendor window. T3 from its 1.x
+// HVAC Grid 2.0 in the browser (app2/, V2-3): one canvas, the modules, one undo, no vendor window. T3 from its 1.0
 // design data: ③ a rule edited and undone, ④ AUTO by the 2.0 engine in Web Workers and an RU dragged on the canvas,
-// ⑤ the XLSX and the model saved and opened again; and the golden 1.x T3 project opened as it is (its networks kept,
-// the review 1.x's).
+// ⑤ the XLSX and the model saved and opened again; and the golden 1.0 T3 project opened as it is (its networks kept,
+// the review 1.0's).
 //   node test/e2e/app2.e2e.cjs
 'use strict';
 const fs = require('fs'), path = require('path'), assert = require('node:assert/strict');
@@ -62,12 +62,12 @@ const { launch } = require('../../tools/browser.cjs'), { start } = require('../.
   assert.deepEqual(await ev(() => HG2.model().review.count), count, 'saved model opened again');
   assert.deepEqual(await ev(() => HG2.state.status.filter(x => x.state === 'stale').length), 0, 'nothing to recompute after opening the saved model');
 
-  // the golden 1.x T3 project as a 1.x user has it: its PHG D networks kept, the review 1.x's
+  // the golden 1.0 T3 project as a 1.0 user has it: its PHG D networks kept, the review 1.0's
   const v1 = G.read(path.join(G.FIXTURES, 't3'), 'project'), golden = G.read(path.join(G.FIXTURES, 't3'), 'review');
-  t = Date.now(); await ev(p => HG2.open(p, 'T3 1.x'), v1); times.openV1S = (Date.now() - t) / 1000;
+  t = Date.now(); await ev(p => HG2.open(p, 'T3 1.0'), v1); times.openV1S = (Date.now() - t) / 1000;
   assert.deepEqual(await ev(() => [HG2.model().review.done, Object.values(HG2.model().networks).every(n => n.source === 'v1')]), [18, true]);
-  assert.deepEqual(await ev(() => HG2.model().review.count), golden.count, '1.x review');
+  assert.deepEqual(await ev(() => HG2.model().review.count), golden.count, '1.0 review');
   assert.deepEqual(errors, []);
-  console.log(`E2E APP2 PASS · AUTO ${times.autoS} s · 1.x 열기 ${times.openV1S} s · 전체 ${((Date.now() - t0) / 1000).toFixed(1)} s`);
+  console.log(`E2E APP2 PASS · AUTO ${times.autoS} s · 1.0 열기 ${times.openV1S} s · 전체 ${((Date.now() - t0) / 1000).toFixed(1)} s`);
  } finally { await b.close(); await s.close(); }
 })().catch(e => { console.error('E2E APP2 FAIL', e); process.exit(1); });

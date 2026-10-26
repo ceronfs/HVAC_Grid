@@ -1,6 +1,6 @@
 // HVAC Grid 2.0 - the libraries in the browser (V2-3.5): the CommonJS modules of lib/ (model, engines, duct engine) by
-// their paths, fetched once, with require() resolving './x' and '../y' as Node does. No 1.x lib file is on the list
-// (D7) - test/app2.test.cjs checks the list holds everything the entries require and nothing of 1.x.
+// their paths, fetched once, with require() resolving './x' and '../y' as Node does. No 1.0 lib file is on the list
+// (D7) - test/app2.test.cjs checks the list holds everything the entries require and nothing of 1.0.
 //   const L = await HG2Loader.load('../');   L('lib/model/run.cjs') → its exports
 'use strict';
 (function (root) {

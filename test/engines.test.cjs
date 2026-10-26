@@ -1,4 +1,4 @@
-// Ver 2.0 engines of V2-3.9 (lib/engines/{fire,airflow,systems,review}), new code, against the 1.x golden values of S5,
+// Ver 2.0 engines of V2-3.9 (lib/engines/{fire,airflow,systems,review}), new code, against the 1.0 golden values of S5,
 // T3 and N3 (D8, D15: the same function - here the same numbers): SOLAS spaces, room airflow and zones, systems, the
 // duct engine's plans, risers and ESP, fire boundaries, penetrations, the review and the outputs (XLSX, HTML report, DXF).
 // And F-1: one airflow all year.
@@ -14,7 +14,7 @@ const J = v => JSON.parse(JSON.stringify(v));   // as the golden files hold it (
 const modelOf = ship => V.fromV1(golden(ship, 'project')).model;
 const air = m => A.airflow({ rooms: m.rooms, decks: m.decks, loads: m.loads, rules: m.rules, assign: m.assign, transfers: m.transfers, conditions: m.conditions.project, classes: F.classes(m.rooms, m.solas) });
 
-for (const ship of ['s5', 't3', 'n3']) test(`engines: ${ship} - the 2.0 engines give the 1.x golden values`, () => {
+for (const ship of ['s5', 't3', 'n3']) test(`engines: ${ship} - the 2.0 engines give the 1.0 golden values`, () => {
  const m = modelOf(ship), a = air(m), g = golden(ship, 'airflow');
  assert.deepEqual(a.airflow, g.rooms, 'room airflow'); assert.deepEqual(a.zones, g.zones, 'zones'); assert.deepEqual(a.systems, golden(ship, 'systems').systems, 'systems');
  const plans = PS.plans({ ...m, ...a, classes: F.classes(m.rooms, m.solas) });
@@ -37,7 +37,7 @@ for (const ship of ['s5', 't3', 'n3']) test(`engines: ${ship} - the 2.0 engines 
  assert.deepEqual(G.dxfCounts(FP.toDxf(FP.model(mm, r.solas))), out.dxf.firePlan, 'fire-rating plan DXF');
 });
 
-test('engines: SOLAS spaces as 1.x for every ship type', () => {
+test('engines: SOLAS spaces as 1.0 for every ship type', () => {
  const SO = require('../lib/solas.cjs');
  for (const ship of ['s5', 't3', 'n3']) { const m = modelOf(ship); for (const type of F.SHIPS) for (const r of m.rooms) { const s = { ...m.solas, ship: type }; assert.deepEqual(F.classify(r, s, s.rooms || {}), SO.classify(r, SO.settingsOf({ solas: s }), s.rooms || {}), `${ship} ${type} ${r.name}`); } }
 });

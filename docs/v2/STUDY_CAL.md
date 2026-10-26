@@ -8,7 +8,7 @@
 
 - **CAL은 형상을 하나도 계산하지 않는다.** 격실 목록과 접한 면 표(A6 "면 행")를 BOX 호스트의 L4 워커가 만들어 넘기고(`calEnhanceGeometry` `BOX:24231`), CAL은 그 위에서 경계 조건·K·부하만 계산한다. 그래서 **부하 계산은 얕게, 형상은 깊게 묶여 있다.**
 - 부하 계산부는 BOX의 전역 상태(`st.*`, `DC` 게터)를 읽지만 식은 분명하고 짧다(순수 산술은 약 40 KB, 화면·XLSX와 섞인 전체 약 110 KB `CAL:11633–13330`, AHU `CAL:3758–3987`). **2.0 부하 엔진은 이 문서 3~7장 명세로 새로 짤 수 있다.**
-- 깊은 쪽은 **면 행을 만드는 형상 엔진**이다: 격실 경계 변 분할, 판넬 간극(25/50 mm, 격벽 이격 100~500 mm) 무시 접촉, 높이별 수직 패치, 데크 상하 접촉(다각형 불리언, z 허용 10 mm), 곡면 외판(HULL_TOP/HULL_BOTTOM·Hull Link), 흘수선 분할, 면적 보존 검사. 이 부분은 V2-5(도면·격실 엔진)가 `boundaries`로 만들어야 하고, V2-4 동안은 **1.x BOX가 만든 면 행을 모델 `boundaries`로 가져오는 어댑터**로 대신한다. 중간 단계(모델 → BOX JSON → 숨긴 CAL `report()`)는 부하에는 필요 없다.
+- 깊은 쪽은 **면 행을 만드는 형상 엔진**이다: 격실 경계 변 분할, 판넬 간극(25/50 mm, 격벽 이격 100~500 mm) 무시 접촉, 높이별 수직 패치, 데크 상하 접촉(다각형 불리언, z 허용 10 mm), 곡면 외판(HULL_TOP/HULL_BOTTOM·Hull Link), 흘수선 분할, 면적 보존 검사. 이 부분은 V2-5(도면·격실 엔진)가 `boundaries`로 만들어야 하고, V2-4 동안은 **1.0 BOX가 만든 면 행을 모델 `boundaries`로 가져오는 어댑터**로 대신한다. 중간 단계(모델 → BOX JSON → 숨긴 CAL `report()`)는 부하에는 필요 없다.
 - 추정: **V2-4 = 13~17 작업일**(계획서 8~15; 부하 XLSX 수식판을 새로 만들면 +2~3). 면 행 형상 엔진은 V2-5에 **+6~9 작업일**로 더해야 한다(K1에서 다시 정함). 9장.
 
 ## 2. CAL이 BOX에서 받는 것
@@ -139,7 +139,7 @@ K 결정 순서(`faceBoundaryCondition` `CAL:12605`): **면 직접 K** → **면
 
 KC 케이스 1~20(`KC_SIMPLE_CASES` `CAL:11877`, `calculateSimpleKCase` `CAL:11900`)은 면 K Type·KU·해수(14·15)에 쓰인다. 자체 시험 골든 `SELF_TEST_K_GOLDEN` `CAL:20404`(20개, 소수 4자리)으로 새 엔진 K를 그대로 맞출 수 있다. `lib/k-change.cjs`는 K 변경 전후 `calSnapshot` 두 장을 비교하는 HVAC Grid 쪽 도구(설계 조건이 움직이면 먼저 경고, 격실별 관류·일사·냉난방·급기 변화) — 2.0에서는 엔진을 두 모드로 두 번 돌린 결과를 같은 `diff()`에 넣으면 된다.
 
-## 6. 출력(report 필드)과 1.x 계약으로 가는 길
+## 6. 출력(report 필드)과 1.0 계약으로 가는 길
 
 `CAL_ENHANCE.report()` `CAL:21152` = `{ rooms: cachedRooms(), loads: calculatedRoomLoads(), conditions: st.designConditions 사본, kMode: st.kValueMode }`. `loads[]`는 격실 레코드 전체에 아래를 더한 것(`CAL:13123–13196`):
 
@@ -150,7 +150,7 @@ KC 케이스 1~20(`KC_SIMPLE_CASES` `CAL:11877`, `calculateSimpleKCase` `CAL:119
 - 공기: `minimumFreshAirCmh`(= `ventilationCmh`), `ventilationAirCmh`(ACH), `ventilationCoolingSensibleW`, `ventilationCoolingLatentW`, `ventLatentCoefficient`, `ventilationHeatingW`
 - 결과: `coolingSensibleW`, `coolingLatentW`, `coolingW`, `coolingKjH`, `heatingW`, `partialCoolingW`, `partialHeatingW`, `calculationComplete`, `calculationStatus`, `waterlineVerified`, `waterlineWarnings`, `areaConservationIssues`, `manualCorrectionIssues`
 
-1.x 경로: `Box.extract()`(`app/bridge.js:294`)가 `{decks: CAD_APP.stack.decks, conditions, rooms: loads에서 23개 필드}` → `extractContract()`(`app/shell.js:150`) → `buildContract(raw, rules)`(`lib/contract.cjs`) → `loads[id] = {coolingSensibleW, coolingLatentW, coolingW, heatingW, minFreshAirCmh ← minimumFreshAirCmh, minAch ← minimumAch, achAirCmh ← ventilationAirCmh, complete, status}` → `roomAirflow`. 즉 **HVAC Grid가 실제로 쓰는 부하 출력은 8개**다. 2.0 `loads[roomId]`(PLAN_V2 6장)는 이 8개 + 추적용 성분(관류·일사·창·인체·조명·기기, 면별 K·ΔT)을 담으면 된다.
+1.0 경로: `Box.extract()`(`app/bridge.js:294`)가 `{decks: CAD_APP.stack.decks, conditions, rooms: loads에서 23개 필드}` → `extractContract()`(`app/shell.js:150`) → `buildContract(raw, rules)`(`lib/contract.cjs`) → `loads[id] = {coolingSensibleW, coolingLatentW, coolingW, heatingW, minFreshAirCmh ← minimumFreshAirCmh, minAch ← minimumAch, achAirCmh ← ventilationAirCmh, complete, status}` → `roomAirflow`. 즉 **HVAC Grid가 실제로 쓰는 부하 출력은 8개**다. 2.0 `loads[roomId]`(PLAN_V2 6장)는 이 8개 + 추적용 성분(관류·일사·창·인체·조명·기기, 면별 K·ΔT)을 담으면 된다.
 
 CAL 내보내기(새 엔진 범위 질문, 9장): R↑ 격실 시트, A↑ 접촉면 시트, I↑ 격실 부하 시트(수식판, T3 LY 18 399 수식), N↑ 비ISO 부하 시트, Σ↑ 계통 요약, LX 부하 시트, RH 'AHU 히터'·'격실 리히터'·'격실 부하 정리'(`CAL:3866–3927`).
 
@@ -160,24 +160,24 @@ BOX 쪽 구현(`BOX_AHU_HEATING.calculate` `CAL:3759`): 격실 풍량 = **올림
 
 새 엔진 규칙:
 
-1. 격실 풍량 함수는 **하나**(여름 조건)이고 난방 W를 입력으로 받지 않는다. `max(…, 난방 W × 3 ÷ 22)` 같은 하한, `basis: 'heating'`, 겨울 풍량 필드·규칙(`heatingSupplyDeltaTK`)을 두지 않는다. 1.x 파일의 `rules.heatingSupplyDeltaTK`는 가져올 때 버린다.
+1. 격실 풍량 함수는 **하나**(여름 조건)이고 난방 W를 입력으로 받지 않는다. `max(…, 난방 W × 3 ÷ 22)` 같은 하한, `basis: 'heating'`, 겨울 풍량 필드·규칙(`heatingSupplyDeltaTK`)을 두지 않는다. 1.0 파일의 `rules.heatingSupplyDeltaTK`는 가져올 때 버린다.
 2. 겨울은 **같은 풍량**에 AHU 히터·격실 재열기 용량과 계통 난방 용량(kW)을 낸다.
 3. 22 K 초과(`HEATING_DT`·`WINTER_FLOW`)는 **"보조 난방·재열기 용량 확인"** 문구로만 낸다. "풍량을 늘리라"고 바꾸지 않는다. '격실 리히터' 시트의 `D/(0.000335*22)` 열(패치 N2)을 2.0이 만든다면 같은 뜻(검사값)으로만 둔다.
 4. 시험 유지: `test/iso7547.test.cjs` "one airflow all year", `test/contract.test.cjs`, CAL 자체 시험 "AHU 격실 풍량"(`CAL:21012`: 500 W, 냉방 급기 16 °C → 170 CMH, 2 kW 난방에도 170 그대로 + `WINTER_FLOW`, 재열 2 kW)을 새 엔진 시험으로 옮긴다.
 
-**결정이 필요한 차이(F-1과 충돌하지 않음, 사용자에게 물음):** 1.x에는 "여름 풍량"이 둘이다 — BOX AHU는 ΔT = 실 냉방 온도 − AHU 냉방 급기 온도(계통별, 안전율 곱, 최소 신기는 `MIN_OA` 경고만), HVAC Grid는 ΔT = `rules.supplyDeltaTK`(10 K) × 3 계수에 최소 신기를 max로 넣는다. 2.0이 AHU 난방 계산에 어느 풍량을 쓸지(권장: HVAC Grid 계약 풍량 하나) K1에서 정한다.
+**결정이 필요한 차이(F-1과 충돌하지 않음, 사용자에게 물음):** 1.0에는 "여름 풍량"이 둘이다 — BOX AHU는 ΔT = 실 냉방 온도 − AHU 냉방 급기 온도(계통별, 안전율 곱, 최소 신기는 `MIN_OA` 경고만), HVAC Grid는 ΔT = `rules.supplyDeltaTK`(10 K) × 3 계수에 최소 신기를 max로 넣는다. 2.0이 AHU 난방 계산에 어느 풍량을 쓸지(권장: HVAC Grid 계약 풍량 하나) K1에서 정한다.
 
 ## 8. 시험
 
 | 시험 | 위치 | 내용 | 2.0에서 |
 |---|---|---|---|
 | CAL 단위 자체 시험 | `selfTest()`/`runSelfTest()` `CAL:20409–21055`, `CAL_ENHANCE.unitSelfTest()` | 기록상 110건(`vendor/VERSIONS.json`). 묶음: K(KC 1~20 골든 + KU 식), 습공기(포화압 0 °C 611 Pa, 35 °C 5618 Pa, W(35/70) 0.025111, W(26/50) 0.010471, 습도 기반 12.21 W/CMH), 기하, 면적 보존, Deck Scale, TEXT, XLSX, SPLINE, JSON, POPUP, LINE 편집, DXF, ISO 구분(이름 추정), 6.4.1 배기, 부하(기기 잠열 → 495 W), AHU(7장) | 부하·K·습공기·AHU·ISO 구분·6.4.1 묶음을 `test/load.test.cjs`로 옮김(같은 입력·기대값). 기하·XLSX·화면 묶음은 V2-5/출력 |
-| BOX 호스트 자체 시험 | `calSelfTest()` `BOX:24289`(`CAD_APP.selfTest`) | H5 예제: 용도 미지정 격실 25/55/22, 흘수선 Z 없으면 차단, Z 10800·해수 K 15로 7실 완료; S5: 94실 완료, AHU 냉각 코일 3건, **S5 LOAD 기준**(일사 0일 때 floor 480, external 792, internal 3147, coolingTransmissionW 9012.201, heatingTransmissionW 29252.646, coolingW 30988.067, heatingW 35079.973 `BOX:24328–24334`) + CAL 단위 시험. 호출부 18건(12 + 반복 7) + 단위 시험 | S5 LOAD 기준 7값은 새 엔진 + 1.x 면 행으로 바로 맞춰 볼 수 있는 가장 좋은 첫 시험 |
+| BOX 호스트 자체 시험 | `calSelfTest()` `BOX:24289`(`CAD_APP.selfTest`) | H5 예제: 용도 미지정 격실 25/55/22, 흘수선 Z 없으면 차단, Z 10800·해수 K 15로 7실 완료; S5: 94실 완료, AHU 냉각 코일 3건, **S5 LOAD 기준**(일사 0일 때 floor 480, external 792, internal 3147, coolingTransmissionW 9012.201, heatingTransmissionW 29252.646, coolingW 30988.067, heatingW 35079.973 `BOX:24328–24334`) + CAL 단위 시험. 호출부 18건(12 + 반복 7) + 단위 시험 | S5 LOAD 기준 7값은 새 엔진 + 1.0 면 행으로 바로 맞춰 볼 수 있는 가장 좋은 첫 시험 |
 | K 변경 | `lib/k-change.cjs`, `test/k-change.test.cjs`, `test/e2e/k-change.e2e.cjs`, `test/e2e/ly-k.cjs`(LY K 독립 계산) | K7·C✓·KU 전후 비교 | 엔진을 모드별로 두 번 → 같은 `diff()` |
 | F-1 | `test/iso7547.test.cjs`, `test/contract.test.cjs`, CAL "AHU 격실 풍량" | 7장 4 | 그대로 유지 |
 | 기준값 | `test/fixtures/v1-golden/s5/{cal,loads,box-extract}.json`(T3·N3는 아직 없음), `test/v1-golden.test.cjs`, `tools/v1-golden.cjs` | `cal.json` = `calSnapshot`(K 모드, 조건, 데크, 94실 입력·관류·일사·부하); `loads.json` = 계약 `loads` 8필드 | 비교 방법 아래 |
 
-**기준값 비교 방법(D8).** (1) 같은 입력을 쓴다: 1.x 면 행 + `cal.json`의 격실 입력·조건·K 모드로 새 엔진을 돌린다. (2) 격실마다 `coolingTransmissionW`·`heatingTransmissionW`·`solarTransmissionW`·`coolingSensibleW`·`coolingLatentW`·`coolingW`·`heatingW`·`minimumFreshAirCmh`·`ventilationAirCmh`를 W 반올림(1 W)으로 비교하고, 다르면 성분별로 갈라 원인을 `docs/v2/LOAD_DIFF.md`(제안)에 적는다. (3) S5 LOAD 기준 7합계. (4) 형상 엔진(V2-5)이 생긴 뒤에는 **면 행 단위**(격실·방향·상대·면적)로 먼저 비교한다 — 부하 차이 대부분은 면적 차이에서 나온다.
+**기준값 비교 방법(D8).** (1) 같은 입력을 쓴다: 1.0 면 행 + `cal.json`의 격실 입력·조건·K 모드로 새 엔진을 돌린다. (2) 격실마다 `coolingTransmissionW`·`heatingTransmissionW`·`solarTransmissionW`·`coolingSensibleW`·`coolingLatentW`·`coolingW`·`heatingW`·`minimumFreshAirCmh`·`ventilationAirCmh`를 W 반올림(1 W)으로 비교하고, 다르면 성분별로 갈라 원인을 `docs/v2/LOAD_DIFF.md`(제안)에 적는다. (3) S5 LOAD 기준 7합계. (4) 형상 엔진(V2-5)이 생긴 뒤에는 **면 행 단위**(격실·방향·상대·면적)로 먼저 비교한다 — 부하 차이 대부분은 면적 차이에서 나온다.
 
 **빈 곳:** 지금 기준값에는 **면 행(A6)과 면별 K·ΔT가 없다**(`cal.json`은 격실 합계만). 위 (1)·(4)를 하려면 `tools/v1-golden.cjs`가 `CAL_ENHANCE_INPUT.faces.summarized`(흘수선 적용 후)와 `roomLoadInputTrace`(`CAL:13200`), `CAL_ENHANCE.ahu(config)` 결과를 함께 저장해야 한다(V2-0 작업 0.1 보강 제안 — 이 조사에서는 고치지 않음).
 
@@ -186,7 +186,7 @@ BOX 쪽 구현(`BOX_AHU_HEATING.calculate` `CAL:3759`): 격실 풍량 = **올림
 | 번호 | 작업 | 산출물 | 작업일 |
 |---|---|---|---|
 | 4.0 | 기준값 보강: S5·T3 면 행(요약, 흘수선 적용), 면별 경계 종류·K·ΔT, AHU 결과를 v1-golden에 추가(0.1 연장) | `tools/v1-golden.cjs`, `test/fixtures/v1-golden/*/faces.json` | 1 |
-| 4.1 | 모델 입력 정의 + 1.x 가져오기: `boundaries[]`에 `side`(6방향)·`type`·`areaM2`(소유 격실 기준)·`zRange`·안정 키·상대 격실·방법; `conditions.project/rooms/k`(4장); BOX 면 행 → `boundaries` 어댑터(V2-5 전까지 ①은 BOX이므로 브라우저에서 읽음) | `lib/engines/load/input.cjs`, `lib/io/v1.cjs` 일부, 스키마 문서 | 2 |
+| 4.1 | 모델 입력 정의 + 1.0 가져오기: `boundaries[]`에 `side`(6방향)·`type`·`areaM2`(소유 격실 기준)·`zRange`·안정 키·상대 격실·방법; `conditions.project/rooms/k`(4장); BOX 면 행 → `boundaries` 어댑터(V2-5 전까지 ①은 BOX이므로 브라우저에서 읽음) | `lib/engines/load/input.cjs`, `lib/io/v1.cjs` 일부, 스키마 문서 | 2 |
 | 4.2 | 경계 조건 해석: 8종, 프리셋, 면 재정의(`faceBoundaryOverrides`), 흘수선 SEA·해수 K 확인, 용도 기본 조건(표 1), `isoClass` 추정, 데크 쌓임 경고 | `lib/engines/load/boundary.cjs`, `rooms.cjs` | 1.5 |
 | 4.3 | K: 모드 4종(+KU `_base`), 경계 종류 분류, LY 층 계산(식 (2)), KC 1~20, 면 K Type·직접 K. 값마다 조항 번호(F-2, 원문 확인 전 "원문 미확인") | `lib/engines/load/k.cjs` | 1.5 |
 | 4.4 | 격실 부하: 관류, 창(+200 mm, 소유 외벽, 수중 창), 일사 3방식, 인체(활동), 조명(주광), 기기, 신기·ACH, 잠열(습공기 2방식), 안전율, 완료 판정·사유 | `lib/engines/load/room.cjs` | 2.5 |
@@ -194,7 +194,7 @@ BOX 쪽 구현(`BOX_AHU_HEATING.calculate` `CAL:3759`): 격실 풍량 = **올림
 | 4.6 | ② `load` 모듈: 부하 색 층(W/㎡), 외기 면 표시, 조건·K 패널, 격실 입력·부하표, K 변경 비교 | `app/modules/load/` | 2.5 |
 | 4.7 | 시험: CAL 단위 시험 이식(K 20, 습공기, AHU, ISO 구분, 6.4.1, 부하), S5 LOAD 기준 7합계, 기준값 격실 비교·차이 기록, `k-change`, F-1 시험 | `test/load.test.cjs`, `docs/v2/LOAD_DIFF.md` | 2 |
 | 소계 | | | **14.5 (13~17)** |
-| 4.8 (선택) | 부하 XLSX 수식판(I↑·RH 시트) 새로 만들기 — 1.x 보고서(`lib/report.cjs`)로 충분한지 사용자 확인 | `lib/report-load.cjs` | +2~3 |
+| 4.8 (선택) | 부하 XLSX 수식판(I↑·RH 시트) 새로 만들기 — 1.0 보고서(`lib/report.cjs`)로 충분한지 사용자 확인 | `lib/report-load.cjs` | +2~3 |
 | (V2-5) | 면 행 형상 엔진: 경계 변 분할, 판넬 간극 접촉, 높이 패치, 상하 접촉 불리언, 곡면 외판(HULL_TOP/BOTTOM, Hull Link), 흘수선 분할, 면적 보존 — 4.0의 면 행과 비교 | `lib/engines/geometry/faces.cjs` | **V2-5에 +6~9** |
 
 **위험과 대응**

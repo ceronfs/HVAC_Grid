@@ -1,5 +1,5 @@
 {
- "source": "HVAC Grid 1.x lib/phg-plan.cjs (FAN_WORDS, SHAFT_WORDS, AVOID, KIND_LABEL) - data moved as is (D20)",
+ "source": "HVAC Grid 1.0 lib/phg-plan.cjs (FAN_WORDS, SHAFT_WORDS, AVOID, KIND_LABEL) - data moved as is (D20)",
  "fanRoom": [
   "팬룸|공조기|공조실|FAN\\s*ROOM|\\bAHU\\b|A\\/C\\s*ROOM|\\bAC\\s*ROOM|팬실",
   "i"

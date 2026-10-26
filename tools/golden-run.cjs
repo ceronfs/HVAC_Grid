@@ -1,5 +1,5 @@
-// V2-0 기준값 실행기: the 1.x shell runs headless over S5, T3 or N3 the way a designer does (the same code path as the
-// ribbon, tools/hvac-run.cjs and the e2e tests), and hands back what 1.x made - the project (contract, results, duct
+// V2-0 기준값 실행기: the 1.0 shell runs headless over S5, T3 or N3 the way a designer does (the same code path as the
+// ribbon, tools/hvac-run.cjs and the e2e tests), and hands back what 1.0 made - the project (contract, results, duct
 // networks), BOX CAL's room loads, how long it took, and (phg: true) what PHG D did for every plan. Used by
 // tools/v1-golden.cjs and tools/phg-golden.cjs (docs/v2/PLAN_V2_WORK.md 0.1·0.2). Nothing here changes the shell.
 //   S5: BOX's own example (openSample) · T3: samples/t3/T3.box.json + T3.solas.json (openSample)

@@ -1,4 +1,4 @@
-// V2-0 기준값 (tools/v1-golden.cjs, tools/phg-golden.cjs): the fixtures, where made, are what 1.x's lib makes of the
+// V2-0 기준값 (tools/v1-golden.cjs, tools/phg-golden.cjs): the fixtures, where made, are what 1.0's lib makes of the
 // saved projects again (derive from project.json), and the helpers that make runs comparable work. Making the fixtures
 // needs a browser (npm run golden); without them only the helper tests run.
 'use strict';
@@ -41,7 +41,7 @@ test('golden: derive on a project without networks (S5 contract)', () => {
 
 for (const ship of ['s5', 't3', 'n3']) {
  const dir = path.join(G.FIXTURES, ship), have = fs.existsSync(path.join(dir, 'project.json'));
- test(`golden ${ship}: 1.x lib makes the same of the saved project`, { skip: !have && 'test/fixtures/v1-golden/' + ship + ' 없음 (npm run golden)' }, () => {
+ test(`golden ${ship}: 1.0 lib makes the same of the saved project`, { skip: !have && 'test/fixtures/v1-golden/' + ship + ' 없음 (npm run golden)' }, () => {
   const d = G.derive(G.read(dir, 'project'));
   for (const k of G.DERIVED) assert.deepEqual(d[k], G.read(dir, k), `${ship} ${k}.json`);
   // F-1 in the reference too

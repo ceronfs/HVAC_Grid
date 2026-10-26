@@ -9,7 +9,7 @@
  try { L = await HG2Loader.load('../'); } catch (e) { $('empty').textContent = '라이브러리를 읽지 못했습니다: ' + e.message; return; }
  const V = L('lib/io/v1.cjs'), S = L('lib/model/schema.cjs'), C = L('lib/model/commands.cjs'), RUN = L('lib/model/run.cjs'), PL = L('lib/engines/geometry/plan.cjs');
  const MODS = Object.fromEntries((window.HG2Modules || []).map(m => [m.id, m]));
- const STEPS = [{ n: 1, id: 'rooms', name: '데크·격실' }, { n: 2, id: null, name: '부하', off: '부하 엔진은 V2-4 — 지금은 1.x 파일의 부하' }, { n: 3, id: 'airflow', name: '풍량·계통' }, { n: 4, id: 'ducts', name: 'RU·덕트' }, { n: 5, id: 'review', name: '검토·출력' }];
+ const STEPS = [{ n: 1, id: 'rooms', name: '데크·격실' }, { n: 2, id: null, name: '부하', off: '부하 엔진은 V2-4 — 지금은 1.0 파일의 부하' }, { n: 3, id: 'airflow', name: '풍량·계통' }, { n: 4, id: 'ducts', name: 'RU·덕트' }, { n: 5, id: 'review', name: '검토·출력' }];
  // which layers each step shows (others can be switched on in the layer box)
  const SHOW = { 1: ['rooms'], 3: ['rooms', 'air', 'transfer', 'units'], 4: ['rooms', 'ducts', 'rus', 'units'], 5: ['rooms', 'fire', 'ducts', 'pens'] };
  const st = { model: null, name: '', step: 3, deck: null, filter: 'deck', sel: null, mstate: {}, status: [], layersOn: null, busy: false, msg: '', err: false, pool: null, history: C.createHistory() };
@@ -120,7 +120,7 @@
   $('steps').innerHTML = STEPS.map(s => `<button class="step" role="tab" data-step="${s.n}" aria-selected="${s.n === st.step}"${s.off ? ` disabled title="${UI.esc(s.off)}"` : ''}><b>${'①②③④⑤'[s.n - 1]}</b>${UI.esc(s.name)}</button>`).join('');
   $('proj').textContent = m ? `${st.name || '모델'} · ${m.decks.find(d => d.id === st.deck)?.name || ''}` : '모델 없음';
   const lbl = st.history.labels(); $('undo').disabled = !st.history.canUndo; $('redo').disabled = !st.history.canRedo; $('undo').title = `실행 취소${lbl.undo ? ': ' + lbl.undo : ''} (Ctrl+Z)`; $('redo').title = `다시 실행${lbl.redo ? ': ' + lbl.redo : ''} (Ctrl+Y)`;
-  const file = UI.group('파일', [UI.button('open', '열기', { title: '1.x 프로젝트·설계 데이터 또는 2.0 모델 (JSON)' }), UI.button('sample', 'T3 시험선', { v: 't3' }), UI.button('sample', 'S5 예제', { v: 's5' }), UI.button('save', '저장', { disabled: !m })]);
+  const file = UI.group('파일', [UI.button('open', '열기', { title: '1.0 프로젝트·설계 데이터 또는 2.0 모델 (JSON)' }), UI.button('sample', 'T3 시험선', { v: 't3' }), UI.button('sample', 'S5 예제', { v: 's5' }), UI.button('save', '저장', { disabled: !m })]);
   $('ribbon').innerHTML = `<div data-mod="shell" class="rg-wrap">${file}</div>` + (m ? `<div data-mod="${cur.id}" class="rg-wrap">${cur.ribbon ? cur.ribbon(ctxOf(cur)) : ''}</div>` : '');
   $('empty').hidden = !!m;
   if (!m) { $('tree').innerHTML = ''; $('insp').innerHTML = ''; $('layers').innerHTML = ''; $('dock').hidden = true; canvas.setLayers([]); status(); return; }

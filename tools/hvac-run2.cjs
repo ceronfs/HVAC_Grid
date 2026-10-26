@@ -1,9 +1,9 @@
-// Ver 2.0 whole pipeline without a person or a browser (V2-3): a 1.x design data / project file or a 2.0 model →
+// Ver 2.0 whole pipeline without a person or a browser (V2-3): a 1.0 design data / project file or a 2.0 model →
 // airflow, plans, every network by the 2.0 duct engine in worker threads, the review and the outputs - all 2.0 code
-// (lib/model, lib/engines, lib/duct; no 1.x lib, D7).
+// (lib/model, lib/engines, lib/duct; no 1.0 lib, D7).
 //   node tools/hvac-run2.cjs <input.json> <outDir> [--solas=<settings.json>] [--threads=n] [--keep-v1] [--strict]
 //   --solas: { "lowestBelow", "ship", "method", "sprinkler", "rooms": { "<room no>": "<space>" } } or a flat { no: space }
-//   --keep-v1: keep the networks of a 1.x project that fit today's plans (default: the 2.0 engine makes every one)
+//   --keep-v1: keep the networks of a 1.0 project that fit today's plans (default: the 2.0 engine makes every one)
 // outDir: model.hg2.json, report.xlsx, report.html, integrated.dxf, fire-plan.dxf, summary.json. Exit code 1 when a
 // plan has no network or an RU is not joined; 3 with --strict when the review has a fail.
 'use strict';
@@ -49,7 +49,7 @@ function writeOutputs(m, outDir) {
 
 if (require.main === module) (async () => {
  const args = process.argv.slice(2), [input, outDir = 'out/run2'] = args.filter(a => !a.startsWith('--')), opt = k => args.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
- if (!input) { console.error('사용법: node tools/hvac-run2.cjs <1.x json | 2.0 model> <outDir> [--solas=<settings.json>] [--threads=n] [--keep-v1] [--strict]'); process.exit(2); }
+ if (!input) { console.error('사용법: node tools/hvac-run2.cjs <1.0 json | 2.0 model> <outDir> [--solas=<settings.json>] [--threads=n] [--keep-v1] [--strict]'); process.exit(2); }
  const solas = opt('solas') ? JSON.parse(fs.readFileSync(opt('solas'), 'utf8')) : null;
  const { model, notes, seconds, threads } = await run(input, outDir, { solas, threads: opt('threads') ? +opt('threads') : undefined, keepV1: args.includes('--keep-v1') });
  const { summary } = writeOutputs(model, outDir);

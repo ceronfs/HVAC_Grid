@@ -1,6 +1,6 @@
 // Ver 2.0 duct engine, AUTO end to end (lib/duct/route.cjs, network.cjs, astar.cjs, assign.cjs, engine.cjs - V2-1.2 to
 // 1.5, 1.8): a small deck built here, and plans of the golden values (S5, T3, N3) - every RU joined, ducts orthogonal and
-// clear of the forbidden zones, the zone relaxation step 1.x took, sizes and the index pressure worked out.
+// clear of the forbidden zones, the zone relaxation step 1.0 took, sizes and the index pressure worked out.
 'use strict';
 const test = require('node:test'), assert = require('node:assert/strict'), fs = require('fs'), path = require('path');
 const E = require('../lib/duct/engine.cjs'), A = require('../lib/duct/astar.cjs'), N = require('../lib/duct/network.cjs'), P = require('../tools/phg-golden.cjs'), G = require('../tools/v1-golden.cjs');
@@ -57,14 +57,14 @@ test('duct engine: a manual size is kept when AUTO runs again (found by its key)
 });
 
 const golden = fs.existsSync(path.join(P.FIXTURES, 's5', 'index.json'));
-test('duct engine: golden plans - every RU joined, the zone step 1.x took, out of the zones', { skip: !golden && 'phg-golden 없음' }, () => {
+test('duct engine: golden plans - every RU joined, the zone step 1.0 took, out of the zones', { skip: !golden && 'phg-golden 없음' }, () => {
  for (const [ship, key] of [['s5', 'S4__AHU-OFC-02'], ['t3', 'D2__EF-SAN'], ['n3', 'DECK1__EF-GAL'], ['n3', 'DECK3__AHU-1']]) {
   const e = P.ungz(path.join(P.FIXTURES, ship, P.safe(key) + '.json.gz')), rooms = G.read(path.join(G.FIXTURES, ship), 'project').contract.rooms, a = E.auto(e.plan, rooms), at = `${ship} ${key}`;
   assert.equal(a.result.unconnected, 0, at); assert.equal(a.result.zonesRelaxed, e.auto.result.zonesRelaxed, at + ' zones');
   const zones = a.route.input.forbidden.map(z => z.polygon);
   assert.ok(!intrudes(a.network, zones), at + ' clear of the zones it kept');
   assert.ok(a.sizing.ok && a.result.indexPa > 0, at);
-  // the same function: a length within half of 1.x's either way (D8 - differences are recorded by tools/engine-compare.cjs)
+  // the same function: a length within half of 1.0's either way (D8 - differences are recorded by tools/engine-compare.cjs)
   assert.ok(a.result.lengthM > e.auto.result.lengthM * 0.5 && a.result.lengthM < e.auto.result.lengthM * 1.5, `${at} ${a.result.lengthM} m vs ${e.auto.result.lengthM}`);
  }
 });
@@ -78,7 +78,7 @@ test('duct engine: plans in worker threads give what one thread gives', async ()
  } finally { await pool.close(); }
 });
 
-test('duct engine: hvac-run --node - the whole T3 without a browser, every plan, the 1.x review', { skip: !fs.existsSync(path.join(__dirname, '..', 'samples', 't3.contract.json')) && 'T3 없음' }, async () => {
+test('duct engine: hvac-run --node - the whole T3 without a browser, every plan, the 1.0 review', { skip: !fs.existsSync(path.join(__dirname, '..', 'samples', 't3.contract.json')) && 'T3 없음' }, async () => {
  const H = require('../tools/hvac-run.cjs'), os = require('os'), out = fs.mkdtempSync(path.join(os.tmpdir(), 'hg-node-'));
  try {
   const solas = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'samples', 't3', 'T3.solas.json'), 'utf8'));

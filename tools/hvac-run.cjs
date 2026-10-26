@@ -3,8 +3,8 @@
 // and writes the project file and the outputs.
 //   node tools/hvac-run.cjs <contract.json | project.json> <outDir> [--shots] [--solas=<settings.json>] [--strict]
 //   --node: no browser - the Ver 2.0 duct engine (lib/duct, V2-1.10) routes, sizes and works out the pressure of every
-//           plan in worker threads; the review and outputs are the same 1.x lib (the loads are the contract's)
-//   --select=cost (with --node): the least weighted cost as 1.x; the default is the engine's lowest-pressure choice among
+//           plan in worker threads; the review and outputs are the same 1.0 lib (the loads are the contract's)
+//   --select=cost (with --node): the least weighted cost as 1.0; the default is the engine's lowest-pressure choice among
 //   near-equal candidates (D16)
 // outDir: project.json, report.xlsx, report.html, integrated.dxf, fire-plan.dxf (방화 등급도), summary.json, phg/<deck__system>.phg.json, shots/*.png
 // --solas: { "lowestBelow": "<space>", "ship": "CARG", "method": "IC", "sprinkler": false, "rooms": { "<room no>": "<space>" } }

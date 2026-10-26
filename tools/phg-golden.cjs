@@ -1,10 +1,10 @@
-// V2-0.2 PHG D 기준값 (PLAN_PHG_LIB P0): for every plan (deck × system) of S5, T3 and N3, what PHG D did when 1.x sent
+// V2-0.2 PHG D 기준값 (PLAN_PHG_LIB P0): for every plan (deck × system) of S5, T3 and N3, what PHG D did when 1.0 sent
 // it and ran AUTO - kept in test/fixtures/phg-golden/<ship>/ as the functional reference for the Ver 2.0 route and size
 // engines (written anew, DECISIONS D7; the same answer is not required, D8 - a difference is recorded).
 //   node tools/phg-golden.cjs [s5 t3 n3] [--out=<dir>]   write the fixtures (default: all three)
 //   node tools/phg-golden.cjs [s5 t3 n3] --check          run again and compare with the fixtures (exit 1 on a difference)
 // Per plan, <deck__system>.json.gz (gzip of JSON, deterministic):
-//   plan     the plan 1.x sent (lib/phg-plan.cjs: Root, RUs, forbidden zones, outside; the dxf by length only)
+//   plan     the plan 1.0 sent (lib/phg-plan.cjs: Root, RUs, forbidden zones, outside; the dxf by length only)
 //   loaded   PHG D state right after loadPlan (entities, nodes, diffusers, settings, layers ...) and its DXF worker
 //   auto     every AUTO preview (forbidden zones it ran with, the candidates), the worker messages in and out
 //            (routing engine, sizing worker, V2 calculation), ducts / RUs / nodes after sizing, the pressure paths,

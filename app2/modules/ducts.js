@@ -64,7 +64,7 @@
     const p = m.plans.find(x => x.key === sel.key), n = m.networks[sel.key], d = n?.ducts.find(x => x.id === sel.id); if (!d) return '';
     const a = area(d), v = a ? d.flowCmh / 3600 / a : null, manual = (m.ductEdits[sel.key]?.manual || []).some(x => x.key === d.key);
     return card(`${esc(TYPE[d.type] || d.type)} ${esc(d.displayName || d.id)}`, kv([['계통', `${dot(p.systemId)}${KIND_LABEL[p.kind]} ${esc(p.systemId)}`], ['크기', `<b>${sizeText(d)}</b> mm`], ['풍량', `${fmt(d.flowCmh)} CMH`], ['풍속', v ? `${v.toFixed(1)} m/s` : '—'], ['길이', `${(len(d.points) / 1000).toFixed(1)} m`]])
-      + (manual ? '<div class="muted">수동 크기 — 다시 AUTO 해도 지킴</div>' : ''), { from: n.source === 'v1' ? '1.x PHG D' : 'HVAC Grid', now: true })
+      + (manual ? '<div class="muted">수동 크기 — 다시 AUTO 해도 지킴</div>' : ''), { from: n.source === 'v1' ? '1.0 PHG D' : 'HVAC Grid', now: true })
      + card('덕트 크기', select('size', '크기 (풍속)', [['', '자동'], ...sizes(d).map(s => [`${s.w}x${s.h}`, `${s.w}×${s.h} · ${s.v.toFixed(1)} m/s`])], manual && d.widthMm ? `${d.widthMm}x${d.heightMm}` : ''));
    }
    if (sel?.kind === 'ru') {
@@ -75,7 +75,7 @@
    const stale = staleKeys(ctx);
    return plansHere(ctx).map(p => { const n = m.networks[p.key], r = n?.result;
     return card(`${dot(p.systemId)}${KIND_LABEL[p.kind]} ${esc(p.systemId)}`, kv([['설계 풍량', `${fmt(p.designCmh)} CMH`], ['RU', `${p.rus.length}개`], ['덕트망', !r ? '없음' : stale.has(p.key) ? '<span class="warn">다시 AUTO 필요</span>' : `${r.ducts}개 · ${r.lengthM} m`], ['Deck 최대 손실', r?.indexPa != null ? `${r.indexPa} Pa` : '—'],
-     r?.zonesRelaxed ? ['금지 영역', `<span class="warn">완화 (${esc(r.zonesRelaxed)})</span>`] : null, r?.unconnected ? ['연결 안 된 RU', `<span class="fail">${r.unconnected}</span>`] : null]), { from: n?.source === 'v1' ? '1.x PHG D' : n ? 'HVAC Grid' : '', now: p.key === current(ctx)?.key }); }).join('');
+     r?.zonesRelaxed ? ['금지 영역', `<span class="warn">완화 (${esc(r.zonesRelaxed)})</span>`] : null, r?.unconnected ? ['연결 안 된 RU', `<span class="fail">${r.unconnected}</span>`] : null]), { from: n?.source === 'v1' ? '1.0 PHG D' : n ? 'HVAC Grid' : '', now: p.key === current(ctx)?.key }); }).join('');
   },
 
   act(ctx, name, arg, value) {

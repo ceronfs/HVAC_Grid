@@ -164,9 +164,9 @@
 | JSON | `schema: 'sketchcad-rooms/1'`, `units: 'mm'`, `coordinates: 'drawing'`, `decks: [{id, name}]`(하나), `rooms[]: {id, key: deck:no, no, name, deckId, grossAreaM2, polygon, holes, areaM2, perimeterM, boundariesM}` (`:7527`) |
 | HVAC Grid용 DXF | **R12**(`buildDxf` `:4380`): `ROOM` 외곽 + `ROOM-NO`·`ROOM-NAME` 문자(없으면 새로) + `ROOM-HOLE` 구멍 + 경계 선(경계 용도가 있을 때). 파일 `<도면>_rooms_hvacgrid.dxf`(`:7549`). 머리 `$DWGCODEPAGE ANSI_1252`(`:4394`), 한글은 `\U+XXXX`(`dxfStr` `:4366`). **main에서도** R12 쓰기에는 용도 XDATA가 없다(2010 쓰기만 `:6016`) → HVAC Grid는 레이어 이름(`STR`·`PNL`·원래 이름)으로 읽음 |
 
-2.0: 실·경계가 모델 안에 있으므로 "HVAC Grid용 DXF" 단계가 없어진다. 남길 것은 ① 면적표(① `rooms` 모듈 패널), ② `sketchcad-rooms/1` JSON과 1.x "HVAC Grid용 DXF" 가져오기(`lib/io`, SketchCAD 단독판 사용자용 — 경계 선 용도는 레이어 이름 `STR`·`PNL`·옛 이름으로 추정).
+2.0: 실·경계가 모델 안에 있으므로 "HVAC Grid용 DXF" 단계가 없어진다. 남길 것은 ① 면적표(① `rooms` 모듈 패널), ② `sketchcad-rooms/1` JSON과 1.0 "HVAC Grid용 DXF" 가져오기(`lib/io`, SketchCAD 단독판 사용자용 — 경계 선 용도는 레이어 이름 `STR`·`PNL`·옛 이름으로 추정).
 
-참고(1.x, 이 조사 범위 밖): `lib/dxf-in.cjs`의 벽 레이어 정규식(`WALL_LAYERS`, `rooms()`의 `wallLayer`)에는 `STR`·`PNL`이 없다. SketchCAD 내보내기는 항상 `ROOM` 외곽을 담으므로 지금은 쓰이지 않는 대체 경로다.
+참고(1.0, 이 조사 범위 밖): `lib/dxf-in.cjs`의 벽 레이어 정규식(`WALL_LAYERS`, `rooms()`의 `wallLayer`)에는 `STR`·`PNL`이 없다. SketchCAD 내보내기는 항상 `ROOM` 외곽을 담으므로 지금은 쓰이지 않는 대체 경로다.
 
 ## 4. 캔버스 구조 (app/canvas 아이디어)
 
@@ -233,7 +233,7 @@
 | `boundaries[{kind, roomA, roomB, deckIds, purpose, lengthMm, areaM2, a, b}]` | 실별 용도별 길이 합(`roomBoundaryLengths`) — 이웃 실 모름 | 두 실이 공유하는 변 짝짓기, 외기 면, 위·아래 데크 접촉(BOX `deckStackIssues`) 신규 |
 | 좌표 | CAD y 위(+), 화면에서만 뒤집음 | 모델 y 아래(+), `lib/io`에서 뒤집음(원칙 7) |
 
-**이름 충돌**: SketchCAD 용도 `DECK`(갑판·천장 경계선, 평면의 선 — main에서도 그대로, `DECK_OUTLINE`만 STR로 감)와 2.0 `decks`(층: 높이·층고·기준점)·"데크로 지정"이 같은 말이다. PLAN_V2 6장 `purpose: 'DECK'`도 같은 충돌. 제안: 선 용도를 `DECKEDGE`(표시 "갑판 끝·천장선")로 바꾸고 `DECK`은 층에만 쓴다. 1.x·SketchCAD 파일을 읽을 때 `DECK` 용도 → `DECKEDGE`(SketchCAD가 BHD → STR을 읽기 표로 흡수한 것과 같은 방식). 사용자 결정 필요(K1).
+**이름 충돌**: SketchCAD 용도 `DECK`(갑판·천장 경계선, 평면의 선 — main에서도 그대로, `DECK_OUTLINE`만 STR로 감)와 2.0 `decks`(층: 높이·층고·기준점)·"데크로 지정"이 같은 말이다. PLAN_V2 6장 `purpose: 'DECK'`도 같은 충돌. 제안: 선 용도를 `DECKEDGE`(표시 "갑판 끝·천장선")로 바꾸고 `DECK`은 층에만 쓴다. 1.0·SketchCAD 파일을 읽을 때 `DECK` 용도 → `DECKEDGE`(SketchCAD가 BHD → STR을 읽기 표로 흡수한 것과 같은 방식). 사용자 결정 필요(K1).
 
 ## 7. V2-2(SketchCAD 데크 지정)와의 관계
 
@@ -243,9 +243,9 @@ D3(2026-10-25 K0)는 "SketchCAD 단독판에도 데크 지정을 넣는다", 이
 
 | 안 | 내용 | 좋은 점 | 나쁜 점 |
 |---|---|---|---|
-| A. V2-2 유지(D3 그대로) | SketchCAD main에 데크 표·데크로 지정·필터·`sketchcad-decks/1`, HVAC Grid `lib/io/sketchcad.cjs` → BOX JSON | 1.x 사용자가 K2 무렵(약 20일째)부터 여러 데크 흐름을 씀, 단독판도 혜택, 2.0의 기능 명세·정답지가 먼저 생김 | 4~6일 더(두 번 구현), 형식 `sketchcad-decks/1`을 계속 맞춰야 함, 한 파일 여러 데크는 메모리 부담(데크마다 계산용으로 열기가 필요) |
+| A. V2-2 유지(D3 그대로) | SketchCAD main에 데크 표·데크로 지정·필터·`sketchcad-decks/1`, HVAC Grid `lib/io/sketchcad.cjs` → BOX JSON | 1.0 사용자가 K2 무렵(약 20일째)부터 여러 데크 흐름을 씀, 단독판도 혜택, 2.0의 기능 명세·정답지가 먼저 생김 | 4~6일 더(두 번 구현), 형식 `sketchcad-decks/1`을 계속 맞춰야 함, 한 파일 여러 데크는 메모리 부담(데크마다 계산용으로 열기가 필요) |
 | B. V2-2를 V2-5에 흡수 | 2.0 0 모듈의 "데크로 지정"만 만든다(8장 5.8, 2~3일) | 한 번 구현, 모델 `decks`에 바로, 이름 충돌을 처음부터 정리, 형식 부담 없음 | 여러 데크 흐름이 V2-5(약 50일째) 뒤에야, 단독판에는 없음, D3를 바꾸는 결정 필요 |
-| C. 줄인 V2-2 | SketchCAD에는 데크 표·내보내기만(2~3일), 지정·필터 화면은 2.0에만 | 1.x 경로를 일찍 열면서 화면 중복을 줄임 | 단독판 기능이 반쪽 |
+| C. 줄인 V2-2 | SketchCAD에는 데크 표·내보내기만(2~3일), 지정·필터 화면은 2.0에만 | 1.0 경로를 일찍 열면서 화면 중복을 줄임 | 단독판 기능이 반쪽 |
 
 권고: K1에서 D3를 다시 묻는다. 단독판에 데크 지정이 **당장 필요하지 않으면 B**(구현 한 번, 총 작업 4~6일 줄어듦). 필요하면 A로 하되, 2.0 "데크로 지정"은 V2-2의 용어·데크 표 열(이름·z·층고·기준점)을 그대로 따르고 `sketchcad-decks/1`을 `lib/io` 가져오기 형식으로 받는다.
 
@@ -260,7 +260,7 @@ D3(2026-10-25 K0)는 "SketchCAD 단독판에도 데크 지정을 넣는다", 이
 | 5.3 | 경계 지정 명령(선마다 용도, 레이어 전체 지정, 되돌림), DECK 이름 정리 | `lib/engines/geometry/purpose.cjs`, 명령 | 0.5~1 |
 | 5.4 | 평면 그래프: 격자 교차, 꼭짓점 합침(mm), 매달린 변, 문 틈 잇기(`OPENING`), 면 전체 추적, 섬, 면 색인, 반변에 원래 선 용도 | `lib/engines/geometry/faces.cjs` | 3~4 |
 | 5.5 | 실 찾기·실 지정·번호/이름 규칙·면적 거르기, 경계 길이 + **이웃 실 경계**(`boundaries`) | `lib/engines/geometry/rooms.cjs` | 2~3 |
-| 5.6 | 면적표·CSV, 가져오기: `sketchcad-rooms/1`(데크 표 `decks[]` 포함, 실마다 `deckId`·창 m·문)·SketchCAD 여러 데크 DXF 2010(XDATA `PHG_SKETCHCAD` `DECK=`)·1.x "HVAC Grid용 DXF"(STR·PNL·옛 레이어 이름) | `lib/io/sketchcad.cjs` | 1.5~2 |
+| 5.6 | 면적표·CSV, 가져오기: `sketchcad-rooms/1`(데크 표 `decks[]` 포함, 실마다 `deckId`·창 m·문)·SketchCAD 여러 데크 DXF 2010(XDATA `PHG_SKETCHCAD` `DECK=`)·1.0 "HVAC Grid용 DXF"(STR·PNL·옛 레이어 이름) | `lib/io/sketchcad.cjs` | 1.5~2 |
 | 5.7 | 큰 도면 래스터 층: 색인 질의, 스타일 묶음, LOD, 이동 중 비트맵 재사용, 층별 그리기 시간 기록 | `app/canvas/raster.js` | 2~3 |
 | 5.8 | 데크로 지정: 데크 표는 SketchCAD 데크 모델(코드·이름·EL·층고, 같은 좌표에 겹침, 데크별 보이기·흐리게, DXF를 새 데크로 — 10장), 나란히 그린 도면은 영역 + 기준점(FR0·중심선, D5)으로 같은 좌표에 옮김(SketchCAD에 없음) + 데크 필터 + D4 층고 검사(아래 EL + 층고 = 위 EL) | `app/modules/drawing/`, 모델 `decks` | 2~3 |
 | 5.8b | 문·루버 문·창 읽기(레이어 `DOOR`·`DOOR_LV`·`WIN`, JSON `windowsM`·`doors`; 그리기 명령은 넣지 않음)와 실별 창 길이·문 목록 — 부하(V2-4 창 폭·외벽 기본값)·전달 공기 출처 후보(V2-3)에 넘김 | `lib/engines/geometry/openings.cjs` | 1~1.5 |
@@ -276,7 +276,7 @@ D3(2026-10-25 K0)는 "SketchCAD 단독판에도 데크 지정을 넣는다", 이
 | 위험 | 신호 | 대응 |
 |---|---|---|
 | 메모리(객체 하나에 약 1 KB: 200 MB 전체 열기에 2.8 GB, 계산용 열기도 해석 중 100 MB에 741 MB) | 5.11 벤치 | typed array·개수만 세는 첫 패스·고른 레이어만. 브라우저 한도(약 4 GB) 안에서 200 MB 해석 최대 메모리 측정 |
-| 실 찾기 결과가 1.x(BOX·`lib/dxf-in.cjs`)·SketchCAD와 다름 | 5.11 기준값 비교 | 다른 격실 목록을 사용자에게 보여 결정(D8: 차이 기록) |
+| 실 찾기 결과가 1.0(BOX·`lib/dxf-in.cjs`)·SketchCAD와 다름 | 5.11 기준값 비교 | 다른 격실 목록을 사용자에게 보여 결정(D8: 차이 기록) |
 | 문 틈·꼭짓점 허용 오차가 도면마다 맞지 않음(두 실 합쳐짐, 못 닫힘) | N3·실도면 | 문 틈 폭을 데크·도면 설정으로, 이름 문자가 둘 든 면 경고(`lib/dxf-in` `names > 1`와 같은 검사) |
 | Worker ↔ 본 화면 전송 비용 | 5.1 측정 | typed array 전송(transfer), 정리 결과만 모델로 |
 | DECK 이름 충돌, HULL을 STR에 합칠지 | 3.3·6장 | K1 결정 |
@@ -294,16 +294,16 @@ D3(2026-10-25 K0)는 "SketchCAD 단독판에도 데크 지정을 넣는다", 이
 | 편집·보기 | 현재 데크만 편집(`isEditable`), 다른 데크는 흐리게 참조(기본 55 %, 스냅은 닿음), "하나만 보기 / 겹쳐 보기" | `isVisible` `:753`, 흐림 `:5709` | 2.0 데크 필터(지금 데크 / 위·아래 흐리게 / 모두)와 같은 개념 |
 | 데크 관리 `DECK`·`DECKNEW`·`DECKMOVE` | 표에서 코드·이름·EL·층고·현재·삭제(빈 데크만), 선택 객체를 다른 데크로(실 번호·이름 문자도 같이) | `openDeckMgr` `:7873`, `cmdDeckMove` `:7938`, 명령 `:8077` | 0 `drawing` 모듈 데크 표 |
 | DXF를 새 데크로 | 도면이 열려 있으면 "새 데크로 추가 / 열기"를 물음. 새 데크로: 레이어는 이름이 같으면 같이, 블록은 내용이 다르면 새 이름 | `chooseDxfOpen` `:7957`, `mergeDxfAsDeck` `:7979` | 데크별 DXF 여러 개 → 한 모델(G4) |
-| 데크를 담은 파일 | DXF 2010: 객체마다 XDATA `PHG_SKETCHCAD` `DECK=<id>`, 데크 목록은 레이어 0의 XDATA `DECK=id|code|name|EL|height|current`. R12에는 데크가 남지 않음(경고). JSON `sketchcad-rooms/1`: `decks[{id: code, name, elevationMm, heightMm, offsetMm{0,0}, rotationDeg 0, scale 1}]`(1.x BOX 데크 필드와 같은 이름), 실마다 `deckId`·`windowsM`·`doors[{widthMm, louver}]` | `dxfDeckStr` `:8026`, `:6066`, `deckJson` `:7634`, JSON `:7644` | 5.6 가져오기 형식. HVAC Grid용 DXF는 **데크마다 하나**(`:7652`) |
+| 데크를 담은 파일 | DXF 2010: 객체마다 XDATA `PHG_SKETCHCAD` `DECK=<id>`, 데크 목록은 레이어 0의 XDATA `DECK=id|code|name|EL|height|current`. R12에는 데크가 남지 않음(경고). JSON `sketchcad-rooms/1`: `decks[{id: code, name, elevationMm, heightMm, offsetMm{0,0}, rotationDeg 0, scale 1}]`(1.0 BOX 데크 필드와 같은 이름), 실마다 `deckId`·`windowsM`·`doors[{widthMm, louver}]` | `dxfDeckStr` `:8026`, `:6066`, `deckJson` `:7634`, JSON `:7644` | 5.6 가져오기 형식. HVAC Grid용 DXF는 **데크마다 하나**(`:7652`) |
 | 데크별 실 | ROOMAUTO·ROOMTABLE·경계 그래프가 현재 데크의 객체만 봄, 면적표에 데크 열·"전체 데크" | `roomDataDeck` `:7575`, `boundaryEnts` | 데크마다 실 찾기 |
 | **ROOMNAME** | 실 번호·이름 문자를 ROOM_NO·ROOM_NAME 레이어에 넣음. 실 외곽 안이면 그 실을 고치고, 밖이면 ROOMAUTO가 그 이름으로 실을 만듦(다른 문자보다 우선) | `cmdRoomName` `:8278`, ROOMAUTO `:7489` | 실 이름 규칙(5.5) |
-| **문·루버 문·창** | `DOOR`·`DOORLV`·`WINDOW`: 벽을 골라 양쪽 면을 찾아 심볼만 그림(벽은 자르지 않음 → 실 외곽·면적 그대로). 레이어 용도 `DOOR`·`DOOR_LV`·`WIN`. 실마다 창 길이(m, 겹친 선 한 번)·문 목록(폭, 루버 여부; 두 실 사이 문은 양쪽 실) | `cmdDoor` `:8160`, `cmdWindow` `:8198`, `roomWindowM` `:8239`, `doorArcsOf` `:8256`, `roomDoors` `:8268` | 5.8b. 부하의 창: 1.x는 창 폭·높이·개수·소유 외벽을 격실 입력에서 사람이 넣음(STUDY_CAL 3장 #3) → 창 길이·놓인 벽을 기본값으로(높이·개수는 그대로 입력). 전달 공기: 1.x는 출처를 사용자 지정(`contract.transfers`), 없으면 딸린 실·복도·공유 벽 길이 규칙으로 정함(`lib/contract.cjs` `balance`) → 루버 문으로 이어진 실을 그 앞 후보로. 풍량 규칙은 바뀌지 않음(F-1) |
+| **문·루버 문·창** | `DOOR`·`DOORLV`·`WINDOW`: 벽을 골라 양쪽 면을 찾아 심볼만 그림(벽은 자르지 않음 → 실 외곽·면적 그대로). 레이어 용도 `DOOR`·`DOOR_LV`·`WIN`. 실마다 창 길이(m, 겹친 선 한 번)·문 목록(폭, 루버 여부; 두 실 사이 문은 양쪽 실) | `cmdDoor` `:8160`, `cmdWindow` `:8198`, `roomWindowM` `:8239`, `doorArcsOf` `:8256`, `roomDoors` `:8268` | 5.8b. 부하의 창: 1.0는 창 폭·높이·개수·소유 외벽을 격실 입력에서 사람이 넣음(STUDY_CAL 3장 #3) → 창 길이·놓인 벽을 기본값으로(높이·개수는 그대로 입력). 전달 공기: 1.0는 출처를 사용자 지정(`contract.transfers`), 없으면 딸린 실·복도·공유 벽 길이 규칙으로 정함(`lib/contract.cjs` `balance`) → 루버 문으로 이어진 실을 그 앞 후보로. 풍량 규칙은 바뀌지 않음(F-1) |
 
 **2.0에 넣지 않는 것**: 작도 명령 — `PNLDRAW`(이중선 판넬, `cmdPnlDraw` `:8388`)·`DOOR`·`DOORLV`·`WINDOW`·`ROOMNAME` 그리기, 레이어 기본색, 오른쪽 클릭 메뉴. 2.0은 이것들이 만든 레이어·파일을 읽기만 한다.
 
 **그대로인 것**: 경계 그래프의 15만 조각 잘림(`:5332`), DXF 읽기·계산용 열기(`chooseCalcOpen` `:4975`, `calcKeepLayers` `:5020`), R12 쓰기의 용도 누락(`buildDxf` `:4446`) — 5장의 함정은 그대로 있다.
 
-**1.x HVAC Grid에 주는 영향**: 1.x는 SketchCAD의 "HVAC Grid용 DXF"(데크마다 하나)만 읽는다(`lib/dxf-in.cjs`). 데크마다 하나라 1.x 흐름은 그대로 동작한다. JSON의 데크 높이·층고와 창·문은 1.x가 읽지 않는다.
+**1.0 HVAC Grid에 주는 영향**: 1.0는 SketchCAD의 "HVAC Grid용 DXF"(데크마다 하나)만 읽는다(`lib/dxf-in.cjs`). 데크마다 하나라 1.0 흐름은 그대로 동작한다. JSON의 데크 높이·층고와 창·문은 1.0가 읽지 않는다.
 
 ## 9. 확인하지 못한 것
 

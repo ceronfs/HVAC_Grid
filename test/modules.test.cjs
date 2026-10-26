@@ -1,4 +1,4 @@
-// Ver 2.0 screen (V2-3.5-3.8): the browser loader holds every library the 2.0 code requires and nothing of 1.x lib (D7);
+// Ver 2.0 screen (V2-3.5-3.8): the browser loader holds every library the 2.0 code requires and nothing of 1.0 lib (D7);
 // the modules keep their contract (app2/modules/README.md) - they read and write parts of the model, write only through
 // commands within `writes`, call no other module - and every layer, panel and action runs on T3 in Node. F-1: the
 // airflow module sets the summer rules only.
@@ -8,7 +8,7 @@ const ROOT = path.join(__dirname, '..'), LD = require('../app2/loader.js'), CV =
 const S = require('../lib/model/schema.cjs'), C = require('../lib/model/commands.cjs'), RUN = require('../lib/model/run.cjs'), V = require('../lib/io/v1.cjs');
 const MODS = ['rooms', 'airflow', 'ducts', 'review'].map(id => ({ id, file: path.join(ROOT, 'app2', 'modules', id + '.js'), mod: require(`../app2/modules/${id}.js`) }));
 
-test('loader: the 2.0 libraries are all on the list, none of them 1.x lib (D7)', () => {
+test('loader: the 2.0 libraries are all on the list, none of them 1.0 lib (D7)', () => {
  const seen = new Set(), todo = ['lib/model/run.cjs', 'lib/io/v1.cjs', 'lib/engines/output/report.cjs', 'lib/engines/output/xlsx.cjs', 'lib/engines/output/dxf.cjs', 'lib/engines/output/diagram.cjs', 'lib/engines/output/fireplan.cjs'];
  while (todo.length) {
   const f = todo.pop(); if (seen.has(f)) continue; seen.add(f);
@@ -16,8 +16,8 @@ test('loader: the 2.0 libraries are all on the list, none of them 1.x lib (D7)',
   for (const m of fs.readFileSync(path.join(ROOT, f), 'utf8').matchAll(/require\('(\.[^']+)'\)/g)) todo.push(LD.resolve(f, m[1]));
  }
  for (const f of seen) assert.ok(LD.FILES.includes(f), 'not on the loader list: ' + f);
- // 1.x lib files sit at lib/*.cjs (and lib/solas-data.json); 2.0 lives in lib/model, lib/io, lib/engines, lib/duct
- assert.deepEqual([...seen].filter(f => /^lib\/[^/]+$/.test(f)), [], '2.0 requires 1.x lib');
+ // 1.0 lib files sit at lib/*.cjs (and lib/solas-data.json); 2.0 lives in lib/model, lib/io, lib/engines, lib/duct
+ assert.deepEqual([...seen].filter(f => /^lib\/[^/]+$/.test(f)), [], '2.0 requires 1.0 lib');
  assert.deepEqual(LD.FILES.filter(f => /^lib\/[^/]+$/.test(f)), []);
  // the loader runs the libraries as the browser does
  const texts = Object.fromEntries(LD.FILES.map(f => [f, fs.readFileSync(path.join(ROOT, f), 'utf8')])), L = LD.make(texts);

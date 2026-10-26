@@ -1,6 +1,6 @@
 // HVAC Grid 2.0 module ① 데크·격실 - in V2-3 the rooms layer only (V2-3.8): the model's room outlines, numbers and
 // names drawn straight from the model on every step, the deck and room tree, the room's shape. Finding rooms from a
-// drawing comes with the drawing engine (V2-5); until then the rooms come from a 1.x file.
+// drawing comes with the drawing engine (V2-5); until then the rooms come from a 1.0 file.
 'use strict';
 (function (root) {
  const UI = typeof require === 'function' && typeof module !== 'undefined' ? require('../ui.js') : root.HG2UI;
@@ -38,7 +38,7 @@
   inspector(ctx) {
    const m = ctx.model, r = ctx.sel?.kind === 'room' && m.rooms.find(x => x.id === ctx.sel.id);
    if (!r) { const d = m.decks.find(x => x.id === ctx.deck), rooms = m.rooms.filter(x => x.deckId === ctx.deck); return d ? card(`Deck ${esc(d.name)}`, kv([['높이 Z', `${fmt(d.z)} mm`], ['층고', d.height ? `${fmt(d.height)} mm` : '—'], ['격실', rooms.length], ['면적 합계', `${rooms.reduce((t, x) => t + (x.areaM2 || 0), 0).toFixed(1)} m²`]])) : ''; }
-   return card('형상', kv([['면적', `${(r.areaM2 || 0).toFixed(1)} m²`], ['체적', `${(r.volumeM3 || 0).toFixed(1)} m³`], ['천장 높이', r.ceilingHeightMm ? `${fmt(r.ceilingHeightMm)} mm` : '—'], ['ISO 분류', esc(r.isoClass || '—')]]), { from: m.source?.from === 'v1' ? '1.x 설계 데이터' : '' });
+   return card('형상', kv([['면적', `${(r.areaM2 || 0).toFixed(1)} m²`], ['체적', `${(r.volumeM3 || 0).toFixed(1)} m³`], ['천장 높이', r.ceilingHeightMm ? `${fmt(r.ceilingHeightMm)} mm` : '—'], ['ISO 분류', esc(r.isoClass || '—')]]), { from: m.source?.from === 'v1' ? '1.0 설계 데이터' : '' });
   },
   act(ctx, name, arg) {
    if (name === 'deck') return { deck: arg, select: null };
