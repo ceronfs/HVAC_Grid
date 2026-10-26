@@ -1,0 +1,41 @@
+{
+ "source": "HVAC Grid 1.x lib/phg-plan.cjs (FAN_WORDS, SHAFT_WORDS, AVOID, KIND_LABEL) - data moved as is (D20)",
+ "fanRoom": [
+  "팬룸|공조기|공조실|FAN\\s*ROOM|\\bAHU\\b|A\\/C\\s*ROOM|\\bAC\\s*ROOM|팬실",
+  "i"
+ ],
+ "shaftRoom": [
+  "샤프트|트렁크|덕트\\s*스페이스|SHAFT(?!\\s*(ALLEY|TUNNEL))|TRUNK|DUCT\\s*SPACE",
+  "i"
+ ],
+ "avoidSpaces": [
+  "기관실 — A류",
+  "보일러실",
+  "조리실",
+  "팬트리 — 조리기구 있음 (조리실 부속)",
+  "소화제 저장실 (CO₂실)",
+  "계단격실",
+  "축전지실",
+  "페인트 로커",
+  "가연성 액체 창고",
+  "램프실"
+ ],
+ "kindLabel": {
+  "supply": "급기(SA)",
+  "exhaust": "배기(EA)",
+  "return": "환기(RA)"
+ },
+ "galleyName": [
+  "조리|갤리|GALLEY",
+  "i"
+ ],
+ "sealedSpace": [
+  "^(소화제 저장실|축전지실)",
+  ""
+ ],
+ "galleySpace": "조리실",
+ "galleyExhaustMay": [
+  "환기·공조 기계실",
+  "덕트 트렁크"
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "source": "HVAC Grid 1.x lib/contract.cjs (CORRIDOR, SEALED, NO_SOURCE, NO_SOURCE_SPACES) - data moved as is (D20)",
+ "corridor": [
+  "복도|통로|\\bALLEY|CORRIDOR|PASSAGE",
+  "i"
+ ],
+ "sealed": [
+  "CO2|CO₂|소화제|배터리|축전지|BATTERY|페인트|PAINT",
+  "i"
+ ],
+ "noSource": [
+  "계단|STAIR|선교\\s*윙|BRIDGE\\s*WING|개방|OPEN\\s*DECK|냉장|냉동|REFRIG|FREEZ|창고|STORE|로커|LOCKER|보관실|트렁크|TRUNK|샤프트|SHAFT|팬룸|팬실|FAN\\s*ROOM|기계실|조리실|주방|갤리|GALLEY|기관실|케이싱|보일러|ENGINE(?!ER)|CASING|BOILER",
+  "i"
+ ],
+ "noSourceSpaces": [
+  "기관실 — A류",
+  "보일러실",
+  "조리실",
+  "팬트리 — 조리기구 있음 (조리실 부속)",
+  "소화제 저장실 (CO₂실)",
+  "계단격실",
+  "축전지실",
+  "페인트 로커",
+  "가연성 액체 창고",
+  "램프실",
+  "승강기 트렁크",
+  "비상탈출트렁크",
+  "외부계단 (피난용)",
+  "개방갑판",
+  "냉장실",
+  "식료품 냉장고",
+  "덕트 트렁크",
+  "환기·공조 기계실",
+  "로커·창고 — 4㎡ 초과",
+  "로커·소창고 — 4㎡ 미만",
+  "청소구 로커",
+  "잡물창고",
+  "쓰레기실",
+  "냉동기계실",
+  "펌프실 (기관구역)",
+  "화물창",
+  "화물펌프실",
+  "보이드·코퍼댐"
+ ]
+}
