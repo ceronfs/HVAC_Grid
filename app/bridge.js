@@ -438,6 +438,27 @@ html.hg-bg.hg-nolabel #roomLabelLayer{display:none!important}`;
    L.renderEverything();
    return this.result();
   }
+  // a network from the lines drawn on the HVAC Grid plan (④ 덕트 그리기), on the plan just sent (Root, RUs, zones, no
+  // ducts): the lines go in as LINE entities (layer HG_DUCT, ids hg-<line>), PHG D's 덕트 지정 makes the ducts (joined at
+  // the line ends, to the Root and the RUs), each duct gets the kind of its line and a size set by hand back (sizes: line
+  // id -> size), and PHG D calculates (sizes, flows, pressure). lines: [{ id, a, b, role }] in BOX y. No AUTO
+  async buildFromLines(lines, sizes = {}) {
+   const w = this.win, L = w.LineDesignLegacy, st = L.getState(), y = this.yBox() ? v => v : v => -v, eid = id => 'hg-' + id;
+   for (const ln of lines) st.entities.push({ type: 'LINE', layer: 'HG_DUCT', x1: ln.a.x, y1: y(ln.a.y), x2: ln.b.x, y2: y(ln.b.y), id: eid(ln.id) });
+   st.selectedEntityIds.clear(); for (const ln of lines) st.selectedEntityIds.add(eid(ln.id)); L.renderEverything();
+   this.click('makeDuctBtn');
+   await until(() => st.ducts.length > 0 || this.doc.getElementById('phgb-conversion')?.open, 30000, '덕트 지정');
+   const conv = this.doc.getElementById('phgb-conversion'); if (conv?.open) { this.doc.getElementById('phgb-conversion-apply').click(); await until(() => st.ducts.length > 0 && !conv.open, 30000, '덕트 변환'); }
+   const role = Object.fromEntries(lines.map(ln => [eid(ln.id), ln.role]));
+   for (const d of st.ducts) {
+    const r = role[d.sourceEntityId], s = sizes[String(d.sourceEntityId).slice(3)];
+    if (r) Object.assign(d, { type: r, manualType: r });
+    if (s && String(d.sourceEntityId).startsWith('hg-')) Object.assign(d, { manualSize: true, shape: s.diameterMm ? 'round' : 'rect', widthMm: s.widthMm || 0, heightMm: s.heightMm || 0, diameterMm: s.diameterMm || 0 });
+   }
+   await w.LineDesignV2.calculateTypedNetwork('');
+   st.selectedEntityIds.clear(); L.renderEverything(); this.fit();
+   return { ...this.result(), unconnected: st.diffusers.filter(d => !d.connectedDuctId).length };
+  }
   // a duct's kind (main | branch | sub_branch) as PHG D's 주 덕트·분기·보조 분기 set it (manualType too, which PHG D keeps
   // when it calculates); the network is calculated again - sizes by the kind's velocity, flows, pressure. No AUTO
   async setDuctType(ductId, type) {
@@ -495,7 +516,7 @@ html.hg-bg.hg-nolabel #roomLabelLayer{display:none!important}`;
    const s = this.win.LineDesignLegacy.getState(), r = s.nodes.find(n => n.type === 'root'), num = v => Number.isFinite(+v) && +v > 0 ? Math.round(+v) : 0, y = this.yBox() ? v => -v : v => v;
    return { root: r ? { x: r.x, y: y(r.y) } : null, rus: s.diffusers.map(d => ({ x: d.x, y: y(d.y), flowCmh: d.flowCmh })),
     ducts: s.ducts.map(d => ({ id: d.id, displayName: d.displayName || d.id, type: d.type, shape: d.shape, widthMm: d.shape === 'round' ? 0 : num(d.widthMm), heightMm: d.shape === 'round' ? 0 : num(d.heightMm),
-     diameterMm: d.shape === 'round' ? num(d.diameterMm) : 0, flowCmh: Math.round(+d.flowCmh || 0), ...(d.manualSize ? { manualSize: true } : {}), points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(y(p.y)) || 0 })) })) };
+     diameterMm: d.shape === 'round' ? num(d.diameterMm) : 0, flowCmh: Math.round(+d.flowCmh || 0), ...(d.manualSize ? { manualSize: true } : {}), ...(String(d.sourceEntityId).startsWith('hg-') ? { line: String(d.sourceEntityId).slice(3) } : {}), points: d.points.map(p => ({ x: Math.round(p.x), y: Math.round(y(p.y)) || 0 })) })) };
   }
  }
 

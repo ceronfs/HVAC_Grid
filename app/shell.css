@@ -329,3 +329,14 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .plan .dsz.ru-pa{fill:var(--text);font-weight:600}.plan .dsz.ru-pa.idx{fill:var(--red);font-weight:700}
 .legend .zk{display:inline-block;width:14px;height:10px;margin-right:4px;vertical-align:middle;border:1px dashed #c62828;background:repeating-linear-gradient(45deg,rgba(198,40,40,.35) 0 1px,transparent 1px 4px)}
 .legend .zk.out{border:0;background:repeating-linear-gradient(-45deg,rgba(120,120,120,.45) 0 1px,transparent 1px 5px)}
+/* ④ 덕트 그리기: the lines drawn by hand (dashed until 덕트 지정·계산), their ends, the next segment and its snap */
+.plan.drawing{cursor:crosshair}
+.plan .sk{fill:none;stroke-linecap:round;vector-effect:non-scaling-stroke;pointer-events:visibleStroke;stroke-dasharray:8 4;cursor:pointer}
+.plan .sk.main{stroke:#0d47a1;stroke-width:4}.plan .sk.branch{stroke:#1976d2;stroke-width:2.8}.plan .sk.sub_branch{stroke:#4fc3f7;stroke-width:2}
+.plan .sk.built{stroke-dasharray:none;opacity:.45}.plan .sk.sel{stroke:#e8890c;opacity:1}
+.plan.drawing .sk{pointer-events:none}
+.plan .sk-end{fill:var(--canvas);stroke:#0d47a1;stroke-width:1.2;vector-effect:non-scaling-stroke;pointer-events:none}
+.plan .sk-from{fill:#0d47a1;pointer-events:none}
+.plan .sk-prev{fill:none;stroke-width:2;stroke-dasharray:3 3;vector-effect:non-scaling-stroke;pointer-events:none}.plan .sk-prev.main{stroke:#0d47a1}.plan .sk-prev.branch{stroke:#1976d2}.plan .sk-prev.sub_branch{stroke:#4fc3f7}
+.plan .snap{fill:none;stroke:#e8890c;stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:none}.plan .snap.grid,.plan .snap.ortho{stroke:#999;stroke-width:1.2}
+.stale-banner .btn+.btn{margin-left:4px}
