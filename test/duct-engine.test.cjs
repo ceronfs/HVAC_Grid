@@ -90,3 +90,10 @@ test('duct engine: hvac-run --node - the whole T3 without a browser, every plan,
   for (const f of ['project.json', 'report.xlsx', 'integrated.dxf', 'fire-plan.dxf']) assert.ok(fs.statSync(path.join(out, f)).size > 1000, f);
  } finally { fs.rmSync(out, { recursive: true, force: true }); }
 });
+
+test('duct engine: another route (pick) is another candidate, the same RUs', () => {
+ const a = E.auto(plan(), rooms);
+ if (a.result.candidates < 2) return;
+ const b = E.auto(plan(), rooms, { pick: 1 });
+ assert.equal(b.result.pick, 1); assert.equal(b.result.unconnected, 0); assert.notDeepEqual(b.network.ducts.map(d => d.key), a.network.ducts.map(d => d.key));
+});

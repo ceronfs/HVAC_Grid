@@ -11,4 +11,5 @@
 | [STUDY_CAL.md](STUDY_CAL.md) · [STUDY_PHG.md](STUDY_PHG.md) · [STUDY_SKETCHCAD.md](STUDY_SKETCHCAD.md) | V2-0 조사: 새로 짤 부하·덕트·도면 엔진의 기능 명세 |
 | [BASELINE.md](BASELINE.md) | V2-0.6 성능 기준(1.x) |
 | [REVIEW_V2-0.md](REVIEW_V2-0.md) | V2-0 검토(게이트 K1) |
+| [REVIEW_V2-1.md](REVIEW_V2-1.md) · [V2-1_COMPARE.md](V2-1_COMPARE.md) | V2-1 덕트 엔진 검토(게이트 K2), 계획별 1.x 대비 차이 |
 | HVAC_Grid_Ver2.0_기획서.docx · HVAC_Grid_Ver2.0_계획서.docx | 위 두 문서의 워드판(md를 고치면 다시 만든다) |

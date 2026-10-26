@@ -1,6 +1,6 @@
 # HVAC Grid Ver 2.0 계획서 — 작업 · 일정 · 검증
 
-작성 2026-10-25 · 고침 2026-10-25(V2-0 조사 뒤, D7·D8 반영 — 게이트 K1 대기) · 상태: K1 통과(2026-10-26, D9~D14 — 권장안), V2-1 진행 — K0 결정 완료(2026-10-25, [DECISIONS.md](DECISIONS.md)) · 기획서: [PLAN_V2.md](PLAN_V2.md) · V2-1 세부: [PLAN_PHG_LIB.md](PLAN_PHG_LIB.md) · 1.x 기준 커밋: `70a1e8d`(main, 2026-10-25)
+작성 2026-10-25 · 고침 2026-10-25(V2-0 조사 뒤, D7·D8 반영 — 게이트 K1 대기) · 상태: K1 통과(2026-10-26, D9~D14 — 권장안), V2-1 끝 — K2 대기([REVIEW_V2-1.md](REVIEW_V2-1.md)) — K0 결정 완료(2026-10-25, [DECISIONS.md](DECISIONS.md)) · 기획서: [PLAN_V2.md](PLAN_V2.md) · V2-1 세부: [PLAN_PHG_LIB.md](PLAN_PHG_LIB.md) · 1.x 기준 커밋: `70a1e8d`(main, 2026-10-25)
 
 ## 1. 범위와 전제
 
@@ -73,6 +73,8 @@ V2-6                                                                            
 **주의**: 기준값은 PHG D 방향 수정(`d92643f`) 뒤의 1.x로 뽑는다(그 전 값과 일부 계통 ESP가 다르다 — T3 AHU-ACC 338.2 Pa, N3 EF-SAN 98 Pa).
 
 ### V2-1 덕트 엔진 (새로 짬 — [STUDY_PHG.md](STUDY_PHG.md))
+
+**결과(2026-10-26)**: 1.1~1.8·1.10 끝, 1.9는 V2-6 뒤(D12). 52계획 RU 425/425, 금지 구역 완화 52/52 같음, 길이 비 중앙 1.00, 지수 압력 비 중앙 1.04, T3 계약 → 출력 5 s(1.x AUTO 152 s). 검토 [REVIEW_V2-1.md](REVIEW_V2-1.md), 계획별 차이 [V2-1_COMPARE.md](V2-1_COMPARE.md).
 
 **목표**: ④ RU·덕트의 경로(AUTO)·덕트 지정·크기·압력을 `lib`의 새 엔진으로 계산하고, 계통을 병렬로 돌린다. PHG D는 기능 참조(D7)와 선택 편집기(D1)다. 옛 세부 계획 [PLAN_PHG_LIB.md](PLAN_PHG_LIB.md)의 P1(잘라 오기)·P2(DXF 없는 PHG D 상태)는 이 목록으로 대체된다.
 
