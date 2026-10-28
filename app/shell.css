@@ -303,3 +303,6 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
    sits left of BOX's deck column */
 .plan.over-box,.plan.over-box *{pointer-events:none!important}
 .center.over-box>.legend{right:184px;top:52px}
+/* ④: the rooms the chosen system's ducts keep out of (PHG D forbidden zones), and the velocity along its ducts */
+.plan .zone{fill:url(#hgHatch);stroke:var(--red);stroke-width:1.2;stroke-dasharray:4 3;vector-effect:non-scaling-stroke;pointer-events:none;opacity:.75}
+.plan .dvel{fill:var(--ok);font-weight:600;paint-order:stroke;stroke:var(--canvas);stroke-width:3px;vector-effect:non-scaling-stroke;pointer-events:none}

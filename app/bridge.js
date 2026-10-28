@@ -411,6 +411,18 @@ html.hg-ov #roomZoneLayer{display:none!important}`;
    L.renderEverything();
    return this.result();
   }
+  // a duct's type (main / branch / sub_branch) set by hand with PHG D's own ML / BR / SBR command on that duct alone (it
+  // keeps the type as manualType); PHG D sizes a duct by its type (a manualSize duct keeps its section) and the network is
+  // calculated again
+  async setDuctType(ductId, type) {
+   const w = this.win, L = w.LineDesignLegacy, st = L.getState(), btn = { main: 'assignMainLineBtn', branch: 'assignBranchBtn', sub_branch: 'assignSubBranchBtn' }[type];
+   if (!st.ducts.some(x => x.id === ductId)) throw new Error('PHG D에 덕트 ' + ductId + '가 없습니다');
+   if (!btn) throw new Error('덕트 종류 ' + type + '?');
+   st.selectedDuctIds.clear(); st.selectedDuctIds.add(ductId);
+   try { this.click(btn); } finally { st.selectedDuctIds.clear(); }
+   await w.LineDesignV2.calculateTypedNetwork(''); L.renderEverything();
+   return this.result();
+  }
   // the project open in PHG D differs from the stored text (edited in PHG D since)
   // content changed since text (a saved project)? PHG D writes keys in another order, new time stamps and default fields
   // when it reloads a project: a project opened from text is compared with what PHG D made of it, in a canonical form
