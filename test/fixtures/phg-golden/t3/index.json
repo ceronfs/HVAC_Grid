@@ -1,0 +1,573 @@
+{
+ "order": [
+  "D1__AHU-ACC",
+  "D2__AHU-ACC",
+  "D3__AHU-ACC",
+  "D4__AHU-BRG",
+  "D1__SF-GAL",
+  "D4__EF-BAT",
+  "D4__EF-BRG",
+  "D1__EF-CO2",
+  "D1__EF-GAL",
+  "D1__EF-LAU",
+  "D1__EF-PAN",
+  "D1__EF-SAN",
+  "D2__EF-SAN",
+  "D3__EF-SAN",
+  "D1__RA-ACC",
+  "D2__RA-ACC",
+  "D3__RA-ACC",
+  "D4__RA-BRG"
+ ],
+ "plans": {
+  "D1__AHU-ACC": {
+   "entities": 60,
+   "forbiddenZones": 7,
+   "rus": 19,
+   "flowCmh": 6360,
+   "ducts": 53,
+   "lengthM": 86.4,
+   "indexPa": 198,
+   "ductTypes": {
+    "main": 11,
+    "branch": 23,
+    "sub_branch": 19
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 82% · RU 묶음 7/7개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 19
+  },
+  "D2__AHU-ACC": {
+   "entities": 81,
+   "forbiddenZones": 5,
+   "rus": 18,
+   "flowCmh": 4850,
+   "ducts": 49,
+   "lengthM": 103.4,
+   "indexPa": 208,
+   "ductTypes": {
+    "main": 13,
+    "branch": 18,
+    "sub_branch": 18
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 96% · RU 묶음 4/4개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 18
+  },
+  "D3__AHU-ACC": {
+   "entities": 66,
+   "forbiddenZones": 5,
+   "rus": 15,
+   "flowCmh": 4680,
+   "ducts": 42,
+   "lengthM": 89.7,
+   "indexPa": 197,
+   "ductTypes": {
+    "main": 11,
+    "branch": 16,
+    "sub_branch": 15
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 96% · RU 묶음 4/4개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 15
+  },
+  "D4__AHU-BRG": {
+   "entities": 30,
+   "forbiddenZones": 5,
+   "rus": 18,
+   "flowCmh": 7050,
+   "ducts": 46,
+   "lengthM": 65.9,
+   "indexPa": 161,
+   "ductTypes": {
+    "main": 6,
+    "branch": 22,
+    "sub_branch": 18
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 58% · RU 묶음 5/5개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 18
+  },
+  "D1__SF-GAL": {
+   "entities": 60,
+   "forbiddenZones": 7,
+   "rus": 7,
+   "flowCmh": 3410,
+   "ducts": 16,
+   "lengthM": 19,
+   "indexPa": 82,
+   "ductTypes": {
+    "branch": 9,
+    "sub_branch": 7
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 71% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 7
+  },
+  "D4__EF-BAT": {
+   "entities": 30,
+   "forbiddenZones": 5,
+   "rus": 1,
+   "flowCmh": 240,
+   "ducts": 1,
+   "lengthM": 1.2,
+   "indexPa": 18,
+   "ductTypes": {
+    "sub_branch": 1
+   },
+   "candidate": "직교 연결 후보 1",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 1
+  },
+  "D4__EF-BRG": {
+   "entities": 30,
+   "forbiddenZones": 6,
+   "rus": 1,
+   "flowCmh": 170,
+   "ducts": 2,
+   "lengthM": 4.2,
+   "indexPa": 28,
+   "ductTypes": {
+    "branch": 1,
+    "sub_branch": 1
+   },
+   "candidate": "직교 연결 후보 1",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 1
+  },
+  "D1__EF-CO2": {
+   "entities": 60,
+   "forbiddenZones": 7,
+   "rus": 1,
+   "flowCmh": 160,
+   "ducts": 1,
+   "lengthM": 1.7,
+   "indexPa": 15,
+   "ductTypes": {
+    "sub_branch": 1
+   },
+   "candidate": "직교 연결 후보 1",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 1
+  },
+  "D1__EF-GAL": {
+   "entities": 60,
+   "forbiddenZones": 20,
+   "rus": 8,
+   "flowCmh": 3630,
+   "ducts": 20,
+   "lengthM": 24.5,
+   "indexPa": 86,
+   "ductTypes": {
+    "branch": 12,
+    "sub_branch": 8
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 0% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 8
+  },
+  "D1__EF-LAU": {
+   "entities": 60,
+   "forbiddenZones": 8,
+   "rus": 2,
+   "flowCmh": 870,
+   "ducts": 6,
+   "lengthM": 13.4,
+   "indexPa": 95,
+   "ductTypes": {
+    "branch": 4,
+    "sub_branch": 2
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 23% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 2
+  },
+  "D1__EF-PAN": {
+   "entities": 60,
+   "forbiddenZones": 8,
+   "rus": 2,
+   "flowCmh": 870,
+   "ducts": 5,
+   "lengthM": 17.3,
+   "indexPa": 94,
+   "ductTypes": {
+    "branch": 3,
+    "sub_branch": 2
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 0% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 1,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 2
+  },
+  "D1__EF-SAN": {
+   "entities": 60,
+   "forbiddenZones": 8,
+   "rus": 3,
+   "flowCmh": 500,
+   "ducts": 8,
+   "lengthM": 16.3,
+   "indexPa": 74,
+   "ductTypes": {
+    "main": 3,
+    "branch": 2,
+    "sub_branch": 3
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 0%",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 3
+  },
+  "D2__EF-SAN": {
+   "entities": 81,
+   "forbiddenZones": 6,
+   "rus": 12,
+   "flowCmh": 1840,
+   "ducts": 27,
+   "lengthM": 42.9,
+   "indexPa": 72,
+   "ductTypes": {
+    "main": 11,
+    "branch": 4,
+    "sub_branch": 12
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 91% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 12
+  },
+  "D3__EF-SAN": {
+   "entities": 66,
+   "forbiddenZones": 6,
+   "rus": 8,
+   "flowCmh": 960,
+   "ducts": 17,
+   "lengthM": 30.8,
+   "indexPa": 45,
+   "ductTypes": {
+    "main": 6,
+    "branch": 3,
+    "sub_branch": 8
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 87%",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 8
+  },
+  "D1__RA-ACC": {
+   "entities": 60,
+   "forbiddenZones": 8,
+   "rus": 11,
+   "flowCmh": 3790,
+   "ducts": 43,
+   "lengthM": 89.2,
+   "indexPa": 174,
+   "ductTypes": {
+    "main": 6,
+    "branch": 26,
+    "sub_branch": 11
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 33% · 덕트 폭 간섭 1곳 · RU 묶음 5/5개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 11
+  },
+  "D2__RA-ACC": {
+   "entities": 81,
+   "forbiddenZones": 6,
+   "rus": 15,
+   "flowCmh": 2940,
+   "ducts": 42,
+   "lengthM": 68.1,
+   "indexPa": 145,
+   "ductTypes": {
+    "main": 13,
+    "branch": 14,
+    "sub_branch": 15
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 94% · RU 묶음 3/3개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 15
+  },
+  "D3__RA-ACC": {
+   "entities": 66,
+   "forbiddenZones": 6,
+   "rus": 13,
+   "flowCmh": 3630,
+   "ducts": 34,
+   "lengthM": 64.6,
+   "indexPa": 124,
+   "ductTypes": {
+    "main": 10,
+    "branch": 11,
+    "sub_branch": 13
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 94% · RU 묶음 3/3개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 13
+  },
+  "D4__RA-BRG": {
+   "entities": 30,
+   "forbiddenZones": 6,
+   "rus": 14,
+   "flowCmh": 5280,
+   "ducts": 41,
+   "lengthM": 73.5,
+   "indexPa": 165,
+   "ductTypes": {
+    "main": 4,
+    "branch": 23,
+    "sub_branch": 14
+   },
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 20% · RU 묶음 4/4개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "previews": [],
+   "workersIn": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "workersOut": {
+    "aroute-routing": 4,
+    "blob:calculate": 1,
+    "dline-native-sizing": 1
+   },
+   "pressurePaths": 14
+  }
+ }
+}
