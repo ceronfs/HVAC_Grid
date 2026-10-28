@@ -123,6 +123,14 @@ HVACGridProject {
 | 실별 신기 부족(ROOM_OA)은 검사로 두고 구역 신기를 자동으로 올리지 않음 | 가장 불리한 실에 맞추면 T3 AHU-ACC 신기 47 % — 설계자 결정 | `lib/project.cjs` ROOM_OA |
 | 한 파일판 (2026-10-25, 요청 "HVAC Grid 전체를 HTML 파일 하나로"): vendor 앱은 srcdoc iframe(페이지와 같은 출처)으로, lib·samples·popup.css는 `window.HVACGridFiles`에서 읽음. vendor 사본은 고치지 않고 글자 그대로 넣음. PHG D 설계 비교의 작업 창은 bridge가 같은 글자로 열어 줌 | `file://` 문서끼리·`blob:` iframe은 같은 출처가 아님(Edge로 시험). srcdoc은 BOX가 CAL 패널에 이미 쓰는 방식. 서버판은 그대로(`HVACGridFiles`가 없으면 fetch·src) | `tools/make-single.cjs`, `app/bridge.js` `get`·`compareFrame`, `docs/SINGLE_FILE.md` |
 
+### 하나의 캔버스 (2026-10-28 시작, 브랜치 claude/practical-gauss-p1ynfx)
+①~⑤ 모든 단계를 BOX 캔버스 + HVAC Grid 평면 하나에서 한다. 계산 결과는 바꾸지 않는다(1.0 기준값 `npm run golden:check`, `test/v1-golden.test.cjs`).
+1. ✓ ⑤ 검토·출력을 평면 위로: 평면(방화 경계·관통부·제한 구역·Deck의 모든 덕트)을 그대로 두고 표는 아래 도크(접기·끌어서 높이, 높이는 다음에도 기억). 관통부 행을 누르면 ③으로 가지 않고 그 평면에 위치 표시. 시험 `test/e2e/review-dock.e2e.cjs`
+2. 공통 층 패널·데크 필터 — 다음
+3. ①②에도 HVAC Grid 층, ③→①② 같은 보기, 선택 공유
+4. PHG D 편집기 쓰는 일 줄이기(범위 먼저 정함)
+5. (선택) 실행 취소 하나
+
 ### H5 남은 것
 1. BOX·PHG D 편집과 HVAC Grid 편집을 하나의 Undo 기록으로 (지금은 화면별: ①② BOX, ④ PHG D, ③⑤ HVAC Grid)
 2. 셸 공통 평면에서 RU 이동·덕트 편집 (지금은 PHG D 화면에서 편집 후 "결과 읽기")

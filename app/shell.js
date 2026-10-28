@@ -605,7 +605,7 @@
    ['편집', [c('reroute', '다른 경로', () => act('다른 경로 찾는 중', () => reroute()), { disabled: () => !result(curKey())?.auto || result(curKey())?.candidates === 1, title: result(curKey())?.candidates === 1 ? 'PHG D가 찾은 경로가 하나뿐 — RU·공조기를 끌어서 옮기면 다른 경로가 나옵니다' : 'AUTO의 다음 후보 경로로 바꿉니다 (RU·공조기는 평면에서 끌어서 옮깁니다)' }), c('resetRu', 'RU 위치 초기화', () => act('RU 위치 되돌리고 다시 AUTO', () => resetRuMoves()), { disabled: () => !curPlan()?.rus.some(u => u.moved), title: '이 계통에서 옮긴 RU를 계획 위치로' })]],
    ['보기', [seg('덕트 보기', S.ductShow || 'sys', [['sys', '이 계통'], ['kind', '같은 종류'], ['all', '모든 계통']], v => { S.ductShow = v; })]],
    ['PHG D', [c('editor', 'PHG D 편집기', () => act('PHG D 여는 중', openEditor), { disabled: () => !curKey(), title: '세부 편집: 경로·RU·덕트를 PHG D 화면에서 직접 고칩니다. "평면으로"를 누르면 고친 내용을 읽어 옵니다' })]]] },
-  { id: 'review', name: '검토·출력', view: 'report', groups: () => [
+  { id: 'review', name: '검토·출력', view: 'plan', groups: () => [
    ['덕트망', [c('all', '모든 계통 AUTO', () => act('AUTO 계산 중', () => runAll()), { primary: true, disabled: needContract, title: '모든 Deck·계통(급기·배기·환기)을 차례로 PHG D로 보내고 AUTO' }), c('refresh', '남은 것만', () => act('AUTO 계산 중', () => runAll(undefined, { onlyNeeded: true })), { disabled: needContract, title: 'AUTO가 없거나 다시 보내야 하는 계통만' })]],
    ['방화 (SOLAS)', [field(`<label class="field">선종<select id="shipSel" ${S.contract ? '' : 'disabled'}>${Object.values(SO.DATA.ships).map(s => `<option value="${s.key}" ${s.key === (S.contract?.solas?.ship || SO.DEFAULT_SETTINGS.ship) ? 'selected' : ''}>${esc(s.label)} · ${s.tB}/${s.tD}</option>`).join('')}</select></label>`),
     field(`<label class="field">방화방식<select id="methodSel" ${S.contract && (S.contract.solas?.ship || 'CARG') === 'CARG' ? '' : 'disabled'}>${['IC', 'IIC', 'IIIC'].map(m => `<option ${m === (S.contract?.solas?.method || 'IC') ? 'selected' : ''}>${m}</option>`).join('')}</select></label>`),
@@ -782,7 +782,7 @@
   svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'none');
   S.planShown = { deck: S.deck, minX, minY, k }; planNav(svg);
   // sizes in screen px: k = px per mm of the plan
-  const px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', fire = S.overlay === 'fire' && !ductMode, a = analysis();
+  const px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', review = S.step === 'review', fire = (S.overlay === 'fire' && !ductMode) || review, a = analysis();
   let html = '', sel = '';
   for (const r of rooms) {
    const sid = r.systems[S.kind], bx = r.polygon.map(p => p.x), by = r.polygon.map(p => Y(p.y)), x0 = Math.min(...bx), y0 = Math.min(...by), wPx = (Math.max(...bx) - x0) * k, hPx = (Math.max(...by) - y0) * k;
@@ -812,6 +812,8 @@
     html += pn.boundaryKind === 'deck' ? `<path class="${cls} dk${pn.damper ? ' fd' : ''}" d="M${x} ${y - r}L${x + r} ${y}L${x} ${y + r}L${x - r} ${y}Z">${tip}</path>`
      : pn.damper ? `<g class="${cls} fd"><rect x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}"/><line x1="${x - r}" y1="${y + r}" x2="${x + r}" y2="${y - r}"/>${tip}</g>` : `<circle class="${cls}" cx="${x}" cy="${y}" r="${r}">${tip}</circle>`;
    }
+   // ⑤: the ducts of every system of the deck, thin and faint under the penetrations (where they cross the walls)
+   if (review) for (const p of deckPlans()) for (const d of S.geometry[p.key]?.ducts || []) html += `<polyline class="duct" points="${d.points.map(q => `${q.x},${Y(-q.y)}`).join(' ')}" stroke="${sysColor(p.systemId)}" stroke-width="${d.type === 'main' ? 2.2 : 1.3}" opacity=".4"><title>${esc(p.systemId)} ${esc(d.displayName)}</title></polyline>`;
    for (const p of a.solas.passages.filter(x => x.deckId === S.deck && x.roomId)) { const r = C.rooms.find(x => x.id === p.roomId); if (!r) continue;
     html += `<polygon class="pass ${p.level}" points="${r.polygon.map(q => q.x + ',' + Y(q.y)).join(' ')}"><title>${esc(p.systemId)}: ${esc(p.text)} (${esc(p.rule)})</title></polygon>`; }
   } else {
@@ -936,8 +938,8 @@
     ${roomChecks.length ? `<h3>분류 확인 ${roomChecks.length}실</h3><table class="assign"><tbody>${roomChecks.map(([id, k]) => `<tr><td>${esc(roomText(id))}</td><td>${esc(k.space)}</td><td class="warn">${esc(k.check)}</td><td><select data-solas="${esc(id)}" aria-label="${esc(roomText(id))} SOLAS 공간"><option value="">자동 분류</option>${spaceOptions(C.solas?.rooms?.[id]?.space || '')}</select></td></tr>`).join('')}</tbody></table>` : ''}
     ${a.solas.passages.length ? `<h3 class="err">제한 구역 통과 ${a.solas.passages.length}건 (II-2/9.7.2)</h3>${tableHtml(get('제한 구역 통과'), { cls: (r, j) => j === 0 ? (r[0] === '실패' ? 'err' : 'warn') : '' })}` : '<p class="ok">✓ 제한 구역(A류 기관구역·조리실·CO₂실·계단 등)을 지나는 덕트 없음</p>'}
     <h3>SOLAS 점검표 <small class="muted">계통 분리 경고 · 조리실 배기(9.7.5) · 축전지실·CO₂실 · 통풍 정지·폐쇄(5.2)</small></h3>${tableHtml(get('SOLAS 점검표'), { cls: (r, j) => j === 0 ? (r[0] === '실패' ? 'err' : 'warn') : '' })}
-    <h3>덕트 관통 ${pens.length}${gf ? ` / ${sum.penetrations}` : ''}곳 <small class="muted">슬리브 ${Object.entries(sum.sleeves).map(([m, n]) => `${m} mm × ${n}`).join(', ') || '없음'} · 행을 누르면 ③ 방화 보기에서 위치 표시${sum.penetrations && !Object.keys(S.geometry).length ? ' · Deck 덕트는 AUTO 후 판정 (지금은 수직 덕트만)' : ''}</small></h3>
-    <div>${tableHtml(pt, { limit: 300, keys: pens.map(p => 'pen:' + p.no), tip: '눌러서 ③ 방화 보기에서 위치 보기', cls: (r, j) => j === 1 && /^A-60/.test(r[1]) ? 'err' : j === 2 && /방화댐퍼|판정|확인|미정|샤프트/.test(r[2]) ? 'warn' : '' })}</div>`;
+    <h3>덕트 관통 ${pens.length}${gf ? ` / ${sum.penetrations}` : ''}곳 <small class="muted">슬리브 ${Object.entries(sum.sleeves).map(([m, n]) => `${m} mm × ${n}`).join(', ') || '없음'} · 행을 누르면 위 평면에 위치 표시${sum.penetrations && !Object.keys(S.geometry).length ? ' · Deck 덕트는 AUTO 후 판정 (지금은 수직 덕트만)' : ''}</small></h3>
+    <div>${tableHtml(pt, { limit: 300, keys: pens.map(p => 'pen:' + p.no), tip: '눌러서 위 평면에서 위치 보기', cls: (r, j) => j === 1 && /^A-60/.test(r[1]) ? 'err' : j === 2 && /방화댐퍼|판정|확인|미정|샤프트/.test(r[2]) ? 'warn' : '' })}</div>`;
   } else {
    const items = RP.openItems(project(), a);
    body = `<h3>검토 <small class="muted">실패 ${a.count.fail} · 확인 필요 ${a.count.check} · 통과 ${a.count.ok}</small></h3><table class="checks"><tbody>${['fail', 'check'].flatMap(lv => a.checks.filter(k => k.level === lv)).map(k => `<tr><td class="${LV[k.level][0]}">${LV[k.level][1]}</td><td>${esc(k.text)}</td></tr>`).join('')}</tbody></table>${a.count.ok ? `<details class="grp-items ok-items"><summary><span class="${LV.ok[0]}">${LV.ok[1]}</span> ${a.count.ok}건</summary><table class="checks"><tbody>${a.checks.filter(k => k.level === 'ok').map(k => `<tr><td class="${LV.ok[0]}">${LV.ok[1]}</td><td>${esc(k.text)}</td></tr>`).join('')}</tbody></table></details>` : ''}
@@ -946,10 +948,12 @@
   }
   const badge = id => id === 'fire' ? (a.solas.summary.passagesFail + a.solas.warnings.length + a.solas.summary.checklistFail ? ` <span class="badge fail" title="방화 실패 항목: 제한 구역 통과 ${a.solas.summary.passagesFail} · 계통 분리 경고 ${a.solas.warnings.length} · 점검표 위반 ${a.solas.summary.checklistFail} (검토 탭에서는 한 줄씩 묶여 셈)">✕ ${a.solas.summary.passagesFail + a.solas.warnings.length + a.solas.summary.checklistFail}</span>` : a.solas.summary.unclassified.length ? ` <span class="badge warn">● ${a.solas.summary.unclassified.length}</span>` : '')
    : id === 'checks' ? (a.count.fail ? ` <span class="badge fail" title="실패한 검토 항목 ${a.count.fail}줄 (한 줄에 여러 건이 묶일 수 있음)">✕ ${a.count.fail}</span>` : a.count.check ? ` <span class="badge warn">● ${a.count.check}</span>` : '') : id === 'systems' && a.zones.some(z => !z.ok) ? ' <span class="badge fail">✕</span>' : '';
-  $('report').innerHTML = `<div class="tabs" role="tablist">${TABS.map(([id, l]) => `<button role="tab" data-tab="${id}" aria-selected="${S.tab === id}">${l}${badge(id)}</button>`).join('')}</div>${body}`;
-  $('report').querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; render(); });
+  const fold = S.step === 'review' ? `<button class="dock-tog" id="dockTog" aria-expanded="${S.dockOpen !== false}" title="${S.dockOpen === false ? '표 펼치기' : '표 접기 — 평면을 넓게'}">${S.dockOpen === false ? '▴ 펼치기' : '▾ 접기'}</button>` : '';
+  $('report').innerHTML = `<div class="tabs" role="tablist">${TABS.map(([id, l]) => `<button role="tab" data-tab="${id}" aria-selected="${S.tab === id}">${l}${badge(id)}</button>`).join('')}${fold}</div>${S.dockOpen === false && S.step === 'review' ? '' : body}`;
+  $('report').querySelectorAll('.tabs button[data-tab]').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; S.dockOpen = true; render(); });
+  if ($('dockTog')) $('dockTog').onclick = () => { S.dockOpen = S.dockOpen === false; render(); };
   $('report').querySelectorAll('tbody tr[data-key]').forEach(tr => {
-   if (tr.dataset.key.startsWith('pen:')) tr.onclick = () => { const p = a.solas.penetrations.find(x => x.no === tr.dataset.key.slice(4)); S.focus = { deckId: p.deckId, x: p.x, y: p.y }; S.deck = p.deckId; S.overlay = 'fire'; pickSystem(); go('air'); setTimeout(() => { S.focus = null; if (S.step === 'air') plan(); }, 4000); };
+   if (tr.dataset.key.startsWith('pen:')) tr.onclick = () => { const p = a.solas.penetrations.find(x => x.no === tr.dataset.key.slice(4)); S.focus = { deckId: p.deckId, x: p.x, y: p.y }; S.deck = p.deckId; S.planView = null; if (S.step === 'review') render(); else { S.overlay = 'fire'; pickSystem(); go('air'); } setTimeout(() => { S.focus = null; if (viewOf(S.step) === 'plan') plan(); }, 4000); };
    else tr.ondblclick = () => { const p = plans().find(x => x.key === tr.dataset.key); S.deck = p.deckId; S.sys = p.systemKey; S.kind = p.kind; go('duct'); };
   });
   $('report').querySelectorAll('.deckbox[data-plan]').forEach(e => e.ondblclick = () => { const p = plans().find(x => x.key === e.dataset.plan); if (!p) return; S.deck = p.deckId; S.sys = p.systemKey; S.kind = p.kind; go('duct'); });
@@ -1004,6 +1008,19 @@
   const ss = $('solasSel'); if (ss) ss.onchange = () => act(null, () => setSolasRoom(r.id, ss.value));
   const xs = $('xferSel'); if (xs) xs.onchange = () => act(null, () => setTransfer(r.id, xs.value));
  }
+ // ⑤ dock height: a share of the work area (the user's drag, kept between sessions), or its tab bar when folded
+ const DOCK_FOLDED_PX = 44;
+ function dockSize() {
+  const m = $('main'), h = m.getBoundingClientRect().height || 600;
+  if (S.dockShare == null) { try { S.dockShare = Math.min(0.8, Math.max(0.15, +localStorage.getItem('hvac-grid-dock') || 0.4)); } catch { S.dockShare = 0.4; } }
+  m.style.setProperty('--dockh', `${S.dockOpen === false ? DOCK_FOLDED_PX : Math.round(h * S.dockShare)}px`);
+ }
+ function dockDrag() {
+  const hd = $('dockHandle'); let y0 = null, s0 = 0;
+  hd.onpointerdown = e => { hd.setPointerCapture(e.pointerId); y0 = e.clientY; s0 = S.dockShare ?? 0.4; };
+  hd.onpointermove = e => { if (y0 == null) return; const h = $('main').getBoundingClientRect().height || 600; S.dockShare = Math.min(0.8, Math.max(0.15, s0 + (y0 - e.clientY) / h)); dockSize(); };
+  hd.onpointerup = () => { if (y0 == null) return; y0 = null; try { localStorage.setItem('hvac-grid-dock', String(S.dockShare)); } catch {} render(); };
+ }
  function center() {
   const view = viewOf(S.step), noContract = !S.contract && (view === 'plan' || view === 'report' || view === 'phg');
   $('boxFrame').style.visibility = view === 'box' ? 'visible' : 'hidden';
@@ -1011,7 +1028,10 @@
   // BOX's canvas is a background only in the plan (plan() decides); back in ① ② it is BOX again
   if (view !== 'plan') { $('boxFrame').classList.remove('backdrop'); if (box.loading) box.backdrop(false); }
   $('phgFrame').style.visibility = view === 'phg' && !noContract ? 'visible' : 'hidden';
-  show($('plan'), view === 'plan' && !noContract); show($('legend'), view === 'plan' && !noContract); show($('report'), view === 'report' && !noContract);
+  // ⑤ keeps the plan; its tables are a dock under it (folded to its tab bar, or as high as the user dragged it)
+  const docked = S.step === 'review' && !noContract;
+  $('center').classList.toggle('docked', docked); $('main').classList.toggle('docked', docked); dockSize();
+  show($('plan'), view === 'plan' && !noContract); show($('legend'), view === 'plan' && !noContract); show($('report'), (view === 'report' || docked) && !noContract); show($('dockHandle'), docked && S.dockOpen !== false);
   show($('empty'), noContract);
   if (noContract) {
    $('empty').innerHTML = `<div><b>아직 설계 데이터가 없습니다</b>BOX의 격실·부하를 HVAC Grid 설계 데이터로 만들어야 풍량·계통과 덕트 단계를 쓸 수 있습니다.<br><button class="btn primary" id="emptyGo">② 부하에서 설계 데이터 만들기</button><button class="btn" id="emptySample">S5 예제 열기 (도면 + 설계 데이터)</button><button class="btn" id="emptyT3">T3 시험선 열기</button></div>`;
@@ -1019,7 +1039,7 @@
   }
   if (view === 'plan' && S.contract) { plan(); legendFold(); }
   phgHint(view);
-  if (view === 'report' && S.contract) report();
+  if ((view === 'report' || S.step === 'review') && S.contract) report();
  }
  function status() {
   const C = S.contract, r = C?.rooms.find(x => x.id === S.room), ps = plans();
@@ -1036,7 +1056,7 @@
  }
  // the plan legend opens and closes; it starts closed when the plan is narrow (it would cover rooms)
  let legendRoom = true;
- function legendOpen() { return S.legendOpen ?? ((legendRoom || (S.overlay === 'fire' && S.step === 'air')) && $('center').getBoundingClientRect().width > 1000); }
+ function legendOpen() { return S.legendOpen ?? ((legendRoom || (S.overlay === 'fire' && S.step === 'air') || S.step === 'review') && $('center').getBoundingClientRect().width > 1000); }
  function legendFold() {
   const lg = $('legend'), open = legendOpen();
   if (!open) lg.innerHTML = '<button class="lg-tog" title="범례 펼치기" aria-expanded="false">범례 ▾</button>';
@@ -1090,6 +1110,7 @@
 
  // ---------- wiring ----------
  $('steps').onclick = e => { const b = e.target.closest('.step'); if (b) go(b.dataset.step); };
+ dockDrag();
  $('q').oninput = () => tree();
  $('leftToggle').onclick = () => { S.leftOff = !S.leftOff; render(); };
  $('rightToggle').onclick = () => { S.rightOff = !S.rightOff; render(); };
@@ -1115,7 +1136,7 @@
   return false;
  };
  document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) || ((e.ctrlKey || e.metaKey) && /^[so]$/i.test(e.key)) || ((e.ctrlKey || e.metaKey) && /^[zy]$/i.test(e.key) && !frameOnScreen()) || e.key === 'F1' ? onKey(e) : false;
- window.addEventListener('resize', () => { if (S.step === 'air' && S.contract) plan(); });
+ window.addEventListener('resize', () => { if (viewOf(S.step) === 'plan' && S.contract) { dockSize(); plan(); } });
  window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, parseJson, newStart: () => act(null, newStart), undo: () => act(null, undoShell), redo: () => act(null, redoShell), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act('RU 옮기고 다시 AUTO', () => moveRu(k, id, p)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, loadProject, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
   runAll: (keys, opt) => act('AUTO 계산 중', () => runAll(keys, opt)) };   // with the busy overlay and error message, as from the ribbon
  render(); go('room');

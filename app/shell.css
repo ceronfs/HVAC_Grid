@@ -283,3 +283,12 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .fp-legend span,.fp-cats span{display:inline-flex;align-items:center;gap:4px}
 .fireplan-wrap{overflow:auto;border:1px solid var(--line);border-radius:4px;background:#fff;margin:6px 0}
 .fireplan-wrap svg{display:block;max-width:100%;height:auto}
+/* ⑤ on the plan: the report is a dock under it (one canvas for every step) */
+.center.docked>#boxFrame,.center.docked>#plan{height:calc(100% - var(--dockh,40%));bottom:auto}
+.center.docked>.report{top:auto;height:var(--dockh,40%);border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(0,0,0,.06);z-index:3;padding-top:10px}
+.main.plan-view.docked>.side{bottom:var(--dockh,40%)}
+.dock-handle{position:absolute;left:0;right:0;bottom:calc(var(--dockh,40%) - 4px);height:8px;cursor:ns-resize;z-index:4;touch-action:none}
+.dock-handle::after{content:"";position:absolute;left:50%;top:2px;width:44px;height:4px;margin-left:-22px;border-radius:2px;background:var(--line)}
+.dock-handle:hover::after{background:var(--accent)}
+.report .tabs .dock-tog{margin-left:auto;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:3px 10px;color:var(--muted);cursor:pointer;align-self:center}
+.center.docked>.report .tabs{top:-10px}
