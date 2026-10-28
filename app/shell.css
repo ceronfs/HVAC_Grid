@@ -292,3 +292,10 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .dock-handle:hover::after{background:var(--accent)}
 .report .tabs .dock-tog{margin-left:auto;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:3px 10px;color:var(--muted);cursor:pointer;align-self:center}
 .center.docked>.report .tabs{top:-10px}
+/* the plan's layers (legend top) and the decks above and below, faint, under this one */
+.legend .lg-layers{border-bottom:1px solid var(--line);margin:0 0 4px;padding:0 0 4px;font-size:12px}
+.legend .lg-boxes{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;margin-right:14px}
+.legend .lg-boxes label{white-space:nowrap;cursor:pointer}.legend .lg-boxes input{margin:0 4px 0 0;vertical-align:-2px}
+.legend .lg-deck select{font:inherit;font-size:12px;margin-left:4px}
+.legend .gh{display:inline-block;width:16px;height:0;border-top:1.5px dashed var(--muted);margin-right:4px;vertical-align:middle}.legend .gh.below{border-top-style:dotted}
+.plan .ghost{fill:none;stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke;pointer-events:none;opacity:.55;stroke-dasharray:6 4}.plan .ghost.below{stroke-dasharray:1.5 3}
