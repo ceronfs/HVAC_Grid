@@ -111,10 +111,11 @@
  // an entry keeps the design data and, for the plans the edit touched (keys), their duct work: the PHG D project, the
  // result and the plan drawing - undo puts the plan back as it was, not the new ducts under RUs that went back
  const workOf = keys => Object.fromEntries(keys.map(k => [k, { project: S.projects[k] ?? null, result: S.results[k] ? JSON.stringify(S.results[k]) : null, geometry: S.geometry[k] ? JSON.stringify(S.geometry[k]) : null }]));
- function record(label, keys = []) {
-  if (keys.length) keepActive();
+ function pushUndo(label, keys = []) {
   S.undo.push({ label, contract: JSON.stringify(S.contract), keys, work: workOf(keys) }); if (S.undo.length > 60) S.undo.shift(); S.redo = []; S.dirty = true;
+  tl().push({ app: 'shell', ref: S.undo.at(-1), label }); S.tlRedo = [];
  }
+ function record(label, keys = []) { if (keys.length) keepActive(); pushUndo(label, keys); }
  function edit(label, fn, keys = []) { record(label, keys); fn(); invalidate(); }
  function stepHistory(from, to, verb) {
   const u = from.pop(); if (!u) { say(verb + '할 HVAC Grid 편집이 없습니다'); return; }
@@ -133,6 +134,70 @@
   say(`${verb}: ${u.label}`);
  }
  const undoShell = () => stepHistory(S.undo, S.redo, '실행 취소'), redoShell = () => stepHistory(S.redo, S.undo, '다시 실행');
+
+ // ---------- one undo across HVAC Grid, BOX and PHG D ----------
+ // One timeline of edits, whichever app made them:
+ // - HVAC Grid's own (record);
+ // - BOX's, in ① ②;
+ // - PHG D's, in its editor in ④.
+ // BOX's and PHG D's edits are seen as their own histories grow while they are on screen (polled, and before a step
+ // change or an undo). What HVAC Grid makes them do out of sight (AUTO, sizes, the deck shown) is HVAC Grid's.
+ // Ctrl+Z and the undo button take back the newest edit of the timeline in the app that made it, on that app's screen;
+ // Ctrl+Y does it again. Edits in the PHG D editor become one HVAC Grid entry when they are read back (readBack).
+ const tl = () => (S.tl ??= []), tlRedo = () => (S.tlRedo ??= []), APP_NAME = { shell: 'HVAC Grid', box: 'BOX', phg: 'PHG D' }, seen = { box: null, phg: null };
+ // an app's history now: undo and redo counts, and its newest undo entry (a full history drops its oldest as it grows)
+ function appHist(app) {
+  try {
+   if (app === 'box') { const st = box.loading && box.win?.CAD_APP?.st; return st ? { u: st.undo.length, r: st.redo.length, top: st.undo.at(-1) } : null; }
+   const w = phg.loading && phg.win, h = w?.LineDesignV2?.getCommandHistoryState?.();
+   if (h) return { u: h.undoCount, r: h.redoCount, top: h.undoLabel };
+   const st = w?.LineDesignLegacy?.getState(); return st ? { u: st.undoStack.length, r: st.redoStack.length, top: st.undoStack.at(-1) } : null;
+  } catch { return null; }
+ }
+ const appOnScreen = app => app === 'box' ? viewOf(S.step) === 'box' : viewOf(S.step) === 'phg' && S.phgEditor;
+ function syncHistories() {
+  for (const app of ['box', 'phg']) {
+   const h = appHist(app), was = seen[app]; seen[app] = h;
+   if (!h || !was || !appOnScreen(app)) continue;
+   let d = h.u - was.u; if (!d && h.u && h.top !== was.top) d = 1;
+   if (d > 0) {
+    // the app's own redo brings its entries back from the redo side; anything else is a new edit (no redo after it)
+    const redone = Math.min(d, Math.max(0, was.r - h.r));
+    for (let i = 0; i < d; i++) { const j = i < redone ? tlRedo().findLastIndex(e => e.app === app) : -1; tl().push(j >= 0 ? tlRedo().splice(j, 1)[0] : { app, key: app === 'phg' ? S.active : null, label: `${APP_NAME[app]} 편집` }); }
+    if (redone < d) { S.tlRedo = []; S.redo = []; }
+   } else if (d < 0) for (let i = 0; i < -d; i++) { const j = tl().findLastIndex(e => e.app === app); if (j >= 0) tlRedo().push(tl().splice(j, 1)[0]); }
+  }
+ }
+ // an entry that can be taken back (redo: done again) now: HVAC Grid's while it is the top of its own history, PHG D's
+ // while its editor holds the network it was made on, BOX's while BOX has history
+ function entryOk(e, redo) {
+  if (e.app === 'shell') return (redo ? S.redo : S.undo).at(-1) === e.ref;
+  const h = appHist(e.app); if (!h || !(redo ? h.r : h.u)) return false;
+  return e.app === 'box' || (S.phgEditor && e.key === S.active);
+ }
+ function nextEntry(redo) { const list = redo ? tlRedo() : tl(); for (let i = list.length - 1; i >= 0; i--) if (entryOk(list[i], redo)) return list[i]; return null; }
+ async function undoAll(redo = false) {
+  syncHistories();
+  const from = redo ? tlRedo() : tl(), to = redo ? tl() : tlRedo(), verb = redo ? '다시 실행' : '실행 취소';
+  let e; while ((e = from.pop()) && !entryOk(e, redo));
+  if (!e) { say(`${verb}할 편집이 없습니다`); return; }
+  if (e.app === 'shell') {
+   // HVAC Grid's edits show on the plan: from BOX's screen to ③, the PHG D editor closed first (it shows a network the
+   // undo may put back)
+   if (S.phgEditor) closeEditor(); else if (viewOf(S.step) === 'box' && S.contract) await go('air');
+   if (!entryOk(e, redo)) { say(`${verb}할 편집이 없습니다`); return; }
+   redo ? redoShell() : undoShell(); e.ref = (redo ? S.undo : S.redo).at(-1); to.push(e); return;
+  }
+  if (e.app === 'box' && !appOnScreen('box')) await go(S.boxStep || 'room');
+  const f = e.app === 'box' ? box : phg; f.click(redo ? 'redoBtn' : 'undoBtn'); seen[e.app] = appHist(e.app);
+  to.push(e); say(`${verb}: ${e.label}${e.app === 'box' ? ' (① ② BOX 도면)' : ''}`);
+ }
+ // the undo / redo buttons name the edit they take back, and its app
+ function undoButtons() {
+  const u = nextEntry(false), r = nextEntry(true);
+  $('undoBtn').disabled = !u; $('redoBtn').disabled = !r;
+  $('undoBtn').title = `실행 취소${u ? ` — ${APP_NAME[u.app]}: ${u.label}` : ''} · Ctrl+Z (HVAC Grid·BOX·PHG D 한 기록)`; $('redoBtn').title = `다시 실행${r ? ` — ${APP_NAME[r.app]}: ${r.label}` : ''} · Ctrl+Y`;
+ }
 
  // ---------- contract ----------
  function setContract(c, { keepWork = false } = {}) {
@@ -450,7 +515,14 @@
   return out;
  }
  function closeEditor() { if (S.active && phg.loading) readBackIfEdited(); S.phgEditor = false; S.duct = null; }
- function readBack() { if (!S.active) throw new Error('PHG D에 열린 계통이 없습니다'); store(S.active, { edited: true }, { keepSig: true }); say('PHG D 결과를 읽었습니다'); }
+ // what the editor changed becomes one HVAC Grid undo entry (the network as it was before); PHG D's own entries for it
+ // leave the timeline
+ function readBack() {
+  if (!S.active) throw new Error('PHG D에 열린 계통이 없습니다');
+  const k = S.active; pushUndo(`PHG D 편집 · ${keyText(k)}`, [k]); store(k, { edited: true }, { keepSig: true });
+  const mine = e => e.app === 'phg' && e.key === k; S.tl = tl().filter(e => !mine(e)); S.tlRedo = tlRedo().filter(e => !mine(e)); seen.phg = appHist('phg');
+  say('PHG D 결과를 읽었습니다');
+ }
  // leaving ④ with edits made in PHG D: read them back so ⑤ and the outputs show what is on screen
  function readBackIfEdited() { if (S.active && phg.loading && S.projects[S.active] && phg.changedSince(S.projects[S.active])) { readBack(); say(`${keyText(S.active)}: PHG D에서 고친 내용을 읽었습니다`); } }
 
@@ -663,6 +735,7 @@
  // ③ opens on the deck BOX showed in ① ② - the same deck on the same canvas
  function followBoxDeck() { try { const a = box.loading && box.win.CAD_APP?.st?.activeDeck; if (a && S.contract?.decks.some(d => d.id === a) && S.deck !== a) { S.deck = a; S.room = null; pickSystem(); } } catch {} }
  async function go(id) {
+  syncHistories(); if (viewOf(S.step) === 'box') S.boxStep = S.step;
   if (S.step === 'duct' && id !== 'duct') { if (S.phgEditor) readBackIfEdited(); S.phgEditor = false; }
   const fromBox = viewOf(S.step) === 'box';
   if (fromBox && viewOf(id) === 'plan') { followBoxDeck(); followBoxRoom(); }
@@ -690,9 +763,7 @@
  }
  function steps() {
   $('steps').innerHTML = STEPS.map((s, i) => `<button class="step" role="tab" data-step="${s.id}" aria-selected="${s.id === S.step}" title="${esc(s.name)} · Alt+${i + 1}"><b>${i + 1}</b>${s.name}${stepBadge(s.id)}</button>`).join('');
-  const f = frameOnScreen(), name = f === box ? 'BOX' : f === phg ? 'PHG D' : 'HVAC Grid';
-  $('undoBtn').disabled = !f && !S.undo.length; $('redoBtn').disabled = !f && !S.redo.length;
-  $('undoBtn').title = `실행 취소 (${name} 편집 기록${!f && S.undo.length ? ': ' + S.undo.at(-1).label : ''}) · Ctrl+Z`; $('redoBtn').title = `다시 실행 (${name} 편집 기록${!f && S.redo.length ? ': ' + S.redo.at(-1).label : ''}) · Ctrl+Y`;
+  syncHistories(); undoButtons();
  }
  // the ribbon's ‹ › show while there is more of it to that side
  function ribbonMore() { const el = $('ribbon'), l = $('rbLeft'), r = $('rbRight'); if (!l || !r) return; l.hidden = el.scrollLeft <= 2; r.hidden = el.scrollLeft + el.clientWidth >= el.scrollWidth - 2; }
@@ -1230,8 +1301,8 @@
  $('q').oninput = () => tree();
  $('leftToggle').onclick = () => { S.leftOff = !S.leftOff; render(); };
  $('rightToggle').onclick = () => { S.rightOff = !S.rightOff; render(); };
- $('undoBtn').onclick = () => act(null, () => { const f = frameOnScreen(); if (f) f.click('undoBtn'); else undoShell(); });
- $('redoBtn').onclick = () => act(null, () => { const f = frameOnScreen(); if (f) f.click('redoBtn'); else redoShell(); });
+ $('undoBtn').onclick = () => act(null, () => undoAll());
+ $('redoBtn').onclick = () => act(null, () => undoAll(true));
  $('resetBtn').onclick = () => act(null, newStart);
  $('openProjectBtn').onclick = e => { e.stopPropagation(); fileMenu(); };
  $('helpBtn').onclick = () => help();
@@ -1240,20 +1311,23 @@
  $('saveProjectBtn').onclick = () => act(null, () => saveProject());
  $('themeBtn').onclick = () => { const d = document.documentElement, dark = d.dataset.theme !== 'dark'; d.dataset.theme = dark ? 'dark' : ''; B.themePopups(); box.theme(); try { localStorage.setItem('hvac-grid-theme', dark ? 'dark' : ''); } catch {} if (S.step === 'air' && S.contract) plan(); };
  try { if (localStorage.getItem('hvac-grid-theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch {}
- // Alt+1..5 switch steps, also while the focus is inside a vendor frame; Ctrl+Z / Ctrl+Y undo HVAC Grid edits in ③ ⑤
+ // Alt+1..5 switch steps, also while the focus is inside a vendor frame; Ctrl+Z / Ctrl+Y take back the newest edit of
+ // the one timeline (undoAll), in BOX and PHG D too - not while typing in a field (the field's own undo)
  const onKey = e => {
   if (e.altKey && /^[1-5]$/.test(e.key)) { e.preventDefault(); go(STEPS[+e.key - 1].id); return true; }
   if ((e.ctrlKey || e.metaKey) && !e.altKey && /^s$/i.test(e.key)) { e.preventDefault(); act(null, () => saveProject(e.shiftKey)); return true; }
   if ((e.ctrlKey || e.metaKey) && !e.altKey && /^o$/i.test(e.key)) { e.preventDefault(); act(null, () => openProject()); return true; }
   if (e.key === 'F1') { e.preventDefault(); help(); return true; }
   if (e.key === 'Escape' && S.pickRoot) { S.pickRoot = false; say(''); render(); return true; }
-  const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName || '');
-  if ((e.ctrlKey || e.metaKey) && !typing && !frameOnScreen() && S.contract && /^[zy]$/i.test(e.key)) { e.preventDefault(); act(null, () => (e.key.toLowerCase() === 'y' || e.shiftKey) ? redoShell() : undoShell()); return true; }
+  const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName || ''), fieldKey = e => /^(INPUT|SELECT|TEXTAREA)$/.test(e.target?.tagName || '') || !!e.target?.isContentEditable;
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && !typing && !fieldKey(e) && /^[zy]$/i.test(e.key)) { e.preventDefault(); act(null, () => undoAll(e.key.toLowerCase() === 'y' || e.shiftKey)); return true; }
   return false;
  };
- document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) || ((e.ctrlKey || e.metaKey) && /^[so]$/i.test(e.key)) || ((e.ctrlKey || e.metaKey) && /^[zy]$/i.test(e.key) && !frameOnScreen()) || e.key === 'F1' ? onKey(e) : false;
+ document.addEventListener('keydown', onKey); B.onFrameKey = e => (e.altKey && /^[1-5]$/.test(e.key)) || (e.key === 'Escape' && S.pickRoot) || ((e.ctrlKey || e.metaKey) && /^[so]$/i.test(e.key)) || ((e.ctrlKey || e.metaKey) && /^[zy]$/i.test(e.key)) || e.key === 'F1' ? onKey(e) : false;
  window.addEventListener('resize', () => { if (viewOf(S.step) === 'plan' && S.contract) { dockSize(); plan(); } });
- window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, parseJson, newStart: () => act(null, newStart), undo: () => act(null, undoShell), redo: () => act(null, redoShell), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act('RU 옮기고 다시 AUTO', () => moveRu(k, id, p)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, loadProject, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
+ window.HVACGrid = { S, box, phg, plans, analysis, project, result, go, parseJson, newStart: () => act(null, newStart), undo: () => act(null, () => undoAll()), redo: () => act(null, () => undoAll(true)), openEditor: () => act('PHG D 여는 중', openEditor), closeEditor: () => act(null, closeEditor), moveRu: (k, id, p) => act('RU 옮기고 다시 AUTO', () => moveRu(k, id, p)), resizeDuct: (k, i, sz) => act('덕트 크기 바꾸고 다시 계산', () => resizeDuct(k, i, sz)), reroute: k => act('다른 경로 찾는 중', () => reroute(k)), openSample, loadProject, setContract, extractContract, sendPlan, autoKey, readBack, projectJson, render, setSolasRoom, setUnitDeck, undoShell, redoShell, OUT, LIB,
   runAll: (keys, opt) => act('AUTO 계산 중', () => runAll(keys, opt)) };   // with the busy overlay and error message, as from the ribbon
+ // BOX's and PHG D's own edits join the timeline as they happen (the buttons then name them)
+ setInterval(() => { if (document.hidden) return; const n = tl().length + tlRedo().length; syncHistories(); if (n !== tl().length + tlRedo().length) undoButtons(); }, 500);
  render(); go('room');
 })();
