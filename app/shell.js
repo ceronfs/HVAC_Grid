@@ -35,7 +35,7 @@
  const UNIT_WORD = { supply: 'AHU', exhaust: 'FAN', return: 'RA' };
 
  // ---------- icons (20 x 20 strokes) ----------
- const P = { open: 'M3 6h5l2 2h7v8H3z', bg: 'M3 4h14v12H3zM6 13l3-4 2 2 3-4', json: 'M7 4c-2 0-2 1-2 3s-1 3-2 3c1 0 2 1 2 3s0 3 2 3M13 4c2 0 2 1 2 3s1 3 2 3c-1 0-2 1-2 3s0 3-2 3', save: 'M4 3h10l3 3v11H4zM7 3v5h6V3', dxfOut: 'M4 3h8l4 4v10H4zM10 9v6M7 12l3 3 3-3',
+ const P = { layers: 'M10 3l7 4-7 4-7-4zM3 11l7 4 7-4M3 14l7 4 7-4', open: 'M3 6h5l2 2h7v8H3z', bg: 'M3 4h14v12H3zM6 13l3-4 2 2 3-4', json: 'M7 4c-2 0-2 1-2 3s-1 3-2 3c1 0 2 1 2 3s0 3 2 3M13 4c2 0 2 1 2 3s1 3 2 3c-1 0-2 1-2 3s0 3-2 3', save: 'M4 3h10l3 3v11H4zM7 3v5h6V3', dxfOut: 'M4 3h8l4 4v10H4zM10 9v6M7 12l3 3 3-3',
   undo: 'M7 5L3 9l4 4M3 9h9a4 4 0 010 8H9', redo: 'M13 5l4 4-4 4M17 9H8a4 4 0 000 8h3', fit: 'M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4', reset: 'M4 10a6 6 0 106-6H6M6 1L3 4l3 3',
   ol: 'M3 14l4-9h6l4 9zM3 14h14', olu: 'M3 8l4-5h6l4 5zM3 8h14M10 11v6', olv: 'M3 14l4-9h6l4 9zM7 11l2 2 4-4', vl: 'M3 10h3M8 10h3M13 10h4', area: 'M4 4h12v12H4zM4 4l12 12', apoly: 'M4 4h12v12H4zM8 8h4v4H8z', roomNo: 'M4 4h12v12H4zM8 8h4M8 12h4', roomFix: 'M4 4h12v12H4zM10 7v6M7 10h6', list: 'M4 5h12M4 10h12M4 15h12', face: 'M3 6l7-3 7 3v8l-7 3-7-3zM10 3v14',
   check: 'M4 10l4 4 8-8', lines: 'M3 6h14M3 10h9M3 14h5M15 12l2 2-2 2', geo: 'M4 15l6-11 6 11z', cube: 'M10 2l7 4v8l-7 4-7-4V6zM10 2v8l7 4M10 10l-7 4', water: 'M3 12c2-2 4-2 6 0s4 2 6 0M3 16c2-2 4-2 6 0s4 2 6 0', sample: 'M5 3h10v14H5zM8 7h4M8 10h4M8 13h2',
@@ -570,11 +570,14 @@
  const needContract = () => !S.contract;
  const field = html => ({ field: html });
  const seg = (name, value, options, onchange) => ({ field: `<div class="seg" role="radiogroup" aria-label="${esc(name)}" data-seg="${esc(name)}">${options.map(([v, l, n]) => `<button role="radio" data-v="${esc(v)}" aria-checked="${v === value}" ${n === 0 ? 'disabled' : ''}>${esc(l)}${n != null ? ` <small>${n}</small>` : ''}</button>`).join('')}</div>`, seg: onchange, segName: name });
+ // ① ②: the HVAC Grid layers over BOX's drawing (BOX keeps the mouse and keys)
+ const boxLayersBtn = () => c('layers', 'HVAC Grid 층', () => { S.boxLayers = !boxLayersOn(); try { localStorage.setItem('hvac-grid-boxlayers', S.boxLayers ? '1' : ''); } catch {} render(); },
+  { disabled: needContract, pressed: () => boxLayersOn(), title: 'BOX 도면 위에 HVAC Grid 층(계통·풍량, 방화 경계, 덕트 …)을 겹쳐 봅니다 — 그리기·선택은 BOX 그대로' });
  const kindSeg = () => seg('계통 종류', S.kind, PL.KINDS.map(k => [k, KL[k], deckPlans(k).length]), v => { S.kind = v; S.sys = null; pickSystem(); S.pickRoot = false; });
  const STEPS = [
   { id: 'room', name: '도면·격실', view: 'box', groups: () => [
    ['파일', [c('open', 'DXF 열기', openBoxDxf, { code: 'DXF' }), c('bg', '배경', boxFile('backgroundFile', ''), { code: 'BG' }), c('json', 'BOX 열기', boxFile('jsonFile', '.json'), { code: 'J↓', title: 'BOX 프로젝트 JSON 열기 (T3 시험선 같은 BOX 프로젝트 파일) — HVAC Grid 프로젝트는 머리줄 폴더 단추' }), c('save', 'BOX 저장', boxCmd('saveBtn'), { code: 'S' }), c('dxfOut', 'BOX DXF 출력', boxCmd('exportBtn'), { code: 'D↑' })]],
-   ['보기', [c('fit', '전체 보기', boxCmd('fitBtn'), { code: '⌕' }), c('reset', '초기화', boxSample('newBtn', '초기화'), { code: '⟲' })]],
+   ['보기', [c('fit', '전체 보기', boxCmd('fitBtn'), { code: '⌕' }), c('reset', '초기화', boxSample('newBtn', '초기화'), { code: '⟲' }), boxLayersBtn()]],
    ['격실', [c('ol', '하부 외곽선', boxCmd('outlineBtn'), { code: '하부 OL' }), c('olu', '상부 외곽선', boxCmd('outlineUpperBtn'), { code: '상부 OL' }), c('olv', '외곽선 검증', boxCmd('outlineVerifyBtn'), { code: 'OL 검증' }), c('vl', '가상선', boxCmd('hullLinkBtn'), { code: 'VL' }), c('area', '면적', boxCmd('measureBtn'), { code: 'AR' }), c('apoly', '면적 다각형', boxCmd('areaPolygonBtn'), { code: 'AP' }),
     c('roomNo', '실 번호', boxCmd('autoRoomNoBtn'), { code: 'RN' }), c('roomFix', '실 지정', boxCmd('manualRoomBtn'), { code: 'RM' }), c('list', '격실 목록', boxCmd('roomBtn'), { code: 'RL' }), c('face', '접한 면적', boxCmd('contactBtn'), { code: 'A6' })]],
    ['검사', [c('lines', '선 검사', boxCmd('lineCheckBtn'), { code: 'CK' }), c('geo', '도형 검사', boxCmd('l4GeometryCheckBtn'), { code: 'GX' }), c('cube', '3D 검사', boxCmd('l4MeshCheckBtn')), c('water', '흘수선', boxCmd('waterlineBtn'))]],
@@ -586,6 +589,7 @@
    ['K값', [c('kIso', 'ISO 기준', boxCal('KD'), { code: 'KD' }), c('kApply', 'ISO 적용', boxCal('K7'), { code: 'K7', title: 'ISO 적용 · ISO 7547:2022 K값을 면별 경계에 적용' }), c('kLayer', 'LY', boxCal('KC'), { code: 'KC', title: 'LY · 구조 레이어(강판·단열·내장)로 계산한 K값 보기' }), c('check', 'LY 적용', boxCal('C✓'), { code: 'C✓', title: 'LY 적용 · 구조 레이어로 계산한 K값을 면별 경계에 적용' }), c('kUser', '사용자', boxCal('KU'), { code: 'KU' })]],
    ['부하', [c('load', '격실 부하', boxCal('LR'), { code: 'LR' }), c('oa', '신기 (OA)', boxCal('OA'), { code: 'OA' }), c('rh', '리히터', boxCal('RH'), { code: 'RH' })]],
    ['내보내기', [c('xlsxIso', 'ISO 시트', boxCal('I↑'), { code: 'I↑' }), c('xlsx', '미적용 시트', boxCal('N↑'), { code: 'N↑' }), c('sum', 'SUP 요약', boxCal('Σ↑'), { code: 'Σ↑' }), c('xlsxAll', '전체 XLSX', boxCal('LX'), { code: 'LX' }), c('sheet', '격실 시트', boxCal('R↑'), { code: 'R↑' }), c('face', '면적 시트', boxCal('A↑'), { code: 'A↑' })]],
+   ['보기', [boxLayersBtn()]],
    ['HVAC Grid', [c('contract', '설계 데이터 만들기', () => act('BOX 격실·부하 읽는 중', extractContract), { primary: true, title: 'BOX 격실·부하 → 격실 풍량·계통 (③ 풍량·계통으로 이동)' })]]] },
   { id: 'air', name: '풍량·계통', view: 'plan', groups: () => [
    ['풍량 규칙', [field(`<label class="field">급기 ΔT (K)<input id="dT" type="number" min="3" max="15" step="1" value="${fv('dT', S.contract?.rules.supplyDeltaTK ?? 10)}" ${fe('dT')}></label>`), field(`<label class="field" title="공조 구역 신기 ≥ 배기 + 가압">가압 (%)<input id="pPct" type="number" min="0" max="30" step="1" value="${fv('pPct', S.contract?.rules.pressurizationPct ?? 5)}" ${fe('pPct')} style="width:4em"></label>`), field(`<label class="field">가압 기준<select id="pBasis"><option value="exhaust" ${S.contract?.rules.pressurizationBasis !== 'supply' ? 'selected' : ''}>배기 대비</option><option value="supply" ${S.contract?.rules.pressurizationBasis === 'supply' ? 'selected' : ''}>급기 대비</option></select></label>`), field(`<label class="field" title="재순환 공조 구역의 신기 하한(선주 사양). 사양이 없으면 0">최소 신기 (%)<input id="minOa" type="number" min="0" max="100" step="1" value="${fv('minOa', S.contract?.rules.minOaPct ?? 25)}" ${fe('minOa')} style="width:4em"></label>`), c('rule', '적용', () => act(null, applyDeltaT), { disabled: needContract, title: '급기(SA) 풍량은 여름 기준 하나 = 10 CMH 올림(max(냉방 현열 W × 안전율 × 3 ÷ ΔT, 최소 신기)) — ISO 7547 6.2.1. 겨울은 같은 풍량에 난방 용량(공조기 히터·재열기), 급기 온도차가 22 K를 넘는 실은 보조 난방 확인(6.3)' })]],
@@ -641,10 +645,11 @@
  function followBoxDeck() { try { const a = box.loading && box.win.CAD_APP?.st?.activeDeck; if (a && S.contract?.decks.some(d => d.id === a) && S.deck !== a) { S.deck = a; S.room = null; pickSystem(); } } catch {} }
  async function go(id) {
   if (S.step === 'duct' && id !== 'duct') { if (S.phgEditor) readBackIfEdited(); S.phgEditor = false; }
-  if (viewOf(S.step) === 'box' && viewOf(id) === 'plan') followBoxDeck();
+  const fromBox = viewOf(S.step) === 'box';
+  if (fromBox && viewOf(id) === 'plan') { followBoxDeck(); followBoxRoom(); }
   S.step = id; S.pickRoot = false; render();
   const view = viewOf(id);
-  if (view === 'box') await act(box.loading ? null : 'BOX CAL 여는 중', () => box.load());
+  if (view === 'box') { await act(box.loading ? null : 'BOX CAL 여는 중', () => box.load()); if (!fromBox && S.contract) { toBoxRoom(); render(); } }
   if (view === 'phg') await act(phg.loading ? null : 'PHG D 여는 중', async () => { await loadPhg(); const key = curKey(); if (key && S.projects[key] && S.active !== key) await openKey(key); });
  }
  // undo / redo go to the app on screen (each keeps its own history); in ③ and ⑤ to the HVAC Grid edits
@@ -744,7 +749,7 @@
  // the plan's layers: each step starts with its own set (LAYER_DEF); a box ticked or cleared in the legend is kept for that
  // step (S.layerSet, this browser). ③ has two sets, one per 평면 보기 (풍량 / 방화)
  const LAYERS = [['air', '계통·풍량'], ['xfer', '전달 공기'], ['units', '공조기·수직 덕트'], ['ducts', '덕트'], ['rus', 'RU'], ['sizes', '덕트 크기'], ['fire', '방화 경계'], ['pens', '관통부'], ['pass', '제한 구역 통과']];
- const LAYER_DEF = { 'air:air': ['air', 'xfer', 'units', 'ducts'], 'air:fire': ['fire', 'pens', 'pass', 'units'], duct: ['air', 'ducts', 'rus', 'sizes', 'units'], review: ['fire', 'pens', 'pass', 'ducts', 'units'] };
+ const LAYER_DEF = { room: ['air', 'units'], load: ['air', 'units'], 'air:air': ['air', 'xfer', 'units', 'ducts'], 'air:fire': ['fire', 'pens', 'pass', 'units'], duct: ['air', 'ducts', 'rus', 'sizes', 'units'], review: ['fire', 'pens', 'pass', 'ducts', 'units'] };
  const layerKey = () => S.step === 'air' ? `air:${S.overlay === 'fire' ? 'fire' : 'air'}` : S.step;
  function layerSet() { if (S.layerSet == null) { try { S.layerSet = JSON.parse(localStorage.getItem('hvac-grid-layers') || '{}') || {}; } catch { S.layerSet = {}; } } return S.layerSet; }
  function layers() { const k = layerKey(), d = LAYER_DEF[k] || [], o = layerSet()[k] || {}; return Object.fromEntries(LAYERS.map(([id]) => [id, id in o ? !!o[id] : d.includes(id)])); }
@@ -753,12 +758,51 @@
  // the decks above and below this one (by elevation), drawn faint under it when the deck filter asks for them
  function nearDecks() { const ds = [...S.contract.decks].sort((a, b) => a.elevationMm - b.elevationMm), i = ds.findIndex(d => d.id === S.deck); return { below: ds[i - 1], above: i < 0 ? null : ds[i + 1] }; }
  function deckFilter() { if (S.deckFilter == null) { try { S.deckFilter = localStorage.getItem('hvac-grid-deckfilter') === 'near' ? 'near' : 'deck'; } catch { S.deckFilter = 'deck'; } } return S.deckFilter; }
+ function boxLayersOn() { if (S.boxLayers == null) { try { S.boxLayers = !!localStorage.getItem('hvac-grid-boxlayers'); } catch { S.boxLayers = false; } } return S.boxLayers; }
+ // ① ② with the HVAC Grid layers: BOX's own view of the deck it shows (its pan and zoom), the plan drawn over it. BOX
+ // draws on every view change (its viewBox); the plan follows on the next frame
+ function boxOverView(rc) {
+  try {
+   const d = box.doc, bs = d.getElementById('svg'); if (!bs || d.getElementById('canvas')?.classList.contains('iso')) return null;
+   const m = bs.getScreenCTM(), fr = $('boxFrame').getBoundingClientRect(), r = bs.getBoundingClientRect();
+   if (!m || !(m.a > 0) || Math.abs(m.b) > 1e-9 || Math.abs(m.c) > 1e-9) return null;
+   const k = m.a, wx = sx => (sx - fr.left - m.e) / k, wy = sy => (sy - fr.top - m.f) / k;
+   return { minX: wx(rc.left), maxX: wx(rc.right), minY: wy(rc.top), maxY: wy(rc.bottom), k, clip: { left: fr.left + r.left - rc.left, top: fr.top + r.top - rc.top, right: rc.right - fr.left - r.right, bottom: rc.bottom - fr.top - r.bottom } };
+  } catch { return null; }
+ }
+ function watchBox() {
+  const w = box.win; if (!w || w.__hgWatch) return; const bs = box.doc.getElementById('svg'); if (!bs) return;
+  let queued = 0;
+  w.__hgWatch = new w.MutationObserver(() => { if (queued || viewOf(S.step) !== 'box' || !boxLayersOn() || !S.contract) return;
+   queued = requestAnimationFrame(() => { queued = 0; if (viewOf(S.step) === 'box' && boxLayersOn() && S.contract) { plan(); legendFold(); } }); });
+  w.__hgWatch.observe(bs, { attributes: true, attributeFilter: ['viewBox'] });
+ }
+ // the room picked in one place is the room picked in the other: ① ② → ③ ④ ⑤ the room BOX highlights (its room list,
+ // RM) or the one closed outline selected; back to ① ② BOX highlights the room HVAC Grid had (as its room list does)
+ function followBoxRoom() {
+  try { const st = box.win.CAD_APP.st, ids = new Set(S.contract.rooms.filter(r => r.deckId === S.deck).map(r => r.id)), sel = [...st.selected].map(String);
+   const id = st.highlightRoom?.id != null && ids.has(String(st.highlightRoom.id)) ? String(st.highlightRoom.id) : sel.length === 1 && ids.has(sel[0]) ? sel[0] : null;
+   if (id) S.room = id; } catch {}
+ }
+ function toBoxRoom() {
+  try { const A = box.win.CAD_APP, r = S.room && A.rooms().find(x => String(x.id) === S.room); if (!r) return;
+   if (A.st.decks.some(d => d.id === r.deckId)) A.st.activeDeck = r.deckId;
+   A.st.highlightFace = null; A.st.highlightRoom = { id: r.id, polygon: r.polygon, holes: r.holes || [], listPick: true, label: `${r.no ?? ''} · ${r.name ?? ''}` }; A.render(); } catch {}
+ }
  function plan() {
-  const C = S.contract, svg = $('plan'), rooms = C.rooms.filter(r => r.deckId === S.deck); if (!rooms.length) { svg.innerHTML = ''; return; }
+  const C = S.contract, svg = $('plan'), over = viewOf(S.step) === 'box';
+  // ① ②: only over the deck BOX shows, when it is a deck of the design data
+  if (over) { watchBox(); let a = null; try { a = box.win.CAD_APP.st.activeDeck; } catch {} if (a && a !== S.deck && C.decks.some(d => d.id === a)) followBoxDeck(); if (a !== S.deck) { svg.innerHTML = ''; return; } }
+  const rooms = C.rooms.filter(r => r.deckId === S.deck); if (!rooms.length) { svg.innerHTML = ''; return; }
   const xs = rooms.flatMap(r => r.polygon.map(p => p.x)), ys = rooms.flatMap(r => r.polygon.map(p => Y(p.y)));
   // the ① ② canvas itself (BOX: its lines, room labels, grid and origin axes, at its resolution) is the background, the
   // chosen deck alone on it (box.solo); the plan draws only what BOX has not got - system colours, flows, units, RUs,
   // ducts, fire boundaries. Without BOX's drawing of this deck (or BOX in 3D) the plan draws the deck itself
+  let minX, minY, maxX, maxY, k, onBox;
+  svg.classList.toggle('over-box', over); svg.style.clipPath = '';
+  if (over) { const rc = svg.getBoundingClientRect(), v = boxOverView(rc); if (!v) { svg.innerHTML = ''; return; }
+   ({ minX, minY, maxX, maxY, k } = v); onBox = true; svg.classList.add('on-box'); svg.style.clipPath = `inset(${v.clip.top}px ${v.clip.right}px ${v.clip.bottom}px ${v.clip.left}px)`; legendRoom = true;
+  } else {
   let boxDeck = false;
   if (box.loading) try { if (box.hasDrawing()) { box.showDeck(S.deck); boxDeck = box.win.CAD_APP.st.activeDeck === S.deck; } } catch {}
   const rc = svg.getBoundingClientRect();
@@ -774,7 +818,6 @@
     if (box.fitDeck(deck, { left: L, right: R, top: rc.top, bottom: rc.bottom })) bv = boxView(xs, ys, rc);
    }
   }
-  let minX, minY, maxX, maxY, k;
   // the user's own view, BOX's view (② → ③ without a jump) or the deck fitted; BOX's canvas is moved to the plan's view
   // when the plan chose it
   if (nav) { ({ minX, minY, k } = nav); maxX = minX + rc.width / k; maxY = minY + rc.height / k; legendRoom = true; }
@@ -789,12 +832,14 @@
    minX = (x0 + x1) / 2 - (sideL + free / 2) / k; maxX = minX + rc.width / k;
    minY = (y0 + y1) / 2 - rc.height / 2 / k; maxY = minY + rc.height / k;
   }
-  const onBox = boxDeck && (!!bv || (() => { try { return box.viewTo(minX, minY, k, rc); } catch { return false; } })());
+  onBox = boxDeck && (!!bv || (() => { try { return box.viewTo(minX, minY, k, rc); } catch { return false; } })());
   $('boxFrame').style.visibility = onBox ? 'visible' : 'hidden'; $('boxFrame').classList.toggle('backdrop', onBox); box.backdrop(onBox, S.step === 'duct'); svg.classList.toggle('on-box', onBox);
-  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'none');
   S.planShown = { deck: S.deck, minX, minY, k }; planNav(svg);
+  }
+  svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`); svg.setAttribute('preserveAspectRatio', 'none');
   // sizes in screen px: k = px per mm of the plan
   const px = v => v / k, cur = curPlan(), ductMode = S.step === 'duct', review = S.step === 'review', fire = (S.overlay === 'fire' && !ductMode) || review, a = analysis(), lay = layers();
+  if (over) box.overlay(lay.air);
   let html = '', sel = '';
   // the deck filter: the rooms of the decks above (dashed) and below (dotted) as outlines under this one - the contract's
   // rooms share the ship's X, Y, so they line up
@@ -819,7 +864,7 @@
     const sub = lay.air ? (flow ? `${flow} CMH` : '') : lay.fire ? (cl?.cat ? `(${cl.cat})` : '미분류') : '';
     if (wPx >= 64 && hPx >= 36 && sub) html += `<text class="lbl${!lay.air && uncls ? ' warnt' : ''}" x="${lx}" y="${onBox ? ly : ly + px(named ? 28 : 15)}" style="font-size:${px(11)}px">${esc(sub)}</text>`;
    }
-   if (r.id === S.room) sel = `<polygon class="selhalo" points="${pts}"/><polygon class="selline" points="${pts}"/>`;
+   if (r.id === S.room && !over) sel = `<polygon class="selhalo" points="${pts}"/><polygon class="selline" points="${pts}"/>`;
   }
   // the layers, bottom to top: restricted passages, ducts, fire boundaries, transfer air, penetrations, duct sizes, RUs
   if (lay.pass) {
@@ -1059,17 +1104,20 @@
   if ($('staleBanner') && (S.step !== 'duct' || !S.contract)) show($('staleBanner'), false);
   // BOX's canvas is a background only in the plan (plan() decides); back in ① ② it is BOX again
   if (view !== 'plan') { $('boxFrame').classList.remove('backdrop'); if (box.loading) box.backdrop(false); }
+  // ① ② with the HVAC Grid layers over BOX
+  const over = view === 'box' && boxLayersOn() && !!S.contract && box.loading && box.hasDrawing();
+  if (!over && box.loading) box.overlay(false); if (!over) { $('plan').classList.remove('over-box'); $('plan').style.clipPath = ''; }
   $('phgFrame').style.visibility = view === 'phg' && !noContract ? 'visible' : 'hidden';
   // ⑤ keeps the plan; its tables are a dock under it (folded to its tab bar, or as high as the user dragged it)
   const docked = S.step === 'review' && !noContract;
   $('center').classList.toggle('docked', docked); $('main').classList.toggle('docked', docked); dockSize();
-  show($('plan'), view === 'plan' && !noContract); show($('legend'), view === 'plan' && !noContract); show($('report'), (view === 'report' || docked) && !noContract); show($('dockHandle'), docked && S.dockOpen !== false);
+  show($('plan'), (view === 'plan' || over) && !noContract); show($('legend'), (view === 'plan' || over) && !noContract); $('center').classList.toggle('over-box', over); show($('report'), (view === 'report' || docked) && !noContract); show($('dockHandle'), docked && S.dockOpen !== false);
   show($('empty'), noContract);
   if (noContract) {
    $('empty').innerHTML = `<div><b>아직 설계 데이터가 없습니다</b>BOX의 격실·부하를 HVAC Grid 설계 데이터로 만들어야 풍량·계통과 덕트 단계를 쓸 수 있습니다.<br><button class="btn primary" id="emptyGo">② 부하에서 설계 데이터 만들기</button><button class="btn" id="emptySample">S5 예제 열기 (도면 + 설계 데이터)</button><button class="btn" id="emptyT3">T3 시험선 열기</button></div>`;
    $('emptyGo').onclick = () => go('load'); $('emptySample').onclick = () => act('S5 예제 여는 중', () => openSample('s5')); $('emptyT3').onclick = () => act('T3 시험선 여는 중', () => openSample('t3'));
   }
-  if (view === 'plan' && S.contract) { plan(); legendFold(); }
+  if ((view === 'plan' || over) && S.contract) { plan(); legendFold(); }
   phgHint(view);
   if ((view === 'report' || S.step === 'review') && S.contract) report();
  }

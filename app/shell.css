@@ -299,3 +299,7 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .legend .lg-deck select{font:inherit;font-size:12px;margin-left:4px}
 .legend .gh{display:inline-block;width:16px;height:0;border-top:1.5px dashed var(--muted);margin-right:4px;vertical-align:middle}.legend .gh.below{border-top-style:dotted}
 .plan .ghost{fill:none;stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke;pointer-events:none;opacity:.55;stroke-dasharray:6 4}.plan .ghost.below{stroke-dasharray:1.5 3}
+/* ① ② with the HVAC Grid layers: the plan over BOX's canvas takes no clicks (BOX keeps drawing and picking); the legend
+   sits left of BOX's deck column */
+.plan.over-box,.plan.over-box *{pointer-events:none!important}
+.center.over-box>.legend{right:184px;top:52px}
