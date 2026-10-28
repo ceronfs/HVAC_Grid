@@ -185,7 +185,9 @@
    // HVAC Grid's edits show on the plan: from BOX's screen to ③, the PHG D editor closed first (it shows a network the
    // undo may put back)
    if (S.phgEditor) closeEditor(); else if (viewOf(S.step) === 'box' && S.contract) await go('air');
-   if (!entryOk(e, redo)) { say(`${verb}할 편집이 없습니다`); return; }
+   // the editor's work read back on closing is the newest edit now (a new edit: no redo after it): it goes first, this
+   // one stays under it for the next press
+   if (!entryOk(e, redo)) { if (!redo) tl().splice(tl().length - 1, 0, e); say('PHG D 편집기에서 고친 것을 읽었습니다 — 한 번 더 누르면 그것부터 되돌립니다'); return; }
    redo ? redoShell() : undoShell(); e.ref = (redo ? S.undo : S.redo).at(-1); to.push(e); return;
   }
   if (e.app === 'box' && !appOnScreen('box')) await go(S.boxStep || 'room');
