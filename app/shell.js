@@ -6,8 +6,8 @@
 (async () => {
  const B = window.HVACGridBridge, $ = id => document.getElementById(id);
  const show = (el, on) => el.toggleAttribute('hidden', !on);   // works for the SVG plan too (no .hidden property on SVG elements)
- const LIB = await B.loadLibs('../lib/', ['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'diagram.cjs', 'dxf-out.cjs', 'fire-plan.cjs', 'report.cjs', 'k-change.cjs']);
- const K = LIB.contract, PL = LIB['phg-plan'], PJ = LIB.project, SO = LIB.solas, XL = LIB.xlsx, DX = LIB['dxf-out'], RP = LIB.report, SVG = LIB['plan-svg'], U = LIB.util, GE = LIB.geom, DG = LIB.diagram, FP = LIB['fire-plan'], KCH = LIB['k-change'];
+ const LIB = await B.loadLibs('../lib/', ['util.cjs', 'geom.cjs', 'solas-data.json', 'solas.cjs', 'contract.cjs', 'phg-plan.cjs', 'ducts.cjs', 'risers.cjs', 'project.cjs', 'xlsx.cjs', 'plan-svg.cjs', 'diagram.cjs', 'dxf-out.cjs', 'fire-plan.cjs', 'report.cjs', 'k-change.cjs', 'dxf-in.cjs', 'design-compare.cjs']);
+ const K = LIB.contract, PL = LIB['phg-plan'], PJ = LIB.project, SO = LIB.solas, XL = LIB.xlsx, DX = LIB['dxf-out'], RP = LIB.report, SVG = LIB['plan-svg'], U = LIB.util, GE = LIB.geom, DG = LIB.diagram, FP = LIB['fire-plan'], KCH = LIB['k-change'], DC = LIB['design-compare'];
  const esc = U.esc, fmt = v => v == null || v === '' || Number.isNaN(+v) ? '—' : Math.round(v).toLocaleString();
  const box = new B.Box($('boxFrame')), phg = new B.Phg($('phgFrame'));
  const S = { step: 'room', contract: null, deck: null, room: null, kind: 'supply', sys: null, filter: 'all', overlay: 'air', tab: 'nets', gradeFilter: null, focus: null, projects: {}, results: {}, geometry: {}, active: null,
@@ -15,7 +15,7 @@
  let plansCache = null, analysisCache = null;
  const invalidate = () => { plansCache = null; analysisCache = null; };
  const plans = () => plansCache || (plansCache = S.contract ? PL.plan(S.contract) : []);
- const project = () => PJ.make({ contract: S.contract, projects: S.projects, results: S.results, geometry: S.geometry });
+ const project = () => PJ.make({ contract: S.contract, projects: S.projects, results: S.results, geometry: S.geometry, design: S.design });
  const analysis = () => analysisCache || (analysisCache = S.contract ? PJ.analyze(project(), plans()) : null);
  // a result is current only while its plan is what it was made from (no signature = an old file = stale)
  const result = key => { const r = S.results[key]; if (!r) return null; const p = plans().find(x => x.key === key); return { ...r, stale: !p || !r.sig || r.sig !== PJ.planSig(p) }; };
@@ -275,7 +275,7 @@
    const w = box.win, c = w.confirm; w.confirm = () => true; try { box.click('newBtn'); } finally { w.confirm = c; }
   }
   if (phg.loading) phg.open(phg.blank, 'HVAC Grid');
-  Object.assign(S, { contract: null, boxFile: null, projects: {}, results: {}, geometry: {}, active: null, undo: [], redo: [], dirty: false, file: null, deck: null, sys: null, room: null, duct: null, phgEditor: false, pickRoot: false, fieldErr: {} });
+  Object.assign(S, { contract: null, boxFile: null, projects: {}, results: {}, geometry: {}, design: {}, active: null, undo: [], redo: [], dirty: false, file: null, deck: null, sys: null, room: null, duct: null, phgEditor: false, pickRoot: false, fieldErr: {} });
   invalidate(); await go('room'); say('새로 시작: 빈 도면입니다. ① 도면을 열거나 예제를 불러오세요.');
  }
  function applyDeltaT() {
@@ -559,7 +559,7 @@
   keepActive(); let carried = S.boxFile || null;
   if (box.loading && box.hasDrawing()) { const json = await box.projectJson().catch(() => null); if (json) carried = { format: 'BOX JSON', json, roomIds: box.roomIds() }; }
   S.boxFile = carried;
-  return JSON.stringify(PJ.make({ contract: S.contract, projects: S.projects, results: S.results, geometry: S.geometry, box: carried }));
+  return JSON.stringify(PJ.make({ contract: S.contract, projects: S.projects, results: S.results, geometry: S.geometry, box: carried, design: S.design }));
  }
  // does BOX show the drawing this design data was made from? (its room ids)
  const boxMatches = () => { const ids = new Set(box.roomIds()); return ids.size === S.contract.rooms.length && S.contract.rooms.every(r => ids.has(r.id)); };
@@ -581,7 +581,7 @@
  // a project (or design data) read from a file: the design data, the PHG D work and the BOX drawing it carries
  async function loadProject(data, name, h = null) {
   const { project: pr, notes } = PJ.read(data), bare = data?.schema === K.SCHEMA, f = { name };
-  setContract(pr.contract); Object.assign(S, { projects: pr.projects, results: pr.results, geometry: pr.geometry, active: null, dirty: false, file: bare ? null : { name: f.name, handle: h || null }, boxFile: pr.box || null });   // a contract file is not a save target for the project
+  setContract(pr.contract); Object.assign(S, { projects: pr.projects, results: pr.results, geometry: pr.geometry, design: pr.design || {}, active: null, dirty: false, file: bare ? null : { name: f.name, handle: h || null }, boxFile: pr.box || null });   // a contract file is not a save target for the project
   if (h && !bare) remember(h);
   // the BOX drawing saved with the project opens in BOX (① ②); without one, say when BOX shows another drawing (F05)
   if (pr.box) {
@@ -732,6 +732,9 @@
     field(`<label class="field">방화방식<select id="methodSel" ${S.contract && (S.contract.solas?.ship || 'CARG') === 'CARG' ? '' : 'disabled'}>${['IC', 'IIC', 'IIIC'].map(m => `<option ${m === (S.contract?.solas?.method || 'IC') ? 'selected' : ''}>${m}</option>`).join('')}</select></label>`),
     field(`<label class="field">최하층 아래<select id="belowSel" ${S.contract ? '' : 'disabled'}><option value="">미지정 (확인 필요)</option>${spaceOptions(S.contract?.solas?.lowestBelow || '', ['기관실 — A류', '보일러실', '화물창', '기타'])}</select></label>`),
     field(`<label class="field">스프링클러<select id="sprinklerSel" ${S.contract && S.contract.solas?.ship === 'P36M' ? '' : 'disabled'} title="여객선 36명 이하 Table 9.3/9.4: 양쪽 실 모두 스프링클러 설치이면 작은 값"><option value="">없음·한쪽</option><option value="1" ${S.contract?.solas?.sprinkler ? 'selected' : ''}>양쪽 설치</option></select></label>`)]],
+   ['설계 비교', [c('open', '설계 덕트 DXF', () => act('설계 덕트 읽는 중', loadDesign), { disabled: needContract, title: '설계자가 그린 덕트 도면(DXF, 지금 Deck)을 읽어 AUTO 덕트망과 비교 — 덕트 레이어의 선, 같은 원점의 도면' }),
+    field(`<label class="field" title="설계 덕트와 AUTO 덕트가 이 거리 안이면 같은 경로로 봄 (겹선 덕트는 폭의 절반 이상)">비교 거리 (mm)<input id="dsgTol" type="number" min="50" max="3000" step="50" value="${designTol()}" style="width:5em"></label>`),
+    c('reset', '지우기', () => { if (S.design?.[S.deck]) { const { [S.deck]: _, ...rest } = S.design; S.design = rest; S.dirty = true; say(`${deckName(S.deck)} 설계 덕트 지움`); render(); } }, { disabled: () => !S.design?.[S.deck], title: '지금 Deck의 설계 덕트를 지움' })]],
    ['출력', [c('save', '프로젝트 저장', () => act(null, () => saveProject()), { disabled: needContract, title: '한 파일: 설계 데이터 + 모든 PHG D 덕트망 + 결과 (Ctrl+S)' }), c('save', '다른 이름으로', () => act(null, () => saveProject(true)), { disabled: needContract, title: '다른 이름·위치로 저장 (Ctrl+Shift+S)' }), c('xlsx', '통합 XLSX', () => act(null, OUT.xlsx), { disabled: needContract }), c('dxfOut', '방화 등급도 DXF', () => act(null, OUT.fireDxf), { disabled: needContract, title: 'SOLAS 등급을 글자로 적은 Deck 평면 (실 범주·격벽 등급·바닥·천장·관통) — 별도 DXF' }), c('dxfOut', '통합 DXF', () => act(null, OUT.dxf), { disabled: needContract }), c('report', '보고서', () => act(null, OUT.report), { disabled: needContract, title: 'HTML 보고서 (Deck 평면·계통·수직 덕트·방화·관통·물량)' }), c('csv', '요약 CSV', OUT.csv, { disabled: needContract }), c('contract', '설계 데이터 저장', OUT.contract, { disabled: needContract })]]] }];
  // the system of the deck: of the chosen kind (③), or every system of the deck with its kind (④)
  function sysField(allKinds) {
@@ -807,6 +810,7 @@
   $('ribbon').querySelectorAll('.seg').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => { segs[g.dataset.seg](b.dataset.v); render(); }));
   const sel = $('sysSel'); if (sel) sel.onchange = () => { S.sys = sel.value; const p = curPlan(); if (p) S.kind = p.kind; S.pickRoot = false; if (S.step === 'duct' && S.phgEditor) act(null, async () => { const k = curKey(); if (S.projects[k]) await openKey(k); }); else render(); };
   const unit = $('unitSel'); if (unit && !unit.disabled) unit.onchange = () => act(null, () => setUnitDeck(unit.value));
+  const tol = $('dsgTol'); if (tol) tol.onchange = () => { const v = +tol.value; if (!(v >= 50 && v <= 3000)) { say('비교 거리는 50–3000 mm', true); return; } S.designTol = v; try { localStorage.setItem('hvac-grid-design-tol', String(v)); } catch {} render(); };
   const ship = $('shipSel'); if (ship) ship.onchange = () => act(null, () => { setSolas('ship', ship.value); say('SOLAS 선종: ' + SO.DATA.ships[ship.value].label); });
   const method = $('methodSel'); if (method) method.onchange = () => act(null, () => { setSolas('method', method.value); say('방화방식 ' + method.value); });
   const below = $('belowSel'); if (below) below.onchange = () => act(null, () => { setSolas('lowestBelow', below.value || null); say('최하층 아래: ' + (below.value || '미지정')); });
@@ -864,8 +868,8 @@
  }
  // the plan's layers: each step starts with its own set (LAYER_DEF); a box ticked or cleared in the legend is kept for that
  // step (S.layerSet, this browser). ③ has two sets, one per 평면 보기 (풍량 / 방화)
- const LAYERS = [['air', '계통·풍량'], ['xfer', '전달 공기'], ['units', '공조기·수직 덕트'], ['ducts', '덕트'], ['rus', 'RU'], ['sizes', '덕트 크기'], ['fire', '방화 경계'], ['pens', '관통부'], ['pass', '제한 구역 통과'], ['zones', '금지 영역'], ['vel', '덕트 풍속'], ['press', '압력 (Pa)']];
- const LAYER_DEF = { room: ['air', 'units'], load: ['air', 'units'], 'air:air': ['air', 'xfer', 'units', 'ducts'], 'air:fire': ['fire', 'pens', 'pass', 'units'], duct: ['air', 'ducts', 'rus', 'sizes', 'units', 'zones'], review: ['fire', 'pens', 'pass', 'ducts', 'units'] };
+ const LAYERS = [['air', '계통·풍량'], ['xfer', '전달 공기'], ['units', '공조기·수직 덕트'], ['ducts', '덕트'], ['rus', 'RU'], ['sizes', '덕트 크기'], ['fire', '방화 경계'], ['pens', '관통부'], ['pass', '제한 구역 통과'], ['zones', '금지 영역'], ['vel', '덕트 풍속'], ['press', '압력 (Pa)'], ['design', '설계 덕트']];
+ const LAYER_DEF = { room: ['air', 'units'], load: ['air', 'units'], 'air:air': ['air', 'xfer', 'units', 'ducts'], 'air:fire': ['fire', 'pens', 'pass', 'units'], duct: ['air', 'ducts', 'rus', 'sizes', 'units', 'zones', 'design'], review: ['fire', 'pens', 'pass', 'ducts', 'units', 'design'] };
  const layerKey = () => S.step === 'air' ? `air:${S.overlay === 'fire' ? 'fire' : 'air'}` : S.step;
  function layerSet() { if (S.layerSet == null) { try { S.layerSet = JSON.parse(localStorage.getItem('hvac-grid-layers') || '{}') || {}; } catch { S.layerSet = {}; } } return S.layerSet; }
  function layers() { const k = layerKey(), d = LAYER_DEF[k] || [], o = layerSet()[k] || {}; return Object.fromEntries(LAYERS.map(([id]) => [id, id in o ? !!o[id] : d.includes(id)])); }
@@ -904,6 +908,30 @@
   try { const A = box.win.CAD_APP, r = S.room && A.rooms().find(x => String(x.id) === S.room); if (!r) return;
    if (A.st.decks.some(d => d.id === r.deckId)) A.st.activeDeck = r.deckId;
    A.st.highlightFace = null; A.st.highlightRoom = { id: r.id, polygon: r.polygon, holes: r.holes || [], listPick: true, label: `${r.no ?? ''} · ${r.name ?? ''}` }; A.render(); } catch {}
+ }
+ // ---------- the designer's ducts (실도면 검증) ----------
+ // a designer's duct drawing of a deck (DXF: the lines on its duct layers) against the AUTO networks of that deck - the
+ // share of each running within a distance of the other (lib/design-compare.cjs). The lines are kept in the project
+ // (design), the distance in this browser
+ function designTol() { if (S.designTol == null) { try { S.designTol = +localStorage.getItem('hvac-grid-design-tol') || 500; } catch { S.designTol = 500; } } return Math.min(3000, Math.max(50, S.designTol)); }
+ const designMemo = new Map();
+ function designOf(deckId) {
+  const d = S.design?.[deckId]; if (!d || !S.contract) return null;
+  const tol = designTol(), ps = plans().filter(p => p.deckId === deckId), sig = [deckId, tol, d.name, d.segs.length, ...ps.map(p => result(p.key)?.at || 0)].join('|');
+  if (!designMemo.has(sig)) { if (designMemo.size > 40) designMemo.clear(); designMemo.set(sig, DC.compare(d.segs, DC.autoSegments(S.geometry, ps, deckId), { tolMm: tol })); }
+  return { ...d, cmp: designMemo.get(sig), done: ps.filter(p => result(p.key)?.auto).length, plans: ps.length };
+ }
+ // the designer's drawing of the deck shown: its duct layers (by name, or the user picks), turned to the plan's way round
+ async function loadDesign() {
+  if (!S.contract) throw new Error('설계 데이터가 먼저 필요합니다');
+  const f = await pickFile('.dxf'), text = await f.text(), ls = DC.layers(text);
+  if (!ls.length) throw new Error(`${f.name}: 선(LINE·LWPOLYLINE)이 없습니다`);
+  let pick = ls.filter(l => l.duct).map(l => l.name);
+  if (!pick.length) { const v = await ask(`${f.name}: 이름에 DUCT·덕트·HVAC가 든 레이어가 없습니다. 어느 레이어를 설계 덕트로 볼까요?`, [...ls.slice(0, 3).map((l, i) => [l.name, `${l.name} (선 ${l.count})`, i === 0]), ['cancel', '취소']]); if (v === 'cancel') return; pick = [v]; }
+  const pl = DC.place(DC.segments(text, pick), S.contract.rooms.filter(r => r.deckId === S.deck));
+  if (!pl.segs.length) throw new Error(`${f.name}: ${pick.join(', ')} 레이어에 선이 없습니다`);
+  S.design = { ...(S.design || {}), [S.deck]: { name: f.name, layers: pick, flip: pl.flip, fit: Math.round(pl.fit * 100) / 100, segs: pl.segs.map(g => g.map(Math.round)) } }; S.dirty = true; S.tab = 'design';
+  say(`${f.name} → ${deckName(S.deck)} 설계 덕트 선 ${pl.segs.length}개 (${pick.join(', ')})${pl.fit < 0.5 ? ` · 이 Deck 격실 범위에 ${Math.round(pl.fit * 100)} %만 들어옴 — 같은 원점의 도면인지 확인` : ''}`, pl.fit < 0.5);
  }
  function plan() {
   const C = S.contract, svg = $('plan'), over = viewOf(S.step) === 'box';
@@ -993,6 +1021,9 @@
    html += `<defs><pattern id="hgHatch" patternUnits="userSpaceOnUse" width="${px(8)}" height="${px(8)}" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="${px(8)}" style="stroke:var(--red);stroke-width:${px(1.2)}px"/></pattern></defs>`;
    for (const z of cur.avoid) html += `<polygon class="zone" points="${z.polygon.map(q => q.x + ',' + Y(q.y)).join(' ')}"/>`;
   }
+  // the designer's ducts of this deck (실도면 검증): dashed; orange where AUTO runs no closer than the distance
+  const dz = lay.design ? designOf(S.deck) : null;
+  if (dz) dz.segs.forEach((g, i) => { html += `<line class="dsg${dz.cmp.designSegShare[i] < 0.5 ? ' miss' : ''}" x1="${g[0]}" y1="${Y(g[1])}" x2="${g[2]}" y2="${Y(g[3])}"/>`; });
   if (lay.ducts) {
    // ducts PHG D made, thin, under the markers: in ③ those of the chosen kind; in ④ (the shared canvas) the chosen
    // system's network strong and pickable, others of the deck faint as asked; in ⑤ every system of the deck, faint
@@ -1117,11 +1148,12 @@
   $('legend').insertAdjacentHTML('afterbegin', `<div class="lg-layers"><div class="lg-boxes">${LAYERS.map(([id, n]) => `<label><input type="checkbox" data-layer="${id}"${lay[id] ? ' checked' : ''}>${n}</label>`).join('')}</div>`
    + `<label class="lg-deck">갑판 <select id="deckFilter"><option value="deck">이 Deck만</option><option value="near"${dfl === 'near' ? ' selected' : ''}>위·아래 Deck 흐리게</option></select></label>`
    + `${dfl === 'near' ? `<div class="muted"><span class="gh above"></span>위 ${esc(nd.above ? deckName(nd.above.id) : '없음')} · <span class="gh below"></span>아래 ${esc(nd.below ? deckName(nd.below.id) : '없음')}</div>` : ''}</div>`);
+  if (dz) $('legend').insertAdjacentHTML('beforeend', `<div class="lg-design"><span class="gh dsg"></span>설계 덕트 ${esc(dz.name)}: 설계의 <b>${Math.round(dz.cmp.designShare * 100)} %</b>를 AUTO가 ${dz.cmp.tolMm} mm 안에서 지남 · AUTO의 <b>${Math.round(dz.cmp.autoShare * 100)} %</b>가 설계에 있음 <span class="muted">(주황 = AUTO가 떨어진 설계 덕트)</span></div>`);
   $('legend').querySelectorAll('[data-layer]').forEach(c => c.onchange = () => { setLayer(c.dataset.layer, c.checked); render(); });
   $('deckFilter').onchange = ev => { S.deckFilter = ev.target.value; try { localStorage.setItem('hvac-grid-deckfilter', S.deckFilter); } catch {} render(); };
  }
  // ⑤ review: tabs over the analysis
- const TABS = [['nets', '덕트망'], ['systems', '계통·수직 덕트'], ['diagram', '계통도'], ['fire', '방화 (SOLAS)'], ['fireplan', '방화 등급도'], ['checks', '검토']];
+ const TABS = [['nets', '덕트망'], ['systems', '계통·수직 덕트'], ['diagram', '계통도'], ['fire', '방화 (SOLAS)'], ['fireplan', '방화 등급도'], ['design', '설계 비교'], ['checks', '검토']];
  const tableHtml = (sh, { keys, limit, cls, tip = '두 번 클릭: ④ RU·덕트에서 열기' } = {}) => `<div class="scrollx"><table><thead><tr>${sh.head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${sh.rows.slice(0, limit || sh.rows.length).map((r, i) => `<tr${keys ? ` data-key="${esc(keys[i])}" class="${keys[i] === S.active ? 'active' : ''}" title="${esc(tip)}"` : ''}>${r.map((v, j) => `<td class="${typeof v === 'number' ? 'n ' : ''}${cls ? cls(r, j, i) : ''}">${esc(typeof v === 'number' ? v.toLocaleString() : v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${limit && sh.rows.length > limit ? `<p class="muted">… ${sh.rows.length - limit}행 더 — 통합 XLSX 참조</p>` : ''}`;
  // a sheet with one column moved forward (the status of a row first on a narrow screen; the XLSX keeps its order)
  const front = (sh, name, at) => { const i = sh.head.indexOf(name); if (i < 0) return sh; const mv = r => { const c = r.slice(); const [v] = c.splice(i, 1); c.splice(at, 0, v); return c; }; return { ...sh, head: mv(sh.head), rows: sh.rows.map(mv) }; };
@@ -1154,6 +1186,12 @@
      <button class="btn" id="fpDxf">DXF 저장</button></div>
     ${FP.legendHtml(m)}<div class="fireplan-wrap">${dk ? FP.toSvg(m, dk.id, { width: Math.max(700, ($('report').clientWidth || 1100) - 40) }) : ''}</div>
     <p class="muted">실 안: 번호 이름 / (SOLAS 범주) 공간 / 바닥·천장 등급(A·B급, 아래·위 실이 여럿이면 가장 엄한 등급 "등"). 노란 빗금 = 미분류 실, 주황 점선 = 등급 미정 경계 — ⑤ 방화 (SOLAS) 탭에서 분류. 보고서·DXF에 같은 그림.</p>`;
+  } else if (S.tab === 'design') {
+   // the designer's ducts against AUTO, deck by deck (실도면 검증)
+   const pct = v => Math.round(v * 100) + ' %', rows = C.decks.map(d => [d, designOf(d.id)]).filter(([, z]) => z);
+   body = `<h3>설계 덕트와 AUTO 비교 <small class="muted">비교 거리 ${designTol()} mm · 설계 덕트 = 설계자 도면(DXF)의 덕트 레이어 선 · 행을 누르면 그 Deck</small></h3>${rows.length ? `<div class="scrollx"><table><thead><tr><th>Deck</th><th>파일 · 레이어</th><th>설계 덕트 (m)</th><th>AUTO 덕트 (m)</th><th>설계 중 AUTO가 지나는 비율</th><th>AUTO 중 설계에 있는 비율</th><th>AUTO 완료 계통</th><th>도면 위치</th></tr></thead><tbody>${rows.map(([d, z]) => `<tr data-dsgdeck="${esc(d.id)}" class="${d.id === S.deck ? 'active' : ''}"><td>${esc(d.name)}</td><td>${esc(z.name)} · ${esc(z.layers.join(', '))}</td><td class="n">${z.cmp.designM.toFixed(1)}</td><td class="n">${z.cmp.autoM.toFixed(1)}</td><td class="n">${pct(z.cmp.designShare)}</td><td class="n">${pct(z.cmp.autoShare)}</td><td class="n${z.done < z.plans ? ' warn' : ''}">${z.done}/${z.plans}</td><td class="${z.fit < 0.5 ? 'warn' : ''}">${z.fit < 0.5 ? `격실 범위에 ${pct(z.fit)} — 원점 확인` : `맞음 (${pct(z.fit)})`}${z.flip ? '' : ' · y 그대로'}</td></tr>`).join('')}</tbody></table></div>`
+    : '<p class="muted">아직 설계 덕트가 없습니다. Deck을 고르고 위 리본 "설계 비교 → 설계 덕트 DXF"로 설계자가 그린 그 Deck의 덕트 도면을 읽으세요. 이름에 DUCT·덕트·HVAC가 든 레이어의 선을 설계 덕트로 봅니다(없으면 레이어를 고름). 도면은 ① BOX에 넣은 도면과 같은 원점이어야 합니다.</p>'}
+    <p class="muted">두 비율이 모두 높으면 AUTO가 설계자와 같은 길을 잡은 것입니다. 설계 중 AUTO가 지나는 비율이 낮은 Deck은 평면에서 주황 선(AUTO가 떨어진 설계 덕트)을 보고 RU·공조기·구간 이동이나 다른 경로로 맞춰 봅니다. 겹선으로 그린 덕트는 비교 거리를 덕트 폭의 절반보다 크게 둡니다.</p>`;
   } else if (S.tab === 'fire') {
    const sum = a.solas.summary, shp = SO.DATA.ships[a.solas.settings.ship], unc = sum.unclassified.map(id => C.rooms.find(r => r.id === id));
    const roomChecks = Object.entries(a.solas.classes).filter(([, k]) => k.check);
@@ -1186,6 +1224,7 @@
   });
   $('report').querySelectorAll('.deckbox[data-plan]').forEach(e => e.ondblclick = () => { const p = plans().find(x => x.key === e.dataset.plan); if (!p) return; S.deck = p.deckId; S.sys = p.systemKey; S.kind = p.kind; go('duct'); });
   $('report').querySelectorAll('[data-fpdeck]').forEach(b => b.onclick = () => { S.deck = b.dataset.fpdeck; render(); });
+  $('report').querySelectorAll('tr[data-dsgdeck]').forEach(tr => tr.onclick = () => { S.deck = tr.dataset.dsgdeck; S.planView = null; render(); });
   if ($('fpShowC')) { $('fpShowC').onchange = e => { S.fpShowC = e.target.checked; render(); }; $('fpShowOuter').onchange = e => { S.fpShowOuter = e.target.checked; render(); }; $('fpDxf').onclick = () => act(null, OUT.fireDxf); }
   $('report').querySelectorAll('.gchip[data-grade]').forEach(b => b.onclick = () => { S.gradeFilter = S.gradeFilter === b.dataset.grade ? null : b.dataset.grade; render(); });
   $('report').querySelectorAll('select[data-solas]').forEach(s => s.onchange = () => act(null, () => setSolasRoom(s.dataset.solas, s.value)));
