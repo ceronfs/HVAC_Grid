@@ -438,9 +438,12 @@ html.hg-ov #roomZoneLayer{display:none!important}`;
   }
   // the pressure along the network open in PHG D (its path calculation, as result() takes the index run from): each
   // RU's loss from the unit (index: the largest), and at each junction (three ducts or more) the loss from the unit to
-  // there - the duct losses (friction, bends, branch) summed along the path. Coordinates as geometry()
+  // there - the duct losses (friction, bends, branch) summed along the path. Coordinates as geometry(). Only with ducts,
+  // as result(): PHG D's calculation writes its default pressure settings into the project, and a plan just sent (no
+  // ducts yet) would carry them into its AUTO
   pressure() {
    const w = this.win, st = w.LineDesignLegacy.getState(), y = this.yBox() ? v => -v : v => v;
+   if (!st.ducts.length) return null;
    const paths = w.LineDesignV2.calculateSimplePressure({})?.paths || []; if (!paths.length) return null;
    const nodeOf = id => st.nodes.find(n => n.id === id), ductOf = id => st.ducts.find(d => d.id === id), reach = new Map();
    const rus = paths.map(p => {
