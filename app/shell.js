@@ -325,6 +325,9 @@
   S.projects[key] = phg.serialize(); S.geometry[key] = phg.geometry();
   S.results[key] = { ...(old || {}), ...phg.result(), ...extra, kind: pl?.kind, rootSource: pl?.rootSource, designCmh: pl?.designCmh, sig: keepSig ? old?.sig ?? null : pl ? PJ.planSig(pl) : null, at: Date.now() };
   delete S.results[key].stale;
+  // the pressure along the network (PHG D's path calculation) for the plan's 압력 layer: on screen only - not in the
+  // project file, not in the results; it belongs to this result (at)
+  S.pressure ??= {}; try { const pr = phg.pressure(); if (pr) S.pressure[key] = { ...pr, at: S.results[key].at }; else delete S.pressure[key]; } catch { delete S.pressure[key]; }
   analysisCache = null;
  }
  async function loadPhg() {
@@ -415,6 +418,12 @@
   // PHG D may number its ducts again when it calculates: the duct is found by id, else by its name
   const ds = S.geometry[key]?.ducts || [], at = ds.findIndex(x => x.id === d.id); S.duct = { key, i: Math.max(0, at >= 0 ? at : ds.findIndex(x => x.displayName === d.displayName)) };
   say(`${d.displayName}: ${size ? (size.diameterMm ? 'Ø' + size.diameterMm : size.widthMm + '×' + size.heightMm) + ' (수동)' : 'PHG D 자동 크기'} · 계통 최대 ${r.indexPa ?? '—'} Pa`);
+ }
+ // the pressure of a network stored before (a project file, an undo): PHG D opens it and calculates the paths
+ async function pressureOf(key) {
+  if (!S.projects[key] || !result(key)?.auto) throw new Error('이 계통의 덕트망이 없습니다 — AUTO 먼저');
+  await openKey(key); const pr = phg.pressure(); if (!pr) throw new Error('PHG D가 압력 경로를 계산하지 못했습니다');
+  (S.pressure ??= {})[key] = { ...pr, at: result(key).at }; say(`${keyText(key)}: 최대 손실 ${Math.round(pr.indexPa)} Pa (RU ${pr.rus.length}개)`);
  }
  // a duct's type by hand (주 덕트 · 분기 · 보조 분기): PHG D sizes a duct by its type; the network is calculated again.
  // Like the other edits of a network, AUTO makes it again (the message says so)
@@ -840,7 +849,7 @@
  }
  // the plan's layers: each step starts with its own set (LAYER_DEF); a box ticked or cleared in the legend is kept for that
  // step (S.layerSet, this browser). ③ has two sets, one per 평면 보기 (풍량 / 방화)
- const LAYERS = [['air', '계통·풍량'], ['xfer', '전달 공기'], ['units', '공조기·수직 덕트'], ['ducts', '덕트'], ['rus', 'RU'], ['sizes', '덕트 크기'], ['fire', '방화 경계'], ['pens', '관통부'], ['pass', '제한 구역 통과'], ['zones', '금지 영역'], ['vel', '덕트 풍속']];
+ const LAYERS = [['air', '계통·풍량'], ['xfer', '전달 공기'], ['units', '공조기·수직 덕트'], ['ducts', '덕트'], ['rus', 'RU'], ['sizes', '덕트 크기'], ['fire', '방화 경계'], ['pens', '관통부'], ['pass', '제한 구역 통과'], ['zones', '금지 영역'], ['vel', '덕트 풍속'], ['press', '압력 (Pa)']];
  const LAYER_DEF = { room: ['air', 'units'], load: ['air', 'units'], 'air:air': ['air', 'xfer', 'units', 'ducts'], 'air:fire': ['fire', 'pens', 'pass', 'units'], duct: ['air', 'ducts', 'rus', 'sizes', 'units', 'zones'], review: ['fire', 'pens', 'pass', 'ducts', 'units'] };
  const layerKey = () => S.step === 'air' ? `air:${S.overlay === 'fire' ? 'fire' : 'air'}` : S.step;
  function layerSet() { if (S.layerSet == null) { try { S.layerSet = JSON.parse(localStorage.getItem('hvac-grid-layers') || '{}') || {}; } catch { S.layerSet = {}; } } return S.layerSet; }
@@ -1033,7 +1042,15 @@
      : cur.kind === 'return' ? `<path class="ru${ductMode ? ' drag' : ''}${u.moved ? ' moved' : ''}" ${dg} d="M${x} ${y - r * 1.2}L${x + r * 1.2} ${y}L${x} ${y + r * 1.2}L${x - r * 1.2} ${y}Z" fill="${sysColor(cur.systemId)}">${t}</path>`
      : `<rect class="ru${ductMode ? ' drag' : ''}${u.moved ? ' moved' : ''}" ${dg} x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}" fill="${sysColor(cur.systemId)}">${t}</rect>`; }
   }
-  html += sel;  // units (filled = set by the user, dashed = a guess) on the unit deck; vertical duct shafts (circles) on the other decks
+  // the pressure along the chosen network: each RU's loss from the unit (Pa), the index run's RU ringed; the loss from
+  // the unit at each junction. Only for the result it was calculated with (an undo or a new AUTO asks for it again)
+  const prs = cur && S.pressure?.[cur.key], prOk = !!prs && prs.at === result(cur.key)?.at;
+  if (lay.press && prOk) {
+   for (const n of prs.nodes) html += `<text class="pnode" x="${n.x + px(5)}" y="${Y(-n.y) - px(5)}" style="font-size:${px(9)}px">${Math.round(n.pa)}</text>`;
+   for (const u of prs.rus) html += `${u.index ? `<circle class="pidx" cx="${u.x}" cy="${Y(-u.y)}" r="${px(9)}"/>` : ''}<text class="pru${u.index ? ' idx' : ''}" x="${u.x + px(7)}" y="${Y(-u.y) + px(13)}" style="font-size:${px(9.5)}px">${Math.round(u.pa)} Pa</text>`;
+  }
+  html += sel;
+  // units (filled = set by the user, dashed = a guess) on the unit deck; vertical duct shafts (circles) on the other decks
   for (const p of deckPlans(S.kind)) {
    const col = sysColor(p.systemId), on = p.key === cur?.key, user = p.rootSource === 'user', firm = user || /^(fan|shaft|own)-room|above-unit/.test(p.rootSource), s = px(on ? 22 : 18), cx = p.root.x, cy = Y(p.root.y);
    const tip = `${esc(p.systemId)} ${p.isUnitDeck ? (p.kind === 'supply' ? '공조기' : '팬') : '수직 덕트'} · ${esc(rootText(p.rootSource))}`;
@@ -1066,6 +1083,10 @@
     if (res?.stale) { banner.innerHTML = `↻ 이 덕트망은 풍량·위치가 바뀌기 전 것입니다 <button class="btn primary">다시 AUTO</button>`; banner.querySelector('button').onclick = () => act('AUTO 계산 중', () => autoKey()); }
     const view = S.ductShow || 'sys', shown = deckPlans().filter(p => p.key !== cur?.key && (view === 'all' || (view === 'kind' && p.kind === S.kind))), keyOthers = shown.length ? `<br>${shown.map(p => `<span class="ln" style="background:${sysColor(p.systemId)};height:3px;opacity:.6"></span>${KL[p.kind]} ${esc(p.systemId)}${result(p.key)?.auto ? '' : ' <span class="muted">(덕트망 없음)</span>'}`).join('<br>')}` : '';
     $('legend').innerHTML = cur ? `<b>${esc(deckName(S.deck))} · ${KL[cur.kind]} ${esc(cur.systemId)}</b><br>${res?.auto ? `덕트 ${res.ducts}개 · ${res.lengthM} m · 최대 ${res.indexPa ?? '—'} Pa${res.stale ? ' · <span class="warn">다시 보내기 필요</span>' : ''}` : '<span class="warn">덕트망 없음 — 보내기 + AUTO</span>'}<br><span class="ln" style="background:${sysColor(cur.systemId)};height:4px"></span>주 덕트 · <span class="ln" style="background:${sysColor(cur.systemId)};height:2px"></span>분기${keyOthers}<br><span class="muted">● 급기 RU · ◆ 환기 RU · ■ 배기 RU · 덕트를 누르면 크기·풍량<br>RU·공조기는 끌어서 옮김 → 놓으면 다시 AUTO</span>` : '<span class="muted">이 Deck에 계통이 없습니다</span>';
+    if (lay.press && cur && res?.auto) $('legend').insertAdjacentHTML('beforeend', prOk
+     ? `<br><span class="muted">압력: RU 옆 = 공조기부터 손실 Pa · ◯ 최대 ${Math.round(prs.indexPa)} Pa RU · 분기점 숫자 = 그곳까지 누적 Pa (PHG D 경로 계산)</span>`
+     : '<br><button class="btn" id="pressCalc">압력 계산 (PHG D)</button>');
+    $('pressCalc')?.addEventListener('click', () => act('압력 계산 중', () => pressureOf(cur.key)));
    } else $('legend').innerHTML = `<b>${esc(deckName(S.deck))} ${KL[S.kind]} 계통</b><br>${sys.map(id => `<span class="dot" style="background:${sysColor(id)}"></span>${esc(id)} · ${fmt(C.systems.find(s => s.id === id && s.kind === S.kind)?.designCmh)} CMH`).join('<br>') || '<span class="muted">이 Deck에 없음</span>'}<br><span class="muted">${UNIT_WORD[S.kind]} □ 공조기·팬 · ⇅ ○ 수직 덕트 · 채움 = 지정 · 점선 = 임시</span>${C.rooms.some(r => r.deckId === S.deck && C.airflow[r.id].transferInCmh && C.rooms.some(x => x.id === C.airflow[r.id].transferFrom)) ? '<br><span class="muted">→ 전달 공기 CMH (실선 = 지정 · 주황 = A급 경계)</span>' : ''}`;
   }
   // the layers of this step and the deck filter, at the top of the legend (a change is kept for this step - layerSet)

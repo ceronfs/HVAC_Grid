@@ -436,6 +436,26 @@ html.hg-ov #roomZoneLayer{display:none!important}`;
     ducts: st.ducts.length, lengthM: Math.round(st.ducts.reduce((s, d) => s + len(d), 0) / 100) / 10, indexPa,
     ductTypes: st.ducts.reduce((o, d) => (o[d.type] = (o[d.type] || 0) + 1, o), {}) };
   }
+  // the pressure along the network open in PHG D (its path calculation, as result() takes the index run from): each
+  // RU's loss from the unit (index: the largest), and at each junction (three ducts or more) the loss from the unit to
+  // there - the duct losses (friction, bends, branch) summed along the path. Coordinates as geometry()
+  pressure() {
+   const w = this.win, st = w.LineDesignLegacy.getState(), y = this.yBox() ? v => -v : v => v;
+   const paths = w.LineDesignV2.calculateSimplePressure({})?.paths || []; if (!paths.length) return null;
+   const nodeOf = id => st.nodes.find(n => n.id === id), ductOf = id => st.ducts.find(d => d.id === id), reach = new Map();
+   const rus = paths.map(p => {
+    let at = p.rootId, acc = 0;
+    for (const d of p.details || []) {
+     acc += (+d.frictionLossPa || 0) + (+d.bendLossPa || 0) + (+d.branchLossPa || 0);
+     const dk = ductOf(d.ductId); if (!dk) continue; at = dk.fromNodeId === at ? dk.toNodeId : dk.fromNodeId; if (!reach.has(at)) reach.set(at, acc);
+    }
+    const ru = st.diffusers.find(x => x.id === p.diffuserId) || nodeOf(p.diffuserId);
+    return ru ? { id: p.diffuserId, name: p.diffuserName, x: ru.x, y: y(ru.y), pa: +p.totalPressureLossPa || 0 } : null;
+   }).filter(Boolean);
+   const indexPa = Math.max(...rus.map(u => u.pa)); for (const u of rus) u.index = u.pa === indexPa;
+   const nodes = [...reach].map(([id, pa]) => ({ n: nodeOf(id), pa })).filter(({ n }) => n && (n.connectedDuctIds?.length || 0) >= 3).map(({ n, pa }) => ({ x: n.x, y: y(n.y), pa }));
+   return { rus, nodes, indexPa };
+  }
   dockShown(side) { const d = this.doc.getElementById(`phgb-${side}-dock`); return !!d && d.getBoundingClientRect().width > 20; }
   // show an area (BOX coordinates) with a margin in mm
   zoomTo(points, pad = 1000) {

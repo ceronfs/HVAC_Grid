@@ -1,5 +1,5 @@
-// End-to-end: ④ on the plan with less of the PHG D editor - the rooms AUTO keeps out of (forbidden zones) and the
-// velocity along the ducts as layers, a duct's type changed from the plan (PHG D calculates again, undo puts it back),
+// End-to-end: ④ on the plan with less of the PHG D editor - the rooms AUTO keeps out of (forbidden zones), the
+// velocity along the ducts and the pressure at each RU and junction as layers, a duct's type changed from the plan (PHG D calculates again, undo puts it back),
 // and the editor opening on the part of the deck the plan shows.
 //   node test/e2e/duct-plan.e2e.cjs
 'use strict';
@@ -34,6 +34,15 @@ const OUT = path.join(__dirname, '..', '..', 'out', 'e2e'); fs.mkdirSync(OUT, { 
   assert.ok(after.undo === before.undo + 1 && /종류/.test(after.label) && after.edited, JSON.stringify(after));
   await H(() => HVACGrid.undo()); await idle();
   assert.equal(await H(([k, n]) => HVACGrid.S.geometry[k].ducts.find(d => d.id === n)?.type, [key, before.id]), 'branch', 'undo puts the type back');
+  // the pressure layer: each RU's loss from the unit, the index run's RU ringed (the deck's largest loss); after the
+  // undo the pressure is of a network put back - PHG D calculates it again on asking
+  await p.locator('#legend [data-layer=press]').setChecked(true); await idle();
+  const pr = () => H(k => ({ ru: document.querySelectorAll('#plan .pru').length, idx: document.querySelectorAll('#plan .pidx').length, idxPa: +document.querySelector('#plan .pru.idx')?.textContent.replace(/[^0-9]/g, ''), rus: HVACGrid.plans().find(p => p.key === k).rus.length, indexPa: HVACGrid.result(k).indexPa, nodes: document.querySelectorAll('#plan .pnode').length, ask: !!document.getElementById('pressCalc') }), key);
+  let q = await pr();
+  if (q.ask) { await p.click('#pressCalc'); await idle(); q = await pr(); }
+  assert.ok(q.ru === q.rus && q.idx >= 1 && Math.abs(q.idxPa - q.indexPa) <= 1 && q.nodes > 0 && !q.ask, `pressure on the plan ${JSON.stringify(q)}`);
+  await p.screenshot({ path: path.join(OUT, 'duct-pressure.png') });
+  await p.locator('#legend [data-layer=press]').setChecked(false); await idle();
   // the editor on the plan's view: zoomed in on the plan, the same middle and width in PHG D
   await p.locator('#plan').hover(); await p.mouse.wheel(0, -360); await idle();
   const pv = await H(() => { const v = HVACGrid.S.planShown, rc = document.getElementById('plan').getBoundingClientRect(); return { cx: v.minX + rc.width / v.k / 2, w: rc.width / v.k, h: rc.height / v.k }; });
