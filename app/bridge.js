@@ -423,6 +423,44 @@ html.hg-ov #roomZoneLayer{display:none!important}`;
    await w.LineDesignV2.calculateTypedNetwork(''); L.renderEverything();
    return this.result();
   }
+  // a straight run of the network moved across itself, as PHG D's own Move of ducts does (one undo entry there; the
+  // typed network kept in step), then calculated again. The run: the leg picked and every leg in line with it, through
+  // junctions too; legs at a right angle to it stretch or shrink. A run that reaches the unit or an RU does not move
+  // (they are dragged themselves), nor one with a slanted leg at its ends. off: mm across the run, geometry()'s way round
+  async moveDuctRun(ductId, leg, off) {
+   const w = this.win, L = w.LineDesignLegacy, st = L.getState(), flip = this.yBox() ? -1 : 1, tol = 1;
+   const d0 = st.ducts.find(x => x.id === ductId), a0 = d0?.points[leg], b0 = d0?.points[leg + 1];
+   if (!a0 || !b0) throw new Error('덕트 구간을 고르세요');
+   const horizontal = Math.abs(b0.x - a0.x) >= Math.abs(b0.y - a0.y), c = horizontal ? 'y' : 'x', o = horizontal ? 'x' : 'y', line = a0[c];
+   if (Math.abs(b0[c] - line) > tol) throw new Error('비스듬한 구간은 PHG D 편집기에서 옮깁니다');
+   const inLine = (p, q) => Math.abs(p[c] - line) <= tol && Math.abs(q[c] - line) <= tol, square = (p, q) => Math.abs(p[o] - q[o]) <= tol;
+   const fixed = n => n.type === 'root' || st.diffusers.some(df => df.connectedNodeId === n.id);
+   const pts = new Set(), nodes = new Set(), ducts = new Set(), seen = new Set(), stretch = [], todo = [[d0, leg]];
+   // leg m of duct e meets the run: in line - part of it; at a right angle - it stretches; slanted - no
+   const meet = (e, m) => { const p = e.points[m], q = e.points[m + 1]; if (inLine(p, q)) todo.push([e, m]); else if (square(p, q)) stretch.push([e, m]); else throw new Error('비스듬한 구간에 이어져 있어 PHG D 편집기에서 옮깁니다'); };
+   while (todo.length) {
+    const [d, i] = todo.pop(), k = d.id + ':' + i; if (seen.has(k)) continue; seen.add(k); ducts.add(d.id);
+    for (const j of [i, i + 1]) {
+     pts.add(d.points[j]);
+     if (j > 0 && j < d.points.length - 1) { meet(d, j === i ? i - 1 : i + 1); continue; }
+     const n = st.nodes.find(x => x.id === (j === 0 ? d.fromNodeId : d.toNodeId));
+     if (!n) throw new Error('덕트 끝의 노드가 없습니다 — PHG D 편집기에서 옮깁니다');
+     if (fixed(n)) throw new Error('공조기·RU에 닿은 구간입니다 — 공조기·RU를 끌어서 옮기세요');
+     nodes.add(n);
+     for (const e of st.ducts) {
+      if (e === d || (e.fromNodeId !== n.id && e.toNodeId !== n.id)) continue;
+      const je = e.fromNodeId === n.id ? 0 : e.points.length - 1; pts.add(e.points[je]); ducts.add(e.id); meet(e, je === 0 ? 0 : e.points.length - 2);
+     }
+    }
+   }
+   const before = L.captureSnapshot(), dv = horizontal ? off * flip : off, span = ([e, m]) => e.points[m + 1][c] - e.points[m][c], was = stretch.map(span);
+   for (const p of pts) p[c] += dv; for (const n of nodes) n[c] += dv;
+   // a stretched leg may not shrink to nothing or turn back
+   if (stretch.some((s, i) => Math.sign(span(s)) !== Math.sign(was[i]) || Math.abs(span(s)) < 100)) { L.restoreSnapshot(before); L.renderEverything(); throw new Error('옆 구간이 너무 짧아집니다 — 덜 옮기세요'); }
+   w.LineDesignV2.recordExternalMutation('move', 'HVAC Grid 구간 이동', before, { ductIds: [...ducts, ...stretch.map(([e]) => e.id)], render: false });
+   L.renderEverything(); await w.LineDesignV2.calculateTypedNetwork(''); L.renderEverything();
+   return { ...this.result(), horizontal, ductsMoved: ducts.size };
+  }
   // the project open in PHG D differs from the stored text (edited in PHG D since)
   // content changed since text (a saved project)? PHG D writes keys in another order, new time stamps and default fields
   // when it reloads a project: a project opened from text is compared with what PHG D made of it, in a canonical form
