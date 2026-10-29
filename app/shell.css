@@ -310,3 +310,10 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .plan .pru{fill:var(--text);font-weight:600;paint-order:stroke;stroke:var(--canvas);stroke-width:3px;vector-effect:non-scaling-stroke;pointer-events:none}.plan .pru.idx{fill:var(--red)}
 .plan .pidx{fill:none;stroke:var(--red);stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:none}
 .plan .pnode{fill:var(--muted);paint-order:stroke;stroke:var(--canvas);stroke-width:3px;vector-effect:non-scaling-stroke;pointer-events:none}
+/* ④: the picked duct's legs, dragged across themselves (the run in line moves with them) */
+.plan .leg line{stroke:#e8890c;stroke-width:7;opacity:.3;vector-effect:non-scaling-stroke}
+.plan .leg rect{fill:var(--canvas);stroke:#e8890c;stroke-width:2;vector-effect:non-scaling-stroke}
+.plan .leg.drag[data-h="1"]{cursor:ns-resize}.plan .leg.drag[data-h="0"]{cursor:ew-resize}.plan .leg{touch-action:none}
+/* the designer's ducts (실도면 검증): dashed under AUTO's, orange where AUTO runs no closer than the distance */
+.plan .dsg{stroke:var(--text);stroke-width:1.6;stroke-dasharray:7 4;vector-effect:non-scaling-stroke;pointer-events:none;opacity:.7}.plan .dsg.miss{stroke:#e8890c;opacity:.95;stroke-width:2.2}
+.legend .gh.dsg{border-top:2px dashed var(--text)}.legend .lg-design{border-top:1px solid var(--line);margin-top:4px;padding-top:4px;font-size:12px}
