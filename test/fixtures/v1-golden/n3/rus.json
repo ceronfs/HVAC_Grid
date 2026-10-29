@@ -1,0 +1,5880 @@
+[
+ {
+  "key": "DECK1__AHU-1",
+  "deckId": "DECK1",
+  "systemId": "AHU-1",
+  "systemKey": "AHU-1",
+  "kind": "supply",
+  "flowMode": "supply",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": true,
+  "decks": 3,
+  "rootRoomId": "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+  "root": {
+   "x": 2500,
+   "y": -11700
+  },
+  "rootSource": "fan-room:106",
+  "rus": [
+   {
+    "id": "AHU-1/102/1",
+    "roomId": "dxf-881522c02887db6d6aaec30c7d78f97f",
+    "roomNo": "102",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 6500,
+    "y": -7000,
+    "flowCmh": 480
+   },
+   {
+    "id": "AHU-1/102/2",
+    "roomId": "dxf-881522c02887db6d6aaec30c7d78f97f",
+    "roomNo": "102",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 19500,
+    "y": -7000,
+    "flowCmh": 480
+   },
+   {
+    "id": "AHU-1/103/1",
+    "roomId": "dxf-e3786626192fffdc62c5a32f9b99fe34",
+    "roomNo": "103",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 4800,
+    "y": -9500,
+    "flowCmh": 60
+   },
+   {
+    "id": "AHU-1/112/1",
+    "roomId": "dxf-a53896078e0f33fb935b8c1557b6296f",
+    "roomNo": "112",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 4800,
+    "y": -4200,
+    "flowCmh": 110
+   },
+   {
+    "id": "AHU-1/113/1",
+    "roomId": "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+    "roomNo": "113",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 7500,
+    "y": -4500,
+    "flowCmh": 410
+   },
+   {
+    "id": "AHU-1/113/2",
+    "roomId": "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+    "roomNo": "113",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 7500,
+    "y": -1500,
+    "flowCmh": 400
+   },
+   {
+    "id": "AHU-1/115/1",
+    "roomId": "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+    "roomNo": "115",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 14500,
+    "y": -4500,
+    "flowCmh": 260
+   },
+   {
+    "id": "AHU-1/115/2",
+    "roomId": "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+    "roomNo": "115",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 14500,
+    "y": -1500,
+    "flowCmh": 250
+   },
+   {
+    "id": "AHU-1/121/1",
+    "roomId": "dxf-858d952395b4da30268e71898b73d022",
+    "roomNo": "121",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 11800,
+    "y": -12500,
+    "flowCmh": 480
+   },
+   {
+    "id": "AHU-1/121/2",
+    "roomId": "dxf-858d952395b4da30268e71898b73d022",
+    "roomNo": "121",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 11800,
+    "y": -9500,
+    "flowCmh": 470
+   },
+   {
+    "id": "AHU-1/122/1",
+    "roomId": "dxf-bce07d0c3b19fb187ad032cabfffb843",
+    "roomNo": "122",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 16800,
+    "y": -12500,
+    "flowCmh": 410
+   },
+   {
+    "id": "AHU-1/122/2",
+    "roomId": "dxf-bce07d0c3b19fb187ad032cabfffb843",
+    "roomNo": "122",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 16800,
+    "y": -9500,
+    "flowCmh": 400
+   },
+   {
+    "id": "AHU-1/123/1",
+    "roomId": "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+    "roomNo": "123",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 20800,
+    "y": -11000,
+    "flowCmh": 330
+   },
+   {
+    "id": "AHU-1/123/2",
+    "roomId": "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+    "roomNo": "123",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 24300,
+    "y": -11000,
+    "flowCmh": 320
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+    "no": "101",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -2500
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e346205f9624b5cd5530d7d28e4536a8",
+    "no": "111",
+    "name": "CO2실",
+    "space": "소화제 저장실 (CO₂실)",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": 0
+     },
+     {
+      "x": 3500,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 3550,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "no": "114",
+    "name": "조리실",
+    "space": "조리실",
+    "polygon": [
+     {
+      "x": 9000,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": 0
+     },
+     {
+      "x": 9000,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 9050,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 9050,
+      "y": -49.99999999999999
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+   "dxf-881522c02887db6d6aaec30c7d78f97f",
+   "dxf-e3786626192fffdc62c5a32f9b99fe34",
+   "dxf-77e13b0451a086cabfbeeff871090a73",
+   "dxf-08fc86fc26e1b72fb150b8063c031334",
+   "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+   "dxf-f4114cdace4e225946b5106b32da09e5",
+   "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+   "dxf-e346205f9624b5cd5530d7d28e4536a8",
+   "dxf-a53896078e0f33fb935b8c1557b6296f",
+   "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+   "dxf-001c6d8f3b5312cc201906b469dad59e",
+   "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+   "dxf-181fb2ec162541b28f2abca5b327efbf",
+   "dxf-10716f31b134eac3f347a165bc673e76",
+   "dxf-858d952395b4da30268e71898b73d022",
+   "dxf-bce07d0c3b19fb187ad032cabfffb843",
+   "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+   "dxf-17307fb0db00f9081298b023f81c6f8f"
+  ],
+  "designCmh": 4860,
+  "dxfBytes": 9080,
+  "dxfSha": "b07d628bab1d3083"
+ },
+ {
+  "key": "DECK2__AHU-1",
+  "deckId": "DECK2",
+  "systemId": "AHU-1",
+  "systemKey": "AHU-1",
+  "kind": "supply",
+  "flowMode": "supply",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": false,
+  "decks": 3,
+  "rootRoomId": "dxf-24ecd28a29b8fa890a5472d7ae7bea68",
+  "root": {
+   "x": 2500,
+   "y": -8700
+  },
+  "rootSource": "shaft-room:204",
+  "rus": [
+   {
+    "id": "AHU-1/202/1",
+    "roomId": "dxf-4e8ddeaf1ebc220fb4f0bc90348050f6",
+    "roomNo": "202",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 6500,
+    "y": -7000,
+    "flowCmh": 290
+   },
+   {
+    "id": "AHU-1/202/2",
+    "roomId": "dxf-4e8ddeaf1ebc220fb4f0bc90348050f6",
+    "roomNo": "202",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 19500,
+    "y": -7000,
+    "flowCmh": 290
+   },
+   {
+    "id": "AHU-1/203/1",
+    "roomId": "dxf-af3d438d68c420fdf2875a9826af66f5",
+    "roomNo": "203",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 4800,
+    "y": -9500,
+    "flowCmh": 30
+   },
+   {
+    "id": "AHU-1/210/1",
+    "roomId": "dxf-4ef60bdf0188131e0875304066d0b8d7",
+    "roomNo": "210",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 5300,
+    "y": -4500,
+    "flowCmh": 360
+   },
+   {
+    "id": "AHU-1/210/2",
+    "roomId": "dxf-4ef60bdf0188131e0875304066d0b8d7",
+    "roomNo": "210",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 5300,
+    "y": -1500,
+    "flowCmh": 350
+   },
+   {
+    "id": "AHU-1/211/1",
+    "roomId": "dxf-51750696267fbb6cbdce7c9d06ea613a",
+    "roomNo": "211",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 13600,
+    "y": -2600,
+    "flowCmh": 150
+   },
+   {
+    "id": "AHU-1/212/1",
+    "roomId": "dxf-9f5af1925540ddcca8f38cc0ceda9b18",
+    "roomNo": "212",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 16600,
+    "y": -2600,
+    "flowCmh": 150
+   },
+   {
+    "id": "AHU-1/213/1",
+    "roomId": "dxf-e37b5a15808fe69097b8d43cb21b45fb",
+    "roomNo": "213",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 19600,
+    "y": -2600,
+    "flowCmh": 150
+   },
+   {
+    "id": "AHU-1/214/1",
+    "roomId": "dxf-0add8a9926fffc0e6b6890bb5791a015",
+    "roomNo": "214",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 23700,
+    "y": -2800,
+    "flowCmh": 240
+   },
+   {
+    "id": "AHU-1/230/1",
+    "roomId": "dxf-646c51ecb95738431e058b737968f473",
+    "roomNo": "230",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 8800,
+    "y": -3000,
+    "flowCmh": 210
+   },
+   {
+    "id": "AHU-1/240/1",
+    "roomId": "dxf-24826d8c78f44fe581a121b25cac7888",
+    "roomNo": "240",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 9000,
+    "y": -11000,
+    "flowCmh": 500
+   },
+   {
+    "id": "AHU-1/241/1",
+    "roomId": "dxf-083eb2d481400aea179dbdf0a8e97c37",
+    "roomNo": "241",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 13600,
+    "y": -11400,
+    "flowCmh": 140
+   },
+   {
+    "id": "AHU-1/242/1",
+    "roomId": "dxf-88e7361c042e44c92002864bb5ff8f1e",
+    "roomNo": "242",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 16600,
+    "y": -11400,
+    "flowCmh": 140
+   },
+   {
+    "id": "AHU-1/243/1",
+    "roomId": "dxf-c5e8ab35892a68ab0a4e2aba3117b8fe",
+    "roomNo": "243",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 19600,
+    "y": -11400,
+    "flowCmh": 140
+   },
+   {
+    "id": "AHU-1/244/1",
+    "roomId": "dxf-1503ba8ae4fc156bf682a1454d285ca6",
+    "roomNo": "244",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 23700,
+    "y": -11200,
+    "flowCmh": 220
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-8636fab8c7d2d95b82b599105465ab01",
+    "no": "201",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-8636fab8c7d2d95b82b599105465ab01",
+   "dxf-4e8ddeaf1ebc220fb4f0bc90348050f6",
+   "dxf-af3d438d68c420fdf2875a9826af66f5",
+   "dxf-24ecd28a29b8fa890a5472d7ae7bea68",
+   "dxf-a017ef1b655e97e3ce1713dce8625789",
+   "dxf-887418acd311084dc60cd3e14ddac4a6",
+   "dxf-ad3bb846865e7f7d6d46d877f5bdcac4",
+   "dxf-9e0d77fd0b878143b633d9ec799f84a7",
+   "dxf-4ef60bdf0188131e0875304066d0b8d7",
+   "dxf-51750696267fbb6cbdce7c9d06ea613a",
+   "dxf-9f5af1925540ddcca8f38cc0ceda9b18",
+   "dxf-e37b5a15808fe69097b8d43cb21b45fb",
+   "dxf-0add8a9926fffc0e6b6890bb5791a015",
+   "dxf-646c51ecb95738431e058b737968f473",
+   "dxf-56795bb56c784489bf9d63261b26d489",
+   "dxf-e92264c43209b5199f90661493a70393",
+   "dxf-24826d8c78f44fe581a121b25cac7888",
+   "dxf-083eb2d481400aea179dbdf0a8e97c37",
+   "dxf-88e7361c042e44c92002864bb5ff8f1e",
+   "dxf-c5e8ab35892a68ab0a4e2aba3117b8fe",
+   "dxf-1503ba8ae4fc156bf682a1454d285ca6",
+   "dxf-e89b9a4aa2a7658b62e751ed6e4bcb43",
+   "dxf-f597909f1784dc61597820827f09a36b",
+   "dxf-e1ec4a10b2ebc3bef135c6cf46e76521",
+   "dxf-6e143ac28e70bee17ad783abb3501bd6",
+   "dxf-352f02672b18af29714267295ceaa585",
+   "dxf-86a83028a6e6f6c892f400b0fc9b49fd",
+   "dxf-202e792fd7d91869178d8c8595506e8b",
+   "dxf-61039d2cb05b4e09893d49f11ce8fddc"
+  ],
+  "designCmh": 3360,
+  "dxfBytes": 15178,
+  "dxfSha": "8f16da8cda863977"
+ },
+ {
+  "key": "DECK3__AHU-1",
+  "deckId": "DECK3",
+  "systemId": "AHU-1",
+  "systemKey": "AHU-1",
+  "kind": "supply",
+  "flowMode": "supply",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": false,
+  "decks": 3,
+  "rootRoomId": "dxf-2232947077b441550a05360ad09986e3",
+  "root": {
+   "x": 2500,
+   "y": -8700
+  },
+  "rootSource": "shaft-room:304",
+  "rus": [
+   {
+    "id": "AHU-1/302/1",
+    "roomId": "dxf-fffa5465a127b54eadfbd2dc713257e6",
+    "roomNo": "302",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 10000,
+    "y": -7000,
+    "flowCmh": 440
+   },
+   {
+    "id": "AHU-1/303/1",
+    "roomId": "dxf-55b673b6b014d038b3abce4a44ca8d5e",
+    "roomNo": "303",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 4800,
+    "y": -9500,
+    "flowCmh": 80
+   },
+   {
+    "id": "AHU-1/310/1",
+    "roomId": "dxf-daac0fd4a65799908990e3c522b5ef74",
+    "roomNo": "310",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 5000,
+    "y": -5000,
+    "flowCmh": 360
+   },
+   {
+    "id": "AHU-1/310/2",
+    "roomId": "dxf-daac0fd4a65799908990e3c522b5ef74",
+    "roomNo": "310",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 5000,
+    "y": -3000,
+    "flowCmh": 360
+   },
+   {
+    "id": "AHU-1/310/3",
+    "roomId": "dxf-daac0fd4a65799908990e3c522b5ef74",
+    "roomNo": "310",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 5000,
+    "y": -1000,
+    "flowCmh": 360
+   },
+   {
+    "id": "AHU-1/311/1",
+    "roomId": "dxf-8ff07887ded002accb687069960d4a91",
+    "roomNo": "311",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 8900,
+    "y": -2800,
+    "flowCmh": 330
+   },
+   {
+    "id": "AHU-1/312/1",
+    "roomId": "dxf-8081f76991270633296cc6970aaa797b",
+    "roomNo": "312",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 13400,
+    "y": -2800,
+    "flowCmh": 330
+   },
+   {
+    "id": "AHU-1/313/1",
+    "roomId": "dxf-b7e76935369cc8c92efe4f1a9f2846dd",
+    "roomNo": "313",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 17900,
+    "y": -2800,
+    "flowCmh": 330
+   },
+   {
+    "id": "AHU-1/321/1",
+    "roomId": "dxf-16128f2ed10d1ff9f7fb9c9a03b5f53d",
+    "roomNo": "321",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 8900,
+    "y": -11200,
+    "flowCmh": 340
+   },
+   {
+    "id": "AHU-1/322/1",
+    "roomId": "dxf-b0b6a5eaebc7a1fbdfcd9ecedea0dd59",
+    "roomNo": "322",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 13400,
+    "y": -11200,
+    "flowCmh": 330
+   },
+   {
+    "id": "AHU-1/323/1",
+    "roomId": "dxf-39b08fe7e28c7e9edd7e9edbddf9a641",
+    "roomNo": "323",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 17900,
+    "y": -11200,
+    "flowCmh": 330
+   },
+   {
+    "id": "AHU-1/330/1",
+    "roomId": "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+    "roomNo": "330",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 23000,
+    "y": -11700,
+    "flowCmh": 480
+   },
+   {
+    "id": "AHU-1/330/2",
+    "roomId": "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+    "roomNo": "330",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 23000,
+    "y": -7000,
+    "flowCmh": 480
+   },
+   {
+    "id": "AHU-1/330/3",
+    "roomId": "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+    "roomNo": "330",
+    "systemId": "AHU-1",
+    "use": "supply",
+    "x": 23000,
+    "y": -2300,
+    "flowCmh": 480
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-bd889c903e6f55bdda08259d1252bec8",
+    "no": "301",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-1ff41e56bb4364bbb145e942cf7f79fb",
+    "no": "306",
+    "name": "배터리실",
+    "space": "축전지실",
+    "polygon": [
+     {
+      "x": 1500,
+      "y": -14000
+     },
+     {
+      "x": 3500,
+      "y": -14000
+     },
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     },
+     {
+      "x": 1500,
+      "y": -9500
+     },
+     {
+      "x": 1500,
+      "y": -10000
+     }
+    ],
+    "zone": [
+     {
+      "x": 1550,
+      "y": -13950
+     },
+     {
+      "x": 3450,
+      "y": -13950
+     },
+     {
+      "x": 3450,
+      "y": -11000
+     },
+     {
+      "x": 3450,
+      "y": -9550
+     },
+     {
+      "x": 1550,
+      "y": -9550
+     },
+     {
+      "x": 1550,
+      "y": -10000
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-bd889c903e6f55bdda08259d1252bec8",
+   "dxf-fffa5465a127b54eadfbd2dc713257e6",
+   "dxf-55b673b6b014d038b3abce4a44ca8d5e",
+   "dxf-2232947077b441550a05360ad09986e3",
+   "dxf-79879f0fa86030712e42f257a3fa3380",
+   "dxf-1ff41e56bb4364bbb145e942cf7f79fb",
+   "dxf-2742cd291d7a4a469719d69ae1ac6f56",
+   "dxf-88c1a4e106955035422445b0889b3816",
+   "dxf-d9378c671f14d704043159cb0db60a25",
+   "dxf-daac0fd4a65799908990e3c522b5ef74",
+   "dxf-8ff07887ded002accb687069960d4a91",
+   "dxf-8081f76991270633296cc6970aaa797b",
+   "dxf-b7e76935369cc8c92efe4f1a9f2846dd",
+   "dxf-16128f2ed10d1ff9f7fb9c9a03b5f53d",
+   "dxf-b0b6a5eaebc7a1fbdfcd9ecedea0dd59",
+   "dxf-39b08fe7e28c7e9edd7e9edbddf9a641",
+   "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+   "dxf-862b5aa64cca353eabc60a00b16209de",
+   "dxf-d4eee0e7aa36553b4bc019c9b3dda076",
+   "dxf-0708aa9057d0e8661554803931188133",
+   "dxf-0f5d1c9c51ed5f2021c2fc58d09324f9",
+   "dxf-c957811dcbd971e1adf889e18c56a1b9",
+   "dxf-5327d687afc9f79b3ccfb4773866d22c"
+  ],
+  "designCmh": 5030,
+  "dxfBytes": 12105,
+  "dxfSha": "5c113dc4caf82eca"
+ },
+ {
+  "key": "DECK1__SF-GAL",
+  "deckId": "DECK1",
+  "systemId": "SF-GAL",
+  "systemKey": "SF-GAL",
+  "kind": "supply",
+  "flowMode": "supply",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": true,
+  "decks": 1,
+  "rootRoomId": "dxf-17307fb0db00f9081298b023f81c6f8f",
+  "root": {
+   "x": 7500,
+   "y": -11000
+  },
+  "rootSource": "fan-room:124",
+  "rus": [
+   {
+    "id": "SF-GAL/114/1",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "SF-GAL",
+    "use": "supply",
+    "x": 11300,
+    "y": -5500,
+    "flowCmh": 490
+   },
+   {
+    "id": "SF-GAL/114/2",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "SF-GAL",
+    "use": "supply",
+    "x": 11300,
+    "y": -4500,
+    "flowCmh": 490
+   },
+   {
+    "id": "SF-GAL/114/3",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "SF-GAL",
+    "use": "supply",
+    "x": 11300,
+    "y": -3500,
+    "flowCmh": 490
+   },
+   {
+    "id": "SF-GAL/114/4",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "SF-GAL",
+    "use": "supply",
+    "x": 11300,
+    "y": -2500,
+    "flowCmh": 490
+   },
+   {
+    "id": "SF-GAL/114/5",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "SF-GAL",
+    "use": "supply",
+    "x": 11300,
+    "y": -1500,
+    "flowCmh": 490
+   },
+   {
+    "id": "SF-GAL/114/6",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "SF-GAL",
+    "use": "supply",
+    "x": 11300,
+    "y": -500,
+    "flowCmh": 490
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+    "no": "101",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -2500
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e3786626192fffdc62c5a32f9b99fe34",
+    "no": "103",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e346205f9624b5cd5530d7d28e4536a8",
+    "no": "111",
+    "name": "CO2실",
+    "space": "소화제 저장실 (CO₂실)",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": 0
+     },
+     {
+      "x": 3500,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 3550,
+      "y": -49.99999999999999
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+   "dxf-881522c02887db6d6aaec30c7d78f97f",
+   "dxf-e3786626192fffdc62c5a32f9b99fe34",
+   "dxf-77e13b0451a086cabfbeeff871090a73",
+   "dxf-08fc86fc26e1b72fb150b8063c031334",
+   "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+   "dxf-f4114cdace4e225946b5106b32da09e5",
+   "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+   "dxf-e346205f9624b5cd5530d7d28e4536a8",
+   "dxf-a53896078e0f33fb935b8c1557b6296f",
+   "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+   "dxf-001c6d8f3b5312cc201906b469dad59e",
+   "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+   "dxf-181fb2ec162541b28f2abca5b327efbf",
+   "dxf-10716f31b134eac3f347a165bc673e76",
+   "dxf-858d952395b4da30268e71898b73d022",
+   "dxf-bce07d0c3b19fb187ad032cabfffb843",
+   "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+   "dxf-17307fb0db00f9081298b023f81c6f8f"
+  ],
+  "designCmh": 2940,
+  "dxfBytes": 9080,
+  "dxfSha": "b07d628bab1d3083"
+ },
+ {
+  "key": "DECK3__EF-BAT",
+  "deckId": "DECK3",
+  "systemId": "EF-BAT",
+  "systemKey": "EF-BAT",
+  "kind": "exhaust",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK3",
+  "unitDeckSource": "most-air",
+  "isUnitDeck": true,
+  "decks": 1,
+  "rootRoomId": "dxf-1ff41e56bb4364bbb145e942cf7f79fb",
+  "root": {
+   "x": 1800,
+   "y": -11700
+  },
+  "rootSource": "own-room:306",
+  "rus": [
+   {
+    "id": "EF-BAT/306/1",
+    "roomId": "dxf-1ff41e56bb4364bbb145e942cf7f79fb",
+    "roomNo": "306",
+    "systemId": "EF-BAT",
+    "use": "exhaust",
+    "x": 2500,
+    "y": -11700,
+    "flowCmh": 240
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-bd889c903e6f55bdda08259d1252bec8",
+    "no": "301",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-55b673b6b014d038b3abce4a44ca8d5e",
+    "no": "303",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-bd889c903e6f55bdda08259d1252bec8",
+   "dxf-fffa5465a127b54eadfbd2dc713257e6",
+   "dxf-55b673b6b014d038b3abce4a44ca8d5e",
+   "dxf-2232947077b441550a05360ad09986e3",
+   "dxf-79879f0fa86030712e42f257a3fa3380",
+   "dxf-1ff41e56bb4364bbb145e942cf7f79fb",
+   "dxf-2742cd291d7a4a469719d69ae1ac6f56",
+   "dxf-88c1a4e106955035422445b0889b3816",
+   "dxf-d9378c671f14d704043159cb0db60a25",
+   "dxf-daac0fd4a65799908990e3c522b5ef74",
+   "dxf-8ff07887ded002accb687069960d4a91",
+   "dxf-8081f76991270633296cc6970aaa797b",
+   "dxf-b7e76935369cc8c92efe4f1a9f2846dd",
+   "dxf-16128f2ed10d1ff9f7fb9c9a03b5f53d",
+   "dxf-b0b6a5eaebc7a1fbdfcd9ecedea0dd59",
+   "dxf-39b08fe7e28c7e9edd7e9edbddf9a641",
+   "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+   "dxf-862b5aa64cca353eabc60a00b16209de",
+   "dxf-d4eee0e7aa36553b4bc019c9b3dda076",
+   "dxf-0708aa9057d0e8661554803931188133",
+   "dxf-0f5d1c9c51ed5f2021c2fc58d09324f9",
+   "dxf-c957811dcbd971e1adf889e18c56a1b9",
+   "dxf-5327d687afc9f79b3ccfb4773866d22c"
+  ],
+  "designCmh": 240,
+  "dxfBytes": 12105,
+  "dxfSha": "5c113dc4caf82eca"
+ },
+ {
+  "key": "DECK1__EF-CO2",
+  "deckId": "DECK1",
+  "systemId": "EF-CO2",
+  "systemKey": "EF-CO2",
+  "kind": "exhaust",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": true,
+  "decks": 1,
+  "rootRoomId": "dxf-e346205f9624b5cd5530d7d28e4536a8",
+  "root": {
+   "x": 3800,
+   "y": -1200
+  },
+  "rootSource": "own-room:111",
+  "rus": [
+   {
+    "id": "EF-CO2/111/1",
+    "roomId": "dxf-e346205f9624b5cd5530d7d28e4536a8",
+    "roomNo": "111",
+    "systemId": "EF-CO2",
+    "use": "exhaust",
+    "x": 4800,
+    "y": -1200,
+    "flowCmh": 90
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+    "no": "101",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -2500
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e3786626192fffdc62c5a32f9b99fe34",
+    "no": "103",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "no": "114",
+    "name": "조리실",
+    "space": "조리실",
+    "polygon": [
+     {
+      "x": 9000,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": 0
+     },
+     {
+      "x": 9000,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 9050,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 9050,
+      "y": -49.99999999999999
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+   "dxf-881522c02887db6d6aaec30c7d78f97f",
+   "dxf-e3786626192fffdc62c5a32f9b99fe34",
+   "dxf-77e13b0451a086cabfbeeff871090a73",
+   "dxf-08fc86fc26e1b72fb150b8063c031334",
+   "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+   "dxf-f4114cdace4e225946b5106b32da09e5",
+   "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+   "dxf-e346205f9624b5cd5530d7d28e4536a8",
+   "dxf-a53896078e0f33fb935b8c1557b6296f",
+   "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+   "dxf-001c6d8f3b5312cc201906b469dad59e",
+   "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+   "dxf-181fb2ec162541b28f2abca5b327efbf",
+   "dxf-10716f31b134eac3f347a165bc673e76",
+   "dxf-858d952395b4da30268e71898b73d022",
+   "dxf-bce07d0c3b19fb187ad032cabfffb843",
+   "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+   "dxf-17307fb0db00f9081298b023f81c6f8f"
+  ],
+  "designCmh": 90,
+  "dxfBytes": 9080,
+  "dxfSha": "b07d628bab1d3083"
+ },
+ {
+  "key": "DECK1__EF-GAL",
+  "deckId": "DECK1",
+  "systemId": "EF-GAL",
+  "systemKey": "EF-GAL",
+  "kind": "exhaust",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": true,
+  "decks": 1,
+  "rootRoomId": "dxf-17307fb0db00f9081298b023f81c6f8f",
+  "root": {
+   "x": 8000,
+   "y": -10500
+  },
+  "rootSource": "fan-room:124",
+  "rus": [
+   {
+    "id": "EF-GAL/114/1",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "EF-GAL",
+    "use": "exhaust",
+    "x": 9300,
+    "y": -5100,
+    "flowCmh": 470
+   },
+   {
+    "id": "EF-GAL/114/2",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "EF-GAL",
+    "use": "exhaust",
+    "x": 9300,
+    "y": -2900,
+    "flowCmh": 470
+   },
+   {
+    "id": "EF-GAL/114/3",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "EF-GAL",
+    "use": "exhaust",
+    "x": 9300,
+    "y": -700,
+    "flowCmh": 460
+   },
+   {
+    "id": "EF-GAL/114/4",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "EF-GAL",
+    "use": "exhaust",
+    "x": 13100,
+    "y": -5100,
+    "flowCmh": 460
+   },
+   {
+    "id": "EF-GAL/114/5",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "EF-GAL",
+    "use": "exhaust",
+    "x": 13100,
+    "y": -3100,
+    "flowCmh": 460
+   },
+   {
+    "id": "EF-GAL/114/6",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "EF-GAL",
+    "use": "exhaust",
+    "x": 13100,
+    "y": -1100,
+    "flowCmh": 460
+   },
+   {
+    "id": "EF-GAL/114/7",
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "roomNo": "114",
+    "systemId": "EF-GAL",
+    "use": "exhaust",
+    "x": 10100,
+    "y": -4100,
+    "flowCmh": 460
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+    "no": "101",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -2500
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-881522c02887db6d6aaec30c7d78f97f",
+    "no": "102",
+    "name": "복도",
+    "space": "통로",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -8000
+     },
+     {
+      "x": 1500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 9000,
+      "y": -8000
+     },
+     {
+      "x": 14500,
+      "y": -8000
+     },
+     {
+      "x": 19000,
+      "y": -8000
+     },
+     {
+      "x": 26000,
+      "y": -8000
+     },
+     {
+      "x": 26000,
+      "y": -6000
+     },
+     {
+      "x": 23000,
+      "y": -6000
+     },
+     {
+      "x": 15500,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": -6000
+     },
+     {
+      "x": 9000,
+      "y": -6000
+     },
+     {
+      "x": 6000,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 0,
+      "y": -6000
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -7950
+     },
+     {
+      "x": 1500,
+      "y": -7950
+     },
+     {
+      "x": 3500,
+      "y": -7950
+     },
+     {
+      "x": 6000,
+      "y": -7950
+     },
+     {
+      "x": 9000,
+      "y": -7950
+     },
+     {
+      "x": 14500,
+      "y": -7950
+     },
+     {
+      "x": 19000,
+      "y": -7950
+     },
+     {
+      "x": 25950,
+      "y": -7950
+     },
+     {
+      "x": 25950,
+      "y": -6050
+     },
+     {
+      "x": 23000,
+      "y": -6050
+     },
+     {
+      "x": 15500,
+      "y": -6050
+     },
+     {
+      "x": 13500,
+      "y": -6050
+     },
+     {
+      "x": 9000,
+      "y": -6050
+     },
+     {
+      "x": 6000,
+      "y": -6050
+     },
+     {
+      "x": 3500,
+      "y": -6050
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -6050
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e3786626192fffdc62c5a32f9b99fe34",
+    "no": "103",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-08fc86fc26e1b72fb150b8063c031334",
+    "no": "105",
+    "name": "공용화장실",
+    "space": "화장실·샤워실·욕실",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -10000
+     },
+     {
+      "x": 1500,
+      "y": -10000
+     },
+     {
+      "x": 1500,
+      "y": -9500
+     },
+     {
+      "x": 1500,
+      "y": -8000
+     },
+     {
+      "x": 0,
+      "y": -8000
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -9950
+     },
+     {
+      "x": 1450,
+      "y": -9950
+     },
+     {
+      "x": 1450,
+      "y": -9500
+     },
+     {
+      "x": 1450,
+      "y": -8050
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -8050
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-f4114cdace4e225946b5106b32da09e5",
+    "no": "107",
+    "name": "창고",
+    "space": "로커·창고 — 4㎡ 초과",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -14000
+     },
+     {
+      "x": 6000,
+      "y": -14000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 3500,
+      "y": -11000
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -13950
+     },
+     {
+      "x": 5950,
+      "y": -13950
+     },
+     {
+      "x": 5950,
+      "y": -11050
+     },
+     {
+      "x": 3550,
+      "y": -11050
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+    "no": "108",
+    "name": "청소도구실",
+    "space": "청소구 로커",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -14000
+     },
+     {
+      "x": 1500,
+      "y": -14000
+     },
+     {
+      "x": 1500,
+      "y": -10000
+     },
+     {
+      "x": 0,
+      "y": -10000
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -13950
+     },
+     {
+      "x": 1450,
+      "y": -13950
+     },
+     {
+      "x": 1450,
+      "y": -10050
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -10050
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e346205f9624b5cd5530d7d28e4536a8",
+    "no": "111",
+    "name": "CO2실",
+    "space": "소화제 저장실 (CO₂실)",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": 0
+     },
+     {
+      "x": 3500,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 3550,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-a53896078e0f33fb935b8c1557b6296f",
+    "no": "112",
+    "name": "탈의실",
+    "space": "화장실·샤워실·욕실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 6000,
+      "y": -6000
+     },
+     {
+      "x": 6000,
+      "y": -2500
+     },
+     {
+      "x": 3500,
+      "y": -2500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -5950
+     },
+     {
+      "x": 5950,
+      "y": -5950
+     },
+     {
+      "x": 5950,
+      "y": -2550
+     },
+     {
+      "x": 3550,
+      "y": -2550
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+    "no": "113",
+    "name": "세탁실",
+    "space": "주세탁실",
+    "polygon": [
+     {
+      "x": 6000,
+      "y": -6000
+     },
+     {
+      "x": 9000,
+      "y": -6000
+     },
+     {
+      "x": 9000,
+      "y": 0
+     },
+     {
+      "x": 6000,
+      "y": 0
+     },
+     {
+      "x": 6000,
+      "y": -2500
+     }
+    ],
+    "zone": [
+     {
+      "x": 6050,
+      "y": -5950
+     },
+     {
+      "x": 8950,
+      "y": -5950
+     },
+     {
+      "x": 8950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 6050,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 6050,
+      "y": -2500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+    "no": "115",
+    "name": "배식실",
+    "space": "팬트리 — 조리기구 없음",
+    "polygon": [
+     {
+      "x": 13500,
+      "y": -6000
+     },
+     {
+      "x": 15500,
+      "y": -6000
+     },
+     {
+      "x": 15500,
+      "y": 0
+     },
+     {
+      "x": 13500,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 13550,
+      "y": -5950
+     },
+     {
+      "x": 15450,
+      "y": -5950
+     },
+     {
+      "x": 15450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 13550,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-181fb2ec162541b28f2abca5b327efbf",
+    "no": "116",
+    "name": "식료품창고",
+    "space": "로커·창고 — 4㎡ 초과",
+    "polygon": [
+     {
+      "x": 15500,
+      "y": -6000
+     },
+     {
+      "x": 23000,
+      "y": -6000
+     },
+     {
+      "x": 23000,
+      "y": 0
+     },
+     {
+      "x": 15500,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 15550,
+      "y": -5950
+     },
+     {
+      "x": 22950,
+      "y": -5950
+     },
+     {
+      "x": 22950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 15550,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-10716f31b134eac3f347a165bc673e76",
+    "no": "117",
+    "name": "냉장고",
+    "space": "냉장실",
+    "polygon": [
+     {
+      "x": 23000,
+      "y": -6000
+     },
+     {
+      "x": 26000,
+      "y": -6000
+     },
+     {
+      "x": 26000,
+      "y": 0
+     },
+     {
+      "x": 23000,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 23050,
+      "y": -5950
+     },
+     {
+      "x": 25950,
+      "y": -5950
+     },
+     {
+      "x": 25950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 23050,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-858d952395b4da30268e71898b73d022",
+    "no": "121",
+    "name": "선원식당",
+    "space": "식당",
+    "polygon": [
+     {
+      "x": 9000,
+      "y": -14000
+     },
+     {
+      "x": 14500,
+      "y": -14000
+     },
+     {
+      "x": 14500,
+      "y": -8000
+     },
+     {
+      "x": 9000,
+      "y": -8000
+     }
+    ],
+    "zone": [
+     {
+      "x": 9050,
+      "y": -13950
+     },
+     {
+      "x": 14450,
+      "y": -13950
+     },
+     {
+      "x": 14450,
+      "y": -8050
+     },
+     {
+      "x": 9050,
+      "y": -8050
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-bce07d0c3b19fb187ad032cabfffb843",
+    "no": "122",
+    "name": "사관식당",
+    "space": "식당",
+    "polygon": [
+     {
+      "x": 14500,
+      "y": -14000
+     },
+     {
+      "x": 19000,
+      "y": -14000
+     },
+     {
+      "x": 19000,
+      "y": -8000
+     },
+     {
+      "x": 14500,
+      "y": -8000
+     }
+    ],
+    "zone": [
+     {
+      "x": 14550,
+      "y": -13950
+     },
+     {
+      "x": 18950,
+      "y": -13950
+     },
+     {
+      "x": 18950,
+      "y": -8050
+     },
+     {
+      "x": 14550,
+      "y": -8050
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+    "no": "123",
+    "name": "휴게실",
+    "space": "오락실",
+    "polygon": [
+     {
+      "x": 19000,
+      "y": -14000
+     },
+     {
+      "x": 26000,
+      "y": -14000
+     },
+     {
+      "x": 26000,
+      "y": -8000
+     },
+     {
+      "x": 19000,
+      "y": -8000
+     }
+    ],
+    "zone": [
+     {
+      "x": 19050,
+      "y": -13950
+     },
+     {
+      "x": 25950,
+      "y": -13950
+     },
+     {
+      "x": 25950,
+      "y": -8050
+     },
+     {
+      "x": 19050,
+      "y": -8050
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+   "dxf-881522c02887db6d6aaec30c7d78f97f",
+   "dxf-e3786626192fffdc62c5a32f9b99fe34",
+   "dxf-77e13b0451a086cabfbeeff871090a73",
+   "dxf-08fc86fc26e1b72fb150b8063c031334",
+   "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+   "dxf-f4114cdace4e225946b5106b32da09e5",
+   "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+   "dxf-e346205f9624b5cd5530d7d28e4536a8",
+   "dxf-a53896078e0f33fb935b8c1557b6296f",
+   "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+   "dxf-001c6d8f3b5312cc201906b469dad59e",
+   "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+   "dxf-181fb2ec162541b28f2abca5b327efbf",
+   "dxf-10716f31b134eac3f347a165bc673e76",
+   "dxf-858d952395b4da30268e71898b73d022",
+   "dxf-bce07d0c3b19fb187ad032cabfffb843",
+   "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+   "dxf-17307fb0db00f9081298b023f81c6f8f"
+  ],
+  "designCmh": 3240,
+  "dxfBytes": 9080,
+  "dxfSha": "b07d628bab1d3083"
+ },
+ {
+  "key": "DECK2__EF-HOS",
+  "deckId": "DECK2",
+  "systemId": "EF-HOS",
+  "systemKey": "EF-HOS",
+  "kind": "exhaust",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK2",
+  "unitDeckSource": "most-air",
+  "isUnitDeck": true,
+  "decks": 1,
+  "rootRoomId": "dxf-e92264c43209b5199f90661493a70393",
+  "root": {
+   "x": 11200,
+   "y": -2000
+  },
+  "rootSource": "user",
+  "rus": [
+   {
+    "id": "EF-HOS/230/1",
+    "roomId": "dxf-646c51ecb95738431e058b737968f473",
+    "roomNo": "230",
+    "systemId": "EF-HOS",
+    "use": "exhaust",
+    "x": 7300,
+    "y": -5700,
+    "flowCmh": 280
+   },
+   {
+    "id": "EF-HOS/230/2",
+    "roomId": "dxf-646c51ecb95738431e058b737968f473",
+    "roomNo": "230",
+    "systemId": "EF-HOS",
+    "use": "exhaust",
+    "x": 7300,
+    "y": -300,
+    "flowCmh": 280
+   },
+   {
+    "id": "EF-HOS/231/1",
+    "roomId": "dxf-56795bb56c784489bf9d63261b26d489",
+    "roomNo": "231",
+    "systemId": "EF-HOS",
+    "use": "exhaust",
+    "x": 11300,
+    "y": -5000,
+    "flowCmh": 100
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-8636fab8c7d2d95b82b599105465ab01",
+    "no": "201",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-af3d438d68c420fdf2875a9826af66f5",
+    "no": "203",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-8636fab8c7d2d95b82b599105465ab01",
+   "dxf-4e8ddeaf1ebc220fb4f0bc90348050f6",
+   "dxf-af3d438d68c420fdf2875a9826af66f5",
+   "dxf-24ecd28a29b8fa890a5472d7ae7bea68",
+   "dxf-a017ef1b655e97e3ce1713dce8625789",
+   "dxf-887418acd311084dc60cd3e14ddac4a6",
+   "dxf-ad3bb846865e7f7d6d46d877f5bdcac4",
+   "dxf-9e0d77fd0b878143b633d9ec799f84a7",
+   "dxf-4ef60bdf0188131e0875304066d0b8d7",
+   "dxf-51750696267fbb6cbdce7c9d06ea613a",
+   "dxf-9f5af1925540ddcca8f38cc0ceda9b18",
+   "dxf-e37b5a15808fe69097b8d43cb21b45fb",
+   "dxf-0add8a9926fffc0e6b6890bb5791a015",
+   "dxf-646c51ecb95738431e058b737968f473",
+   "dxf-56795bb56c784489bf9d63261b26d489",
+   "dxf-e92264c43209b5199f90661493a70393",
+   "dxf-24826d8c78f44fe581a121b25cac7888",
+   "dxf-083eb2d481400aea179dbdf0a8e97c37",
+   "dxf-88e7361c042e44c92002864bb5ff8f1e",
+   "dxf-c5e8ab35892a68ab0a4e2aba3117b8fe",
+   "dxf-1503ba8ae4fc156bf682a1454d285ca6",
+   "dxf-e89b9a4aa2a7658b62e751ed6e4bcb43",
+   "dxf-f597909f1784dc61597820827f09a36b",
+   "dxf-e1ec4a10b2ebc3bef135c6cf46e76521",
+   "dxf-6e143ac28e70bee17ad783abb3501bd6",
+   "dxf-352f02672b18af29714267295ceaa585",
+   "dxf-86a83028a6e6f6c892f400b0fc9b49fd",
+   "dxf-202e792fd7d91869178d8c8595506e8b",
+   "dxf-61039d2cb05b4e09893d49f11ce8fddc"
+  ],
+  "designCmh": 660,
+  "dxfBytes": 15178,
+  "dxfSha": "8f16da8cda863977"
+ },
+ {
+  "key": "DECK1__EF-LAU",
+  "deckId": "DECK1",
+  "systemId": "EF-LAU",
+  "systemKey": "EF-LAU",
+  "kind": "exhaust",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": true,
+  "decks": 1,
+  "rootRoomId": "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+  "root": {
+   "x": 3000,
+   "y": -11200
+  },
+  "rootSource": "fan-room:106",
+  "rus": [
+   {
+    "id": "EF-LAU/113/1",
+    "roomId": "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+    "roomNo": "113",
+    "systemId": "EF-LAU",
+    "use": "exhaust",
+    "x": 6300,
+    "y": -3100,
+    "flowCmh": 500
+   },
+   {
+    "id": "EF-LAU/113/2",
+    "roomId": "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+    "roomNo": "113",
+    "systemId": "EF-LAU",
+    "use": "exhaust",
+    "x": 8700,
+    "y": -3100,
+    "flowCmh": 490
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+    "no": "101",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -2500
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e3786626192fffdc62c5a32f9b99fe34",
+    "no": "103",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e346205f9624b5cd5530d7d28e4536a8",
+    "no": "111",
+    "name": "CO2실",
+    "space": "소화제 저장실 (CO₂실)",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": 0
+     },
+     {
+      "x": 3500,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 3550,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "no": "114",
+    "name": "조리실",
+    "space": "조리실",
+    "polygon": [
+     {
+      "x": 9000,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": 0
+     },
+     {
+      "x": 9000,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 9050,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 9050,
+      "y": -49.99999999999999
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+   "dxf-881522c02887db6d6aaec30c7d78f97f",
+   "dxf-e3786626192fffdc62c5a32f9b99fe34",
+   "dxf-77e13b0451a086cabfbeeff871090a73",
+   "dxf-08fc86fc26e1b72fb150b8063c031334",
+   "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+   "dxf-f4114cdace4e225946b5106b32da09e5",
+   "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+   "dxf-e346205f9624b5cd5530d7d28e4536a8",
+   "dxf-a53896078e0f33fb935b8c1557b6296f",
+   "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+   "dxf-001c6d8f3b5312cc201906b469dad59e",
+   "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+   "dxf-181fb2ec162541b28f2abca5b327efbf",
+   "dxf-10716f31b134eac3f347a165bc673e76",
+   "dxf-858d952395b4da30268e71898b73d022",
+   "dxf-bce07d0c3b19fb187ad032cabfffb843",
+   "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+   "dxf-17307fb0db00f9081298b023f81c6f8f"
+  ],
+  "designCmh": 990,
+  "dxfBytes": 9080,
+  "dxfSha": "b07d628bab1d3083"
+ },
+ {
+  "key": "DECK1__EF-PAN",
+  "deckId": "DECK1",
+  "systemId": "EF-PAN",
+  "systemKey": "EF-PAN",
+  "kind": "exhaust",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": true,
+  "decks": 1,
+  "rootRoomId": "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+  "root": {
+   "x": 2000,
+   "y": -11200
+  },
+  "rootSource": "fan-room:106",
+  "rus": [
+   {
+    "id": "EF-PAN/115/1",
+    "roomId": "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+    "roomNo": "115",
+    "systemId": "EF-PAN",
+    "use": "exhaust",
+    "x": 13800,
+    "y": -3100,
+    "flowCmh": 330
+   },
+   {
+    "id": "EF-PAN/115/2",
+    "roomId": "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+    "roomNo": "115",
+    "systemId": "EF-PAN",
+    "use": "exhaust",
+    "x": 15200,
+    "y": -2900,
+    "flowCmh": 330
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+    "no": "101",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -2500
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e3786626192fffdc62c5a32f9b99fe34",
+    "no": "103",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e346205f9624b5cd5530d7d28e4536a8",
+    "no": "111",
+    "name": "CO2실",
+    "space": "소화제 저장실 (CO₂실)",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": 0
+     },
+     {
+      "x": 3500,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 3550,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "no": "114",
+    "name": "조리실",
+    "space": "조리실",
+    "polygon": [
+     {
+      "x": 9000,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": 0
+     },
+     {
+      "x": 9000,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 9050,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 9050,
+      "y": -49.99999999999999
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+   "dxf-881522c02887db6d6aaec30c7d78f97f",
+   "dxf-e3786626192fffdc62c5a32f9b99fe34",
+   "dxf-77e13b0451a086cabfbeeff871090a73",
+   "dxf-08fc86fc26e1b72fb150b8063c031334",
+   "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+   "dxf-f4114cdace4e225946b5106b32da09e5",
+   "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+   "dxf-e346205f9624b5cd5530d7d28e4536a8",
+   "dxf-a53896078e0f33fb935b8c1557b6296f",
+   "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+   "dxf-001c6d8f3b5312cc201906b469dad59e",
+   "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+   "dxf-181fb2ec162541b28f2abca5b327efbf",
+   "dxf-10716f31b134eac3f347a165bc673e76",
+   "dxf-858d952395b4da30268e71898b73d022",
+   "dxf-bce07d0c3b19fb187ad032cabfffb843",
+   "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+   "dxf-17307fb0db00f9081298b023f81c6f8f"
+  ],
+  "designCmh": 660,
+  "dxfBytes": 9080,
+  "dxfSha": "b07d628bab1d3083"
+ },
+ {
+  "key": "DECK1__EF-SAN",
+  "deckId": "DECK1",
+  "systemId": "EF-SAN",
+  "systemKey": "EF-SAN",
+  "kind": "exhaust",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": true,
+  "decks": 3,
+  "rootRoomId": "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+  "root": {
+   "x": 3000,
+   "y": -12200
+  },
+  "rootSource": "fan-room:106",
+  "rus": [
+   {
+    "id": "EF-SAN/105/1",
+    "roomId": "dxf-08fc86fc26e1b72fb150b8063c031334",
+    "roomNo": "105",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 800,
+    "y": -9000,
+    "flowCmh": 100
+   },
+   {
+    "id": "EF-SAN/108/1",
+    "roomId": "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+    "roomNo": "108",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 800,
+    "y": -12000,
+    "flowCmh": 140
+   },
+   {
+    "id": "EF-SAN/112/1",
+    "roomId": "dxf-a53896078e0f33fb935b8c1557b6296f",
+    "roomNo": "112",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 3800,
+    "y": -5700,
+    "flowCmh": 290
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+    "no": "101",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -2500
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e3786626192fffdc62c5a32f9b99fe34",
+    "no": "103",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e346205f9624b5cd5530d7d28e4536a8",
+    "no": "111",
+    "name": "CO2실",
+    "space": "소화제 저장실 (CO₂실)",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": 0
+     },
+     {
+      "x": 3500,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 3550,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "no": "114",
+    "name": "조리실",
+    "space": "조리실",
+    "polygon": [
+     {
+      "x": 9000,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": 0
+     },
+     {
+      "x": 9000,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 9050,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 9050,
+      "y": -49.99999999999999
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+   "dxf-881522c02887db6d6aaec30c7d78f97f",
+   "dxf-e3786626192fffdc62c5a32f9b99fe34",
+   "dxf-77e13b0451a086cabfbeeff871090a73",
+   "dxf-08fc86fc26e1b72fb150b8063c031334",
+   "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+   "dxf-f4114cdace4e225946b5106b32da09e5",
+   "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+   "dxf-e346205f9624b5cd5530d7d28e4536a8",
+   "dxf-a53896078e0f33fb935b8c1557b6296f",
+   "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+   "dxf-001c6d8f3b5312cc201906b469dad59e",
+   "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+   "dxf-181fb2ec162541b28f2abca5b327efbf",
+   "dxf-10716f31b134eac3f347a165bc673e76",
+   "dxf-858d952395b4da30268e71898b73d022",
+   "dxf-bce07d0c3b19fb187ad032cabfffb843",
+   "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+   "dxf-17307fb0db00f9081298b023f81c6f8f"
+  ],
+  "designCmh": 530,
+  "dxfBytes": 9080,
+  "dxfSha": "b07d628bab1d3083"
+ },
+ {
+  "key": "DECK2__EF-SAN",
+  "deckId": "DECK2",
+  "systemId": "EF-SAN",
+  "systemKey": "EF-SAN",
+  "kind": "exhaust",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": false,
+  "decks": 3,
+  "rootRoomId": "dxf-24ecd28a29b8fa890a5472d7ae7bea68",
+  "root": {
+   "x": 3000,
+   "y": -8200
+  },
+  "rootSource": "shaft-room:204",
+  "rus": [
+   {
+    "id": "EF-SAN/205/1",
+    "roomId": "dxf-a017ef1b655e97e3ce1713dce8625789",
+    "roomNo": "205",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 800,
+    "y": -9000,
+    "flowCmh": 100
+   },
+   {
+    "id": "EF-SAN/208/1",
+    "roomId": "dxf-9e0d77fd0b878143b633d9ec799f84a7",
+    "roomNo": "208",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 800,
+    "y": -12000,
+    "flowCmh": 140
+   },
+   {
+    "id": "EF-SAN/261/1",
+    "roomId": "dxf-e89b9a4aa2a7658b62e751ed6e4bcb43",
+    "roomNo": "261",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 12800,
+    "y": -5100,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/262/1",
+    "roomId": "dxf-f597909f1784dc61597820827f09a36b",
+    "roomNo": "262",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 15800,
+    "y": -5100,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/263/1",
+    "roomId": "dxf-e1ec4a10b2ebc3bef135c6cf46e76521",
+    "roomNo": "263",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 18800,
+    "y": -5100,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/264/1",
+    "roomId": "dxf-6e143ac28e70bee17ad783abb3501bd6",
+    "roomNo": "264",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 21800,
+    "y": -5100,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/291/1",
+    "roomId": "dxf-352f02672b18af29714267295ceaa585",
+    "roomNo": "291",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 12800,
+    "y": -8900,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/292/1",
+    "roomId": "dxf-86a83028a6e6f6c892f400b0fc9b49fd",
+    "roomNo": "292",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 15800,
+    "y": -8900,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/293/1",
+    "roomId": "dxf-202e792fd7d91869178d8c8595506e8b",
+    "roomNo": "293",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 18800,
+    "y": -8900,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/294/1",
+    "roomId": "dxf-61039d2cb05b4e09893d49f11ce8fddc",
+    "roomNo": "294",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 21800,
+    "y": -8900,
+    "flowCmh": 90
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-8636fab8c7d2d95b82b599105465ab01",
+    "no": "201",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-af3d438d68c420fdf2875a9826af66f5",
+    "no": "203",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-8636fab8c7d2d95b82b599105465ab01",
+   "dxf-4e8ddeaf1ebc220fb4f0bc90348050f6",
+   "dxf-af3d438d68c420fdf2875a9826af66f5",
+   "dxf-24ecd28a29b8fa890a5472d7ae7bea68",
+   "dxf-a017ef1b655e97e3ce1713dce8625789",
+   "dxf-887418acd311084dc60cd3e14ddac4a6",
+   "dxf-ad3bb846865e7f7d6d46d877f5bdcac4",
+   "dxf-9e0d77fd0b878143b633d9ec799f84a7",
+   "dxf-4ef60bdf0188131e0875304066d0b8d7",
+   "dxf-51750696267fbb6cbdce7c9d06ea613a",
+   "dxf-9f5af1925540ddcca8f38cc0ceda9b18",
+   "dxf-e37b5a15808fe69097b8d43cb21b45fb",
+   "dxf-0add8a9926fffc0e6b6890bb5791a015",
+   "dxf-646c51ecb95738431e058b737968f473",
+   "dxf-56795bb56c784489bf9d63261b26d489",
+   "dxf-e92264c43209b5199f90661493a70393",
+   "dxf-24826d8c78f44fe581a121b25cac7888",
+   "dxf-083eb2d481400aea179dbdf0a8e97c37",
+   "dxf-88e7361c042e44c92002864bb5ff8f1e",
+   "dxf-c5e8ab35892a68ab0a4e2aba3117b8fe",
+   "dxf-1503ba8ae4fc156bf682a1454d285ca6",
+   "dxf-e89b9a4aa2a7658b62e751ed6e4bcb43",
+   "dxf-f597909f1784dc61597820827f09a36b",
+   "dxf-e1ec4a10b2ebc3bef135c6cf46e76521",
+   "dxf-6e143ac28e70bee17ad783abb3501bd6",
+   "dxf-352f02672b18af29714267295ceaa585",
+   "dxf-86a83028a6e6f6c892f400b0fc9b49fd",
+   "dxf-202e792fd7d91869178d8c8595506e8b",
+   "dxf-61039d2cb05b4e09893d49f11ce8fddc"
+  ],
+  "designCmh": 960,
+  "dxfBytes": 15178,
+  "dxfSha": "8f16da8cda863977"
+ },
+ {
+  "key": "DECK3__EF-SAN",
+  "deckId": "DECK3",
+  "systemId": "EF-SAN",
+  "systemKey": "EF-SAN",
+  "kind": "exhaust",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": false,
+  "decks": 3,
+  "rootRoomId": "dxf-2232947077b441550a05360ad09986e3",
+  "root": {
+   "x": 3000,
+   "y": -8200
+  },
+  "rootSource": "shaft-room:304",
+  "rus": [
+   {
+    "id": "EF-SAN/305/1",
+    "roomId": "dxf-79879f0fa86030712e42f257a3fa3380",
+    "roomNo": "305",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 800,
+    "y": -9000,
+    "flowCmh": 100
+   },
+   {
+    "id": "EF-SAN/308/1",
+    "roomId": "dxf-88c1a4e106955035422445b0889b3816",
+    "roomNo": "308",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 800,
+    "y": -12000,
+    "flowCmh": 140
+   },
+   {
+    "id": "EF-SAN/361/1",
+    "roomId": "dxf-862b5aa64cca353eabc60a00b16209de",
+    "roomNo": "361",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 7300,
+    "y": -5100,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/362/1",
+    "roomId": "dxf-d4eee0e7aa36553b4bc019c9b3dda076",
+    "roomNo": "362",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 11800,
+    "y": -5100,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/363/1",
+    "roomId": "dxf-0708aa9057d0e8661554803931188133",
+    "roomNo": "363",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 16300,
+    "y": -5100,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/371/1",
+    "roomId": "dxf-0f5d1c9c51ed5f2021c2fc58d09324f9",
+    "roomNo": "371",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 7300,
+    "y": -8900,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/372/1",
+    "roomId": "dxf-c957811dcbd971e1adf889e18c56a1b9",
+    "roomNo": "372",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 11800,
+    "y": -8900,
+    "flowCmh": 90
+   },
+   {
+    "id": "EF-SAN/373/1",
+    "roomId": "dxf-5327d687afc9f79b3ccfb4773866d22c",
+    "roomNo": "373",
+    "systemId": "EF-SAN",
+    "use": "exhaust",
+    "x": 16300,
+    "y": -8900,
+    "flowCmh": 90
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-bd889c903e6f55bdda08259d1252bec8",
+    "no": "301",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-55b673b6b014d038b3abce4a44ca8d5e",
+    "no": "303",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-1ff41e56bb4364bbb145e942cf7f79fb",
+    "no": "306",
+    "name": "배터리실",
+    "space": "축전지실",
+    "polygon": [
+     {
+      "x": 1500,
+      "y": -14000
+     },
+     {
+      "x": 3500,
+      "y": -14000
+     },
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     },
+     {
+      "x": 1500,
+      "y": -9500
+     },
+     {
+      "x": 1500,
+      "y": -10000
+     }
+    ],
+    "zone": [
+     {
+      "x": 1550,
+      "y": -13950
+     },
+     {
+      "x": 3450,
+      "y": -13950
+     },
+     {
+      "x": 3450,
+      "y": -11000
+     },
+     {
+      "x": 3450,
+      "y": -9550
+     },
+     {
+      "x": 1550,
+      "y": -9550
+     },
+     {
+      "x": 1550,
+      "y": -10000
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-bd889c903e6f55bdda08259d1252bec8",
+   "dxf-fffa5465a127b54eadfbd2dc713257e6",
+   "dxf-55b673b6b014d038b3abce4a44ca8d5e",
+   "dxf-2232947077b441550a05360ad09986e3",
+   "dxf-79879f0fa86030712e42f257a3fa3380",
+   "dxf-1ff41e56bb4364bbb145e942cf7f79fb",
+   "dxf-2742cd291d7a4a469719d69ae1ac6f56",
+   "dxf-88c1a4e106955035422445b0889b3816",
+   "dxf-d9378c671f14d704043159cb0db60a25",
+   "dxf-daac0fd4a65799908990e3c522b5ef74",
+   "dxf-8ff07887ded002accb687069960d4a91",
+   "dxf-8081f76991270633296cc6970aaa797b",
+   "dxf-b7e76935369cc8c92efe4f1a9f2846dd",
+   "dxf-16128f2ed10d1ff9f7fb9c9a03b5f53d",
+   "dxf-b0b6a5eaebc7a1fbdfcd9ecedea0dd59",
+   "dxf-39b08fe7e28c7e9edd7e9edbddf9a641",
+   "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+   "dxf-862b5aa64cca353eabc60a00b16209de",
+   "dxf-d4eee0e7aa36553b4bc019c9b3dda076",
+   "dxf-0708aa9057d0e8661554803931188133",
+   "dxf-0f5d1c9c51ed5f2021c2fc58d09324f9",
+   "dxf-c957811dcbd971e1adf889e18c56a1b9",
+   "dxf-5327d687afc9f79b3ccfb4773866d22c"
+  ],
+  "designCmh": 780,
+  "dxfBytes": 12105,
+  "dxfSha": "5c113dc4caf82eca"
+ },
+ {
+  "key": "DECK1__RA-1",
+  "deckId": "DECK1",
+  "systemId": "RA-1",
+  "systemKey": "RA-1",
+  "kind": "return",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": true,
+  "decks": 3,
+  "rootRoomId": "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+  "root": {
+   "x": 2000,
+   "y": -12200
+  },
+  "rootSource": "fan-room:106",
+  "rus": [
+   {
+    "id": "RA-1/102/1",
+    "roomId": "dxf-881522c02887db6d6aaec30c7d78f97f",
+    "roomNo": "102",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 12900,
+    "y": -7700,
+    "flowCmh": 50
+   },
+   {
+    "id": "RA-1/121/1",
+    "roomId": "dxf-858d952395b4da30268e71898b73d022",
+    "roomNo": "121",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 9300,
+    "y": -11100,
+    "flowCmh": 470
+   },
+   {
+    "id": "RA-1/121/2",
+    "roomId": "dxf-858d952395b4da30268e71898b73d022",
+    "roomNo": "121",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 9300,
+    "y": -8300,
+    "flowCmh": 470
+   },
+   {
+    "id": "RA-1/122/1",
+    "roomId": "dxf-bce07d0c3b19fb187ad032cabfffb843",
+    "roomNo": "122",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 14800,
+    "y": -11100,
+    "flowCmh": 400
+   },
+   {
+    "id": "RA-1/122/2",
+    "roomId": "dxf-bce07d0c3b19fb187ad032cabfffb843",
+    "roomNo": "122",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 14800,
+    "y": -13700,
+    "flowCmh": 400
+   },
+   {
+    "id": "RA-1/123/1",
+    "roomId": "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+    "roomNo": "123",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 22500,
+    "y": -13700,
+    "flowCmh": 320
+   },
+   {
+    "id": "RA-1/123/2",
+    "roomId": "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+    "roomNo": "123",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 22500,
+    "y": -8300,
+    "flowCmh": 320
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+    "no": "101",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -2500
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e3786626192fffdc62c5a32f9b99fe34",
+    "no": "103",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-e346205f9624b5cd5530d7d28e4536a8",
+    "no": "111",
+    "name": "CO2실",
+    "space": "소화제 저장실 (CO₂실)",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": -2500
+     },
+     {
+      "x": 6000,
+      "y": 0
+     },
+     {
+      "x": 3500,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -2450
+     },
+     {
+      "x": 5950,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 3550,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-001c6d8f3b5312cc201906b469dad59e",
+    "no": "114",
+    "name": "조리실",
+    "space": "조리실",
+    "polygon": [
+     {
+      "x": 9000,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": -6000
+     },
+     {
+      "x": 13500,
+      "y": 0
+     },
+     {
+      "x": 9000,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 9050,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -5950
+     },
+     {
+      "x": 13450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 9050,
+      "y": -49.99999999999999
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-e06f24a70be2198ec0b1da49d3cae6ec",
+   "dxf-881522c02887db6d6aaec30c7d78f97f",
+   "dxf-e3786626192fffdc62c5a32f9b99fe34",
+   "dxf-77e13b0451a086cabfbeeff871090a73",
+   "dxf-08fc86fc26e1b72fb150b8063c031334",
+   "dxf-7c5ce088e4e3eb938ed5b734f62f7e39",
+   "dxf-f4114cdace4e225946b5106b32da09e5",
+   "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+   "dxf-e346205f9624b5cd5530d7d28e4536a8",
+   "dxf-a53896078e0f33fb935b8c1557b6296f",
+   "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+   "dxf-001c6d8f3b5312cc201906b469dad59e",
+   "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+   "dxf-181fb2ec162541b28f2abca5b327efbf",
+   "dxf-10716f31b134eac3f347a165bc673e76",
+   "dxf-858d952395b4da30268e71898b73d022",
+   "dxf-bce07d0c3b19fb187ad032cabfffb843",
+   "dxf-1bd8a6b812a37b5364ab50f8920a10f6",
+   "dxf-17307fb0db00f9081298b023f81c6f8f"
+  ],
+  "designCmh": 2430,
+  "dxfBytes": 9080,
+  "dxfSha": "b07d628bab1d3083"
+ },
+ {
+  "key": "DECK2__RA-1",
+  "deckId": "DECK2",
+  "systemId": "RA-1",
+  "systemKey": "RA-1",
+  "kind": "return",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": false,
+  "decks": 3,
+  "rootRoomId": "dxf-24ecd28a29b8fa890a5472d7ae7bea68",
+  "root": {
+   "x": 2000,
+   "y": -8200
+  },
+  "rootSource": "shaft-room:204",
+  "rus": [
+   {
+    "id": "RA-1/202/1",
+    "roomId": "dxf-4e8ddeaf1ebc220fb4f0bc90348050f6",
+    "roomNo": "202",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 12900,
+    "y": -7700,
+    "flowCmh": 30
+   },
+   {
+    "id": "RA-1/210/1",
+    "roomId": "dxf-4ef60bdf0188131e0875304066d0b8d7",
+    "roomNo": "210",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 3800,
+    "y": -3100,
+    "flowCmh": 350
+   },
+   {
+    "id": "RA-1/210/2",
+    "roomId": "dxf-4ef60bdf0188131e0875304066d0b8d7",
+    "roomNo": "210",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 3800,
+    "y": -5700,
+    "flowCmh": 350
+   },
+   {
+    "id": "RA-1/211/1",
+    "roomId": "dxf-51750696267fbb6cbdce7c9d06ea613a",
+    "roomNo": "211",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 14700,
+    "y": -5700,
+    "flowCmh": 60
+   },
+   {
+    "id": "RA-1/212/1",
+    "roomId": "dxf-9f5af1925540ddcca8f38cc0ceda9b18",
+    "roomNo": "212",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 17700,
+    "y": -5700,
+    "flowCmh": 60
+   },
+   {
+    "id": "RA-1/213/1",
+    "roomId": "dxf-e37b5a15808fe69097b8d43cb21b45fb",
+    "roomNo": "213",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 20700,
+    "y": -5700,
+    "flowCmh": 60
+   },
+   {
+    "id": "RA-1/214/1",
+    "roomId": "dxf-0add8a9926fffc0e6b6890bb5791a015",
+    "roomNo": "214",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 25700,
+    "y": -5700,
+    "flowCmh": 150
+   },
+   {
+    "id": "RA-1/240/1",
+    "roomId": "dxf-24826d8c78f44fe581a121b25cac7888",
+    "roomNo": "240",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 6300,
+    "y": -13700,
+    "flowCmh": 500
+   },
+   {
+    "id": "RA-1/241/1",
+    "roomId": "dxf-083eb2d481400aea179dbdf0a8e97c37",
+    "roomNo": "241",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 14700,
+    "y": -8300,
+    "flowCmh": 50
+   },
+   {
+    "id": "RA-1/242/1",
+    "roomId": "dxf-88e7361c042e44c92002864bb5ff8f1e",
+    "roomNo": "242",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 17700,
+    "y": -8300,
+    "flowCmh": 50
+   },
+   {
+    "id": "RA-1/243/1",
+    "roomId": "dxf-c5e8ab35892a68ab0a4e2aba3117b8fe",
+    "roomNo": "243",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 20700,
+    "y": -8300,
+    "flowCmh": 50
+   },
+   {
+    "id": "RA-1/244/1",
+    "roomId": "dxf-1503ba8ae4fc156bf682a1454d285ca6",
+    "roomNo": "244",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 25700,
+    "y": -8300,
+    "flowCmh": 130
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-8636fab8c7d2d95b82b599105465ab01",
+    "no": "201",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-af3d438d68c420fdf2875a9826af66f5",
+    "no": "203",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-8636fab8c7d2d95b82b599105465ab01",
+   "dxf-4e8ddeaf1ebc220fb4f0bc90348050f6",
+   "dxf-af3d438d68c420fdf2875a9826af66f5",
+   "dxf-24ecd28a29b8fa890a5472d7ae7bea68",
+   "dxf-a017ef1b655e97e3ce1713dce8625789",
+   "dxf-887418acd311084dc60cd3e14ddac4a6",
+   "dxf-ad3bb846865e7f7d6d46d877f5bdcac4",
+   "dxf-9e0d77fd0b878143b633d9ec799f84a7",
+   "dxf-4ef60bdf0188131e0875304066d0b8d7",
+   "dxf-51750696267fbb6cbdce7c9d06ea613a",
+   "dxf-9f5af1925540ddcca8f38cc0ceda9b18",
+   "dxf-e37b5a15808fe69097b8d43cb21b45fb",
+   "dxf-0add8a9926fffc0e6b6890bb5791a015",
+   "dxf-646c51ecb95738431e058b737968f473",
+   "dxf-56795bb56c784489bf9d63261b26d489",
+   "dxf-e92264c43209b5199f90661493a70393",
+   "dxf-24826d8c78f44fe581a121b25cac7888",
+   "dxf-083eb2d481400aea179dbdf0a8e97c37",
+   "dxf-88e7361c042e44c92002864bb5ff8f1e",
+   "dxf-c5e8ab35892a68ab0a4e2aba3117b8fe",
+   "dxf-1503ba8ae4fc156bf682a1454d285ca6",
+   "dxf-e89b9a4aa2a7658b62e751ed6e4bcb43",
+   "dxf-f597909f1784dc61597820827f09a36b",
+   "dxf-e1ec4a10b2ebc3bef135c6cf46e76521",
+   "dxf-6e143ac28e70bee17ad783abb3501bd6",
+   "dxf-352f02672b18af29714267295ceaa585",
+   "dxf-86a83028a6e6f6c892f400b0fc9b49fd",
+   "dxf-202e792fd7d91869178d8c8595506e8b",
+   "dxf-61039d2cb05b4e09893d49f11ce8fddc"
+  ],
+  "designCmh": 1840,
+  "dxfBytes": 15178,
+  "dxfSha": "8f16da8cda863977"
+ },
+ {
+  "key": "DECK3__RA-1",
+  "deckId": "DECK3",
+  "systemId": "RA-1",
+  "systemKey": "RA-1",
+  "kind": "return",
+  "flowMode": "exhaust",
+  "outside": [
+   [
+    {
+     "x": -10000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -24000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": -10000,
+     "y": -14000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 36000,
+     "y": 10000
+    },
+    {
+     "x": -10000,
+     "y": 10000
+    }
+   ],
+   [
+    {
+     "x": -10000,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": -14000
+    },
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": -10000,
+     "y": 0
+    }
+   ],
+   [
+    {
+     "x": 26000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": -14000
+    },
+    {
+     "x": 36000,
+     "y": 0
+    },
+    {
+     "x": 26000,
+     "y": 0
+    }
+   ]
+  ],
+  "unitDeckId": "DECK1",
+  "unitDeckSource": "fan-room",
+  "isUnitDeck": false,
+  "decks": 3,
+  "rootRoomId": "dxf-2232947077b441550a05360ad09986e3",
+  "root": {
+   "x": 2000,
+   "y": -8200
+  },
+  "rootSource": "shaft-room:304",
+  "rus": [
+   {
+    "id": "RA-1/302/1",
+    "roomId": "dxf-fffa5465a127b54eadfbd2dc713257e6",
+    "roomNo": "302",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 300,
+    "y": -7700,
+    "flowCmh": 340
+   },
+   {
+    "id": "RA-1/310/1",
+    "roomId": "dxf-daac0fd4a65799908990e3c522b5ef74",
+    "roomNo": "310",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 3800,
+    "y": -4100,
+    "flowCmh": 360
+   },
+   {
+    "id": "RA-1/310/2",
+    "roomId": "dxf-daac0fd4a65799908990e3c522b5ef74",
+    "roomNo": "310",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 3800,
+    "y": -2100,
+    "flowCmh": 360
+   },
+   {
+    "id": "RA-1/310/3",
+    "roomId": "dxf-daac0fd4a65799908990e3c522b5ef74",
+    "roomNo": "310",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 6200,
+    "y": -4100,
+    "flowCmh": 350
+   },
+   {
+    "id": "RA-1/311/1",
+    "roomId": "dxf-8ff07887ded002accb687069960d4a91",
+    "roomNo": "311",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 10600,
+    "y": -5700,
+    "flowCmh": 240
+   },
+   {
+    "id": "RA-1/312/1",
+    "roomId": "dxf-8081f76991270633296cc6970aaa797b",
+    "roomNo": "312",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 15100,
+    "y": -5700,
+    "flowCmh": 240
+   },
+   {
+    "id": "RA-1/313/1",
+    "roomId": "dxf-b7e76935369cc8c92efe4f1a9f2846dd",
+    "roomNo": "313",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 19600,
+    "y": -5700,
+    "flowCmh": 240
+   },
+   {
+    "id": "RA-1/321/1",
+    "roomId": "dxf-16128f2ed10d1ff9f7fb9c9a03b5f53d",
+    "roomNo": "321",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 10600,
+    "y": -8300,
+    "flowCmh": 250
+   },
+   {
+    "id": "RA-1/322/1",
+    "roomId": "dxf-b0b6a5eaebc7a1fbdfcd9ecedea0dd59",
+    "roomNo": "322",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 15100,
+    "y": -8300,
+    "flowCmh": 240
+   },
+   {
+    "id": "RA-1/323/1",
+    "roomId": "dxf-39b08fe7e28c7e9edd7e9edbddf9a641",
+    "roomNo": "323",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 19600,
+    "y": -8300,
+    "flowCmh": 240
+   },
+   {
+    "id": "RA-1/330/1",
+    "roomId": "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+    "roomNo": "330",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 20300,
+    "y": -9300,
+    "flowCmh": 480
+   },
+   {
+    "id": "RA-1/330/2",
+    "roomId": "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+    "roomNo": "330",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 20300,
+    "y": -4700,
+    "flowCmh": 480
+   },
+   {
+    "id": "RA-1/330/3",
+    "roomId": "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+    "roomNo": "330",
+    "systemId": "RA-1",
+    "use": "return",
+    "x": 25700,
+    "y": -9300,
+    "flowCmh": 470
+   }
+  ],
+  "avoid": [
+   {
+    "roomId": "dxf-bd889c903e6f55bdda08259d1252bec8",
+    "no": "301",
+    "name": "기관실 케이싱",
+    "space": "기관실 — A류",
+    "polygon": [
+     {
+      "x": 0,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": -6000
+     },
+     {
+      "x": 3500,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "zone": [
+     {
+      "x": 49.99999999999999,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -5950
+     },
+     {
+      "x": 3450,
+      "y": -49.99999999999999
+     },
+     {
+      "x": 49.99999999999999,
+      "y": -49.99999999999999
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-55b673b6b014d038b3abce4a44ca8d5e",
+    "no": "303",
+    "name": "계단실",
+    "space": "계단격실",
+    "polygon": [
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -11000
+     },
+     {
+      "x": 6000,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -8000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     }
+    ],
+    "zone": [
+     {
+      "x": 3550,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -10950
+     },
+     {
+      "x": 5950,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -8050
+     },
+     {
+      "x": 3550,
+      "y": -9500
+     }
+    ]
+   },
+   {
+    "roomId": "dxf-1ff41e56bb4364bbb145e942cf7f79fb",
+    "no": "306",
+    "name": "배터리실",
+    "space": "축전지실",
+    "polygon": [
+     {
+      "x": 1500,
+      "y": -14000
+     },
+     {
+      "x": 3500,
+      "y": -14000
+     },
+     {
+      "x": 3500,
+      "y": -11000
+     },
+     {
+      "x": 3500,
+      "y": -9500
+     },
+     {
+      "x": 1500,
+      "y": -9500
+     },
+     {
+      "x": 1500,
+      "y": -10000
+     }
+    ],
+    "zone": [
+     {
+      "x": 1550,
+      "y": -13950
+     },
+     {
+      "x": 3450,
+      "y": -13950
+     },
+     {
+      "x": 3450,
+      "y": -11000
+     },
+     {
+      "x": 3450,
+      "y": -9550
+     },
+     {
+      "x": 1550,
+      "y": -9550
+     },
+     {
+      "x": 1550,
+      "y": -10000
+     }
+    ]
+   }
+  ],
+  "rooms": [
+   "dxf-bd889c903e6f55bdda08259d1252bec8",
+   "dxf-fffa5465a127b54eadfbd2dc713257e6",
+   "dxf-55b673b6b014d038b3abce4a44ca8d5e",
+   "dxf-2232947077b441550a05360ad09986e3",
+   "dxf-79879f0fa86030712e42f257a3fa3380",
+   "dxf-1ff41e56bb4364bbb145e942cf7f79fb",
+   "dxf-2742cd291d7a4a469719d69ae1ac6f56",
+   "dxf-88c1a4e106955035422445b0889b3816",
+   "dxf-d9378c671f14d704043159cb0db60a25",
+   "dxf-daac0fd4a65799908990e3c522b5ef74",
+   "dxf-8ff07887ded002accb687069960d4a91",
+   "dxf-8081f76991270633296cc6970aaa797b",
+   "dxf-b7e76935369cc8c92efe4f1a9f2846dd",
+   "dxf-16128f2ed10d1ff9f7fb9c9a03b5f53d",
+   "dxf-b0b6a5eaebc7a1fbdfcd9ecedea0dd59",
+   "dxf-39b08fe7e28c7e9edd7e9edbddf9a641",
+   "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+   "dxf-862b5aa64cca353eabc60a00b16209de",
+   "dxf-d4eee0e7aa36553b4bc019c9b3dda076",
+   "dxf-0708aa9057d0e8661554803931188133",
+   "dxf-0f5d1c9c51ed5f2021c2fc58d09324f9",
+   "dxf-c957811dcbd971e1adf889e18c56a1b9",
+   "dxf-5327d687afc9f79b3ccfb4773866d22c"
+  ],
+  "designCmh": 4290,
+  "dxfBytes": 12105,
+  "dxfSha": "5c113dc4caf82eca"
+ }
+]

@@ -1,0 +1,7333 @@
+{
+ "DECK1__AHU-1": {
+  "result": {
+   "rus": 14,
+   "flowCmh": 4860,
+   "roots": 1,
+   "ducts": 42,
+   "lengthM": 76,
+   "indexPa": 207,
+   "ductTypes": {
+    "main": 10,
+    "branch": 18,
+    "sub_branch": 14
+   },
+   "kind": "supply",
+   "rootSource": "fan-room:106",
+   "designCmh": 4860,
+   "sig": "[\"supply\",2500,-11700,[[6500,-7000,480],[19500,-7000,480],[4800,-9500,60],[4800,-4200,110],[7500,-4500,410],[7500,-1500,400],[14500,-4500,260],[14500,-1500,250],[11800,-12500,480],[11800,-9500,470],[16800,-12500,410],[16800,-9500,400],[20800,-11000,330],[24300,-11000,320]],\"u4ra1k\",[\"dxf-e06f24a70be2198ec0b1da49d3cae6ec\",\"dxf-e346205f9624b5cd5530d7d28e4536a8\",\"dxf-001c6d8f3b5312cc201906b469dad59e\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 84% · RU 묶음 5/5개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 2500,
+    "y": 11700
+   },
+   "rus": [
+    {
+     "x": 6500,
+     "y": 7000,
+     "flowCmh": 480
+    },
+    {
+     "x": 19500,
+     "y": 7000,
+     "flowCmh": 480
+    },
+    {
+     "x": 4800,
+     "y": 9500,
+     "flowCmh": 60
+    },
+    {
+     "x": 4800,
+     "y": 4200,
+     "flowCmh": 110
+    },
+    {
+     "x": 7500,
+     "y": 4500,
+     "flowCmh": 410
+    },
+    {
+     "x": 7500,
+     "y": 1500,
+     "flowCmh": 400
+    },
+    {
+     "x": 14500,
+     "y": 4500,
+     "flowCmh": 260
+    },
+    {
+     "x": 14500,
+     "y": 1500,
+     "flowCmh": 250
+    },
+    {
+     "x": 11800,
+     "y": 12500,
+     "flowCmh": 480
+    },
+    {
+     "x": 11800,
+     "y": 9500,
+     "flowCmh": 470
+    },
+    {
+     "x": 16800,
+     "y": 12500,
+     "flowCmh": 410
+    },
+    {
+     "x": 16800,
+     "y": 9500,
+     "flowCmh": 400
+    },
+    {
+     "x": 20800,
+     "y": 11000,
+     "flowCmh": 330
+    },
+    {
+     "x": 24300,
+     "y": 11000,
+     "flowCmh": 320
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 450,
+     "heightMm": 300,
+     "diameterMm": 0,
+     "flowCmh": 4860,
+     "points": [
+      {
+       "x": 2500,
+       "y": 11700
+      },
+      {
+       "x": 2500,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "M-D-2",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 450,
+     "heightMm": 300,
+     "diameterMm": 0,
+     "flowCmh": 4860,
+     "points": [
+      {
+       "x": 2500,
+       "y": 7400
+      },
+      {
+       "x": 4500,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "M-D-6",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 300,
+     "diameterMm": 0,
+     "flowCmh": 4210,
+     "points": [
+      {
+       "x": 4800,
+       "y": 7400
+      },
+      {
+       "x": 7500,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "M-D-3",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 300,
+     "diameterMm": 0,
+     "flowCmh": 4270,
+     "points": [
+      {
+       "x": 4500,
+       "y": 7400
+      },
+      {
+       "x": 4800,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "M-D-4",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 590,
+     "points": [
+      {
+       "x": 4500,
+       "y": 7400
+      },
+      {
+       "x": 4500,
+       "y": 6200
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "M-D-5",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 590,
+     "points": [
+      {
+       "x": 4500,
+       "y": 6200
+      },
+      {
+       "x": 5600,
+       "y": 6200
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "M-D-7",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 3400,
+     "points": [
+      {
+       "x": 7500,
+       "y": 7400
+      },
+      {
+       "x": 11800,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "M-D-8",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2450,
+     "points": [
+      {
+       "x": 11800,
+       "y": 7400
+      },
+      {
+       "x": 14500,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "M-D-10",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1460,
+     "points": [
+      {
+       "x": 15700,
+       "y": 7400
+      },
+      {
+       "x": 16000,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "M-D-9",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 300,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1940,
+     "points": [
+      {
+       "x": 14500,
+       "y": 7400
+      },
+      {
+       "x": 15700,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "G001-D-4",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 810,
+     "points": [
+      {
+       "x": 7500,
+       "y": 7400
+      },
+      {
+       "x": 7500,
+       "y": 5300
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "G001-D-9",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 950,
+     "points": [
+      {
+       "x": 11800,
+       "y": 7400
+      },
+      {
+       "x": 11800,
+       "y": 8700
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "G001-D-22",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 650,
+     "points": [
+      {
+       "x": 16000,
+       "y": 7400
+      },
+      {
+       "x": 20800,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "G001-D-23",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 810,
+     "points": [
+      {
+       "x": 16000,
+       "y": 7400
+      },
+      {
+       "x": 16000,
+       "y": 9500
+      }
+     ]
+    },
+    {
+     "id": "duct-015",
+     "displayName": "G001-D-28",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 650,
+     "points": [
+      {
+       "x": 20800,
+       "y": 7400
+      },
+      {
+       "x": 20800,
+       "y": 10200
+      }
+     ]
+    },
+    {
+     "id": "duct-016",
+     "displayName": "G001-D-13",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 510,
+     "points": [
+      {
+       "x": 14500,
+       "y": 7400
+      },
+      {
+       "x": 14500,
+       "y": 5300
+      }
+     ]
+    },
+    {
+     "id": "duct-017",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 5600,
+       "y": 6200
+      },
+      {
+       "x": 6500,
+       "y": 6200
+      }
+     ]
+    },
+    {
+     "id": "duct-018",
+     "displayName": "G001-D-18",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 15700,
+       "y": 7400
+      },
+      {
+       "x": 15700,
+       "y": 6200
+      }
+     ]
+    },
+    {
+     "id": "duct-019",
+     "displayName": "G001-D-21",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 15700,
+       "y": 6200
+      },
+      {
+       "x": 19500,
+       "y": 6200
+      }
+     ]
+    },
+    {
+     "id": "duct-020",
+     "displayName": "G001-D-3",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 110,
+     "points": [
+      {
+       "x": 5600,
+       "y": 6200
+      },
+      {
+       "x": 5600,
+       "y": 4200
+      }
+     ]
+    },
+    {
+     "id": "duct-021",
+     "displayName": "G001-D-7",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 400,
+     "points": [
+      {
+       "x": 7500,
+       "y": 5300
+      },
+      {
+       "x": 6700,
+       "y": 5300
+      }
+     ]
+    },
+    {
+     "id": "duct-022",
+     "displayName": "G001-D-10",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 400,
+     "points": [
+      {
+       "x": 6700,
+       "y": 5300
+      },
+      {
+       "x": 6700,
+       "y": 1500
+      }
+     ]
+    },
+    {
+     "id": "duct-023",
+     "displayName": "G001-D-16",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 250,
+     "points": [
+      {
+       "x": 14500,
+       "y": 5300
+      },
+      {
+       "x": 13700,
+       "y": 5300
+      }
+     ]
+    },
+    {
+     "id": "duct-024",
+     "displayName": "G001-D-20",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 250,
+     "points": [
+      {
+       "x": 13700,
+       "y": 5300
+      },
+      {
+       "x": 13700,
+       "y": 1500
+      }
+     ]
+    },
+    {
+     "id": "duct-025",
+     "displayName": "G001-D-11",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 11800,
+       "y": 8700
+      },
+      {
+       "x": 11000,
+       "y": 8700
+      }
+     ]
+    },
+    {
+     "id": "duct-026",
+     "displayName": "G001-D-15",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 11000,
+       "y": 8700
+      },
+      {
+       "x": 11000,
+       "y": 12500
+      }
+     ]
+    },
+    {
+     "id": "duct-027",
+     "displayName": "G001-D-25",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 410,
+     "points": [
+      {
+       "x": 16000,
+       "y": 9500
+      },
+      {
+       "x": 16000,
+       "y": 12500
+      }
+     ]
+    },
+    {
+     "id": "duct-028",
+     "displayName": "G001-D-30",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 320,
+     "points": [
+      {
+       "x": 20800,
+       "y": 10200
+      },
+      {
+       "x": 24300,
+       "y": 10200
+      }
+     ]
+    },
+    {
+     "id": "duct-029",
+     "displayName": "G001-D-6",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 6500,
+       "y": 6200
+      },
+      {
+       "x": 6500,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-030",
+     "displayName": "G001-D-27",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 19500,
+       "y": 6200
+      },
+      {
+       "x": 19500,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-031",
+     "displayName": "G001-D-1",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 60,
+     "points": [
+      {
+       "x": 4800,
+       "y": 7400
+      },
+      {
+       "x": 4800,
+       "y": 9500
+      }
+     ]
+    },
+    {
+     "id": "duct-032",
+     "displayName": "G001-D-5",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 110,
+     "points": [
+      {
+       "x": 5600,
+       "y": 4200
+      },
+      {
+       "x": 4800,
+       "y": 4200
+      }
+     ]
+    },
+    {
+     "id": "duct-033",
+     "displayName": "G001-D-8",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 410,
+     "points": [
+      {
+       "x": 7500,
+       "y": 5300
+      },
+      {
+       "x": 7500,
+       "y": 4500
+      }
+     ]
+    },
+    {
+     "id": "duct-034",
+     "displayName": "G001-D-14",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 400,
+     "points": [
+      {
+       "x": 6700,
+       "y": 1500
+      },
+      {
+       "x": 7500,
+       "y": 1500
+      }
+     ]
+    },
+    {
+     "id": "duct-035",
+     "displayName": "G001-D-17",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 260,
+     "points": [
+      {
+       "x": 14500,
+       "y": 5300
+      },
+      {
+       "x": 14500,
+       "y": 4500
+      }
+     ]
+    },
+    {
+     "id": "duct-036",
+     "displayName": "G001-D-24",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 250,
+     "points": [
+      {
+       "x": 13700,
+       "y": 1500
+      },
+      {
+       "x": 14500,
+       "y": 1500
+      }
+     ]
+    },
+    {
+     "id": "duct-037",
+     "displayName": "G001-D-19",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 11000,
+       "y": 12500
+      },
+      {
+       "x": 11800,
+       "y": 12500
+      }
+     ]
+    },
+    {
+     "id": "duct-038",
+     "displayName": "G001-D-12",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 470,
+     "points": [
+      {
+       "x": 11800,
+       "y": 8700
+      },
+      {
+       "x": 11800,
+       "y": 9500
+      }
+     ]
+    },
+    {
+     "id": "duct-039",
+     "displayName": "G001-D-29",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 410,
+     "points": [
+      {
+       "x": 16000,
+       "y": 12500
+      },
+      {
+       "x": 16800,
+       "y": 12500
+      }
+     ]
+    },
+    {
+     "id": "duct-040",
+     "displayName": "G001-D-26",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 400,
+     "points": [
+      {
+       "x": 16000,
+       "y": 9500
+      },
+      {
+       "x": 16800,
+       "y": 9500
+      }
+     ]
+    },
+    {
+     "id": "duct-041",
+     "displayName": "G001-D-31",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 20800,
+       "y": 10200
+      },
+      {
+       "x": 20800,
+       "y": 11000
+      }
+     ]
+    },
+    {
+     "id": "duct-042",
+     "displayName": "G001-D-32",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 320,
+     "points": [
+      {
+       "x": 24300,
+       "y": 10200
+      },
+      {
+       "x": 24300,
+       "y": 11000
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK2__AHU-1": {
+  "result": {
+   "rus": 15,
+   "flowCmh": 3360,
+   "roots": 1,
+   "ducts": 39,
+   "lengthM": 81.7,
+   "indexPa": 157,
+   "ductTypes": {
+    "main": 14,
+    "branch": 10,
+    "sub_branch": 15
+   },
+   "kind": "supply",
+   "rootSource": "shaft-room:204",
+   "designCmh": 3360,
+   "sig": "[\"supply\",2500,-8700,[[6500,-7000,290],[19500,-7000,290],[4800,-9500,30],[5300,-4500,360],[5300,-1500,350],[13600,-2600,150],[16600,-2600,150],[19600,-2600,150],[23700,-2800,240],[8800,-3000,210],[9000,-11000,500],[13600,-11400,140],[16600,-11400,140],[19600,-11400,140],[23700,-11200,220]],\"wz87g1\",[\"dxf-8636fab8c7d2d95b82b599105465ab01\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 97% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 2500,
+    "y": 8700
+   },
+   "rus": [
+    {
+     "x": 6500,
+     "y": 7000,
+     "flowCmh": 290
+    },
+    {
+     "x": 19500,
+     "y": 7000,
+     "flowCmh": 290
+    },
+    {
+     "x": 4800,
+     "y": 9500,
+     "flowCmh": 30
+    },
+    {
+     "x": 5300,
+     "y": 4500,
+     "flowCmh": 360
+    },
+    {
+     "x": 5300,
+     "y": 1500,
+     "flowCmh": 350
+    },
+    {
+     "x": 13600,
+     "y": 2600,
+     "flowCmh": 150
+    },
+    {
+     "x": 16600,
+     "y": 2600,
+     "flowCmh": 150
+    },
+    {
+     "x": 19600,
+     "y": 2600,
+     "flowCmh": 150
+    },
+    {
+     "x": 23700,
+     "y": 2800,
+     "flowCmh": 240
+    },
+    {
+     "x": 8800,
+     "y": 3000,
+     "flowCmh": 210
+    },
+    {
+     "x": 9000,
+     "y": 11000,
+     "flowCmh": 500
+    },
+    {
+     "x": 13600,
+     "y": 11400,
+     "flowCmh": 140
+    },
+    {
+     "x": 16600,
+     "y": 11400,
+     "flowCmh": 140
+    },
+    {
+     "x": 19600,
+     "y": 11400,
+     "flowCmh": 140
+    },
+    {
+     "x": 23700,
+     "y": 11200,
+     "flowCmh": 220
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 3360,
+     "points": [
+      {
+       "x": 2500,
+       "y": 8700
+      },
+      {
+       "x": 2500,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "M-D-2",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 3360,
+     "points": [
+      {
+       "x": 2500,
+       "y": 6600
+      },
+      {
+       "x": 4800,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "M-D-3",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 3040,
+     "points": [
+      {
+       "x": 4800,
+       "y": 6600
+      },
+      {
+       "x": 5300,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "M-D-4",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 320,
+     "points": [
+      {
+       "x": 4800,
+       "y": 6600
+      },
+      {
+       "x": 4800,
+       "y": 7800
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "M-D-5",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2330,
+     "points": [
+      {
+       "x": 5300,
+       "y": 6600
+      },
+      {
+       "x": 8200,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "M-D-7",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1620,
+     "points": [
+      {
+       "x": 8800,
+       "y": 6600
+      },
+      {
+       "x": 12800,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "M-D-9",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1330,
+     "points": [
+      {
+       "x": 13600,
+       "y": 6600
+      },
+      {
+       "x": 16600,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "M-D-10",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1180,
+     "points": [
+      {
+       "x": 16600,
+       "y": 6600
+      },
+      {
+       "x": 19000,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "M-D-14",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 460,
+     "points": [
+      {
+       "x": 19600,
+       "y": 6600
+      },
+      {
+       "x": 23700,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "M-D-11",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 610,
+     "points": [
+      {
+       "x": 19000,
+       "y": 6600
+      },
+      {
+       "x": 19600,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "M-D-12",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 570,
+     "points": [
+      {
+       "x": 19000,
+       "y": 6600
+      },
+      {
+       "x": 19000,
+       "y": 7800
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "M-D-13",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 280,
+     "points": [
+      {
+       "x": 19000,
+       "y": 7800
+      },
+      {
+       "x": 19000,
+       "y": 9800
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "M-D-8",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1480,
+     "points": [
+      {
+       "x": 12800,
+       "y": 6600
+      },
+      {
+       "x": 13600,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "M-D-6",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 300,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1830,
+     "points": [
+      {
+       "x": 8200,
+       "y": 6600
+      },
+      {
+       "x": 8800,
+       "y": 6600
+      }
+     ]
+    },
+    {
+     "id": "duct-015",
+     "displayName": "G001-D-3",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 710,
+     "points": [
+      {
+       "x": 5300,
+       "y": 6600
+      },
+      {
+       "x": 5300,
+       "y": 5300
+      }
+     ]
+    },
+    {
+     "id": "duct-016",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 290,
+     "points": [
+      {
+       "x": 4800,
+       "y": 7800
+      },
+      {
+       "x": 6500,
+       "y": 7800
+      }
+     ]
+    },
+    {
+     "id": "duct-017",
+     "displayName": "G001-D-16",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 290,
+     "points": [
+      {
+       "x": 19000,
+       "y": 7800
+      },
+      {
+       "x": 19500,
+       "y": 7800
+      }
+     ]
+    },
+    {
+     "id": "duct-018",
+     "displayName": "G001-D-4",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 350,
+     "points": [
+      {
+       "x": 5300,
+       "y": 5300
+      },
+      {
+       "x": 4500,
+       "y": 5300
+      }
+     ]
+    },
+    {
+     "id": "duct-019",
+     "displayName": "G001-D-8",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 350,
+     "points": [
+      {
+       "x": 4500,
+       "y": 5300
+      },
+      {
+       "x": 4500,
+       "y": 1500
+      }
+     ]
+    },
+    {
+     "id": "duct-020",
+     "displayName": "G001-D-7",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 500,
+     "points": [
+      {
+       "x": 8200,
+       "y": 6600
+      },
+      {
+       "x": 8200,
+       "y": 11000
+      }
+     ]
+    },
+    {
+     "id": "duct-021",
+     "displayName": "G001-D-12",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 12800,
+       "y": 6600
+      },
+      {
+       "x": 12800,
+       "y": 11400
+      }
+     ]
+    },
+    {
+     "id": "duct-022",
+     "displayName": "G001-D-18",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 19000,
+       "y": 9800
+      },
+      {
+       "x": 16600,
+       "y": 9800
+      }
+     ]
+    },
+    {
+     "id": "duct-023",
+     "displayName": "G001-D-19",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 19000,
+       "y": 9800
+      },
+      {
+       "x": 19000,
+       "y": 10600
+      }
+     ]
+    },
+    {
+     "id": "duct-024",
+     "displayName": "G001-D-24",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 19000,
+       "y": 10600
+      },
+      {
+       "x": 19600,
+       "y": 10600
+      }
+     ]
+    },
+    {
+     "id": "duct-025",
+     "displayName": "G001-D-6",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 290,
+     "points": [
+      {
+       "x": 6500,
+       "y": 7800
+      },
+      {
+       "x": 6500,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-026",
+     "displayName": "G001-D-20",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 290,
+     "points": [
+      {
+       "x": 19500,
+       "y": 7800
+      },
+      {
+       "x": 19500,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-027",
+     "displayName": "G001-D-2",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 30,
+     "points": [
+      {
+       "x": 4800,
+       "y": 7800
+      },
+      {
+       "x": 4800,
+       "y": 9500
+      }
+     ]
+    },
+    {
+     "id": "duct-028",
+     "displayName": "G001-D-5",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 5300,
+       "y": 5300
+      },
+      {
+       "x": 5300,
+       "y": 4500
+      }
+     ]
+    },
+    {
+     "id": "duct-029",
+     "displayName": "G001-D-11",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 350,
+     "points": [
+      {
+       "x": 4500,
+       "y": 1500
+      },
+      {
+       "x": 5300,
+       "y": 1500
+      }
+     ]
+    },
+    {
+     "id": "duct-030",
+     "displayName": "G001-D-14",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 150,
+     "points": [
+      {
+       "x": 13600,
+       "y": 6600
+      },
+      {
+       "x": 13600,
+       "y": 2600
+      }
+     ]
+    },
+    {
+     "id": "duct-031",
+     "displayName": "G001-D-15",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 150,
+     "points": [
+      {
+       "x": 16600,
+       "y": 6600
+      },
+      {
+       "x": 16600,
+       "y": 2600
+      }
+     ]
+    },
+    {
+     "id": "duct-032",
+     "displayName": "G001-D-17",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 150,
+     "points": [
+      {
+       "x": 19600,
+       "y": 6600
+      },
+      {
+       "x": 19600,
+       "y": 2600
+      }
+     ]
+    },
+    {
+     "id": "duct-033",
+     "displayName": "G001-D-21",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 23700,
+       "y": 6600
+      },
+      {
+       "x": 23700,
+       "y": 2800
+      }
+     ]
+    },
+    {
+     "id": "duct-034",
+     "displayName": "G001-D-10",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 210,
+     "points": [
+      {
+       "x": 8800,
+       "y": 6600
+      },
+      {
+       "x": 8800,
+       "y": 3000
+      }
+     ]
+    },
+    {
+     "id": "duct-035",
+     "displayName": "G001-D-9",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 500,
+     "points": [
+      {
+       "x": 8200,
+       "y": 11000
+      },
+      {
+       "x": 9000,
+       "y": 11000
+      }
+     ]
+    },
+    {
+     "id": "duct-036",
+     "displayName": "G001-D-13",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 12800,
+       "y": 11400
+      },
+      {
+       "x": 13600,
+       "y": 11400
+      }
+     ]
+    },
+    {
+     "id": "duct-037",
+     "displayName": "G001-D-23",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 16600,
+       "y": 9800
+      },
+      {
+       "x": 16600,
+       "y": 11400
+      }
+     ]
+    },
+    {
+     "id": "duct-038",
+     "displayName": "G001-D-25",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 19600,
+       "y": 10600
+      },
+      {
+       "x": 19600,
+       "y": 11400
+      }
+     ]
+    },
+    {
+     "id": "duct-039",
+     "displayName": "G001-D-22",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 220,
+     "points": [
+      {
+       "x": 23700,
+       "y": 6600
+      },
+      {
+       "x": 23700,
+       "y": 11200
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK3__AHU-1": {
+  "result": {
+   "rus": 14,
+   "flowCmh": 5030,
+   "roots": 1,
+   "ducts": 36,
+   "lengthM": 74.3,
+   "indexPa": 191,
+   "ductTypes": {
+    "main": 10,
+    "branch": 12,
+    "sub_branch": 14
+   },
+   "kind": "supply",
+   "rootSource": "shaft-room:304",
+   "designCmh": 5030,
+   "sig": "[\"supply\",2500,-8700,[[10000,-7000,440],[4800,-9500,80],[5000,-5000,360],[5000,-3000,360],[5000,-1000,360],[8900,-2800,330],[13400,-2800,330],[17900,-2800,330],[8900,-11200,340],[13400,-11200,330],[17900,-11200,330],[23000,-11700,480],[23000,-7000,480],[23000,-2300,480]],\"cvfgs6\",[\"dxf-bd889c903e6f55bdda08259d1252bec8\",\"dxf-1ff41e56bb4364bbb145e942cf7f79fb\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 83% · RU 묶음 2/2개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 2500,
+    "y": 8700
+   },
+   "rus": [
+    {
+     "x": 10000,
+     "y": 7000,
+     "flowCmh": 440
+    },
+    {
+     "x": 4800,
+     "y": 9500,
+     "flowCmh": 80
+    },
+    {
+     "x": 5000,
+     "y": 5000,
+     "flowCmh": 360
+    },
+    {
+     "x": 5000,
+     "y": 3000,
+     "flowCmh": 360
+    },
+    {
+     "x": 5000,
+     "y": 1000,
+     "flowCmh": 360
+    },
+    {
+     "x": 8900,
+     "y": 2800,
+     "flowCmh": 330
+    },
+    {
+     "x": 13400,
+     "y": 2800,
+     "flowCmh": 330
+    },
+    {
+     "x": 17900,
+     "y": 2800,
+     "flowCmh": 330
+    },
+    {
+     "x": 8900,
+     "y": 11200,
+     "flowCmh": 340
+    },
+    {
+     "x": 13400,
+     "y": 11200,
+     "flowCmh": 330
+    },
+    {
+     "x": 17900,
+     "y": 11200,
+     "flowCmh": 330
+    },
+    {
+     "x": 23000,
+     "y": 11700,
+     "flowCmh": 480
+    },
+    {
+     "x": 23000,
+     "y": 7000,
+     "flowCmh": 480
+    },
+    {
+     "x": 23000,
+     "y": 2300,
+     "flowCmh": 480
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 350,
+     "diameterMm": 0,
+     "flowCmh": 5030,
+     "points": [
+      {
+       "x": 2500,
+       "y": 8700
+      },
+      {
+       "x": 2500,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "M-D-2",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 350,
+     "diameterMm": 0,
+     "flowCmh": 5030,
+     "points": [
+      {
+       "x": 2500,
+       "y": 7400
+      },
+      {
+       "x": 4200,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "M-D-4",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 550,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 3870,
+     "points": [
+      {
+       "x": 4800,
+       "y": 7400
+      },
+      {
+       "x": 8100,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "M-D-3",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 550,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 3950,
+     "points": [
+      {
+       "x": 4200,
+       "y": 7400
+      },
+      {
+       "x": 4800,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "M-D-6",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2760,
+     "points": [
+      {
+       "x": 8900,
+       "y": 7400
+      },
+      {
+       "x": 12600,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "M-D-7",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 770,
+     "points": [
+      {
+       "x": 8900,
+       "y": 7400
+      },
+      {
+       "x": 8900,
+       "y": 6200
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "M-D-9",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 300,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2100,
+     "points": [
+      {
+       "x": 13400,
+       "y": 7400
+      },
+      {
+       "x": 17100,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "M-D-5",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 3530,
+     "points": [
+      {
+       "x": 8100,
+       "y": 7400
+      },
+      {
+       "x": 8900,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "M-D-8",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2430,
+     "points": [
+      {
+       "x": 12600,
+       "y": 7400
+      },
+      {
+       "x": 13400,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "M-D-10",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1770,
+     "points": [
+      {
+       "x": 17100,
+       "y": 7400
+      },
+      {
+       "x": 17900,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 1080,
+     "points": [
+      {
+       "x": 4200,
+       "y": 7400
+      },
+      {
+       "x": 4200,
+       "y": 5000
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 720,
+     "points": [
+      {
+       "x": 4200,
+       "y": 5000
+      },
+      {
+       "x": 4200,
+       "y": 3000
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "G001-D-18",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1440,
+     "points": [
+      {
+       "x": 17900,
+       "y": 7400
+      },
+      {
+       "x": 23000,
+       "y": 7400
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "G001-D-20",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1440,
+     "points": [
+      {
+       "x": 23000,
+       "y": 7400
+      },
+      {
+       "x": 23000,
+       "y": 7700
+      }
+     ]
+    },
+    {
+     "id": "duct-015",
+     "displayName": "G001-D-21",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 960,
+     "points": [
+      {
+       "x": 23000,
+       "y": 7700
+      },
+      {
+       "x": 23800,
+       "y": 7700
+      }
+     ]
+    },
+    {
+     "id": "duct-016",
+     "displayName": "G001-D-23",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 960,
+     "points": [
+      {
+       "x": 23800,
+       "y": 7700
+      },
+      {
+       "x": 23800,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-017",
+     "displayName": "G001-D-10",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 440,
+     "points": [
+      {
+       "x": 8900,
+       "y": 6200
+      },
+      {
+       "x": 10000,
+       "y": 6200
+      }
+     ]
+    },
+    {
+     "id": "duct-018",
+     "displayName": "G001-D-5",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 4200,
+       "y": 3000
+      },
+      {
+       "x": 4200,
+       "y": 1000
+      }
+     ]
+    },
+    {
+     "id": "duct-019",
+     "displayName": "G001-D-7",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 340,
+     "points": [
+      {
+       "x": 8100,
+       "y": 7400
+      },
+      {
+       "x": 8100,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-020",
+     "displayName": "G001-D-12",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 12600,
+       "y": 7400
+      },
+      {
+       "x": 12600,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-021",
+     "displayName": "G001-D-16",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 17100,
+       "y": 7400
+      },
+      {
+       "x": 17100,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-022",
+     "displayName": "G001-D-24",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 23800,
+       "y": 7000
+      },
+      {
+       "x": 23800,
+       "y": 2300
+      }
+     ]
+    },
+    {
+     "id": "duct-023",
+     "displayName": "G001-D-13",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 440,
+     "points": [
+      {
+       "x": 10000,
+       "y": 6200
+      },
+      {
+       "x": 10000,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-024",
+     "displayName": "G001-D-4",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 80,
+     "points": [
+      {
+       "x": 4800,
+       "y": 7400
+      },
+      {
+       "x": 4800,
+       "y": 9500
+      }
+     ]
+    },
+    {
+     "id": "duct-025",
+     "displayName": "G001-D-3",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 4200,
+       "y": 5000
+      },
+      {
+       "x": 5000,
+       "y": 5000
+      }
+     ]
+    },
+    {
+     "id": "duct-026",
+     "displayName": "G001-D-6",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 4200,
+       "y": 3000
+      },
+      {
+       "x": 5000,
+       "y": 3000
+      }
+     ]
+    },
+    {
+     "id": "duct-027",
+     "displayName": "G001-D-8",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 4200,
+       "y": 1000
+      },
+      {
+       "x": 5000,
+       "y": 1000
+      }
+     ]
+    },
+    {
+     "id": "duct-028",
+     "displayName": "G001-D-11",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 8900,
+       "y": 6200
+      },
+      {
+       "x": 8900,
+       "y": 2800
+      }
+     ]
+    },
+    {
+     "id": "duct-029",
+     "displayName": "G001-D-15",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 13400,
+       "y": 7400
+      },
+      {
+       "x": 13400,
+       "y": 2800
+      }
+     ]
+    },
+    {
+     "id": "duct-030",
+     "displayName": "G001-D-19",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 17900,
+       "y": 7400
+      },
+      {
+       "x": 17900,
+       "y": 2800
+      }
+     ]
+    },
+    {
+     "id": "duct-031",
+     "displayName": "G001-D-9",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 340,
+     "points": [
+      {
+       "x": 8100,
+       "y": 11200
+      },
+      {
+       "x": 8900,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-032",
+     "displayName": "G001-D-14",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 12600,
+       "y": 11200
+      },
+      {
+       "x": 13400,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-033",
+     "displayName": "G001-D-17",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 17100,
+       "y": 11200
+      },
+      {
+       "x": 17900,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-034",
+     "displayName": "G001-D-22",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 23000,
+       "y": 7700
+      },
+      {
+       "x": 23000,
+       "y": 11700
+      }
+     ]
+    },
+    {
+     "id": "duct-035",
+     "displayName": "G001-D-25",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 23800,
+       "y": 7000
+      },
+      {
+       "x": 23000,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-036",
+     "displayName": "G001-D-26",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 23800,
+       "y": 2300
+      },
+      {
+       "x": 23000,
+       "y": 2300
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK1__SF-GAL": {
+  "result": {
+   "rus": 6,
+   "flowCmh": 2940,
+   "roots": 1,
+   "ducts": 14,
+   "lengthM": 19.9,
+   "indexPa": 109,
+   "ductTypes": {
+    "branch": 8,
+    "sub_branch": 6
+   },
+   "kind": "supply",
+   "rootSource": "fan-room:124",
+   "designCmh": 2940,
+   "sig": "[\"supply\",7500,-11000,[[11300,-5500,490],[11300,-4500,490],[11300,-3500,490],[11300,-2500,490],[11300,-1500,490],[11300,-500,490]],\"u4ra1k\",[\"dxf-e06f24a70be2198ec0b1da49d3cae6ec\",\"dxf-e3786626192fffdc62c5a32f9b99fe34\",\"dxf-e346205f9624b5cd5530d7d28e4536a8\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 0% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 7500,
+    "y": 11000
+   },
+   "rus": [
+    {
+     "x": 11300,
+     "y": 5500,
+     "flowCmh": 490
+    },
+    {
+     "x": 11300,
+     "y": 4500,
+     "flowCmh": 490
+    },
+    {
+     "x": 11300,
+     "y": 3500,
+     "flowCmh": 490
+    },
+    {
+     "x": 11300,
+     "y": 2500,
+     "flowCmh": 490
+    },
+    {
+     "x": 11300,
+     "y": 1500,
+     "flowCmh": 490
+    },
+    {
+     "x": 11300,
+     "y": 500,
+     "flowCmh": 490
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 300,
+     "diameterMm": 0,
+     "flowCmh": 2940,
+     "points": [
+      {
+       "x": 7500,
+       "y": 11000
+      },
+      {
+       "x": 11300,
+       "y": 11000
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 300,
+     "diameterMm": 0,
+     "flowCmh": 2940,
+     "points": [
+      {
+       "x": 11300,
+       "y": 11000
+      },
+      {
+       "x": 11300,
+       "y": 6300
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "G001-D-3",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 2450,
+     "points": [
+      {
+       "x": 11300,
+       "y": 6300
+      },
+      {
+       "x": 10500,
+       "y": 6300
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "G001-D-5",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 2450,
+     "points": [
+      {
+       "x": 10500,
+       "y": 6300
+      },
+      {
+       "x": 10500,
+       "y": 4500
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "G001-D-6",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1960,
+     "points": [
+      {
+       "x": 10500,
+       "y": 4500
+      },
+      {
+       "x": 10500,
+       "y": 3500
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "G001-D-8",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 1470,
+     "points": [
+      {
+       "x": 10500,
+       "y": 3500
+      },
+      {
+       "x": 10500,
+       "y": 2500
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "G001-D-10",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 980,
+     "points": [
+      {
+       "x": 10500,
+       "y": 2500
+      },
+      {
+       "x": 10500,
+       "y": 1500
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "G001-D-12",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 490,
+     "points": [
+      {
+       "x": 10500,
+       "y": 1500
+      },
+      {
+       "x": 10500,
+       "y": 500
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "G001-D-4",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 490,
+     "points": [
+      {
+       "x": 11300,
+       "y": 6300
+      },
+      {
+       "x": 11300,
+       "y": 5500
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "G001-D-7",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 490,
+     "points": [
+      {
+       "x": 10500,
+       "y": 4500
+      },
+      {
+       "x": 11300,
+       "y": 4500
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "G001-D-9",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 490,
+     "points": [
+      {
+       "x": 10500,
+       "y": 3500
+      },
+      {
+       "x": 11300,
+       "y": 3500
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "G001-D-11",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 490,
+     "points": [
+      {
+       "x": 10500,
+       "y": 2500
+      },
+      {
+       "x": 11300,
+       "y": 2500
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "G001-D-13",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 490,
+     "points": [
+      {
+       "x": 10500,
+       "y": 1500
+      },
+      {
+       "x": 11300,
+       "y": 1500
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "G001-D-14",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 490,
+     "points": [
+      {
+       "x": 10500,
+       "y": 500
+      },
+      {
+       "x": 11300,
+       "y": 500
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK3__EF-BAT": {
+  "result": {
+   "rus": 1,
+   "flowCmh": 240,
+   "roots": 1,
+   "ducts": 3,
+   "lengthM": 2.3,
+   "indexPa": 39,
+   "ductTypes": {
+    "branch": 2,
+    "sub_branch": 1
+   },
+   "kind": "exhaust",
+   "rootSource": "own-room:306",
+   "designCmh": 240,
+   "sig": "[\"exhaust\",1800,-11700,[[2500,-11700,240]],\"cvfgs6\",[\"dxf-bd889c903e6f55bdda08259d1252bec8\",\"dxf-55b673b6b014d038b3abce4a44ca8d5e\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 1800,
+    "y": 11700
+   },
+   "rus": [
+    {
+     "x": 2500,
+     "y": 11700,
+     "flowCmh": 240
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 1800,
+       "y": 11700
+      },
+      {
+       "x": 1800,
+       "y": 10900
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 1800,
+       "y": 10900
+      },
+      {
+       "x": 2500,
+       "y": 10900
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "G001-D-3",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 2500,
+       "y": 10900
+      },
+      {
+       "x": 2500,
+       "y": 11700
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK1__EF-CO2": {
+  "result": {
+   "rus": 1,
+   "flowCmh": 90,
+   "roots": 1,
+   "ducts": 1,
+   "lengthM": 1,
+   "indexPa": 11,
+   "ductTypes": {
+    "sub_branch": 1
+   },
+   "kind": "exhaust",
+   "rootSource": "own-room:111",
+   "designCmh": 90,
+   "sig": "[\"exhaust\",3800,-1200,[[4800,-1200,90]],\"u4ra1k\",[\"dxf-e06f24a70be2198ec0b1da49d3cae6ec\",\"dxf-e3786626192fffdc62c5a32f9b99fe34\",\"dxf-001c6d8f3b5312cc201906b469dad59e\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 3800,
+    "y": 1200
+   },
+   "rus": [
+    {
+     "x": 4800,
+     "y": 1200,
+     "flowCmh": 90
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "G001-D-1",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 3800,
+       "y": 1200
+      },
+      {
+       "x": 4800,
+       "y": 1200
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK1__EF-GAL": {
+  "result": {
+   "rus": 7,
+   "flowCmh": 3240,
+   "roots": 1,
+   "ducts": 20,
+   "lengthM": 55.6,
+   "indexPa": 187,
+   "ductTypes": {
+    "branch": 13,
+    "sub_branch": 7
+   },
+   "kind": "exhaust",
+   "rootSource": "fan-room:124",
+   "designCmh": 3240,
+   "sig": "[\"exhaust\",8000,-10500,[[9300,-5100,470],[9300,-2900,470],[9300,-700,460],[13100,-5100,460],[13100,-3100,460],[13100,-1100,460],[10100,-4100,460]],\"u4ra1k\",[\"dxf-e06f24a70be2198ec0b1da49d3cae6ec\",\"dxf-881522c02887db6d6aaec30c7d78f97f\",\"dxf-e3786626192fffdc62c5a32f9b99fe34\",\"dxf-08fc86fc26e1b72fb150b8063c031334\",\"dxf-f4114cdace4e225946b5106b32da09e5\",\"dxf-6f7ff00bb742cf6b50ef5c3d76c2937b\",\"dxf-e346205f9624b5cd5530d7d28e4536a8\",\"dxf-a53896078e0f33fb935b8c1557b6296f\",\"dxf-f136e0d6e8aaabb0e937c67d84e6a04b\",\"dxf-7ae08633edf8c9b9ed3d3101fdc217d8\",\"dxf-181fb2ec162541b28f2abca5b327efbf\",\"dxf-10716f31b134eac3f347a165bc673e76\",\"dxf-858d952395b4da30268e71898b73d022\",\"dxf-bce07d0c3b19fb187ad032cabfffb843\",\"dxf-1bd8a6b812a37b5364ab50f8920a10f6\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 0% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": "outside",
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 8000,
+    "y": 10500
+   },
+   "rus": [
+    {
+     "x": 9300,
+     "y": 5100,
+     "flowCmh": 470
+    },
+    {
+     "x": 9300,
+     "y": 2900,
+     "flowCmh": 470
+    },
+    {
+     "x": 9300,
+     "y": 700,
+     "flowCmh": 460
+    },
+    {
+     "x": 13100,
+     "y": 5100,
+     "flowCmh": 460
+    },
+    {
+     "x": 13100,
+     "y": 3100,
+     "flowCmh": 460
+    },
+    {
+     "x": 13100,
+     "y": 1100,
+     "flowCmh": 460
+    },
+    {
+     "x": 10100,
+     "y": 4100,
+     "flowCmh": 460
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 450,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 3240,
+     "points": [
+      {
+       "x": 8000,
+       "y": 10500
+      },
+      {
+       "x": 8000,
+       "y": 14150
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 450,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 3240,
+     "points": [
+      {
+       "x": 8000,
+       "y": 14150
+      },
+      {
+       "x": -150,
+       "y": 14150
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "G001-D-3",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 450,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 3240,
+     "points": [
+      {
+       "x": -150,
+       "y": 14150
+      },
+      {
+       "x": -150,
+       "y": -250
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "G001-D-4",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 450,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 3240,
+     "points": [
+      {
+       "x": -150,
+       "y": -250
+      },
+      {
+       "x": 9300,
+       "y": -250
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "G001-D-12",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1390,
+     "points": [
+      {
+       "x": 10250,
+       "y": 4600
+      },
+      {
+       "x": 10250,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "G001-D-10",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 450,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 1850,
+     "points": [
+      {
+       "x": 10250,
+       "y": 2900
+      },
+      {
+       "x": 10250,
+       "y": 4600
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "G001-D-5",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 2780,
+     "points": [
+      {
+       "x": 9300,
+       "y": -250
+      },
+      {
+       "x": 10250,
+       "y": -250
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "G001-D-7",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 2780,
+     "points": [
+      {
+       "x": 10250,
+       "y": -250
+      },
+      {
+       "x": 10250,
+       "y": 1100
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "G001-D-15",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 920,
+     "points": [
+      {
+       "x": 10250,
+       "y": 5100
+      },
+      {
+       "x": 12300,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "G001-D-8",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 2320,
+     "points": [
+      {
+       "x": 10250,
+       "y": 1100
+      },
+      {
+       "x": 10250,
+       "y": 2900
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "G001-D-18",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 460,
+     "points": [
+      {
+       "x": 12300,
+       "y": 5100
+      },
+      {
+       "x": 12300,
+       "y": 3100
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "G001-D-13",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 460,
+     "points": [
+      {
+       "x": 10250,
+       "y": 4600
+      },
+      {
+       "x": 9300,
+       "y": 4600
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "G001-D-14",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 460,
+     "points": [
+      {
+       "x": 9300,
+       "y": 4600
+      },
+      {
+       "x": 9300,
+       "y": 4100
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "G001-D-16",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 470,
+     "points": [
+      {
+       "x": 10250,
+       "y": 5100
+      },
+      {
+       "x": 9300,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-015",
+     "displayName": "G001-D-11",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 470,
+     "points": [
+      {
+       "x": 10250,
+       "y": 2900
+      },
+      {
+       "x": 9300,
+       "y": 2900
+      }
+     ]
+    },
+    {
+     "id": "duct-016",
+     "displayName": "G001-D-6",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 460,
+     "points": [
+      {
+       "x": 9300,
+       "y": -250
+      },
+      {
+       "x": 9300,
+       "y": 700
+      }
+     ]
+    },
+    {
+     "id": "duct-017",
+     "displayName": "G001-D-19",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 460,
+     "points": [
+      {
+       "x": 12300,
+       "y": 5100
+      },
+      {
+       "x": 13100,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-018",
+     "displayName": "G001-D-20",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 460,
+     "points": [
+      {
+       "x": 12300,
+       "y": 3100
+      },
+      {
+       "x": 13100,
+       "y": 3100
+      }
+     ]
+    },
+    {
+     "id": "duct-019",
+     "displayName": "G001-D-9",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 460,
+     "points": [
+      {
+       "x": 10250,
+       "y": 1100
+      },
+      {
+       "x": 13100,
+       "y": 1100
+      }
+     ]
+    },
+    {
+     "id": "duct-020",
+     "displayName": "G001-D-17",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 460,
+     "points": [
+      {
+       "x": 9300,
+       "y": 4100
+      },
+      {
+       "x": 10100,
+       "y": 4100
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK2__EF-HOS": {
+  "result": {
+   "rus": 3,
+   "flowCmh": 660,
+   "roots": 1,
+   "ducts": 5,
+   "lengthM": 12.4,
+   "indexPa": 64,
+   "ductTypes": {
+    "main": 1,
+    "branch": 1,
+    "sub_branch": 3
+   },
+   "kind": "exhaust",
+   "rootSource": "user",
+   "designCmh": 660,
+   "sig": "[\"exhaust\",11200,-2000,[[7300,-5700,280],[7300,-300,280],[11300,-5000,100]],\"wz87g1\",[\"dxf-8636fab8c7d2d95b82b599105465ab01\",\"dxf-af3d438d68c420fdf2875a9826af66f5\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관·분기관 500mm 미만 1개 · 주관 복도 경유 0% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 11200,
+    "y": 2000
+   },
+   "rus": [
+    {
+     "x": 7300,
+     "y": 5700,
+     "flowCmh": 280
+    },
+    {
+     "x": 7300,
+     "y": 300,
+     "flowCmh": 280
+    },
+    {
+     "x": 11300,
+     "y": 5000,
+     "flowCmh": 100
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 100,
+     "points": [
+      {
+       "x": 11200,
+       "y": 2000
+      },
+      {
+       "x": 11300,
+       "y": 2000
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 560,
+     "points": [
+      {
+       "x": 11200,
+       "y": 2000
+      },
+      {
+       "x": 7300,
+       "y": 2000
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "G001-D-2",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 280,
+     "points": [
+      {
+       "x": 7300,
+       "y": 2000
+      },
+      {
+       "x": 7300,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "G001-D-3",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 280,
+     "points": [
+      {
+       "x": 7300,
+       "y": 2000
+      },
+      {
+       "x": 7300,
+       "y": 300
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "G001-D-4",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 100,
+     "points": [
+      {
+       "x": 11300,
+       "y": 2000
+      },
+      {
+       "x": 11300,
+       "y": 5000
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK1__EF-LAU": {
+  "result": {
+   "rus": 2,
+   "flowCmh": 990,
+   "roots": 1,
+   "ducts": 5,
+   "lengthM": 14.6,
+   "indexPa": 74,
+   "ductTypes": {
+    "branch": 3,
+    "sub_branch": 2
+   },
+   "kind": "exhaust",
+   "rootSource": "fan-room:106",
+   "designCmh": 990,
+   "sig": "[\"exhaust\",3000,-11200,[[6300,-3100,500],[8700,-3100,490]],\"u4ra1k\",[\"dxf-e06f24a70be2198ec0b1da49d3cae6ec\",\"dxf-e3786626192fffdc62c5a32f9b99fe34\",\"dxf-e346205f9624b5cd5530d7d28e4536a8\",\"dxf-001c6d8f3b5312cc201906b469dad59e\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 19% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 3000,
+    "y": 11200
+   },
+   "rus": [
+    {
+     "x": 6300,
+     "y": 3100,
+     "flowCmh": 500
+    },
+    {
+     "x": 8700,
+     "y": 3100,
+     "flowCmh": 490
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 990,
+     "points": [
+      {
+       "x": 3000,
+       "y": 11200
+      },
+      {
+       "x": 6300,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 990,
+     "points": [
+      {
+       "x": 6300,
+       "y": 11200
+      },
+      {
+       "x": 6300,
+       "y": 3900
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "G001-D-3",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 490,
+     "points": [
+      {
+       "x": 6300,
+       "y": 3900
+      },
+      {
+       "x": 8700,
+       "y": 3900
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "G001-D-4",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 500,
+     "points": [
+      {
+       "x": 6300,
+       "y": 3900
+      },
+      {
+       "x": 6300,
+       "y": 3100
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "G001-D-5",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 490,
+     "points": [
+      {
+       "x": 8700,
+       "y": 3900
+      },
+      {
+       "x": 8700,
+       "y": 3100
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK1__EF-PAN": {
+  "result": {
+   "rus": 2,
+   "flowCmh": 660,
+   "roots": 1,
+   "ducts": 5,
+   "lengthM": 22.3,
+   "indexPa": 124,
+   "ductTypes": {
+    "branch": 3,
+    "sub_branch": 2
+   },
+   "kind": "exhaust",
+   "rootSource": "fan-room:106",
+   "designCmh": 660,
+   "sig": "[\"exhaust\",2000,-11200,[[13800,-3100,330],[15200,-2900,330]],\"u4ra1k\",[\"dxf-e06f24a70be2198ec0b1da49d3cae6ec\",\"dxf-e3786626192fffdc62c5a32f9b99fe34\",\"dxf-e346205f9624b5cd5530d7d28e4536a8\",\"dxf-001c6d8f3b5312cc201906b469dad59e\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 10% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 2000,
+    "y": 11200
+   },
+   "rus": [
+    {
+     "x": 13800,
+     "y": 3100,
+     "flowCmh": 330
+    },
+    {
+     "x": 15200,
+     "y": 2900,
+     "flowCmh": 330
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 660,
+     "points": [
+      {
+       "x": 2000,
+       "y": 11200
+      },
+      {
+       "x": 13800,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 660,
+     "points": [
+      {
+       "x": 13800,
+       "y": 11200
+      },
+      {
+       "x": 13800,
+       "y": 3900
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "G001-D-3",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 13800,
+       "y": 3900
+      },
+      {
+       "x": 15200,
+       "y": 3900
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "G001-D-4",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 13800,
+       "y": 3900
+      },
+      {
+       "x": 13800,
+       "y": 3100
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "G001-D-5",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 330,
+     "points": [
+      {
+       "x": 15200,
+       "y": 3900
+      },
+      {
+       "x": 15200,
+       "y": 2900
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK1__EF-SAN": {
+  "result": {
+   "rus": 3,
+   "flowCmh": 530,
+   "roots": 1,
+   "ducts": 8,
+   "lengthM": 14.5,
+   "indexPa": 25,
+   "ductTypes": {
+    "main": 4,
+    "branch": 1,
+    "sub_branch": 3
+   },
+   "kind": "exhaust",
+   "rootSource": "fan-room:106",
+   "designCmh": 530,
+   "sig": "[\"exhaust\",3000,-12200,[[800,-9000,100],[800,-12000,140],[3800,-5700,290]],\"u4ra1k\",[\"dxf-e06f24a70be2198ec0b1da49d3cae6ec\",\"dxf-e3786626192fffdc62c5a32f9b99fe34\",\"dxf-e346205f9624b5cd5530d7d28e4536a8\",\"dxf-001c6d8f3b5312cc201906b469dad59e\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 49%",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 3000,
+    "y": 12200
+   },
+   "rus": [
+    {
+     "x": 800,
+     "y": 9000,
+     "flowCmh": 100
+    },
+    {
+     "x": 800,
+     "y": 12000,
+     "flowCmh": 140
+    },
+    {
+     "x": 3800,
+     "y": 5700,
+     "flowCmh": 290
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 530,
+     "points": [
+      {
+       "x": 3000,
+       "y": 12200
+      },
+      {
+       "x": 3000,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "M-D-3",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 100,
+     "points": [
+      {
+       "x": 3000,
+       "y": 7000
+      },
+      {
+       "x": 800,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "M-D-4",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 290,
+     "points": [
+      {
+       "x": 3000,
+       "y": 7000
+      },
+      {
+       "x": 3800,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "M-D-2",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 390,
+     "points": [
+      {
+       "x": 3000,
+       "y": 11200
+      },
+      {
+       "x": 3000,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 3000,
+       "y": 11200
+      },
+      {
+       "x": 800,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "G001-D-3",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 100,
+     "points": [
+      {
+       "x": 800,
+       "y": 7000
+      },
+      {
+       "x": 800,
+       "y": 9000
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "G001-D-2",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 800,
+       "y": 11200
+      },
+      {
+       "x": 800,
+       "y": 12000
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "G001-D-4",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 290,
+     "points": [
+      {
+       "x": 3800,
+       "y": 7000
+      },
+      {
+       "x": 3800,
+       "y": 5700
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK2__EF-SAN": {
+  "result": {
+   "rus": 10,
+   "flowCmh": 960,
+   "roots": 1,
+   "ducts": 24,
+   "lengthM": 43.8,
+   "indexPa": 51,
+   "ductTypes": {
+    "main": 10,
+    "branch": 4,
+    "sub_branch": 10
+   },
+   "kind": "exhaust",
+   "rootSource": "shaft-room:204",
+   "designCmh": 960,
+   "sig": "[\"exhaust\",3000,-8200,[[800,-9000,100],[800,-12000,140],[12800,-5100,90],[15800,-5100,90],[18800,-5100,90],[21800,-5100,90],[12800,-8900,90],[15800,-8900,90],[18800,-8900,90],[21800,-8900,90]],\"wz87g1\",[\"dxf-8636fab8c7d2d95b82b599105465ab01\",\"dxf-af3d438d68c420fdf2875a9826af66f5\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 89%",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 3000,
+    "y": 8200
+   },
+   "rus": [
+    {
+     "x": 800,
+     "y": 9000,
+     "flowCmh": 100
+    },
+    {
+     "x": 800,
+     "y": 12000,
+     "flowCmh": 140
+    },
+    {
+     "x": 12800,
+     "y": 5100,
+     "flowCmh": 90
+    },
+    {
+     "x": 15800,
+     "y": 5100,
+     "flowCmh": 90
+    },
+    {
+     "x": 18800,
+     "y": 5100,
+     "flowCmh": 90
+    },
+    {
+     "x": 21800,
+     "y": 5100,
+     "flowCmh": 90
+    },
+    {
+     "x": 12800,
+     "y": 8900,
+     "flowCmh": 90
+    },
+    {
+     "x": 15800,
+     "y": 8900,
+     "flowCmh": 90
+    },
+    {
+     "x": 18800,
+     "y": 8900,
+     "flowCmh": 90
+    },
+    {
+     "x": 21800,
+     "y": 8900,
+     "flowCmh": 90
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 3000,
+       "y": 8200
+      },
+      {
+       "x": 3000,
+       "y": 9000
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "M-D-3",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 3000,
+       "y": 9000
+      },
+      {
+       "x": 1600,
+       "y": 9000
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "M-D-2",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 720,
+     "points": [
+      {
+       "x": 3000,
+       "y": 8200
+      },
+      {
+       "x": 3000,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "M-D-4",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 720,
+     "points": [
+      {
+       "x": 3000,
+       "y": 7600
+      },
+      {
+       "x": 12000,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "M-D-6",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 540,
+     "points": [
+      {
+       "x": 12800,
+       "y": 7600
+      },
+      {
+       "x": 15800,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "M-D-7",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 450,
+     "points": [
+      {
+       "x": 15800,
+       "y": 7600
+      },
+      {
+       "x": 16600,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "M-D-10",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 180,
+     "points": [
+      {
+       "x": 18800,
+       "y": 7600
+      },
+      {
+       "x": 21800,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "M-D-9",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 270,
+     "points": [
+      {
+       "x": 18000,
+       "y": 7600
+      },
+      {
+       "x": 18800,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "M-D-8",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 16600,
+       "y": 7600
+      },
+      {
+       "x": 18000,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "M-D-5",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 630,
+     "points": [
+      {
+       "x": 12000,
+       "y": 7600
+      },
+      {
+       "x": 12800,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 1600,
+       "y": 9000
+      },
+      {
+       "x": 1600,
+       "y": 12000
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "G001-D-3",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 12000,
+       "y": 7600
+      },
+      {
+       "x": 12000,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "G001-D-8",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 16600,
+       "y": 7600
+      },
+      {
+       "x": 16600,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "G001-D-10",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 18000,
+       "y": 7600
+      },
+      {
+       "x": 18000,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-015",
+     "displayName": "G001-D-2",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 100,
+     "points": [
+      {
+       "x": 1600,
+       "y": 9000
+      },
+      {
+       "x": 800,
+       "y": 9000
+      }
+     ]
+    },
+    {
+     "id": "duct-016",
+     "displayName": "G001-D-4",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 1600,
+       "y": 12000
+      },
+      {
+       "x": 800,
+       "y": 12000
+      }
+     ]
+    },
+    {
+     "id": "duct-017",
+     "displayName": "G001-D-5",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 12000,
+       "y": 5100
+      },
+      {
+       "x": 12800,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-018",
+     "displayName": "G001-D-9",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 16600,
+       "y": 5100
+      },
+      {
+       "x": 15800,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-019",
+     "displayName": "G001-D-11",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 18000,
+       "y": 5100
+      },
+      {
+       "x": 18800,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-020",
+     "displayName": "G001-D-13",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 21800,
+       "y": 7600
+      },
+      {
+       "x": 21800,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-021",
+     "displayName": "G001-D-6",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 12800,
+       "y": 7600
+      },
+      {
+       "x": 12800,
+       "y": 8900
+      }
+     ]
+    },
+    {
+     "id": "duct-022",
+     "displayName": "G001-D-7",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 15800,
+       "y": 7600
+      },
+      {
+       "x": 15800,
+       "y": 8900
+      }
+     ]
+    },
+    {
+     "id": "duct-023",
+     "displayName": "G001-D-12",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 18800,
+       "y": 7600
+      },
+      {
+       "x": 18800,
+       "y": 8900
+      }
+     ]
+    },
+    {
+     "id": "duct-024",
+     "displayName": "G001-D-14",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 21800,
+       "y": 7600
+      },
+      {
+       "x": 21800,
+       "y": 8900
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK3__EF-SAN": {
+  "result": {
+   "rus": 8,
+   "flowCmh": 780,
+   "roots": 1,
+   "ducts": 20,
+   "lengthM": 37.2,
+   "indexPa": 37,
+   "ductTypes": {
+    "main": 8,
+    "branch": 4,
+    "sub_branch": 8
+   },
+   "kind": "exhaust",
+   "rootSource": "shaft-room:304",
+   "designCmh": 780,
+   "sig": "[\"exhaust\",3000,-8200,[[800,-9000,100],[800,-12000,140],[7300,-5100,90],[11800,-5100,90],[16300,-5100,90],[7300,-8900,90],[11800,-8900,90],[16300,-8900,90]],\"cvfgs6\",[\"dxf-bd889c903e6f55bdda08259d1252bec8\",\"dxf-55b673b6b014d038b3abce4a44ca8d5e\",\"dxf-1ff41e56bb4364bbb145e942cf7f79fb\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 99%",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 3000,
+    "y": 8200
+   },
+   "rus": [
+    {
+     "x": 800,
+     "y": 9000,
+     "flowCmh": 100
+    },
+    {
+     "x": 800,
+     "y": 12000,
+     "flowCmh": 140
+    },
+    {
+     "x": 7300,
+     "y": 5100,
+     "flowCmh": 90
+    },
+    {
+     "x": 11800,
+     "y": 5100,
+     "flowCmh": 90
+    },
+    {
+     "x": 16300,
+     "y": 5100,
+     "flowCmh": 90
+    },
+    {
+     "x": 7300,
+     "y": 8900,
+     "flowCmh": 90
+    },
+    {
+     "x": 11800,
+     "y": 8900,
+     "flowCmh": 90
+    },
+    {
+     "x": 16300,
+     "y": 8900,
+     "flowCmh": 90
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 780,
+     "points": [
+      {
+       "x": 3000,
+       "y": 8200
+      },
+      {
+       "x": 3000,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "M-D-2",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 3000,
+       "y": 7000
+      },
+      {
+       "x": 1300,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "M-D-3",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 540,
+     "points": [
+      {
+       "x": 3000,
+       "y": 7000
+      },
+      {
+       "x": 6500,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "M-D-4",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 100,
+     "points": [
+      {
+       "x": 1300,
+       "y": 7000
+      },
+      {
+       "x": 800,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "M-D-6",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 7300,
+       "y": 7000
+      },
+      {
+       "x": 11000,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "M-D-5",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 450,
+     "points": [
+      {
+       "x": 6500,
+       "y": 7000
+      },
+      {
+       "x": 7300,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "M-D-8",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 180,
+     "points": [
+      {
+       "x": 11800,
+       "y": 7000
+      },
+      {
+       "x": 16300,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "M-D-7",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 270,
+     "points": [
+      {
+       "x": 11000,
+       "y": 7000
+      },
+      {
+       "x": 11800,
+       "y": 7000
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 1300,
+       "y": 7000
+      },
+      {
+       "x": 1300,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "G001-D-4",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 1300,
+       "y": 11200
+      },
+      {
+       "x": 800,
+       "y": 11200
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 6500,
+       "y": 7000
+      },
+      {
+       "x": 6500,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "G001-D-8",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 11000,
+       "y": 7000
+      },
+      {
+       "x": 11000,
+       "y": 8900
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "G001-D-3",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 100,
+     "points": [
+      {
+       "x": 800,
+       "y": 7000
+      },
+      {
+       "x": 800,
+       "y": 9000
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "G001-D-7",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 140,
+     "points": [
+      {
+       "x": 800,
+       "y": 11200
+      },
+      {
+       "x": 800,
+       "y": 12000
+      }
+     ]
+    },
+    {
+     "id": "duct-015",
+     "displayName": "G001-D-5",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 6500,
+       "y": 5100
+      },
+      {
+       "x": 7300,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-016",
+     "displayName": "G001-D-10",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 11800,
+       "y": 7000
+      },
+      {
+       "x": 11800,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-017",
+     "displayName": "G001-D-11",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 16300,
+       "y": 7000
+      },
+      {
+       "x": 16300,
+       "y": 5100
+      }
+     ]
+    },
+    {
+     "id": "duct-018",
+     "displayName": "G001-D-6",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 7300,
+       "y": 7000
+      },
+      {
+       "x": 7300,
+       "y": 8900
+      }
+     ]
+    },
+    {
+     "id": "duct-019",
+     "displayName": "G001-D-9",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 11000,
+       "y": 8900
+      },
+      {
+       "x": 11800,
+       "y": 8900
+      }
+     ]
+    },
+    {
+     "id": "duct-020",
+     "displayName": "G001-D-12",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 90,
+     "points": [
+      {
+       "x": 16300,
+       "y": 7000
+      },
+      {
+       "x": 16300,
+       "y": 8900
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK1__RA-1": {
+  "result": {
+   "rus": 7,
+   "flowCmh": 2430,
+   "roots": 1,
+   "ducts": 19,
+   "lengthM": 49.7,
+   "indexPa": 169,
+   "ductTypes": {
+    "main": 4,
+    "branch": 8,
+    "sub_branch": 7
+   },
+   "kind": "return",
+   "rootSource": "fan-room:106",
+   "designCmh": 2430,
+   "sig": "[\"exhaust\",2000,-12200,[[12900,-7700,50],[9300,-11100,470],[9300,-8300,470],[14800,-11100,400],[14800,-13700,400],[22500,-13700,320],[22500,-8300,320]],\"u4ra1k\",[\"dxf-e06f24a70be2198ec0b1da49d3cae6ec\",\"dxf-e3786626192fffdc62c5a32f9b99fe34\",\"dxf-e346205f9624b5cd5530d7d28e4536a8\",\"dxf-001c6d8f3b5312cc201906b469dad59e\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 83% · RU 묶음 3/3개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 2000,
+    "y": 12200
+   },
+   "rus": [
+    {
+     "x": 12900,
+     "y": 7700,
+     "flowCmh": 50
+    },
+    {
+     "x": 9300,
+     "y": 11100,
+     "flowCmh": 470
+    },
+    {
+     "x": 9300,
+     "y": 8300,
+     "flowCmh": 470
+    },
+    {
+     "x": 14800,
+     "y": 11100,
+     "flowCmh": 400
+    },
+    {
+     "x": 14800,
+     "y": 13700,
+     "flowCmh": 400
+    },
+    {
+     "x": 22500,
+     "y": 13700,
+     "flowCmh": 320
+    },
+    {
+     "x": 22500,
+     "y": 8300,
+     "flowCmh": 320
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2430,
+     "points": [
+      {
+       "x": 2000,
+       "y": 12200
+      },
+      {
+       "x": 2000,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "M-D-2",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2430,
+     "points": [
+      {
+       "x": 2000,
+       "y": 6800
+      },
+      {
+       "x": 8500,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "M-D-3",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1490,
+     "points": [
+      {
+       "x": 8500,
+       "y": 6800
+      },
+      {
+       "x": 12900,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "M-D-4",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1440,
+     "points": [
+      {
+       "x": 12900,
+       "y": 6800
+      },
+      {
+       "x": 14800,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 940,
+     "points": [
+      {
+       "x": 8500,
+       "y": 6800
+      },
+      {
+       "x": 8500,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "G001-D-6",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 640,
+     "points": [
+      {
+       "x": 14800,
+       "y": 6800
+      },
+      {
+       "x": 21700,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "G001-D-7",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 800,
+     "points": [
+      {
+       "x": 14800,
+       "y": 6800
+      },
+      {
+       "x": 14800,
+       "y": 10300
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "G001-D-10",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 640,
+     "points": [
+      {
+       "x": 21700,
+       "y": 6800
+      },
+      {
+       "x": 21700,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 470,
+     "points": [
+      {
+       "x": 8500,
+       "y": 8300
+      },
+      {
+       "x": 8500,
+       "y": 11100
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "G001-D-8",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 400,
+     "points": [
+      {
+       "x": 14800,
+       "y": 10300
+      },
+      {
+       "x": 14000,
+       "y": 10300
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "G001-D-11",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 400,
+     "points": [
+      {
+       "x": 14000,
+       "y": 10300
+      },
+      {
+       "x": 14000,
+       "y": 13700
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "G001-D-12",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 320,
+     "points": [
+      {
+       "x": 21700,
+       "y": 8300
+      },
+      {
+       "x": 21700,
+       "y": 13700
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "G001-D-4",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 50,
+     "points": [
+      {
+       "x": 12900,
+       "y": 6800
+      },
+      {
+       "x": 12900,
+       "y": 7700
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "G001-D-5",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 470,
+     "points": [
+      {
+       "x": 8500,
+       "y": 11100
+      },
+      {
+       "x": 9300,
+       "y": 11100
+      }
+     ]
+    },
+    {
+     "id": "duct-015",
+     "displayName": "G001-D-3",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 470,
+     "points": [
+      {
+       "x": 8500,
+       "y": 8300
+      },
+      {
+       "x": 9300,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-016",
+     "displayName": "G001-D-9",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 400,
+     "points": [
+      {
+       "x": 14800,
+       "y": 10300
+      },
+      {
+       "x": 14800,
+       "y": 11100
+      }
+     ]
+    },
+    {
+     "id": "duct-017",
+     "displayName": "G001-D-14",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 400,
+     "points": [
+      {
+       "x": 14000,
+       "y": 13700
+      },
+      {
+       "x": 14800,
+       "y": 13700
+      }
+     ]
+    },
+    {
+     "id": "duct-018",
+     "displayName": "G001-D-15",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 320,
+     "points": [
+      {
+       "x": 21700,
+       "y": 13700
+      },
+      {
+       "x": 22500,
+       "y": 13700
+      }
+     ]
+    },
+    {
+     "id": "duct-019",
+     "displayName": "G001-D-13",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 320,
+     "points": [
+      {
+       "x": 21700,
+       "y": 8300
+      },
+      {
+       "x": 22500,
+       "y": 8300
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK2__RA-1": {
+  "result": {
+   "rus": 12,
+   "flowCmh": 1840,
+   "roots": 1,
+   "ducts": 31,
+   "lengthM": 56.8,
+   "indexPa": 68,
+   "ductTypes": {
+    "main": 11,
+    "branch": 8,
+    "sub_branch": 12
+   },
+   "kind": "return",
+   "rootSource": "shaft-room:204",
+   "designCmh": 1840,
+   "sig": "[\"exhaust\",2000,-8200,[[12900,-7700,30],[3800,-3100,350],[3800,-5700,350],[14700,-5700,60],[17700,-5700,60],[20700,-5700,60],[25700,-5700,150],[6300,-13700,500],[14700,-8300,50],[17700,-8300,50],[20700,-8300,50],[25700,-8300,130]],\"wz87g1\",[\"dxf-8636fab8c7d2d95b82b599105465ab01\",\"dxf-af3d438d68c420fdf2875a9826af66f5\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 97% · RU 묶음 1/1개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 2000,
+    "y": 8200
+   },
+   "rus": [
+    {
+     "x": 12900,
+     "y": 7700,
+     "flowCmh": 30
+    },
+    {
+     "x": 3800,
+     "y": 3100,
+     "flowCmh": 350
+    },
+    {
+     "x": 3800,
+     "y": 5700,
+     "flowCmh": 350
+    },
+    {
+     "x": 14700,
+     "y": 5700,
+     "flowCmh": 60
+    },
+    {
+     "x": 17700,
+     "y": 5700,
+     "flowCmh": 60
+    },
+    {
+     "x": 20700,
+     "y": 5700,
+     "flowCmh": 60
+    },
+    {
+     "x": 25700,
+     "y": 5700,
+     "flowCmh": 150
+    },
+    {
+     "x": 6300,
+     "y": 13700,
+     "flowCmh": 500
+    },
+    {
+     "x": 14700,
+     "y": 8300,
+     "flowCmh": 50
+    },
+    {
+     "x": 17700,
+     "y": 8300,
+     "flowCmh": 50
+    },
+    {
+     "x": 20700,
+     "y": 8300,
+     "flowCmh": 50
+    },
+    {
+     "x": 25700,
+     "y": 8300,
+     "flowCmh": 130
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 640,
+     "points": [
+      {
+       "x": 2000,
+       "y": 8200
+      },
+      {
+       "x": 2600,
+       "y": 8200
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "M-D-2",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 640,
+     "points": [
+      {
+       "x": 2600,
+       "y": 8200
+      },
+      {
+       "x": 2600,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "M-D-3",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 640,
+     "points": [
+      {
+       "x": 2600,
+       "y": 7600
+      },
+      {
+       "x": 13400,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "M-D-5",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 560,
+     "points": [
+      {
+       "x": 13900,
+       "y": 7600
+      },
+      {
+       "x": 14700,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "M-D-6",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 560,
+     "points": [
+      {
+       "x": 14700,
+       "y": 7600
+      },
+      {
+       "x": 14700,
+       "y": 7100
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "M-D-4",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 610,
+     "points": [
+      {
+       "x": 13400,
+       "y": 7600
+      },
+      {
+       "x": 13900,
+       "y": 7600
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "M-D-7",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 500,
+     "points": [
+      {
+       "x": 14700,
+       "y": 7100
+      },
+      {
+       "x": 17700,
+       "y": 7100
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "M-D-8",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 440,
+     "points": [
+      {
+       "x": 17700,
+       "y": 7100
+      },
+      {
+       "x": 17700,
+       "y": 7500
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "M-D-9",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 390,
+     "points": [
+      {
+       "x": 17700,
+       "y": 7500
+      },
+      {
+       "x": 20700,
+       "y": 7500
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "M-D-10",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 340,
+     "points": [
+      {
+       "x": 20700,
+       "y": 7500
+      },
+      {
+       "x": 20700,
+       "y": 7200
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "M-D-11",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 280,
+     "points": [
+      {
+       "x": 20700,
+       "y": 7200
+      },
+      {
+       "x": 25700,
+       "y": 7200
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "G001-D-1",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 700,
+     "points": [
+      {
+       "x": 2000,
+       "y": 8200
+      },
+      {
+       "x": 2000,
+       "y": 6500
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "G001-D-4",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 700,
+     "points": [
+      {
+       "x": 2000,
+       "y": 6500
+      },
+      {
+       "x": 3800,
+       "y": 6500
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "G001-D-8",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 30,
+     "points": [
+      {
+       "x": 13400,
+       "y": 7600
+      },
+      {
+       "x": 13400,
+       "y": 8500
+      }
+     ]
+    },
+    {
+     "id": "duct-015",
+     "displayName": "G001-D-10",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 30,
+     "points": [
+      {
+       "x": 13400,
+       "y": 8500
+      },
+      {
+       "x": 12900,
+       "y": 8500
+      }
+     ]
+    },
+    {
+     "id": "duct-016",
+     "displayName": "G001-D-5",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 350,
+     "points": [
+      {
+       "x": 3800,
+       "y": 6500
+      },
+      {
+       "x": 4600,
+       "y": 6500
+      }
+     ]
+    },
+    {
+     "id": "duct-017",
+     "displayName": "G001-D-7",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 350,
+     "points": [
+      {
+       "x": 4600,
+       "y": 6500
+      },
+      {
+       "x": 4600,
+       "y": 3100
+      }
+     ]
+    },
+    {
+     "id": "duct-018",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 500,
+     "points": [
+      {
+       "x": 2000,
+       "y": 8200
+      },
+      {
+       "x": 2000,
+       "y": 13700
+      }
+     ]
+    },
+    {
+     "id": "duct-019",
+     "displayName": "G001-D-11",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 50,
+     "points": [
+      {
+       "x": 13900,
+       "y": 7600
+      },
+      {
+       "x": 13900,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-020",
+     "displayName": "G001-D-12",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 30,
+     "points": [
+      {
+       "x": 12900,
+       "y": 8500
+      },
+      {
+       "x": 12900,
+       "y": 7700
+      }
+     ]
+    },
+    {
+     "id": "duct-021",
+     "displayName": "G001-D-9",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 350,
+     "points": [
+      {
+       "x": 4600,
+       "y": 3100
+      },
+      {
+       "x": 3800,
+       "y": 3100
+      }
+     ]
+    },
+    {
+     "id": "duct-022",
+     "displayName": "G001-D-6",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 350,
+     "points": [
+      {
+       "x": 3800,
+       "y": 6500
+      },
+      {
+       "x": 3800,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-023",
+     "displayName": "G001-D-14",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 60,
+     "points": [
+      {
+       "x": 14700,
+       "y": 7100
+      },
+      {
+       "x": 14700,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-024",
+     "displayName": "G001-D-15",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 60,
+     "points": [
+      {
+       "x": 17700,
+       "y": 7100
+      },
+      {
+       "x": 17700,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-025",
+     "displayName": "G001-D-18",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 60,
+     "points": [
+      {
+       "x": 20700,
+       "y": 7200
+      },
+      {
+       "x": 20700,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-026",
+     "displayName": "G001-D-19",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 150,
+     "points": [
+      {
+       "x": 25700,
+       "y": 7200
+      },
+      {
+       "x": 25700,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-027",
+     "displayName": "G001-D-3",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 500,
+     "points": [
+      {
+       "x": 2000,
+       "y": 13700
+      },
+      {
+       "x": 6300,
+       "y": 13700
+      }
+     ]
+    },
+    {
+     "id": "duct-028",
+     "displayName": "G001-D-13",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 50,
+     "points": [
+      {
+       "x": 13900,
+       "y": 8300
+      },
+      {
+       "x": 14700,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-029",
+     "displayName": "G001-D-16",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 50,
+     "points": [
+      {
+       "x": 17700,
+       "y": 7500
+      },
+      {
+       "x": 17700,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-030",
+     "displayName": "G001-D-17",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 50,
+     "points": [
+      {
+       "x": 20700,
+       "y": 7500
+      },
+      {
+       "x": 20700,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-031",
+     "displayName": "G001-D-20",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 130,
+     "points": [
+      {
+       "x": 25700,
+       "y": 7200
+      },
+      {
+       "x": 25700,
+       "y": 8300
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "DECK3__RA-1": {
+  "result": {
+   "rus": 13,
+   "flowCmh": 4290,
+   "roots": 1,
+   "ducts": 35,
+   "lengthM": 60.1,
+   "indexPa": 246,
+   "ductTypes": {
+    "main": 9,
+    "branch": 13,
+    "sub_branch": 13
+   },
+   "kind": "return",
+   "rootSource": "shaft-room:304",
+   "designCmh": 4290,
+   "sig": "[\"exhaust\",2000,-8200,[[300,-7700,340],[3800,-4100,360],[3800,-2100,360],[6200,-4100,350],[10600,-5700,240],[15100,-5700,240],[19600,-5700,240],[10600,-8300,250],[15100,-8300,240],[19600,-8300,240],[20300,-9300,480],[20300,-4700,480],[25700,-9300,470]],\"cvfgs6\",[\"dxf-bd889c903e6f55bdda08259d1252bec8\",\"dxf-55b673b6b014d038b3abce4a44ca8d5e\",\"dxf-1ff41e56bb4364bbb145e942cf7f79fb\"]]",
+   "at": 1,
+   "auto": true,
+   "seconds": 0,
+   "candidate": "직교 연결 후보 1 · 주관 복도 경유 98% · RU 묶음 2/2개",
+   "candidates": 1,
+   "pick": 0,
+   "unconnected": 0,
+   "zonesRelaxed": false,
+   "edited": false
+  },
+  "geometry": {
+   "root": {
+    "x": 2000,
+    "y": 8200
+   },
+   "rus": [
+    {
+     "x": 300,
+     "y": 7700,
+     "flowCmh": 340
+    },
+    {
+     "x": 3800,
+     "y": 4100,
+     "flowCmh": 360
+    },
+    {
+     "x": 3800,
+     "y": 2100,
+     "flowCmh": 360
+    },
+    {
+     "x": 6200,
+     "y": 4100,
+     "flowCmh": 350
+    },
+    {
+     "x": 10600,
+     "y": 5700,
+     "flowCmh": 240
+    },
+    {
+     "x": 15100,
+     "y": 5700,
+     "flowCmh": 240
+    },
+    {
+     "x": 19600,
+     "y": 5700,
+     "flowCmh": 240
+    },
+    {
+     "x": 10600,
+     "y": 8300,
+     "flowCmh": 250
+    },
+    {
+     "x": 15100,
+     "y": 8300,
+     "flowCmh": 240
+    },
+    {
+     "x": 19600,
+     "y": 8300,
+     "flowCmh": 240
+    },
+    {
+     "x": 20300,
+     "y": 9300,
+     "flowCmh": 480
+    },
+    {
+     "x": 20300,
+     "y": 4700,
+     "flowCmh": 480
+    },
+    {
+     "x": 25700,
+     "y": 9300,
+     "flowCmh": 470
+    }
+   ],
+   "ducts": [
+    {
+     "id": "duct-001",
+     "displayName": "M-D-1",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 300,
+     "diameterMm": 0,
+     "flowCmh": 4290,
+     "points": [
+      {
+       "x": 2000,
+       "y": 8200
+      },
+      {
+       "x": 2000,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-002",
+     "displayName": "M-D-2",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 340,
+     "points": [
+      {
+       "x": 2000,
+       "y": 6800
+      },
+      {
+       "x": 300,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-003",
+     "displayName": "M-D-3",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 550,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 3950,
+     "points": [
+      {
+       "x": 2000,
+       "y": 6800
+      },
+      {
+       "x": 3800,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-004",
+     "displayName": "M-D-4",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 400,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2880,
+     "points": [
+      {
+       "x": 3800,
+       "y": 6800
+      },
+      {
+       "x": 9800,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-005",
+     "displayName": "M-D-6",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 350,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2390,
+     "points": [
+      {
+       "x": 10600,
+       "y": 6800
+      },
+      {
+       "x": 14300,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-006",
+     "displayName": "M-D-5",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 300,
+     "heightMm": 250,
+     "diameterMm": 0,
+     "flowCmh": 2630,
+     "points": [
+      {
+       "x": 9800,
+       "y": 6800
+      },
+      {
+       "x": 10600,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-007",
+     "displayName": "M-D-8",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 300,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1910,
+     "points": [
+      {
+       "x": 15100,
+       "y": 6800
+      },
+      {
+       "x": 18800,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-008",
+     "displayName": "M-D-7",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 300,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 2150,
+     "points": [
+      {
+       "x": 14300,
+       "y": 6800
+      },
+      {
+       "x": 15100,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-009",
+     "displayName": "M-D-9",
+     "type": "main",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1670,
+     "points": [
+      {
+       "x": 18800,
+       "y": 6800
+      },
+      {
+       "x": 19600,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-010",
+     "displayName": "G001-D-2",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 1070,
+     "points": [
+      {
+       "x": 3800,
+       "y": 6800
+      },
+      {
+       "x": 3800,
+       "y": 4900
+      }
+     ]
+    },
+    {
+     "id": "duct-011",
+     "displayName": "G001-D-3",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 710,
+     "points": [
+      {
+       "x": 3800,
+       "y": 4900
+      },
+      {
+       "x": 4600,
+       "y": 4900
+      }
+     ]
+    },
+    {
+     "id": "duct-012",
+     "displayName": "G001-D-6",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 710,
+     "points": [
+      {
+       "x": 4600,
+       "y": 4900
+      },
+      {
+       "x": 4600,
+       "y": 4100
+      }
+     ]
+    },
+    {
+     "id": "duct-013",
+     "displayName": "G001-D-17",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1430,
+     "points": [
+      {
+       "x": 19600,
+       "y": 6800
+      },
+      {
+       "x": 20300,
+       "y": 6800
+      }
+     ]
+    },
+    {
+     "id": "duct-014",
+     "displayName": "G001-D-19",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 200,
+     "diameterMm": 0,
+     "flowCmh": 1430,
+     "points": [
+      {
+       "x": 20300,
+       "y": 6800
+      },
+      {
+       "x": 20300,
+       "y": 7300
+      }
+     ]
+    },
+    {
+     "id": "duct-015",
+     "displayName": "G001-D-20",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 250,
+     "heightMm": 150,
+     "diameterMm": 0,
+     "flowCmh": 950,
+     "points": [
+      {
+       "x": 20300,
+       "y": 7300
+      },
+      {
+       "x": 24900,
+       "y": 7300
+      }
+     ]
+    },
+    {
+     "id": "duct-016",
+     "displayName": "G001-D-9",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 4600,
+       "y": 4100
+      },
+      {
+       "x": 4600,
+       "y": 2100
+      }
+     ]
+    },
+    {
+     "id": "duct-017",
+     "displayName": "G001-D-15",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 18800,
+       "y": 6800
+      },
+      {
+       "x": 18800,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-018",
+     "displayName": "G001-D-5",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 250,
+     "points": [
+      {
+       "x": 9800,
+       "y": 6800
+      },
+      {
+       "x": 9800,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-019",
+     "displayName": "G001-D-11",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 14300,
+       "y": 6800
+      },
+      {
+       "x": 14300,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-020",
+     "displayName": "G001-D-22",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 24900,
+       "y": 7300
+      },
+      {
+       "x": 25800,
+       "y": 7300
+      }
+     ]
+    },
+    {
+     "id": "duct-021",
+     "displayName": "G001-D-25",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 25800,
+       "y": 7300
+      },
+      {
+       "x": 25800,
+       "y": 4700
+      }
+     ]
+    },
+    {
+     "id": "duct-022",
+     "displayName": "G001-D-23",
+     "type": "branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 470,
+     "points": [
+      {
+       "x": 24900,
+       "y": 7300
+      },
+      {
+       "x": 24900,
+       "y": 9300
+      }
+     ]
+    },
+    {
+     "id": "duct-023",
+     "displayName": "G001-D-1",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 340,
+     "points": [
+      {
+       "x": 300,
+       "y": 6800
+      },
+      {
+       "x": 300,
+       "y": 7700
+      }
+     ]
+    },
+    {
+     "id": "duct-024",
+     "displayName": "G001-D-4",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 3800,
+       "y": 4900
+      },
+      {
+       "x": 3800,
+       "y": 4100
+      }
+     ]
+    },
+    {
+     "id": "duct-025",
+     "displayName": "G001-D-12",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 360,
+     "points": [
+      {
+       "x": 4600,
+       "y": 2100
+      },
+      {
+       "x": 3800,
+       "y": 2100
+      }
+     ]
+    },
+    {
+     "id": "duct-026",
+     "displayName": "G001-D-10",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 150,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 350,
+     "points": [
+      {
+       "x": 4600,
+       "y": 4100
+      },
+      {
+       "x": 6200,
+       "y": 4100
+      }
+     ]
+    },
+    {
+     "id": "duct-027",
+     "displayName": "G001-D-8",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 10600,
+       "y": 6800
+      },
+      {
+       "x": 10600,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-028",
+     "displayName": "G001-D-14",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 15100,
+       "y": 6800
+      },
+      {
+       "x": 15100,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-029",
+     "displayName": "G001-D-16",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 18800,
+       "y": 5700
+      },
+      {
+       "x": 19600,
+       "y": 5700
+      }
+     ]
+    },
+    {
+     "id": "duct-030",
+     "displayName": "G001-D-7",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 250,
+     "points": [
+      {
+       "x": 9800,
+       "y": 8300
+      },
+      {
+       "x": 10600,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-031",
+     "displayName": "G001-D-13",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 14300,
+       "y": 8300
+      },
+      {
+       "x": 15100,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-032",
+     "displayName": "G001-D-18",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 100,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 240,
+     "points": [
+      {
+       "x": 19600,
+       "y": 6800
+      },
+      {
+       "x": 19600,
+       "y": 8300
+      }
+     ]
+    },
+    {
+     "id": "duct-033",
+     "displayName": "G001-D-21",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 20300,
+       "y": 7300
+      },
+      {
+       "x": 20300,
+       "y": 9300
+      }
+     ]
+    },
+    {
+     "id": "duct-034",
+     "displayName": "G001-D-26",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 480,
+     "points": [
+      {
+       "x": 25800,
+       "y": 4700
+      },
+      {
+       "x": 20300,
+       "y": 4700
+      }
+     ]
+    },
+    {
+     "id": "duct-035",
+     "displayName": "G001-D-24",
+     "type": "sub_branch",
+     "shape": "rect",
+     "widthMm": 200,
+     "heightMm": 100,
+     "diameterMm": 0,
+     "flowCmh": 470,
+     "points": [
+      {
+       "x": 24900,
+       "y": 9300
+      },
+      {
+       "x": 25700,
+       "y": 9300
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

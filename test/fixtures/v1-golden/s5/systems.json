@@ -1,0 +1,641 @@
+{
+ "systems": [
+  {
+   "id": "EXH-ROOM",
+   "kind": "exhaust",
+   "deckIds": [
+    "S2",
+    "S3",
+    "S4",
+    "S5"
+   ],
+   "roomIds": [
+    "S5_E101",
+    "S5_E088",
+    "S5_E064",
+    "S5_E065",
+    "S5_E037"
+   ],
+   "designCmh": 660
+  },
+  {
+   "id": "RET-ROOM",
+   "kind": "return",
+   "deckIds": [
+    "S1",
+    "S3",
+    "S4",
+    "S5"
+   ],
+   "roomIds": [
+    "S5_E094",
+    "S5_E107",
+    "S5_E071",
+    "S5_E073",
+    "S5_E074",
+    "S5_E075",
+    "S5_E076",
+    "S5_E077",
+    "S5_E078",
+    "S5_E080",
+    "S5_E081",
+    "S5_E082",
+    "S5_E083",
+    "S5_E084",
+    "S5_E085",
+    "S5_E087",
+    "S5_E051",
+    "S5_E053",
+    "S5_E054",
+    "S5_E055",
+    "S5_E056",
+    "S5_E057",
+    "S5_E059",
+    "S5_E060",
+    "S5_E061",
+    "S5_E062",
+    "S5_E066",
+    "S5_E009"
+   ],
+   "designCmh": 5790
+  },
+  {
+   "id": "AHU-AC-01",
+   "kind": "supply",
+   "deckIds": [
+    "S3"
+   ],
+   "roomIds": [
+    "S5_E059",
+    "S5_E060",
+    "S5_E061",
+    "S5_E062",
+    "S5_E063",
+    "S5_E064",
+    "S5_E065",
+    "S5_E066"
+   ],
+   "designCmh": 880
+  },
+  {
+   "id": "AHU-AC-02",
+   "kind": "supply",
+   "deckIds": [
+    "S3"
+   ],
+   "roomIds": [
+    "S5_E051",
+    "S5_E052",
+    "S5_E053",
+    "S5_E054",
+    "S5_E055",
+    "S5_E056",
+    "S5_E057",
+    "S5_E058"
+   ],
+   "designCmh": 900
+  },
+  {
+   "id": "AHU-BRG-01",
+   "kind": "supply",
+   "deckIds": [
+    "S5"
+   ],
+   "roomIds": [
+    "S5_E105",
+    "S5_E106",
+    "S5_E107",
+    "S5_E108",
+    "S5_E109",
+    "S5_E110",
+    "S5_E111",
+    "S5_E112",
+    "S5_E113",
+    "S5_E114"
+   ],
+   "designCmh": 500
+  },
+  {
+   "id": "AHU-BRG-02",
+   "kind": "supply",
+   "deckIds": [
+    "S5"
+   ],
+   "roomIds": [
+    "S5_E094",
+    "S5_E095",
+    "S5_E096",
+    "S5_E097",
+    "S5_E098",
+    "S5_E099",
+    "S5_E100",
+    "S5_E101",
+    "S5_E102",
+    "S5_E103",
+    "S5_E104"
+   ],
+   "designCmh": 2250
+  },
+  {
+   "id": "AHU-OFC-01",
+   "kind": "supply",
+   "deckIds": [
+    "S4"
+   ],
+   "roomIds": [
+    "S5_E081",
+    "S5_E082",
+    "S5_E083",
+    "S5_E084",
+    "S5_E085",
+    "S5_E086",
+    "S5_E087",
+    "S5_E088",
+    "S5_E089"
+   ],
+   "designCmh": 760
+  },
+  {
+   "id": "AHU-OFC-02",
+   "kind": "supply",
+   "deckIds": [
+    "S4"
+   ],
+   "roomIds": [
+    "S5_E071",
+    "S5_E072",
+    "S5_E073",
+    "S5_E074",
+    "S5_E075",
+    "S5_E076",
+    "S5_E077",
+    "S5_E078",
+    "S5_E079",
+    "S5_E080"
+   ],
+   "designCmh": 1260
+  },
+  {
+   "id": "SUP-ER-01",
+   "kind": "supply",
+   "deckIds": [
+    "S1"
+   ],
+   "roomIds": [
+    "S5_E014",
+    "S5_E015",
+    "S5_E016",
+    "S5_E017",
+    "S5_E018",
+    "S5_E019",
+    "S5_E020",
+    "S5_E021"
+   ],
+   "designCmh": 710
+  },
+  {
+   "id": "SUP-ER-02",
+   "kind": "supply",
+   "deckIds": [
+    "S1"
+   ],
+   "roomIds": [
+    "S5_E005",
+    "S5_E006",
+    "S5_E007",
+    "S5_E008",
+    "S5_E009",
+    "S5_E010",
+    "S5_E011",
+    "S5_E012",
+    "S5_E013"
+   ],
+   "designCmh": 3160
+  },
+  {
+   "id": "SUP-SVC-01",
+   "kind": "supply",
+   "deckIds": [
+    "S2"
+   ],
+   "roomIds": [
+    "S5_E037",
+    "S5_E038",
+    "S5_E039",
+    "S5_E040",
+    "S5_E041",
+    "S5_E042",
+    "S5_E043",
+    "S5_E044",
+    "S5_E045",
+    "S5_E046"
+   ],
+   "designCmh": 570
+  },
+  {
+   "id": "SUP-SVC-02",
+   "kind": "supply",
+   "deckIds": [
+    "S2"
+   ],
+   "roomIds": [
+    "S5_E026",
+    "S5_E027",
+    "S5_E028",
+    "S5_E029",
+    "S5_E030",
+    "S5_E031",
+    "S5_E032",
+    "S5_E033",
+    "S5_E034",
+    "S5_E035",
+    "S5_E036"
+   ],
+   "designCmh": 590
+  }
+ ],
+ "analysis": [
+  {
+   "system": "AHU-AC-01",
+   "systemId": "AHU-AC-01",
+   "kind": "supply",
+   "unitDeck": "S3",
+   "fanCmh": 880,
+   "decks": [
+    "S3"
+   ],
+   "complete": true,
+   "espPa": 48,
+   "fanPa": 698,
+   "indexDeck": "S3",
+   "riserLengthM": 0
+  },
+  {
+   "system": "AHU-AC-02",
+   "systemId": "AHU-AC-02",
+   "kind": "supply",
+   "unitDeck": "S3",
+   "fanCmh": 900,
+   "decks": [
+    "S3"
+   ],
+   "complete": true,
+   "espPa": 63,
+   "fanPa": 713,
+   "indexDeck": "S3",
+   "riserLengthM": 0
+  },
+  {
+   "system": "AHU-BRG-01",
+   "systemId": "AHU-BRG-01",
+   "kind": "supply",
+   "unitDeck": "S5",
+   "fanCmh": 500,
+   "decks": [
+    "S5"
+   ],
+   "complete": true,
+   "espPa": 23,
+   "fanPa": 673,
+   "indexDeck": "S5",
+   "riserLengthM": 0
+  },
+  {
+   "system": "AHU-BRG-02",
+   "systemId": "AHU-BRG-02",
+   "kind": "supply",
+   "unitDeck": "S5",
+   "fanCmh": 2250,
+   "decks": [
+    "S5"
+   ],
+   "complete": true,
+   "espPa": 177,
+   "fanPa": 827,
+   "indexDeck": "S5",
+   "riserLengthM": 0
+  },
+  {
+   "system": "AHU-OFC-01",
+   "systemId": "AHU-OFC-01",
+   "kind": "supply",
+   "unitDeck": "S4",
+   "fanCmh": 760,
+   "decks": [
+    "S4"
+   ],
+   "complete": true,
+   "espPa": 33,
+   "fanPa": 683,
+   "indexDeck": "S4",
+   "riserLengthM": 0
+  },
+  {
+   "system": "AHU-OFC-02",
+   "systemId": "AHU-OFC-02",
+   "kind": "supply",
+   "unitDeck": "S4",
+   "fanCmh": 1260,
+   "decks": [
+    "S4"
+   ],
+   "complete": true,
+   "espPa": 98,
+   "fanPa": 748,
+   "indexDeck": "S4",
+   "riserLengthM": 0
+  },
+  {
+   "system": "SUP-ER-01",
+   "systemId": "SUP-ER-01",
+   "kind": "supply",
+   "unitDeck": "S1",
+   "fanCmh": 710,
+   "decks": [
+    "S1"
+   ],
+   "complete": true,
+   "espPa": 36,
+   "fanPa": 686,
+   "indexDeck": "S1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "SUP-ER-02",
+   "systemId": "SUP-ER-02",
+   "kind": "supply",
+   "unitDeck": "S1",
+   "fanCmh": 3160,
+   "decks": [
+    "S1"
+   ],
+   "complete": true,
+   "espPa": 211.1,
+   "fanPa": 861,
+   "indexDeck": "S1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "SUP-SVC-01",
+   "systemId": "SUP-SVC-01",
+   "kind": "supply",
+   "unitDeck": "S2",
+   "fanCmh": 570,
+   "decks": [
+    "S2"
+   ],
+   "complete": true,
+   "espPa": 20,
+   "fanPa": 670,
+   "indexDeck": "S2",
+   "riserLengthM": 0
+  },
+  {
+   "system": "SUP-SVC-02",
+   "systemId": "SUP-SVC-02",
+   "kind": "supply",
+   "unitDeck": "S2",
+   "fanCmh": 590,
+   "decks": [
+    "S2"
+   ],
+   "complete": true,
+   "espPa": 29,
+   "fanPa": 679,
+   "indexDeck": "S2",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EXH-ROOM",
+   "systemId": "EXH-ROOM",
+   "kind": "exhaust",
+   "unitDeck": "S4",
+   "fanCmh": 660,
+   "decks": [
+    "S2",
+    "S3",
+    "S4",
+    "S5"
+   ],
+   "complete": true,
+   "espPa": 56.5,
+   "fanPa": 207,
+   "indexDeck": "S3",
+   "riserLengthM": 9
+  },
+  {
+   "system": "RET-ROOM",
+   "systemId": "RET-ROOM",
+   "kind": "return",
+   "unitDeck": "S1",
+   "fanCmh": 5790,
+   "decks": [
+    "S1",
+    "S3",
+    "S4",
+    "S5"
+   ],
+   "complete": true,
+   "espPa": 175.1,
+   "fanPa": 325,
+   "indexDeck": "S4",
+   "riserLengthM": 12
+  }
+ ],
+ "risers": [
+  {
+   "id": "EXH-ROOM:S4-S5",
+   "systemKey": "EXH-ROOM",
+   "systemId": "EXH-ROOM",
+   "kind": "exhaust",
+   "fromDeckId": "S4",
+   "toDeckId": "S5",
+   "from": {
+    "x": 600,
+    "y": 5700
+   },
+   "to": {
+    "x": 600,
+    "y": 5700
+   },
+   "flowCmh": 120,
+   "widthMm": 100,
+   "heightMm": 100,
+   "verticalM": 3,
+   "offsetM": 0,
+   "lengthM": 3,
+   "elbows": 2,
+   "velocityMps": 3.33,
+   "frictionPa": 5.4,
+   "elbowPa": 3.3,
+   "branchPa": 0,
+   "straightPa": 0,
+   "damperPa": 0,
+   "totalPa": 8.8,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "EXH-ROOM:S4-S3",
+   "systemKey": "EXH-ROOM",
+   "systemId": "EXH-ROOM",
+   "kind": "exhaust",
+   "fromDeckId": "S4",
+   "toDeckId": "S3",
+   "from": {
+    "x": 600,
+    "y": 5700
+   },
+   "to": {
+    "x": 600,
+    "y": 5700
+   },
+   "flowCmh": 400,
+   "widthMm": 250,
+   "heightMm": 100,
+   "verticalM": 3,
+   "offsetM": 0,
+   "lengthM": 3,
+   "elbows": 2,
+   "velocityMps": 4.44,
+   "frictionPa": 5.9,
+   "elbowPa": 5.9,
+   "branchPa": 4.7,
+   "straightPa": 1.2,
+   "damperPa": 0,
+   "totalPa": 11.8,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "EXH-ROOM:S3-S2",
+   "systemKey": "EXH-ROOM",
+   "systemId": "EXH-ROOM",
+   "kind": "exhaust",
+   "fromDeckId": "S3",
+   "toDeckId": "S2",
+   "from": {
+    "x": 600,
+    "y": 5700
+   },
+   "to": {
+    "x": 600,
+    "y": 5700
+   },
+   "flowCmh": 80,
+   "widthMm": 100,
+   "heightMm": 100,
+   "verticalM": 3,
+   "offsetM": 0,
+   "lengthM": 3,
+   "elbows": 2,
+   "velocityMps": 2.22,
+   "frictionPa": 2.6,
+   "elbowPa": 1.5,
+   "branchPa": 0,
+   "straightPa": 0,
+   "damperPa": 0,
+   "totalPa": 4.1,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "RET-ROOM:S1-S3",
+   "systemKey": "RET-ROOM",
+   "systemId": "RET-ROOM",
+   "kind": "return",
+   "fromDeckId": "S1",
+   "toDeckId": "S3",
+   "from": {
+    "x": 4200,
+    "y": 5800
+   },
+   "to": {
+    "x": 4200,
+    "y": 5800
+   },
+   "flowCmh": 3420,
+   "widthMm": 400,
+   "heightMm": 300,
+   "verticalM": 6,
+   "offsetM": 0,
+   "lengthM": 6,
+   "elbows": 2,
+   "velocityMps": 7.92,
+   "frictionPa": 11.7,
+   "elbowPa": 18.8,
+   "branchPa": 15,
+   "straightPa": 3.8,
+   "damperPa": 22.6,
+   "totalPa": 53.1,
+   "exceeded": false,
+   "through": [
+    "S2"
+   ]
+  },
+  {
+   "id": "RET-ROOM:S3-S4",
+   "systemKey": "RET-ROOM",
+   "systemId": "RET-ROOM",
+   "kind": "return",
+   "fromDeckId": "S3",
+   "toDeckId": "S4",
+   "from": {
+    "x": 4200,
+    "y": 5800
+   },
+   "to": {
+    "x": 4200,
+    "y": 5800
+   },
+   "flowCmh": 2210,
+   "widthMm": 350,
+   "heightMm": 250,
+   "verticalM": 3,
+   "offsetM": 0,
+   "lengthM": 3,
+   "elbows": 2,
+   "velocityMps": 7.02,
+   "frictionPa": 5.7,
+   "elbowPa": 14.8,
+   "branchPa": 11.8,
+   "straightPa": 3,
+   "damperPa": 0,
+   "totalPa": 20.4,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "RET-ROOM:S4-S5",
+   "systemKey": "RET-ROOM",
+   "systemId": "RET-ROOM",
+   "kind": "return",
+   "fromDeckId": "S4",
+   "toDeckId": "S5",
+   "from": {
+    "x": 4200,
+    "y": 5800
+   },
+   "to": {
+    "x": 4200,
+    "y": 5800
+   },
+   "flowCmh": 1010,
+   "widthMm": 250,
+   "heightMm": 200,
+   "verticalM": 3,
+   "offsetM": 0,
+   "lengthM": 3,
+   "elbows": 2,
+   "velocityMps": 5.61,
+   "frictionPa": 5.2,
+   "elbowPa": 9.4,
+   "branchPa": 0,
+   "straightPa": 0,
+   "damperPa": 0,
+   "totalPa": 14.7,
+   "exceeded": false,
+   "through": []
+  }
+ ]
+}

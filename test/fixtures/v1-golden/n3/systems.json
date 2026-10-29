@@ -1,0 +1,546 @@
+{
+ "systems": [
+  {
+   "id": "EF-BAT",
+   "kind": "exhaust",
+   "deckIds": [
+    "DECK3"
+   ],
+   "roomIds": [
+    "dxf-1ff41e56bb4364bbb145e942cf7f79fb"
+   ],
+   "designCmh": 240
+  },
+  {
+   "id": "EF-CO2",
+   "kind": "exhaust",
+   "deckIds": [
+    "DECK1"
+   ],
+   "roomIds": [
+    "dxf-e346205f9624b5cd5530d7d28e4536a8"
+   ],
+   "designCmh": 90
+  },
+  {
+   "id": "EF-GAL",
+   "kind": "exhaust",
+   "deckIds": [
+    "DECK1"
+   ],
+   "roomIds": [
+    "dxf-001c6d8f3b5312cc201906b469dad59e"
+   ],
+   "designCmh": 3240
+  },
+  {
+   "id": "EF-HOS",
+   "kind": "exhaust",
+   "deckIds": [
+    "DECK2"
+   ],
+   "roomIds": [
+    "dxf-646c51ecb95738431e058b737968f473",
+    "dxf-56795bb56c784489bf9d63261b26d489"
+   ],
+   "designCmh": 660
+  },
+  {
+   "id": "EF-LAU",
+   "kind": "exhaust",
+   "deckIds": [
+    "DECK1"
+   ],
+   "roomIds": [
+    "dxf-f136e0d6e8aaabb0e937c67d84e6a04b"
+   ],
+   "designCmh": 990
+  },
+  {
+   "id": "EF-PAN",
+   "kind": "exhaust",
+   "deckIds": [
+    "DECK1"
+   ],
+   "roomIds": [
+    "dxf-7ae08633edf8c9b9ed3d3101fdc217d8"
+   ],
+   "designCmh": 660
+  },
+  {
+   "id": "EF-SAN",
+   "kind": "exhaust",
+   "deckIds": [
+    "DECK1",
+    "DECK2",
+    "DECK3"
+   ],
+   "roomIds": [
+    "dxf-79879f0fa86030712e42f257a3fa3380",
+    "dxf-88c1a4e106955035422445b0889b3816",
+    "dxf-862b5aa64cca353eabc60a00b16209de",
+    "dxf-d4eee0e7aa36553b4bc019c9b3dda076",
+    "dxf-0708aa9057d0e8661554803931188133",
+    "dxf-0f5d1c9c51ed5f2021c2fc58d09324f9",
+    "dxf-c957811dcbd971e1adf889e18c56a1b9",
+    "dxf-5327d687afc9f79b3ccfb4773866d22c",
+    "dxf-a017ef1b655e97e3ce1713dce8625789",
+    "dxf-9e0d77fd0b878143b633d9ec799f84a7",
+    "dxf-e89b9a4aa2a7658b62e751ed6e4bcb43",
+    "dxf-f597909f1784dc61597820827f09a36b",
+    "dxf-e1ec4a10b2ebc3bef135c6cf46e76521",
+    "dxf-6e143ac28e70bee17ad783abb3501bd6",
+    "dxf-352f02672b18af29714267295ceaa585",
+    "dxf-86a83028a6e6f6c892f400b0fc9b49fd",
+    "dxf-202e792fd7d91869178d8c8595506e8b",
+    "dxf-61039d2cb05b4e09893d49f11ce8fddc",
+    "dxf-08fc86fc26e1b72fb150b8063c031334",
+    "dxf-6f7ff00bb742cf6b50ef5c3d76c2937b",
+    "dxf-a53896078e0f33fb935b8c1557b6296f"
+   ],
+   "designCmh": 2270
+  },
+  {
+   "id": "RA-1",
+   "kind": "return",
+   "deckIds": [
+    "DECK1",
+    "DECK2",
+    "DECK3"
+   ],
+   "roomIds": [
+    "dxf-fffa5465a127b54eadfbd2dc713257e6",
+    "dxf-daac0fd4a65799908990e3c522b5ef74",
+    "dxf-8ff07887ded002accb687069960d4a91",
+    "dxf-8081f76991270633296cc6970aaa797b",
+    "dxf-b7e76935369cc8c92efe4f1a9f2846dd",
+    "dxf-16128f2ed10d1ff9f7fb9c9a03b5f53d",
+    "dxf-b0b6a5eaebc7a1fbdfcd9ecedea0dd59",
+    "dxf-39b08fe7e28c7e9edd7e9edbddf9a641",
+    "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+    "dxf-4e8ddeaf1ebc220fb4f0bc90348050f6",
+    "dxf-4ef60bdf0188131e0875304066d0b8d7",
+    "dxf-51750696267fbb6cbdce7c9d06ea613a",
+    "dxf-9f5af1925540ddcca8f38cc0ceda9b18",
+    "dxf-e37b5a15808fe69097b8d43cb21b45fb",
+    "dxf-0add8a9926fffc0e6b6890bb5791a015",
+    "dxf-24826d8c78f44fe581a121b25cac7888",
+    "dxf-083eb2d481400aea179dbdf0a8e97c37",
+    "dxf-88e7361c042e44c92002864bb5ff8f1e",
+    "dxf-c5e8ab35892a68ab0a4e2aba3117b8fe",
+    "dxf-1503ba8ae4fc156bf682a1454d285ca6",
+    "dxf-881522c02887db6d6aaec30c7d78f97f",
+    "dxf-858d952395b4da30268e71898b73d022",
+    "dxf-bce07d0c3b19fb187ad032cabfffb843",
+    "dxf-1bd8a6b812a37b5364ab50f8920a10f6"
+   ],
+   "designCmh": 8560
+  },
+  {
+   "id": "AHU-1",
+   "kind": "supply",
+   "deckIds": [
+    "DECK1",
+    "DECK2",
+    "DECK3"
+   ],
+   "roomIds": [
+    "dxf-fffa5465a127b54eadfbd2dc713257e6",
+    "dxf-55b673b6b014d038b3abce4a44ca8d5e",
+    "dxf-daac0fd4a65799908990e3c522b5ef74",
+    "dxf-8ff07887ded002accb687069960d4a91",
+    "dxf-8081f76991270633296cc6970aaa797b",
+    "dxf-b7e76935369cc8c92efe4f1a9f2846dd",
+    "dxf-16128f2ed10d1ff9f7fb9c9a03b5f53d",
+    "dxf-b0b6a5eaebc7a1fbdfcd9ecedea0dd59",
+    "dxf-39b08fe7e28c7e9edd7e9edbddf9a641",
+    "dxf-f276ef5c1c6eb3758805a150e3a173ce",
+    "dxf-4e8ddeaf1ebc220fb4f0bc90348050f6",
+    "dxf-af3d438d68c420fdf2875a9826af66f5",
+    "dxf-4ef60bdf0188131e0875304066d0b8d7",
+    "dxf-51750696267fbb6cbdce7c9d06ea613a",
+    "dxf-9f5af1925540ddcca8f38cc0ceda9b18",
+    "dxf-e37b5a15808fe69097b8d43cb21b45fb",
+    "dxf-0add8a9926fffc0e6b6890bb5791a015",
+    "dxf-646c51ecb95738431e058b737968f473",
+    "dxf-24826d8c78f44fe581a121b25cac7888",
+    "dxf-083eb2d481400aea179dbdf0a8e97c37",
+    "dxf-88e7361c042e44c92002864bb5ff8f1e",
+    "dxf-c5e8ab35892a68ab0a4e2aba3117b8fe",
+    "dxf-1503ba8ae4fc156bf682a1454d285ca6",
+    "dxf-881522c02887db6d6aaec30c7d78f97f",
+    "dxf-e3786626192fffdc62c5a32f9b99fe34",
+    "dxf-a53896078e0f33fb935b8c1557b6296f",
+    "dxf-f136e0d6e8aaabb0e937c67d84e6a04b",
+    "dxf-7ae08633edf8c9b9ed3d3101fdc217d8",
+    "dxf-858d952395b4da30268e71898b73d022",
+    "dxf-bce07d0c3b19fb187ad032cabfffb843",
+    "dxf-1bd8a6b812a37b5364ab50f8920a10f6"
+   ],
+   "designCmh": 13250
+  },
+  {
+   "id": "SF-GAL",
+   "kind": "supply",
+   "deckIds": [
+    "DECK1"
+   ],
+   "roomIds": [
+    "dxf-001c6d8f3b5312cc201906b469dad59e"
+   ],
+   "designCmh": 2940
+  }
+ ],
+ "analysis": [
+  {
+   "system": "AHU-1",
+   "systemId": "AHU-1",
+   "kind": "supply",
+   "unitDeck": "DECK1",
+   "fanCmh": 13250,
+   "decks": [
+    "DECK1",
+    "DECK2",
+    "DECK3"
+   ],
+   "complete": true,
+   "espPa": 327.8,
+   "fanPa": 978,
+   "indexDeck": "DECK3",
+   "riserLengthM": 8.8
+  },
+  {
+   "system": "SF-GAL",
+   "systemId": "SF-GAL",
+   "kind": "supply",
+   "unitDeck": "DECK1",
+   "fanCmh": 2940,
+   "decks": [
+    "DECK1"
+   ],
+   "complete": true,
+   "espPa": 130.8,
+   "fanPa": 781,
+   "indexDeck": "DECK1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-BAT",
+   "systemId": "EF-BAT",
+   "kind": "exhaust",
+   "unitDeck": "DECK3",
+   "fanCmh": 240,
+   "decks": [
+    "DECK3"
+   ],
+   "complete": true,
+   "espPa": 39,
+   "fanPa": 189,
+   "indexDeck": "DECK3",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-CO2",
+   "systemId": "EF-CO2",
+   "kind": "exhaust",
+   "unitDeck": "DECK1",
+   "fanCmh": 90,
+   "decks": [
+    "DECK1"
+   ],
+   "complete": true,
+   "espPa": 11,
+   "fanPa": 161,
+   "indexDeck": "DECK1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-GAL",
+   "systemId": "EF-GAL",
+   "kind": "exhaust",
+   "unitDeck": "DECK1",
+   "fanCmh": 3240,
+   "decks": [
+    "DECK1"
+   ],
+   "complete": true,
+   "espPa": 187,
+   "fanPa": 337,
+   "indexDeck": "DECK1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-HOS",
+   "systemId": "EF-HOS",
+   "kind": "exhaust",
+   "unitDeck": "DECK2",
+   "fanCmh": 660,
+   "decks": [
+    "DECK2"
+   ],
+   "complete": true,
+   "espPa": 64,
+   "fanPa": 214,
+   "indexDeck": "DECK2",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-LAU",
+   "systemId": "EF-LAU",
+   "kind": "exhaust",
+   "unitDeck": "DECK1",
+   "fanCmh": 990,
+   "decks": [
+    "DECK1"
+   ],
+   "complete": true,
+   "espPa": 74,
+   "fanPa": 224,
+   "indexDeck": "DECK1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-PAN",
+   "systemId": "EF-PAN",
+   "kind": "exhaust",
+   "unitDeck": "DECK1",
+   "fanCmh": 660,
+   "decks": [
+    "DECK1"
+   ],
+   "complete": true,
+   "espPa": 124,
+   "fanPa": 274,
+   "indexDeck": "DECK1",
+   "riserLengthM": 0
+  },
+  {
+   "system": "EF-SAN",
+   "systemId": "EF-SAN",
+   "kind": "exhaust",
+   "unitDeck": "DECK1",
+   "fanCmh": 2270,
+   "decks": [
+    "DECK1",
+    "DECK2",
+    "DECK3"
+   ],
+   "complete": true,
+   "espPa": 98,
+   "fanPa": 248,
+   "indexDeck": "DECK2",
+   "riserLengthM": 9.8
+  },
+  {
+   "system": "RA-1",
+   "systemId": "RA-1",
+   "kind": "return",
+   "unitDeck": "DECK1",
+   "fanCmh": 8560,
+   "decks": [
+    "DECK1",
+    "DECK2",
+    "DECK3"
+   ],
+   "complete": true,
+   "espPa": 366.2,
+   "fanPa": 516,
+   "indexDeck": "DECK3",
+   "riserLengthM": 9.8
+  }
+ ],
+ "risers": [
+  {
+   "id": "AHU-1:DECK1-DECK2",
+   "systemKey": "AHU-1",
+   "systemId": "AHU-1",
+   "kind": "supply",
+   "fromDeckId": "DECK1",
+   "toDeckId": "DECK2",
+   "from": {
+    "x": 2500,
+    "y": -11700
+   },
+   "to": {
+    "x": 2500,
+    "y": -8700
+   },
+   "flowCmh": 8390,
+   "widthMm": 600,
+   "heightMm": 400,
+   "verticalM": 2.9,
+   "offsetM": 3,
+   "lengthM": 5.9,
+   "elbows": 4,
+   "velocityMps": 9.71,
+   "frictionPa": 11.2,
+   "elbowPa": 56.6,
+   "branchPa": 22.6,
+   "straightPa": 5.7,
+   "damperPa": 17,
+   "totalPa": 84.7,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "AHU-1:DECK2-DECK3",
+   "systemKey": "AHU-1",
+   "systemId": "AHU-1",
+   "kind": "supply",
+   "fromDeckId": "DECK2",
+   "toDeckId": "DECK3",
+   "from": {
+    "x": 2500,
+    "y": -8700
+   },
+   "to": {
+    "x": 2500,
+    "y": -8700
+   },
+   "flowCmh": 5030,
+   "widthMm": 400,
+   "heightMm": 400,
+   "verticalM": 2.9,
+   "offsetM": 0,
+   "lengthM": 2.9,
+   "elbows": 2,
+   "velocityMps": 8.73,
+   "frictionPa": 5.6,
+   "elbowPa": 22.9,
+   "branchPa": 0,
+   "straightPa": 0,
+   "damperPa": 0,
+   "totalPa": 28.5,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "EF-SAN:DECK1-DECK2",
+   "systemKey": "EF-SAN",
+   "systemId": "EF-SAN",
+   "kind": "exhaust",
+   "fromDeckId": "DECK1",
+   "toDeckId": "DECK2",
+   "from": {
+    "x": 3000,
+    "y": -12200
+   },
+   "to": {
+    "x": 3000,
+    "y": -8200
+   },
+   "flowCmh": 1740,
+   "widthMm": 300,
+   "heightMm": 250,
+   "verticalM": 2.9,
+   "offsetM": 4,
+   "lengthM": 6.9,
+   "elbows": 4,
+   "velocityMps": 6.44,
+   "frictionPa": 12.1,
+   "elbowPa": 24.9,
+   "branchPa": 10,
+   "straightPa": 2.5,
+   "damperPa": 0,
+   "totalPa": 37,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "EF-SAN:DECK2-DECK3",
+   "systemKey": "EF-SAN",
+   "systemId": "EF-SAN",
+   "kind": "exhaust",
+   "fromDeckId": "DECK2",
+   "toDeckId": "DECK3",
+   "from": {
+    "x": 3000,
+    "y": -8200
+   },
+   "to": {
+    "x": 3000,
+    "y": -8200
+   },
+   "flowCmh": 780,
+   "widthMm": 200,
+   "heightMm": 200,
+   "verticalM": 2.9,
+   "offsetM": 0,
+   "lengthM": 2.9,
+   "elbows": 2,
+   "velocityMps": 5.42,
+   "frictionPa": 5.4,
+   "elbowPa": 8.8,
+   "branchPa": 0,
+   "straightPa": 0,
+   "damperPa": 0,
+   "totalPa": 14.2,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "RA-1:DECK1-DECK2",
+   "systemKey": "RA-1",
+   "systemId": "RA-1",
+   "kind": "return",
+   "fromDeckId": "DECK1",
+   "toDeckId": "DECK2",
+   "from": {
+    "x": 2000,
+    "y": -12200
+   },
+   "to": {
+    "x": 2000,
+    "y": -8200
+   },
+   "flowCmh": 6130,
+   "widthMm": 550,
+   "heightMm": 350,
+   "verticalM": 2.9,
+   "offsetM": 4,
+   "lengthM": 6.9,
+   "elbows": 4,
+   "velocityMps": 8.85,
+   "frictionPa": 12.6,
+   "elbowPa": 46.9,
+   "branchPa": 18.8,
+   "straightPa": 4.7,
+   "damperPa": 14.1,
+   "totalPa": 73.7,
+   "exceeded": false,
+   "through": []
+  },
+  {
+   "id": "RA-1:DECK2-DECK3",
+   "systemKey": "RA-1",
+   "systemId": "RA-1",
+   "kind": "return",
+   "fromDeckId": "DECK2",
+   "toDeckId": "DECK3",
+   "from": {
+    "x": 2000,
+    "y": -8200
+   },
+   "to": {
+    "x": 2000,
+    "y": -8200
+   },
+   "flowCmh": 4290,
+   "widthMm": 500,
+   "heightMm": 300,
+   "verticalM": 2.9,
+   "offsetM": 0,
+   "lengthM": 2.9,
+   "elbows": 2,
+   "velocityMps": 7.94,
+   "frictionPa": 5.1,
+   "elbowPa": 18.9,
+   "branchPa": 0,
+   "straightPa": 0,
+   "damperPa": 0,
+   "totalPa": 24,
+   "exceeded": false,
+   "through": []
+  }
+ ]
+}

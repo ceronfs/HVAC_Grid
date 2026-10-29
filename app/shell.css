@@ -283,3 +283,30 @@ svg.sysdia{stroke:none;fill:none}svg.sysdia text{stroke:none}
 .fp-legend span,.fp-cats span{display:inline-flex;align-items:center;gap:4px}
 .fireplan-wrap{overflow:auto;border:1px solid var(--line);border-radius:4px;background:#fff;margin:6px 0}
 .fireplan-wrap svg{display:block;max-width:100%;height:auto}
+/* ⑤ on the plan: the report is a dock under it (one canvas for every step) */
+.center.docked>#boxFrame,.center.docked>#plan{height:calc(100% - var(--dockh,40%));bottom:auto}
+.center.docked>.report{top:auto;height:var(--dockh,40%);border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(0,0,0,.06);z-index:3;padding-top:10px}
+.main.plan-view.docked>.side{bottom:var(--dockh,40%)}
+.dock-handle{position:absolute;left:0;right:0;bottom:calc(var(--dockh,40%) - 4px);height:8px;cursor:ns-resize;z-index:4;touch-action:none}
+.dock-handle::after{content:"";position:absolute;left:50%;top:2px;width:44px;height:4px;margin-left:-22px;border-radius:2px;background:var(--line)}
+.dock-handle:hover::after{background:var(--accent)}
+.report .tabs .dock-tog{margin-left:auto;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:3px 10px;color:var(--muted);cursor:pointer;align-self:center}
+.center.docked>.report .tabs{top:-10px}
+/* the plan's layers (legend top) and the decks above and below, faint, under this one */
+.legend .lg-layers{border-bottom:1px solid var(--line);margin:0 0 4px;padding:0 0 4px;font-size:12px}
+.legend .lg-boxes{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;margin-right:14px}
+.legend .lg-boxes label{white-space:nowrap;cursor:pointer}.legend .lg-boxes input{margin:0 4px 0 0;vertical-align:-2px}
+.legend .lg-deck select{font:inherit;font-size:12px;margin-left:4px}
+.legend .gh{display:inline-block;width:16px;height:0;border-top:1.5px dashed var(--muted);margin-right:4px;vertical-align:middle}.legend .gh.below{border-top-style:dotted}
+.plan .ghost{fill:none;stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke;pointer-events:none;opacity:.55;stroke-dasharray:6 4}.plan .ghost.below{stroke-dasharray:1.5 3}
+/* ① ② with the HVAC Grid layers: the plan over BOX's canvas takes no clicks (BOX keeps drawing and picking); the legend
+   sits left of BOX's deck column */
+.plan.over-box,.plan.over-box *{pointer-events:none!important}
+.center.over-box>.legend{right:184px;top:52px}
+/* ④: the rooms the chosen system's ducts keep out of (PHG D forbidden zones), and the velocity along its ducts */
+.plan .zone{fill:url(#hgHatch);stroke:var(--red);stroke-width:1.2;stroke-dasharray:4 3;vector-effect:non-scaling-stroke;pointer-events:none;opacity:.75}
+.plan .dvel{fill:var(--ok);font-weight:600;paint-order:stroke;stroke:var(--canvas);stroke-width:3px;vector-effect:non-scaling-stroke;pointer-events:none}
+/* ④ 압력 layer: each RU's loss from the unit, the index run's RU ringed, the loss at each junction */
+.plan .pru{fill:var(--text);font-weight:600;paint-order:stroke;stroke:var(--canvas);stroke-width:3px;vector-effect:non-scaling-stroke;pointer-events:none}.plan .pru.idx{fill:var(--red)}
+.plan .pidx{fill:none;stroke:var(--red);stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:none}
+.plan .pnode{fill:var(--muted);paint-order:stroke;stroke:var(--canvas);stroke-width:3px;vector-effect:non-scaling-stroke;pointer-events:none}

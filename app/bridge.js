@@ -152,7 +152,9 @@
 html.hg-bg #roomZoneLayer,html.hg-bg #roomHighlightLayer,html.hg-bg #gripLayer,html.hg-bg #previewLayer,html.hg-bg #osnapLayer,
 html.hg-bg #olWorkflowOverlay,html.hg-bg #l4DiagnosticsOverlay{display:none!important}
 html.hg-bg .main>.side,html.hg-bg #canvas>.viewbar,html.hg-bg #canvas>.status{visibility:hidden!important}
-html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
+html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}
+/* ① ② with the HVAC Grid layers and their system colours: BOX's own room fills step aside */
+html.hg-ov #roomZoneLayer{display:none!important}`;
  const CAL_APPLY = new Set(['K7', 'C✓']);
  // CAL commands on CAL's settings alone - the K values (ISO 기준, ISO 적용, LY, LY 적용, 사용자) and the design conditions
  // (project K): they open with no drawing too. CAL then has no rooms; BOX keeps the settings for the drawing opened next
@@ -187,6 +189,8 @@ html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
   theme() { try { this.doc.documentElement.dataset.theme = document.documentElement.dataset.theme || ''; } catch {} }
   // BOX's canvas as the background of ③ ④ (BOX_CSS hg-bg); BOX itself is not changed
   backdrop(on, duct = false) { try { const c = this.doc.documentElement.classList; c.toggle('hg-bg', !!on); c.toggle('hg-duct', !!on && duct); this.solo(on); } catch {} }
+  // ① ② under the HVAC Grid layers: BOX's room fills give way to the system colours (BOX_CSS hg-ov)
+  overlay(on) { try { this.doc.documentElement.classList.toggle('hg-ov', !!on); } catch {} }
   // as the background BOX draws its active deck alone: BOX draws the lines of every shown deck, and decks stacked at one
   // place (as BOX opens drawings) crossed the chosen deck's rooms. BOX's render filter hook (shownForRender) does it - the
   // decks' own visibility, BOX's undo and the saved drawing stay as they are. st.stackView, a key of BOX's canvas cache,
@@ -407,6 +411,18 @@ html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
    L.renderEverything();
    return this.result();
   }
+  // a duct's type (main / branch / sub_branch) set by hand with PHG D's own ML / BR / SBR command on that duct alone (it
+  // keeps the type as manualType); PHG D sizes a duct by its type (a manualSize duct keeps its section) and the network is
+  // calculated again
+  async setDuctType(ductId, type) {
+   const w = this.win, L = w.LineDesignLegacy, st = L.getState(), btn = { main: 'assignMainLineBtn', branch: 'assignBranchBtn', sub_branch: 'assignSubBranchBtn' }[type];
+   if (!st.ducts.some(x => x.id === ductId)) throw new Error('PHG D에 덕트 ' + ductId + '가 없습니다');
+   if (!btn) throw new Error('덕트 종류 ' + type + '?');
+   st.selectedDuctIds.clear(); st.selectedDuctIds.add(ductId);
+   try { this.click(btn); } finally { st.selectedDuctIds.clear(); }
+   await w.LineDesignV2.calculateTypedNetwork(''); L.renderEverything();
+   return this.result();
+  }
   // the project open in PHG D differs from the stored text (edited in PHG D since)
   // content changed since text (a saved project)? PHG D writes keys in another order, new time stamps and default fields
   // when it reloads a project: a project opened from text is compared with what PHG D made of it, in a canonical form
@@ -419,6 +435,29 @@ html.hg-bg.hg-duct #roomLabelLayer{opacity:.4}`;
    return { rus: st.diffusers.length, flowCmh: st.diffusers.reduce((t, d) => t + (+d.flowCmh || 0), 0), roots: st.nodes.filter(n => n.type === 'root').length,
     ducts: st.ducts.length, lengthM: Math.round(st.ducts.reduce((s, d) => s + len(d), 0) / 100) / 10, indexPa,
     ductTypes: st.ducts.reduce((o, d) => (o[d.type] = (o[d.type] || 0) + 1, o), {}) };
+  }
+  // the pressure along the network open in PHG D (its path calculation, as result() takes the index run from): each
+  // RU's loss from the unit (index: the largest), and at each junction (three ducts or more) the loss from the unit to
+  // there - the duct losses (friction, bends, branch) summed along the path. Coordinates as geometry(). Only with ducts,
+  // as result(): PHG D's calculation writes its default pressure settings into the project, and a plan just sent (no
+  // ducts yet) would carry them into its AUTO
+  pressure() {
+   const w = this.win, st = w.LineDesignLegacy.getState(), y = this.yBox() ? v => -v : v => v;
+   if (!st.ducts.length) return null;
+   const paths = w.LineDesignV2.calculateSimplePressure({})?.paths || []; if (!paths.length) return null;
+   const nodeOf = id => st.nodes.find(n => n.id === id), ductOf = id => st.ducts.find(d => d.id === id), reach = new Map();
+   const rus = paths.map(p => {
+    let at = p.rootId, acc = 0;
+    for (const d of p.details || []) {
+     acc += (+d.frictionLossPa || 0) + (+d.bendLossPa || 0) + (+d.branchLossPa || 0);
+     const dk = ductOf(d.ductId); if (!dk) continue; at = dk.fromNodeId === at ? dk.toNodeId : dk.fromNodeId; if (!reach.has(at)) reach.set(at, acc);
+    }
+    const ru = st.diffusers.find(x => x.id === p.diffuserId) || nodeOf(p.diffuserId);
+    return ru ? { id: p.diffuserId, name: p.diffuserName, x: ru.x, y: y(ru.y), pa: +p.totalPressureLossPa || 0 } : null;
+   }).filter(Boolean);
+   const indexPa = Math.max(...rus.map(u => u.pa)); for (const u of rus) u.index = u.pa === indexPa;
+   const nodes = [...reach].map(([id, pa]) => ({ n: nodeOf(id), pa })).filter(({ n }) => n && (n.connectedDuctIds?.length || 0) >= 3).map(({ n, pa }) => ({ x: n.x, y: y(n.y), pa }));
+   return { rus, nodes, indexPa };
   }
   dockShown(side) { const d = this.doc.getElementById(`phgb-${side}-dock`); return !!d && d.getBoundingClientRect().width > 20; }
   // show an area (BOX coordinates) with a margin in mm
